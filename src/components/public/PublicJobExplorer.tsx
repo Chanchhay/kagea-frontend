@@ -22,7 +22,7 @@ const emptyFilters: PublicJobFilterValues = {
   jobType: "",
 };
 
-const pageSize = 3;
+const pageSize = 5;
 
 export function PublicJobExplorer({ jobs, categories, skills }: PublicJobExplorerProps) {
   const [filters, setFilters] = useState(emptyFilters);
@@ -35,15 +35,15 @@ export function PublicJobExplorer({ jobs, categories, skills }: PublicJobExplore
     return jobs.filter((job) => {
       const matchesKeyword =
         !keyword ||
-        job.title.toLowerCase().includes(keyword) ||
-        job.companyName.toLowerCase().includes(keyword) ||
-        job.skills.some((skill) => skill.skillName.toLowerCase().includes(keyword));
-      const matchesLocation = !location || job.location.toLowerCase().includes(location);
+        (job.title ?? "").toLowerCase().includes(keyword) ||
+        (job.companyName ?? "").toLowerCase().includes(keyword) ||
+        (job.skills ?? []).some((skill) => (skill.skillName ?? "").toLowerCase().includes(keyword));
+      const matchesLocation = !location || (job.location ?? "").toLowerCase().includes(location);
       const matchesCategory =
         !filters.categoryId || job.categoryId === Number(filters.categoryId);
       const matchesSkill =
         !filters.skillId ||
-        job.skills.some((skill) => skill.skillId === Number(filters.skillId));
+        (job.skills ?? []).some((skill) => skill.skillId === Number(filters.skillId));
       const matchesWorkMode = !filters.workMode || job.workMode === filters.workMode;
       const matchesJobType = !filters.jobType || job.jobType === filters.jobType;
 
@@ -69,6 +69,16 @@ export function PublicJobExplorer({ jobs, categories, skills }: PublicJobExplore
     setPage(0);
   };
 
+  const changePage = (nextPage: number) => {
+    setPage(nextPage);
+    requestAnimationFrame(() => {
+      document.getElementById("public-job-results")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  };
+
   return (
     <div className="space-y-6">
       <SectionHeader
@@ -90,13 +100,16 @@ export function PublicJobExplorer({ jobs, categories, skills }: PublicJobExplore
           Filters active · {filteredJobs.length} matching jobs
         </p>
       ) : null}
-      <PublicJobList jobs={visibleJobs} state={listState} />
+      <div id="public-job-results" className="scroll-mt-24">
+        <PublicJobList jobs={visibleJobs} state={listState} />
+      </div>
       {visibleJobs.length > 0 ? (
         <PublicJobPagination
           page={safePage}
           totalPages={totalPages}
           totalItems={filteredJobs.length}
-          onPageChange={setPage}
+          pageSize={pageSize}
+          onPageChange={changePage}
         />
       ) : null}
     </div>
