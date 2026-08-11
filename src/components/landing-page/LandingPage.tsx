@@ -1,5 +1,3 @@
-import LandingFooter from './LandingFooter';
-import LandingNavbar from './LandingNavbar';
 import { ScrollReveal } from './shared/ScrollReveal';
 import CtaBannerSection from './CtaBannerSection';
 import DecorativeBackground from './DecorativeBackground';
@@ -13,13 +11,12 @@ import TrustedCompaniesSection from './TrustedCompaniesSection';
 export default function LandingPage() {
   return (
     <>
-      <LandingNavbar />
       <div className="relative overflow-hidden bg-transparent text-slate-900 transition-colors duration-300 dark:text-slate-50">
         <DecorativeBackground />
 
-        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <HeroCompaniesSection />
-        </main>
+        </div>
 
         <ScrollReveal delay={0.05} className="relative z-10">
           <ProfileSection />
@@ -45,7 +42,6 @@ export default function LandingPage() {
           <CtaBannerSection />
         </ScrollReveal>
       </div>
-      <LandingFooter />
     </>
   );
 }
