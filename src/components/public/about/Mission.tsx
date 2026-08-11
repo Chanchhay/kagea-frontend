@@ -8,7 +8,9 @@ import { Globe2, Bot, Target, ShieldCheck, Sparkles, CheckCircle2 } from "lucide
 interface MissionFeature {
   title: string;
   description: string;
-  icon: React.ElementType;
+  // Narrower than React.ElementType: @react-three/fiber augments
+  // JSX.IntrinsicElements, which collapses `className` to never on ElementType.
+  icon: React.ComponentType<{ className?: string }>;
   accentColor: string;
   badgeBg: string;
 }
