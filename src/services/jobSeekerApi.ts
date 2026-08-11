@@ -6,6 +6,7 @@ import type {
   ApiResponseAiInterviewSessionResponse,
   ApiResponseJobApplicationResponse,
   ApiResponseJobSeekerProfileResponse,
+  ApiResponsePublicationResponse,
   ApiResponseListAiInterviewSessionResponse,
   ApiResponseListJobApplicationResponse,
   ApiResponseListPortfolioResponse,
@@ -18,6 +19,8 @@ import type {
   JobApplicationCreateRequest,
   JobSeekerProfileResponse,
   JobSeekerProfileUpdateRequest,
+  PublicationRequest,
+  PublicationResponse,
   PortfolioResponse,
   PortfolioCreateRequest,
   PortfolioUpdateRequest,
@@ -38,9 +41,30 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         unwrapApiResponse(response),
       providesTags: ["JobSeekerProfile"],
     }),
-    updateJobSeekerProfile: builder.mutation<JobSeekerProfileResponse, JobSeekerProfileUpdateRequest>({
-      query: (body) => ({ url: "/job-seeker/profile", method: "PATCH", body }),
-      transformResponse: (response: ApiResponseJobSeekerProfileResponse) => unwrapApiResponse(response),
+    updateJobSeekerProfile: builder.mutation<
+      JobSeekerProfileResponse,
+      JobSeekerProfileUpdateRequest
+    >({
+      query: (body) => ({
+        url: "/job-seeker/profile",
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (response: ApiResponseJobSeekerProfileResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: ["JobSeekerProfile"],
+    }),
+    updateJobSeekerPublication: builder.mutation<
+      PublicationResponse,
+      PublicationRequest
+    >({
+      query: (body) => ({
+        url: "/job-seeker/profile/publication",
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (response: ApiResponsePublicationResponse) =>
+        unwrapApiResponse(response),
       invalidatesTags: ["JobSeekerProfile"],
     }),
     getResumes: builder.query<ResumeResponse[], void>({
@@ -266,6 +290,7 @@ export const jobSeekerApi = baseApi.injectEndpoints({
 export const {
   useGetJobSeekerProfileQuery,
   useUpdateJobSeekerProfileMutation,
+  useUpdateJobSeekerPublicationMutation,
   useGetResumesQuery,
   useGetResumeQuery,
   useCreateResumeMutation,
