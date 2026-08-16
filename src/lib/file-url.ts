@@ -1,29 +1,22 @@
 /**
  * Files live in MinIO and are addressed by the app-relative URL the backend
- * returns from `POST /api/v1/files` — `/api/v1/public/files/…` for anything
- * rendered as an image, `/api/v1/files/…` for resumes and verification
- * documents. Storing a relative URL rather than a MinIO one means rotating the
- * bucket host or its credentials never invalidates rows already in the database;
- * only the short-lived presigned redirect target changes.
+ * returns from `POST /api/v1/files` — `/api/v1/public/files/…` for images,
+ * `/api/v1/files/…` for resumes and verification documents.
  *
- * The browser reaches the backend through the Next.js proxy mounted at
- * `/api/backend`, so the prefix is swapped at render time. Once the Spring Cloud
- * Gateway fronts both apps on one origin, this becomes a no-op and can be
- * deleted.
+ * The Spring Cloud Gateway serves this app and the backend on one origin, so
+ * those URLs are already directly fetchable by the browser; this only
+ * normalises the empty case so callers can interpolate the result safely.
+ *
+ * Before the gateway, this rewrote `/api/v1/…` to the Next.js proxy at
+ * `/api/backend/…`. That hop is gone.
  */
-
-const BACKEND_PREFIX = "/api/v1/";
-const PROXY_PREFIX = "/api/backend/";
 
 /**
- * Maps a stored file URL to one the browser can fetch.
+ * Returns a file URL the browser can fetch, or `""` when there is none.
  *
  * Legacy `/uploads/…` values written before the MinIO migration, and absolute
- * external URLs, are returned unchanged so existing rows keep resolving.
+ * external URLs, pass through unchanged so existing rows keep resolving.
  */
 export function resolveFileUrl(url: string | null | undefined): string {
-  if (!url) return "";
-  return url.startsWith(BACKEND_PREFIX)
-    ? PROXY_PREFIX + url.slice(BACKEND_PREFIX.length)
-    : url;
+  return url ?? "";
 }

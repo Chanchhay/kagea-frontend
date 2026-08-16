@@ -49,7 +49,7 @@ export async function uploadFile(
   body.append("file", file);
   body.append("visibility", visibility.toUpperCase());
 
-  const response = await fetch("/api/backend/files", { method: "POST", body });
+  const response = await fetch("/api/v1/files", { method: "POST", body });
 
   let payload: unknown = null;
   try {

@@ -17,10 +17,9 @@ import {
   PageHeadingProvider,
   usePageHeading,
 } from "@/components/layout/PageHeader";
-import { authClient } from "@/lib/auth-client";
 import { jobSeekerNavigation, recruiterNavigation } from "@/lib/navigation";
 import { cn, getInitials } from "@/lib/utils";
-import { useGetCurrentUserQuery } from "@/services/authApi";
+import { useGetCurrentUserQuery, useGetSessionQuery } from "@/services/authApi";
 
 type NavLink = {
   href: string;
@@ -142,7 +141,7 @@ function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
 
 function SignOutRailButton() {
   return (
-    <form action="/api/auth/keycloak/logout" method="post" className="mt-auto">
+    <form action="/logout" method="post" className="mt-auto">
       <button
         type="submit"
         aria-label="Sign out"
@@ -234,15 +233,15 @@ function QuickSearch({ href, placeholder }: { href: string; placeholder: string 
 }
 
 function Avatar() {
-  const { data: session } = authClient.useSession();
+  const { data: session } = useGetSessionQuery();
   const currentUser = useGetCurrentUserQuery(undefined, {
-    skip: !session?.user,
+    skip: !session?.authenticated,
   });
 
-  if (!session?.user) return null;
+  if (!session?.authenticated) return null;
 
   const name =
-    currentUser.data?.fullName || session.user.name || session.user.email;
+    currentUser.data?.fullName || session.username || session.email || "Account";
   // The uploaded avatar lives on the backend profile; the auth session only
   // carries whatever picture Keycloak happens to hold.
   const avatar = resolveFileUrl(currentUser.data?.avatarUrl);

@@ -4,13 +4,13 @@ import { useState } from "react";
 import { BadgeCheck, BriefcaseBusiness, Camera, Eye, MapPin, X } from "lucide-react";
 import { toast } from "sonner";
 import type { JobSeekerProfileResponse } from "@/contracts";
-import { authClient } from "@/lib/auth-client";
 import { FileDropzone } from "@/components/shared/FileDropzone";
 import { resolveFileUrl } from "@/lib/file-url";
 import { getInitials } from "@/lib/utils";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { uploadFile } from "@/lib/upload-file";
 import { useUpdateJobSeekerProfileMutation } from "@/services/jobSeekerApi";
+import { useGetCurrentUserQuery } from "@/services/authApi";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ProfileHeaderCardProps {
@@ -29,7 +29,7 @@ const STRENGTH_FIELDS = [
 ] as const satisfies readonly (keyof JobSeekerProfileResponse)[];
 
 export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
-  const { data: session } = authClient.useSession();
+  const { data: currentUser } = useGetCurrentUserQuery();
   const [updateProfile, { isLoading: isSaving }] =
     useUpdateJobSeekerProfileMutation();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -40,7 +40,7 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
   // mutation invalidates the JobSeekerProfile tag, so this re-renders on save.
   const photoUrl = profile.avatarUrl ?? "";
 
-  const name = session?.user.name || session?.user.email || "Job seeker";
+  const name = currentUser?.fullName || currentUser?.email || "Job seeker";
 
   const completedCount = STRENGTH_FIELDS.filter((field) => {
     const value = profile[field];
