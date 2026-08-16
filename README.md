@@ -1,143 +1,271 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI-Powered Hybrid Career Platform & Interview Simulator
 
-## Getting Started
+A multi-role career platform that combines public job discovery, recruiter job management, candidate preparation, AI interview simulation, moderator verification, and controlled candidate forwarding.
 
-First, run the development server:
+This README focuses on the current frontend implementation.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Project Overview
+
+The platform is designed for four main user groups:
+
+- **Job Seeker** — manages a professional profile, resumes, portfolios, applications, and AI interviews.
+- **Recruiter** — manages a verified company, publishes jobs, discovers public talent, and reviews candidates forwarded by moderators.
+- **Moderator** — verifies companies, reviews candidate applications and AI results, conducts human interviews, and forwards approved candidates.
+- **Admin / Finance** — manages platform-level operations, permissions, settings, and financial responsibilities according to the confirmed project scope.
+
+The platform separates public talent discovery from private job applications. A recruiter may view information that a job seeker explicitly publishes, but private application and interview information is hidden until a moderator explicitly forwards the candidate.
+
+---
+
+## Main Recruitment Workflow
+
+```text
+Recruiter creates company
+        ↓
+Moderator verifies company
+        ↓
+Verified recruiter publishes jobs directly
+        ↓
+Job seeker discovers and applies to a job
+        ↓
+Job seeker completes the AI interview
+        ↓
+Moderator reviews the application and AI result
+        ↓
+Moderator conducts or schedules a human interview
+        ↓
+Moderator approves or rejects the candidate
+        ↓
+Moderator explicitly forwards an approved candidate
+        ↓
+Recruiter can view the forwarded application
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Public profile discovery remains independent:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-
-# TalentPulse
-
-Recruiter / ATS workspace. Next.js 15 (App Router) · TypeScript · Tailwind ·
-shadcn/ui (Base UI) · Redux Toolkit + RTK Query · React Hook Form + Zod.
-
-## Getting started
-
-```bash
-npm install
-npm run dev
+```text
+Job seeker publishes profile, resume, or portfolio
+        ↓
+Recruiter may discover the published content
 ```
 
-Open http://localhost:3000. With no `.env.local`, the app runs against a built-in
-mock backend — no external services required.
+---
 
-## Mock backend strategy
+## Frontend Technology
 
-The real Spring Boot API isn't wired in yet, so the frontend talks to a fake
-backend that lives behind the same HTTP boundary the real one will use.
+- Next.js with App Router
+- React and TypeScript
+- Tailwind CSS
+- shadcn UI primitives
+- Redux Toolkit for global UI state
+- RTK Query for API state and requests
+- Better Auth with Keycloak/OIDC
+- Same-origin backend-for-frontend routes for protected API calls
+- Reusable design tokens and shared UI components
+- OpenAPI-shaped frontend contracts and live API data
+- Figma as the visual design reference
+- Spring Boot OpenAPI contract as the field and workflow reference
 
-- **`NEXT_PUBLIC_API_URL` unset** → RTK Query calls `/api/*`, served by Next.js
-  Route Handlers in `src/app/api/`, which return data from `src/mocks/`.
-- **`NEXT_PUBLIC_API_URL` set** (e.g. `http://localhost:8080/api/v1`) → the exact
-  same RTK Query hooks hit the real backend. No component changes.
+---
 
-```bash
-# .env.local — point at Spring Boot when it's ready
-NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+## Frontend Static UI Progress
+
+| Area | Estimated Completion |
+|---|---:|
+| Shared UI foundation | **85%** |
+| Public and authentication UI | **90%** |
+| Job seeker UI | **80%** |
+| Recruiter UI | **80%** |
+| Moderator UI | **60%** |
+| Admin and Finance UI | **60%** |
+| Final responsive and Figma polish | **55%** |
+| **Overall static UI progress** | **about 60%** |
+
+```text
+Overall frontend static UI progress: approximately 60%
 ```
 
-### Cutover checklist
+This percentage measures visible interface coverage only. Backend capabilities remain limited to operations exposed by the current OpenAPI contract.
 
-1. Confirm the Spring Boot responses match the contracts in `src/types/`.
-2. Set `NEXT_PUBLIC_API_URL`.
-3. Delete `src/mocks/` and `src/app/api/`.
+---
 
-That's it — nothing in `src/components/` imports mocks directly. The mock data is
-consumed **only** by the route handlers, which is what makes the cutover clean.
+## Completed Static UI Work
 
-## Folder structure
+### Shared foundation
 
+- Design tokens and UI rules
+- Reusable role shells and page containers
+- Page headers and section headers
+- Buttons and form controls
+- Cards and status badges
+- Dialogs and confirmation states
+- Tables and pagination
+- Search and filter controls
+- Loading, empty, and error states
+- RTK Query API integration and frontend contracts
+- Responsive foundation
+
+### Public and authentication pages
+
+- Landing or public home page
+- Login page
+- Registration page
+- Public job list
+- Public job detail
+- Public company information page
+- Job search and filter interface
+- API-backed job application dialog
+
+The implemented public pages are API-aligned and responsive. Some final Figma visual polishing remains.
+
+---
+
+## Current Implementation Status
+
+### Public visitor
+
+- [x] Public navigation and layout
+- [x] Landing page
+- [x] Job listing page
+- [x] Job detail page
+- [x] Public company information
+- [x] Job filters
+- [ ] Final Figma comparison and polish
+
+### Authentication
+
+- [x] Login UI
+- [x] Registration UI
+- [x] Better Auth Keycloak login integration
+- [x] Session and role redirect behavior
+
+Runtime authentication requires the Better Auth and Keycloak environment values documented in `.env.example`.
+
+### Job seeker
+
+- [ ] Job seeker dashboard
+- [ ] Profile view and edit UI
+- [ ] Profile publication controls
+- [ ] Resume list
+- [ ] Resume create and edit
+- [ ] Default resume control
+- [ ] Resume publication control
+- [ ] Portfolio list
+- [ ] Portfolio create and edit
+- [ ] Portfolio project management
+- [ ] Portfolio publication control
+- [ ] Application list and detail
+- [ ] AI interview flow
+- [ ] AI interview result screen
+
+### Recruiter
+
+- [ ] Recruiter profile
+- [ ] Recruiter dashboard completion
+- [ ] Company onboarding
+- [ ] Company document management
+- [ ] Verification status interface
+- [ ] Job list
+- [ ] Create and edit job
+- [ ] Publish, pause, resume, and close controls
+- [ ] Public talent discovery
+- [ ] Forwarded candidate list and detail
+
+### Moderator
+
+- [ ] Moderator dashboard
+- [ ] Company verification queue
+- [ ] Company verification detail
+- [ ] Candidate review queue
+- [ ] Candidate application detail
+- [ ] AI interview result review
+- [ ] Human interview scheduling
+- [ ] Candidate approval and rejection
+- [ ] Explicit candidate forwarding
+
+### Admin and Finance
+
+- [ ] Confirm final Admin frontend scope
+- [ ] Confirm final Finance frontend scope
+- [ ] Implement approved Admin interfaces
+- [ ] Implement approved Finance interfaces
+
+---
+
+## Frontend Source Priority
+
+Frontend implementation should follow this order of authority:
+
+1. Current OpenAPI contract
+2. Confirmed business workflows
+3. Existing RTK Query services and shared frontend contracts
+4. Existing reusable UI foundation
+5. Figma visual design
+
+The OpenAPI contract controls fields, request shapes, response shapes, actions, and enum values. Figma controls appearance and layout only.
+
+---
+
+## Confirmed Privacy and Ownership Rules
+
+- Job seekers manage only their own profiles, resumes, portfolios, applications, and interviews.
+- Profile, resume, and portfolio publication must be explicit.
+- Published talent information is separate from job applications.
+- Recruiters cannot view private applications or AI interview results before moderator forwarding.
+- Recruiters may publish and manage jobs directly only after their company is verified.
+- Moderator approval and moderator forwarding are separate actions.
+- Admin, Moderator, Recruiter, Finance, and Job Seeker interfaces must remain separated by role.
+
+---
+
+## Planned Frontend Build Order
+
+### Build 3
+
+Job seeker dashboard, profile, resume, portfolio, publication controls, and portfolio projects.
+
+### Build 4
+
+Applications, application detail, AI interview sessions, question-and-answer flow, and interview result.
+
+### Build 5
+
+Recruiter profile, company onboarding, documents, job management, talent discovery, and forwarded applications.
+
+### Build 6
+
+Moderator company verification, candidate review, human interview scheduling, decisions, and forwarding.
+
+### Build 7
+
+Admin, Finance, responsive review, accessibility, empty states, permission states, and final Figma polishing.
+
+---
+
+## Static UI Completion Rule
+
+A frontend page should be marked complete only when it includes:
+
+- Correct route and role ownership
+- OpenAPI-aligned fields and enum values
+- Responsive structure
+- Reusable shared components
+- Empty state
+- Loading state where applicable
+- Error state where applicable
+- Confirmation for destructive actions
+- Accessible dialog and keyboard behavior
+- No private data exposure
+- Figma comparison completed or clearly recorded as pending polish
+
+---
+
+## Current Summary
+
+The frontend foundation is strong and the public/authentication static interface is mostly complete. Most protected job seeker, recruiter, moderator, Admin, and Finance screens remain to be built.
+
+```text
+Frontend static UI progress: approximately 60%
 ```
-src/
-  app/            Routes. /discovery/new /jobs/new /profile + stubs.
-                  api/  <- fake backend (delete at cutover)
-  components/
-    layout/       AppShell, Sidebar, Topbar, PageHeader, SectionCard
-    company/      Add New Company page pieces
-    job/          Post New Job page pieces
-    profile/      Profile page pieces
-    shared/       FieldWrapper, FileDropzone, ErrorState, ComingSoon
-    ui/           shadcn primitives (generated — don't hand-edit)
-  redux/
-    store.ts, StoreProvider.tsx, hooks.ts
-    api/          baseApi + injected endpoints per feature
-    features/     client-only UI slices
-  lib/            constants, schemas (zod), format, api-error, utils
-  types/          the API contract — source of truth shared with backend
-  mocks/          fake data (delete at cutover)
-```
-
-## Adding an RTK Query endpoint
-
-One `baseApi`, one cache. Every feature file injects into it — never call
-`createApi` again.
-
-```ts
-// src/redux/api/candidateApi.ts
-import { baseApi } from "./baseApi";
-import type { Candidate } from "@/types/candidate";
-
-export const candidateApi = baseApi.injectEndpoints({
-  endpoints: (builder) => ({
-    getCandidates: builder.query<Candidate[], void>({
-      query: () => "/candidates",
-      providesTags: ["Candidate"],
-    }),
-  }),
-});
-
-export const { useGetCandidatesQuery } = candidateApi;
-```
-
-Then:
-
-1. Add any new tag (`"Candidate"`) to `tagTypes` in `src/redux/api/baseApi.ts`.
-2. Import the file for its side effects in `src/redux/store.ts` so the endpoint
-   registers:
-```ts
-   import "./api/candidateApi";
-```
-
-## Heads up: shadcn here uses Base UI, not Radix
-
-This project's shadcn components are the **Base UI** dialect. Base UI does **not**
-support the `asChild` prop — passing it renders a nested `<button><button>` (or
-`<button><a>`) and throws a hydration error.
-
-- ❌ `<SheetTrigger asChild><Button/></SheetTrigger>`
-- ✅ Control open state yourself: `useState` + `open` / `onOpenChange`.
-- ✅ For a link that looks like a button, style the `<Link>` directly — don't
-  wrap it in `<Button>`.
-
-Most shadcn snippets online assume Radix, so watch for `asChild` when copying
-code in.
