@@ -4,6 +4,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { Code2, ExternalLink, FolderKanban, ImageIcon, Layers3, Loader2, Save } from "lucide-react";
 import type { PortfolioCreateRequest, PortfolioProjectRequest } from "@/contracts";
 import { FileDropzone } from "@/components/shared/FileDropzone";
+import { uploadFile } from "@/lib/upload-file";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,9 +31,31 @@ export function PortfolioForm({ initial = {}, isSubmitting, submitLabel, onSubmi
 export function ProjectForm({ initial = {}, isSubmitting, submitLabel, onSubmit, onCancel }: { initial?: Partial<PortfolioProjectRequest>; isSubmitting?: boolean; submitLabel: string; onSubmit: (body: PortfolioProjectRequest) => Promise<void>; onCancel?: () => void }) {
   const [values, setValues] = useState<PortfolioProjectRequest>({ title: initial.title ?? "", description: initial.description ?? "", projectUrl: initial.projectUrl ?? "", githubUrl: initial.githubUrl ?? "", imageUrl: initial.imageUrl ?? "", techStack: initial.techStack ?? "", displayOrder: initial.displayOrder ?? 0 });
   const set = <K extends keyof PortfolioProjectRequest>(key: K, value: PortfolioProjectRequest[K]) => setValues((current) => ({ ...current, [key]: value }));
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
-  return <form onSubmit={async (e) => { e.preventDefault(); if (values.title.trim()) await onSubmit({ ...values, title: values.title.trim() }); }} className="space-y-5">
-    <Field label="Project cover"><FileDropzone value={values.imageUrl} onChange={(url) => set("imageUrl", url)} accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" hint="PNG, JPG or WebP up to 5 MB." /></Field>
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!values.title.trim()) return;
+
+    setUploadError(null);
+    let imageUrl = values.imageUrl;
+    if (coverFile) {
+      try {
+        imageUrl = await uploadFile(coverFile, "public");
+      } catch (error) {
+        setUploadError(error instanceof Error ? error.message : "Upload failed.");
+        return;
+      }
+    }
+
+    await onSubmit({ ...values, imageUrl, title: values.title.trim() });
+    setCoverFile(null);
+  };
+
+  return <form onSubmit={submit} className="space-y-5">
+    <Field label="Project cover"><FileDropzone value={values.imageUrl} file={coverFile} onFileChange={setCoverFile} onClear={() => set("imageUrl", "")} accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" hint="PNG, JPG or WebP up to 5 MB." /></Field>
+    {uploadError ? <p role="alert" className="text-sm font-medium text-destructive">{uploadError}</p> : null}
     <Field label="Project title" required><IconInput icon={Layers3}><Input value={values.title} onChange={(e) => set("title", e.target.value)} placeholder="Project name" maxLength={150} required /></IconInput></Field>
     <Field label="Description"><Textarea value={values.description} onChange={(e) => set("description", e.target.value)} placeholder="Explain the problem, your approach, and the outcome…" maxLength={5000} className="min-h-32" /></Field>
     <div className="grid gap-4 sm:grid-cols-2">

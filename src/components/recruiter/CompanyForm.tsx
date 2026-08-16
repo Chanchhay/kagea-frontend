@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/api-error";
@@ -15,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { FileDropzone } from "@/components/shared/FileDropzone";
+import { uploadFile } from "@/lib/upload-file";
 import { SectionLabel } from "@/components/shared/ApiCards";
 import {
   SelectField,
@@ -62,9 +64,29 @@ export function CompanyForm({
     values: toFormValues(company),
   });
 
-  const isSaving = creation.isLoading || update.isLoading;
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const isSaving = creation.isLoading || update.isLoading || isUploading;
 
   const onSubmit = async (values: CompanyFormValues) => {
+    // Uploaded on save rather than at pick time, so abandoning the form
+    // leaves no orphaned object in the bucket.
+    let logoUrl = values.logoUrl;
+    if (logoFile) {
+      try {
+        setIsUploading(true);
+        logoUrl = await uploadFile(logoFile, "public");
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Unable to upload the logo.",
+        );
+        return;
+      } finally {
+        setIsUploading(false);
+      }
+    }
+
     const body = {
       name: values.name,
       industryId:
@@ -74,7 +96,7 @@ export function CompanyForm({
       address: values.address || undefined,
       contactEmail: values.contactEmail || undefined,
       contactPhone: values.contactPhone || undefined,
-      logoUrl: values.logoUrl || undefined,
+      logoUrl: logoUrl || undefined,
       businessRegistrationNo: values.businessRegistrationNo || undefined,
     };
 
@@ -149,7 +171,9 @@ export function CompanyForm({
                   <FormControl>
                     <FileDropzone
                       value={field.value}
-                      onChange={field.onChange}
+                      file={logoFile}
+                      onFileChange={setLogoFile}
+                      onClear={() => field.onChange("")}
                       accept=".png,.jpg,.jpeg,.webp,.svg"
                       hint="PNG, JPG, WebP or SVG up to 5 MB."
                     />

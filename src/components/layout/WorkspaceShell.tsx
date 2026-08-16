@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
@@ -18,7 +19,7 @@ import {
 } from "@/components/layout/PageHeader";
 import { authClient } from "@/lib/auth-client";
 import { jobSeekerNavigation, recruiterNavigation } from "@/lib/navigation";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { useGetCurrentUserQuery } from "@/services/authApi";
 
 type NavLink = {
@@ -242,23 +243,18 @@ function Avatar() {
 
   const name =
     currentUser.data?.fullName || session.user.name || session.user.email;
+  // The uploaded avatar lives on the backend profile; the auth session only
+  // carries whatever picture Keycloak happens to hold.
+  const avatar = resolveFileUrl(currentUser.data?.avatarUrl);
 
   return (
     <Link
       href="/profile"
       aria-label={`Open ${name}'s profile`}
       className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 bg-cover bg-center text-xs font-bold text-primary ring-2 ring-ws-line"
-      style={
-        session.user.image
-          ? { backgroundImage: `url("${session.user.image}")` }
-          : undefined
-      }
+      style={avatar ? { backgroundImage: `url("${avatar}")` } : undefined}
     >
-      {session.user.image ? (
-        <span className="sr-only">Profile image</span>
-      ) : (
-        getInitials(name)
-      )}
+      {avatar ? <span className="sr-only">Profile image</span> : getInitials(name)}
     </Link>
   );
 }
@@ -299,17 +295,6 @@ function MobileDock({ links, pathname }: { links: NavLink[]; pathname: string })
 }
 
 /* -------------------------------------------------------------- helpers --- */
-
-function getInitials(name: string) {
-  const initials = name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("");
-
-  return initials || "U";
-}
 
 function isActivePath(pathname: string, href: string) {
   return href.endsWith("/dashboard")

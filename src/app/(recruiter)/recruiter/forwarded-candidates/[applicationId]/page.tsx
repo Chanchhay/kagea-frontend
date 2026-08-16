@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -151,7 +152,7 @@ export default function ForwardedCandidateDetailPage() {
                 <Button
                   render={
                     <a
-                      href={submittedResume.resumeFileUrl}
+                      href={resolveFileUrl(submittedResume.resumeFileUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
                     />

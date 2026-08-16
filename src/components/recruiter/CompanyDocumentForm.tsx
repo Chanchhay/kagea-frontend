@@ -1,9 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/api-error";
+import { uploadFile } from "@/lib/upload-file";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,18 +40,39 @@ const defaultValues: CompanyDocumentFormValues = {
 
 export function CompanyDocumentForm({ companyId }: { companyId: number }) {
   const [addCompanyDocument, addition] = useAddCompanyDocumentMutation();
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const form = useForm<CompanyDocumentFormValues>({
     resolver: zodResolver(companyDocumentSchema),
     defaultValues,
   });
 
   const onSubmit = async (values: CompanyDocumentFormValues) => {
+    if (!documentFile && !values.documentUrl) {
+      toast.error("Choose a document file first.");
+      return;
+    }
+
     try {
-      await addCompanyDocument({ companyId, body: values }).unwrap();
+      // Uploaded here rather than at pick time, so an abandoned form leaves
+      // nothing behind in the bucket.
+      setIsUploading(true);
+      const documentUrl = documentFile
+        ? await uploadFile(documentFile, "private")
+        : values.documentUrl;
+
+      await addCompanyDocument({
+        companyId,
+        body: { ...values, documentUrl },
+      }).unwrap();
+
       toast.success("Document added.");
       form.reset(defaultValues);
+      setDocumentFile(null);
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Unable to add the document."));
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -70,7 +93,12 @@ export function CompanyDocumentForm({ companyId }: { companyId: number }) {
             <FormItem>
               <FormLabel>Document file</FormLabel>
               <FormControl>
-                <FileDropzone value={field.value} onChange={field.onChange} />
+                <FileDropzone
+                  value={field.value}
+                  file={documentFile}
+                  onFileChange={setDocumentFile}
+                  onClear={() => field.onChange("")}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -81,10 +109,10 @@ export function CompanyDocumentForm({ companyId }: { companyId: number }) {
           <Button
             type="submit"
             className="h-11 rounded-lg px-6"
-            disabled={addition.isLoading}
+            disabled={addition.isLoading || isUploading}
           >
             <Plus aria-hidden="true" className="size-4" />
-            {addition.isLoading ? "Adding…" : "Add document"}
+            {isUploading ? "Uploading…" : addition.isLoading ? "Adding…" : "Add document"}
           </Button>
         </div>
       </form>

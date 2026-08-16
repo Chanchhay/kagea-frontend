@@ -1,10 +1,11 @@
 "use client";
 
+import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { KeycloakLoginButton, KeycloakLogoutButton } from "./AuthActions";
 import { authClient } from "@/lib/auth-client";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { useGetCurrentUserQuery } from "@/services/authApi";
 
 type NavbarAccountProps = {
@@ -34,7 +35,7 @@ export function NavbarAccount({
         <ProfileLink
           name={name}
           role={role}
-          image={session.user.image}
+          image={resolveFileUrl(currentUser.data?.avatarUrl)}
           mobile
           onClick={onNavigate}
         />
@@ -46,7 +47,13 @@ export function NavbarAccount({
     );
   }
 
-  return <ProfileLink name={name} role={role} image={session.user.image} />;
+  return (
+    <ProfileLink
+      name={name}
+      role={role}
+      image={resolveFileUrl(currentUser.data?.avatarUrl)}
+    />
+  );
 }
 
 function SignedOutActions({
@@ -127,17 +134,6 @@ function ProfileLink({
       />
     </Link>
   );
-}
-
-function getInitials(name: string) {
-  const initials = name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("");
-
-  return initials || "U";
 }
 
 function getRoleLabel(roles?: string[]) {

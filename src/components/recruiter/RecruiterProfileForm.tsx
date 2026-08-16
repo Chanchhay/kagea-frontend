@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import type { RecruiterProfileResponse } from "@/contracts";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -13,16 +14,18 @@ import {
 } from "@/lib/validation/recruiter.schema";
 import { useUpdateRecruiterProfileMutation } from "@/services/recruiterApi";
 
-const defaultValues: RecruiterProfileFormValues = {
-  position: "",
-  linkedinUrl: "",
-};
-
-export function RecruiterProfileForm() {
+export function RecruiterProfileForm({
+  profile,
+}: {
+  profile?: RecruiterProfileResponse;
+}) {
   const [updateRecruiterProfile, update] = useUpdateRecruiterProfileMutation();
   const form = useForm<RecruiterProfileFormValues>({
     resolver: zodResolver(recruiterProfileSchema),
-    defaultValues,
+    defaultValues: {
+      position: profile?.position ?? "",
+      linkedinUrl: profile?.linkedinUrl ?? "",
+    },
   });
 
   const onSubmit = async (values: RecruiterProfileFormValues) => {

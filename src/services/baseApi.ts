@@ -17,6 +17,7 @@ export const baseApi = createApi({
     "Portfolios",
     "Applications",
     "Interviews",
+    "RecruiterProfile",
     "RecruiterCompany",
     "RecruiterJobs",
     "CompanyDocuments",

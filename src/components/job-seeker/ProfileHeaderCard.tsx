@@ -6,6 +6,11 @@ import { toast } from "sonner";
 import type { JobSeekerProfileResponse } from "@/contracts";
 import { authClient } from "@/lib/auth-client";
 import { FileDropzone } from "@/components/shared/FileDropzone";
+import { resolveFileUrl } from "@/lib/file-url";
+import { getInitials } from "@/lib/utils";
+import { getApiErrorMessage } from "@/lib/api-error";
+import { uploadFile } from "@/lib/upload-file";
+import { useUpdateJobSeekerProfileMutation } from "@/services/jobSeekerApi";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ProfileHeaderCardProps {
@@ -25,9 +30,15 @@ const STRENGTH_FIELDS = [
 
 export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
   const { data: session } = authClient.useSession();
-  const [photoUrl, setPhotoUrl] = useState(session?.user.image ?? "");
+  const [updateProfile, { isLoading: isSaving }] =
+    useUpdateJobSeekerProfileMutation();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // The photo lives on the backend profile, not on the auth session — the
+  // mutation invalidates the JobSeekerProfile tag, so this re-renders on save.
+  const photoUrl = profile.avatarUrl ?? "";
 
   const name = session?.user.name || session?.user.email || "Job seeker";
 
@@ -37,18 +48,25 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
   }).length;
   const completion = Math.round((completedCount / STRENGTH_FIELDS.length) * 100);
 
-  const updatePhoto = async (url: string) => {
-    setIsSaving(true);
+  const savePhoto = async () => {
     try {
-      const result = await authClient.updateUser({ image: url || null });
-      if (result.error) throw new Error(result.error.message);
-      setPhotoUrl(url);
+      setIsUploading(true);
+      // The staged file travels only now — picking one changes nothing yet.
+      const avatarUrl = photoFile
+        ? await uploadFile(photoFile, "public")
+        : "";
+
+      // "" clears the column; the object itself is left in MinIO.
+      await updateProfile({ avatarUrl }).unwrap();
+      setPhotoFile(null);
       setIsEditorOpen(false);
-      toast.success(url ? "Profile photo updated" : "Profile photo removed");
-    } catch {
-      toast.error("Could not update your profile photo.");
+      toast.success(avatarUrl ? "Profile photo updated" : "Profile photo removed");
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(error, "Could not update your profile photo."),
+      );
     } finally {
-      setIsSaving(false);
+      setIsUploading(false);
     }
   };
 
@@ -60,9 +78,13 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
             <div className="relative shrink-0">
               <div
                 className="flex size-20 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-xl font-bold text-brand ring-4 ring-white/50"
-                style={photoUrl ? { backgroundImage: `url("${photoUrl}")` } : undefined}
+                style={
+                  photoUrl
+                    ? { backgroundImage: `url("${resolveFileUrl(photoUrl)}")` }
+                    : undefined
+                }
               >
-                {photoUrl ? <span className="sr-only">Profile photo</span> : initials(name)}
+                {photoUrl ? <span className="sr-only">Profile photo</span> : getInitials(name)}
               </div>
               <button
                 type="button"
@@ -126,10 +148,31 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
               </div>
               <FileDropzone
                 value={photoUrl}
-                onChange={(url) => void updatePhoto(url)}
+                file={photoFile}
+                onFileChange={setPhotoFile}
                 accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
-                hint={isSaving ? "Saving profile photo…" : "PNG, JPG or WebP up to 5 MB."}
+                hint="PNG, JPG or WebP up to 5 MB."
               />
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPhotoFile(null);
+                    setIsEditorOpen(false);
+                  }}
+                  className="h-10 rounded-lg px-4 text-sm font-medium text-body hover:bg-surface-muted"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void savePhoto()}
+                  disabled={isUploading || isSaving || (!photoFile && !photoUrl)}
+                  className="h-10 rounded-lg bg-brand px-5 text-sm font-semibold text-white hover:bg-brand/90 disabled:opacity-50"
+                >
+                  {isUploading ? "Uploading…" : isSaving ? "Saving…" : "Save"}
+                </button>
+              </div>
             </div>
           ) : null}
         </div>
@@ -152,15 +195,4 @@ function humanize(value: string) {
     .replaceAll("_", " ")
     .toLowerCase()
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
-function initials(name: string) {
-  return (
-    name
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase())
-      .join("") || "U"
-  );
 }

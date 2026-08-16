@@ -3,8 +3,10 @@ import { auth } from "@/lib/auth";
 
 const PUBLIC_PREFIXES = ["public/"];
 const PUBLIC_PATHS = new Set(["auth/register"]);
-const PROTECTED_PREFIXES = ["job-seeker/", "recruiter/"];
-const PROTECTED_PATHS = new Set(["me"]);
+const PROTECTED_PREFIXES = ["job-seeker/", "recruiter/", "files/"];
+// `files` is the MinIO upload endpoint; `files/...` reads a stored object.
+// Public objects are served under `public/files/...`, already covered above.
+const PROTECTED_PATHS = new Set(["me", "files"]);
 
 function isAllowedPath(path: string) {
   return (
@@ -58,17 +60,29 @@ export async function backendRequest(
   }
 
   const hasBody = request.method !== "GET" && request.method !== "HEAD";
-  const response = await fetch(target, {
+  let response = await fetch(target, {
     method: request.method,
     headers: requestHeaders,
     body: hasBody ? await request.arrayBuffer() : undefined,
     cache: "no-store",
+    // File reads answer 302 to a presigned MinIO URL; see below.
+    redirect: "manual",
   });
 
+  if (response.status >= 300 && response.status < 400) {
+    const location = response.headers.get("location");
+    if (location) {
+      // Followed here rather than in the browser: MinIO is not necessarily
+      // reachable from the client, and a presigned URL must be fetched with no
+      // Authorization header — S3 rejects requests carrying both.
+      response = await fetch(location, { cache: "no-store" });
+    }
+  }
+
   const responseHeaders = new Headers();
-  const responseContentType = response.headers.get("content-type");
-  if (responseContentType) {
-    responseHeaders.set("content-type", responseContentType);
+  for (const header of ["content-type", "content-length", "content-disposition"]) {
+    const value = response.headers.get(header);
+    if (value) responseHeaders.set(header, value);
   }
 
   return new Response(response.body, {
