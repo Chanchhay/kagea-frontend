@@ -6,6 +6,7 @@ import { KeycloakLoginButton, KeycloakLogoutButton } from "./AuthActions";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useGetCurrentUserQuery } from "@/services/authApi";
+import { useProfileAvatar } from "@/lib/use-profile-avatar";
 
 type NavbarAccountProps = {
   mobile?: boolean;
@@ -20,6 +21,10 @@ export function NavbarAccount({
   const currentUser = useGetCurrentUserQuery(undefined, {
     skip: !session?.user,
   });
+  const profileImage = useProfileAvatar(
+    currentUser.data?.userAccountId,
+    session?.user.image,
+  );
 
   if (isPending || !session?.user) {
     return <SignedOutActions mobile={mobile} onNavigate={onNavigate} />;
@@ -34,7 +39,7 @@ export function NavbarAccount({
         <ProfileLink
           name={name}
           role={role}
-          image={session.user.image}
+          image={profileImage}
           mobile
           onClick={onNavigate}
         />
@@ -46,7 +51,7 @@ export function NavbarAccount({
     );
   }
 
-  return <ProfileLink name={name} role={role} image={session.user.image} />;
+  return <ProfileLink name={name} role={role} image={profileImage} />;
 }
 
 function SignedOutActions({

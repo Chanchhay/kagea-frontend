@@ -5,6 +5,8 @@ import { BadgeCheck, BriefcaseBusiness, Camera, Eye, MapPin, X } from "lucide-re
 import { toast } from "sonner";
 import type { JobSeekerProfileResponse } from "@/contracts";
 import { authClient } from "@/lib/auth-client";
+import { saveProfileAvatar, useProfileAvatar } from "@/lib/use-profile-avatar";
+import { useGetCurrentUserQuery } from "@/services/authApi";
 import { FileDropzone } from "@/components/shared/FileDropzone";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -25,7 +27,11 @@ const STRENGTH_FIELDS = [
 
 export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
   const { data: session } = authClient.useSession();
-  const [photoUrl, setPhotoUrl] = useState(session?.user.image ?? "");
+  const currentUser = useGetCurrentUserQuery();
+  const persistedPhoto = useProfileAvatar(
+    currentUser.data?.userAccountId,
+    session?.user.image,
+  );
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -42,7 +48,9 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
     try {
       const result = await authClient.updateUser({ image: url || null });
       if (result.error) throw new Error(result.error.message);
-      setPhotoUrl(url);
+      if (currentUser.data?.userAccountId) {
+        saveProfileAvatar(currentUser.data.userAccountId, url);
+      }
       setIsEditorOpen(false);
       toast.success(url ? "Profile photo updated" : "Profile photo removed");
     } catch {
@@ -60,9 +68,9 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
             <div className="relative shrink-0">
               <div
                 className="flex size-20 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-xl font-bold text-brand ring-4 ring-white/50"
-                style={photoUrl ? { backgroundImage: `url("${photoUrl}")` } : undefined}
+                style={persistedPhoto ? { backgroundImage: `url(${JSON.stringify(persistedPhoto)})` } : undefined}
               >
-                {photoUrl ? <span className="sr-only">Profile photo</span> : initials(name)}
+                {persistedPhoto ? <span className="sr-only">Profile photo</span> : initials(name)}
               </div>
               <button
                 type="button"
@@ -125,7 +133,7 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
                 </button>
               </div>
               <FileDropzone
-                value={photoUrl}
+                value={persistedPhoto}
                 onChange={(url) => void updatePhoto(url)}
                 accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
                 hint={isSaving ? "Saving profile photo…" : "PNG, JPG or WebP up to 5 MB."}

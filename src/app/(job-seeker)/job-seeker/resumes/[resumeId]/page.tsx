@@ -7,11 +7,12 @@ import { ArrowLeft, CalendarDays, Check, Download, Eye, FileText, Loader2, Penci
 import { toast } from "sonner";
 import { ResumeDocument } from "@/components/job-seeker/ResumeDocument";
 import { ResumeForm } from "@/components/job-seeker/ResumeForm";
+import { PublicationControl } from "@/components/job-seeker/PublicationControl";
 import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { Button } from "@/components/ui/button";
-import { useDeleteResumeMutation, useGetResumeQuery, useSetDefaultResumeMutation, useUpdateResumeMutation } from "@/services/jobSeekerApi";
+import { useDeleteResumeMutation, useGetResumeQuery, useSetDefaultResumeMutation, useUpdateResumeMutation, useUpdateResumePublicationMutation } from "@/services/jobSeekerApi";
 
 export default function ResumeDetailPage() {
   const { resumeId } = useParams<{ resumeId: string }>();
@@ -21,6 +22,7 @@ export default function ResumeDetailPage() {
   const [setDefault, defaultState] = useSetDefaultResumeMutation();
   const [updateResume, updateState] = useUpdateResumeMutation();
   const [deleteResume, deleteState] = useDeleteResumeMutation();
+  const [updatePublication, publicationState] = useUpdateResumePublicationMutation();
 
   if (resumeQuery.isLoading) return <LoadingState rows={4} />;
   if (resumeQuery.isError || !resumeQuery.data) return <ErrorState message="Unable to load this resume." />;
@@ -106,6 +108,7 @@ export default function ResumeDetailPage() {
                 <InfoRow icon={CalendarDays} label="Last updated" value={formatDate(resume.updatedAt)} />
               </div>
               {!resume.isDefault ? <Button onClick={makeDefault} disabled={defaultState.isLoading} variant="secondary" className="mt-6 w-full rounded-xl">{defaultState.isLoading ? <Loader2 className="animate-spin" /> : <Star />} Make default</Button> : null}
+              <div className="mt-6 border-t border-ws-line pt-5"><p className="mb-3 text-xs font-medium text-ws-muted">Who can see this resume?</p><PublicationControl value={resume.visibility} loading={publicationState.isLoading} onChange={async (visibility) => { try { await updatePublication({ resumeId, body: { visibility } }).unwrap(); toast.success(`Resume is now ${visibility.toLowerCase()}.`); } catch { toast.error("Could not update resume visibility."); } }} /></div>
             </section>
 
             <section className="rounded-[22px] bg-ws-card p-5">

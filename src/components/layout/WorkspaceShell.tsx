@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   Bell,
@@ -237,11 +237,33 @@ function Avatar() {
   const currentUser = useGetCurrentUserQuery(undefined, {
     skip: !session?.user,
   });
+  const [uploadedAvatar, setUploadedAvatar] = useState("");
+
+  useEffect(() => {
+    const accountId = currentUser.data?.userAccountId;
+    if (!accountId) return;
+
+    const storageKey = `profile-avatar-${accountId}`;
+    const legacyStorageKey = `recruiter-avatar-${accountId}`;
+    const syncAvatar = (event?: Event) => {
+      const updated = event as CustomEvent<string> | undefined;
+      setUploadedAvatar(updated?.detail || localStorage.getItem(storageKey) || localStorage.getItem(legacyStorageKey) || "");
+    };
+
+    queueMicrotask(() => syncAvatar());
+    window.addEventListener("profile-avatar-updated", syncAvatar);
+    window.addEventListener("storage", syncAvatar);
+    return () => {
+      window.removeEventListener("profile-avatar-updated", syncAvatar);
+      window.removeEventListener("storage", syncAvatar);
+    };
+  }, [currentUser.data?.userAccountId]);
 
   if (!session?.user) return null;
 
   const name =
     currentUser.data?.fullName || session.user.name || session.user.email;
+  const image = uploadedAvatar || session.user.image;
 
   return (
     <Link
@@ -249,12 +271,12 @@ function Avatar() {
       aria-label={`Open ${name}'s profile`}
       className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 bg-cover bg-center text-xs font-bold text-primary ring-2 ring-ws-line"
       style={
-        session.user.image
-          ? { backgroundImage: `url("${session.user.image}")` }
+        image
+          ? { backgroundImage: `url(${JSON.stringify(image)})` }
           : undefined
       }
     >
-      {session.user.image ? (
+      {image ? (
         <span className="sr-only">Profile image</span>
       ) : (
         getInitials(name)

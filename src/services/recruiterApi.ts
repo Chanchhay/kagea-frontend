@@ -159,6 +159,12 @@ export const recruiterApi = baseApi.injectEndpoints({
         unwrapApiResponse(response),
       invalidatesTags: jobWriteTags,
     }),
+    getRecruiterProfile: builder.query<RecruiterProfileResponse, void>({
+      query: () => "/recruiter/profile",
+      transformResponse: (response: ApiResponseRecruiterProfileResponse) =>
+        unwrapApiResponse(response),
+      providesTags: ["RecruiterProfile"],
+    }),
     updateRecruiterProfile: builder.mutation<
       RecruiterProfileResponse,
       RecruiterProfileUpdateRequest
@@ -170,7 +176,7 @@ export const recruiterApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: ApiResponseRecruiterProfileResponse) =>
         unwrapApiResponse(response),
-      invalidatesTags: ["CurrentUser"],
+      invalidatesTags: ["CurrentUser", "RecruiterProfile"],
     }),
     getForwardedApplications: builder.query<
       ForwardedApplicationResponse[],
@@ -237,6 +243,7 @@ export const {
   usePauseJobMutation,
   useResumeJobMutation,
   useCloseJobMutation,
+  useGetRecruiterProfileQuery,
   useUpdateRecruiterProfileMutation,
   useGetForwardedApplicationsQuery,
   useGetForwardedApplicationQuery,

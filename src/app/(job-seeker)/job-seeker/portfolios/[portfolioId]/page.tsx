@@ -9,11 +9,12 @@ import { ArrowLeft, Code2 as Github, ExternalLink, Globe2, Layers3, Pencil, Plus
 import { toast } from "sonner";
 import type { PortfolioProjectResponse } from "@/contracts";
 import { PortfolioForm, ProjectForm } from "@/components/job-seeker/PortfolioForms";
+import { PublicationControl } from "@/components/job-seeker/PublicationControl";
 import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { Button } from "@/components/ui/button";
-import { useCreatePortfolioProjectMutation, useDeletePortfolioMutation, useDeletePortfolioProjectMutation, useGetPortfolioQuery, useUpdatePortfolioMutation, useUpdatePortfolioProjectMutation } from "@/services/jobSeekerApi";
+import { useCreatePortfolioProjectMutation, useDeletePortfolioMutation, useDeletePortfolioProjectMutation, useGetPortfolioQuery, useUpdatePortfolioMutation, useUpdatePortfolioProjectMutation, useUpdatePortfolioPublicationMutation } from "@/services/jobSeekerApi";
 
 export default function PortfolioDetailPage() {
   const { portfolioId } = useParams<{ portfolioId: string }>();
@@ -27,6 +28,7 @@ export default function PortfolioDetailPage() {
   const [createProject, createProjectState] = useCreatePortfolioProjectMutation();
   const [updateProject, updateProjectState] = useUpdatePortfolioProjectMutation();
   const [deleteProject] = useDeletePortfolioProjectMutation();
+  const [updatePublication, publicationState] = useUpdatePortfolioPublicationMutation();
 
   if (query.isLoading) return <LoadingState rows={5} />;
   if (query.isError || !query.data) return <ErrorState message="Unable to load this portfolio." />;
@@ -48,6 +50,8 @@ export default function PortfolioDetailPage() {
     <section className="mb-6 overflow-hidden rounded-[24px] bg-ws-card">
       <div className="bg-linear-to-br from-primary/18 via-primary/8 to-transparent p-7 sm:p-9"><div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"><div><span className="inline-flex items-center gap-1.5 rounded-full bg-ws-panel px-3 py-1 text-xs font-semibold capitalize text-ws-muted"><Globe2 className="size-3.5" /> {portfolio.visibility?.toLowerCase()}</span><h2 className="mt-5 text-3xl font-semibold tracking-tight text-ws-fg">{portfolio.title}</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-ws-muted">{portfolio.summary || "Add a summary to introduce this collection."}</p></div><div className="flex gap-2"><Button variant="secondary" onClick={() => setEditingPortfolio(true)} className="rounded-xl"><Pencil /> Edit</Button>{portfolio.publicUrl ? <Button render={<a href={portfolio.publicUrl} target="_blank" rel="noreferrer" />} className="rounded-xl"><ExternalLink /> Visit website</Button> : null}</div></div></div>
     </section>
+
+    <section className="mb-6 rounded-[22px] bg-ws-card p-5"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="text-sm font-semibold text-ws-fg">Portfolio visibility</h2><p className="mt-1 text-xs text-ws-muted">Control whether recruiters can discover this work.</p></div><div className="w-full sm:w-80"><PublicationControl value={portfolio.visibility} loading={publicationState.isLoading} onChange={async (visibility) => { try { await updatePublication({ portfolioId, body: { visibility } }).unwrap(); toast.success(`Portfolio is now ${visibility.toLowerCase()}.`); } catch { toast.error("Could not update portfolio visibility."); } }} /></div></div></section>
 
     <div className="mb-5 flex items-center justify-between"><div><h2 className="text-lg font-semibold text-ws-fg">Projects</h2><p className="mt-1 text-sm text-ws-muted">{projects.length} {projects.length === 1 ? "project" : "projects"} in this portfolio</p></div><Button onClick={() => setProjectFormOpen(true)} className="rounded-xl"><Plus /> Add project</Button></div>
 

@@ -2,7 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm, type Control } from "react-hook-form";
+import { ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import type {
   JobPostRequest,
@@ -10,6 +12,7 @@ import type {
   JobPostSectionRequest,
 } from "@/contracts";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -25,6 +28,7 @@ import { markdownToPlainText } from "@/lib/markdown";
 import {
   experienceLevelOptions,
   jobTypeOptions,
+  locationOptions,
   NOT_SPECIFIED,
   withNotSpecified,
   workModeOptions,
@@ -115,7 +119,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
         values.categoryId === NOT_SPECIFIED
           ? undefined
           : Number(values.categoryId),
-      location: optional(values.location),
+      location: optional(values.location.trim()),
       jobType: optional(values.jobType),
       workMode: optional(values.workMode),
       experienceLevel: optional(values.experienceLevel),
@@ -164,7 +168,6 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
       label: category.name,
     })),
   );
-
   return (
     <Form {...form}>
       <form
@@ -203,12 +206,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
             label="Category / department"
             options={categoryOptions}
           />
-          <TextField
-            control={form.control}
-            name="location"
-            label="Location"
-            placeholder="Remote / Phnom Penh, Cambodia"
-          />
+          <LocationField control={form.control} />
           <SelectField
             control={form.control}
             name="workMode"
@@ -297,5 +295,71 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
         </div>
       </form>
     </Form>
+  );
+}
+
+function LocationField({ control }: { control: Control<JobFormValues> }) {
+  const [focused, setFocused] = useState(false);
+
+  return (
+    <FormField
+      control={control}
+      name="location"
+      render={({ field }) => {
+        const query = field.value.trim().toLowerCase();
+        const matches = query
+          ? locationOptions.filter((option) =>
+              option.label.toLowerCase().includes(query),
+            )
+          : locationOptions;
+
+        return (
+          <FormItem className="relative">
+            <FormLabel>Location</FormLabel>
+            <div className="relative">
+              <FormControl>
+                <Input
+                  {...field}
+                  autoComplete="off"
+                  placeholder="Type to search, e.g. Phnom Penh"
+                  className="h-11 rounded-xl pr-11"
+                  onFocus={() => setFocused(true)}
+                  onBlur={() => setFocused(false)}
+                />
+              </FormControl>
+              <button
+                type="button"
+                aria-label="Show province options"
+                aria-expanded={focused}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => setFocused((open) => !open)}
+                className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-xl text-muted-foreground hover:text-foreground"
+              >
+                <ChevronDown className={`size-4 transition-transform ${focused ? "rotate-180" : ""}`} />
+              </button>
+            </div>
+            {focused && matches.length > 0 ? (
+              <div className="absolute inset-x-0 top-full z-30 mt-1 max-h-52 overflow-y-auto rounded-xl border border-border bg-popover p-1.5 shadow-lg">
+                {matches.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => {
+                      field.onChange(option.value);
+                      setFocused(false);
+                    }}
+                    className="block w-full rounded-lg px-3 py-2 text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    />
   );
 }

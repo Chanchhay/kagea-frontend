@@ -3,7 +3,6 @@
 import type { PublicJobCategoryResponse, PublicSkillResponse } from "@/contracts";
 import { FilterBar } from "@/components/shared/FilterBar";
 import { SearchInput } from "@/components/shared/SearchInput";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -20,6 +19,7 @@ export type PublicJobFilterValues = {
   skillId: string;
   workMode: string;
   jobType: string;
+  minimumSalary: string;
 };
 
 type PublicJobFiltersProps = {
@@ -27,7 +27,6 @@ type PublicJobFiltersProps = {
   categories: PublicJobCategoryResponse[];
   skills: PublicSkillResponse[];
   onChange: (nextValues: PublicJobFilterValues) => void;
-  onClear: () => void;
 };
 
 const workModes = ["HYBRID", "ONSITE", "REMOTE"];
@@ -38,15 +37,14 @@ export function PublicJobFilters({
   categories,
   skills,
   onChange,
-  onClear,
 }: PublicJobFiltersProps) {
   const update = (name: keyof PublicJobFilterValues, value: string) => {
     onChange({ ...values, [name]: value });
   };
 
   return (
-    <FilterBar className="grid gap-3 md:grid-cols-2 lg:grid-cols-6">
-      <label className="lg:col-span-2">
+    <FilterBar className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <label>
         <span className="sr-only">Keyword</span>
         <SearchInput
           value={values.keyword}
@@ -99,47 +97,54 @@ export function PublicJobFilters({
           </SelectContent>
         </Select>
       </label>
-      <div className="grid grid-cols-[1fr_1fr_auto] gap-2 md:col-span-2 lg:col-span-6">
-        <label>
-          <span className="sr-only">Work mode</span>
-          <Select
-            value={values.workMode || null}
-            onValueChange={(value) => update("workMode", value ?? "")}
-          >
-            <SelectTrigger className="h-11 w-full bg-surface">
-              <SelectValue placeholder="Work mode" />
-            </SelectTrigger>
-            <SelectContent>
-              {workModes.map((mode) => (
-                <SelectItem key={mode} value={mode}>
-                  {mode}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </label>
-        <label>
-          <span className="sr-only">Job type</span>
-          <Select
-            value={values.jobType || null}
-            onValueChange={(value) => update("jobType", value ?? "")}
-          >
-            <SelectTrigger className="h-11 w-full bg-surface">
-              <SelectValue placeholder="Job type" />
-            </SelectTrigger>
-            <SelectContent>
-              {jobTypes.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </label>
-        <Button type="button" variant="outline" onClick={onClear}>
-          Clear
-        </Button>
-      </div>
+      <label>
+        <span className="sr-only">Work mode</span>
+        <Select
+          value={values.workMode || null}
+          onValueChange={(value) => update("workMode", value ?? "")}
+        >
+          <SelectTrigger className="h-11 w-full bg-surface">
+            <SelectValue placeholder="Work mode" />
+          </SelectTrigger>
+          <SelectContent>
+            {workModes.map((mode) => (
+              <SelectItem key={mode} value={mode}>
+                {mode}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </label>
+      <label>
+        <span className="sr-only">Job type</span>
+        <Select
+          value={values.jobType || null}
+          onValueChange={(value) => update("jobType", value ?? "")}
+        >
+          <SelectTrigger className="h-11 w-full bg-surface">
+            <SelectValue placeholder="Job type" />
+          </SelectTrigger>
+          <SelectContent>
+            {jobTypes.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </label>
+      <label>
+        <span className="sr-only">Minimum salary</span>
+        <Input
+          type="number"
+          min="0"
+          inputMode="numeric"
+          value={values.minimumSalary}
+          onChange={(event) => update("minimumSalary", event.target.value)}
+          placeholder="Minimum salary"
+          className="h-11 bg-surface"
+        />
+      </label>
     </FilterBar>
   );
 }

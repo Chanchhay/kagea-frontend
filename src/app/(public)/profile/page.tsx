@@ -30,10 +30,15 @@ import {
 import { useGetCurrentUserQuery } from "@/services/authApi";
 import { useGetJobSeekerProfileQuery } from "@/services/jobSeekerApi";
 import { authClient } from "@/lib/auth-client";
+import { useProfileAvatar } from "@/lib/use-profile-avatar";
 
 export default function ProfilePage() {
   const { data: session } = authClient.useSession();
   const currentUser = useGetCurrentUserQuery();
+  const profileImage = useProfileAvatar(
+    currentUser.data?.userAccountId,
+    session?.user.image,
+  );
   const isJobSeeker =
     currentUser.data?.roles.some((role) =>
       role.toUpperCase().includes("SEEKER"),
@@ -61,7 +66,7 @@ export default function ProfilePage() {
             <ProfileContent
               user={currentUser.data}
               jobSeekerProfile={jobSeekerProfile.data}
-              image={session?.user.image}
+              image={profileImage}
             />
           ) : null}
         </PageContainer>

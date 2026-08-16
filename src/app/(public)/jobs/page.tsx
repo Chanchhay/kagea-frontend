@@ -12,7 +12,7 @@ import {
 } from "@/services/publicApi";
 
 export default function PublicJobsPage() {
-  const jobs = useGetPublicJobsQuery({ size: 100 });
+  const jobs = useGetPublicJobsQuery({ size: 100, sort: "publishedAt,desc" });
   const categories = useGetPublicJobCategoriesQuery();
   const skills = useGetPublicSkillsQuery();
 

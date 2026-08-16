@@ -1,49 +1,18 @@
 "use client";
 
-import { PageIntro, PlainCard, StatusPill } from "@/components/shared/ApiCards";
+import { RecruiterProfileForm } from "@/components/recruiter/RecruiterProfileForm";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
-import { RecruiterProfileForm } from "@/components/recruiter/RecruiterProfileForm";
 import { useGetCurrentUserQuery } from "@/services/authApi";
+import { useGetRecruiterProfileQuery } from "@/services/recruiterApi";
 
 export default function RecruiterProfilePage() {
-  const currentUserQuery = useGetCurrentUserQuery();
-
-  if (currentUserQuery.isLoading) return <LoadingState rows={4} />;
-  if (currentUserQuery.isError || !currentUserQuery.data) {
-    return <ErrorState message="Unable to load your account." />;
-  }
-
-  const currentUser = currentUserQuery.data;
-
-  return (
-    <>
-      <PageIntro
-        title="Recruiter profile"
-        description="Manage the personal details of the business owner."
-      />
-      <div className="grid gap-6">
-        <PlainCard>
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h2 className="font-semibold text-heading">
-                {currentUser.fullName}
-              </h2>
-              <p className="mt-1 text-sm text-body">{currentUser.email}</p>
-            </div>
-            <StatusPill>{currentUser.roles.join(", ")}</StatusPill>
-          </div>
-        </PlainCard>
-
-        <PlainCard>
-          <h2 className="font-semibold text-heading">Recruiter details</h2>
-          <p className="mt-1 mb-5 text-sm leading-6 text-body">
-            The API has no endpoint to read these back, so the fields start blank
-            and saving overwrites whatever is stored.
-          </p>
-          <RecruiterProfileForm />
-        </PlainCard>
-      </div>
-    </>
-  );
+  const user = useGetCurrentUserQuery();
+  const profile = useGetRecruiterProfileQuery();
+  if (user.isLoading || profile.isLoading) return <LoadingState rows={5} />;
+  if (user.isError || !user.data || profile.isError || !profile.data) return <ErrorState message="Unable to load your recruiter profile." />;
+  return <div className="mx-auto max-w-6xl pb-4 pt-1">
+    <div className="mb-6"><p className="text-sm font-medium text-primary">Personal workspace</p><h2 className="mt-1 text-2xl font-bold tracking-tight text-ws-fg sm:text-3xl">Your recruiter profile</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-ws-muted">Keep your professional identity clear and current for every candidate conversation.</p></div>
+    <RecruiterProfileForm currentUser={user.data} profile={profile.data} />
+  </div>;
 }

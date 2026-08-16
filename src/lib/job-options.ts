@@ -27,6 +27,35 @@ export const experienceLevelOptions = [
   { value: "LEAD", label: "Lead" },
 ] as const;
 
+/** Common Cambodian hiring locations used by recruiter job forms. */
+export const locationOptions = [
+  { value: "Banteay Meanchey", label: "Banteay Meanchey" },
+  { value: "Battambang", label: "Battambang" },
+  { value: "Kampong Cham", label: "Kampong Cham" },
+  { value: "Kampong Chhnang", label: "Kampong Chhnang" },
+  { value: "Kampong Speu", label: "Kampong Speu" },
+  { value: "Kampong Thom", label: "Kampong Thom" },
+  { value: "Kampot", label: "Kampot" },
+  { value: "Kandal", label: "Kandal" },
+  { value: "Kep", label: "Kep" },
+  { value: "Koh Kong", label: "Koh Kong" },
+  { value: "Kratie", label: "Kratie" },
+  { value: "Mondulkiri", label: "Mondulkiri" },
+  { value: "Oddar Meanchey", label: "Oddar Meanchey" },
+  { value: "Pailin", label: "Pailin" },
+  { value: "Phnom Penh", label: "Phnom Penh" },
+  { value: "Preah Sihanouk", label: "Preah Sihanouk" },
+  { value: "Preah Vihear", label: "Preah Vihear" },
+  { value: "Pursat", label: "Pursat" },
+  { value: "Prey Veng", label: "Prey Veng" },
+  { value: "Ratanakiri", label: "Ratanakiri" },
+  { value: "Siem Reap", label: "Siem Reap" },
+  { value: "Stung Treng", label: "Stung Treng" },
+  { value: "Svay Rieng", label: "Svay Rieng" },
+  { value: "Takeo", label: "Takeo" },
+  { value: "Tboung Khmum", label: "Tboung Khmum" },
+] as const;
+
 export const NOT_SPECIFIED = "none";
 
 /** Prepends a "not specified" choice so optional selects can be cleared. */

@@ -129,6 +129,22 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         { type: "Resumes", id: resumeId },
       ],
     }),
+    updateResumePublication: builder.mutation<
+      PublicationResponse,
+      { resumeId: string | number; body: PublicationRequest }
+    >({
+      query: ({ resumeId, body }) => ({
+        url: `/job-seeker/resumes/${resumeId}/publication`,
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (response: ApiResponsePublicationResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, { resumeId }) => [
+        "Resumes",
+        { type: "Resumes", id: resumeId },
+      ],
+    }),
     getPortfolios: builder.query<PortfolioResponse[], void>({
       query: () => "/job-seeker/portfolios",
       transformResponse: (response: ApiResponseListPortfolioResponse) =>
@@ -155,6 +171,22 @@ export const jobSeekerApi = baseApi.injectEndpoints({
       query: (portfolioId) => ({ url: `/job-seeker/portfolios/${portfolioId}`, method: "DELETE" }),
       transformResponse: (response: ApiResponseVoid) => unwrapApiResponse(response),
       invalidatesTags: ["Portfolios"],
+    }),
+    updatePortfolioPublication: builder.mutation<
+      PublicationResponse,
+      { portfolioId: string | number; body: PublicationRequest }
+    >({
+      query: ({ portfolioId, body }) => ({
+        url: `/job-seeker/portfolios/${portfolioId}/publication`,
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (response: ApiResponsePublicationResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, { portfolioId }) => [
+        "Portfolios",
+        { type: "Portfolios", id: portfolioId },
+      ],
     }),
     createPortfolioProject: builder.mutation<PortfolioProjectResponse, { portfolioId: string | number; body: PortfolioProjectRequest }>({
       query: ({ portfolioId, body }) => ({ url: `/job-seeker/portfolios/${portfolioId}/projects`, method: "POST", body }),
@@ -195,6 +227,21 @@ export const jobSeekerApi = baseApi.injectEndpoints({
       transformResponse: (response: ApiResponseJobApplicationResponse) =>
         unwrapApiResponse(response),
       invalidatesTags: ["Applications"],
+    }),
+    withdrawApplication: builder.mutation<
+      JobApplicationResponse,
+      string | number
+    >({
+      query: (applicationId) => ({
+        url: `/job-seeker/applications/${applicationId}/withdraw`,
+        method: "POST",
+      }),
+      transformResponse: (response: ApiResponseJobApplicationResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, applicationId) => [
+        "Applications",
+        { type: "Applications", id: applicationId },
+      ],
     }),
     getAiInterviews: builder.query<AiInterviewSessionResponse[], void>({
       query: () => "/job-seeker/ai-interviews",
@@ -297,17 +344,20 @@ export const {
   useSetDefaultResumeMutation,
   useUpdateResumeMutation,
   useDeleteResumeMutation,
+  useUpdateResumePublicationMutation,
   useGetPortfoliosQuery,
   useGetPortfolioQuery,
   useCreatePortfolioMutation,
   useUpdatePortfolioMutation,
   useDeletePortfolioMutation,
+  useUpdatePortfolioPublicationMutation,
   useCreatePortfolioProjectMutation,
   useUpdatePortfolioProjectMutation,
   useDeletePortfolioProjectMutation,
   useGetApplicationsQuery,
   useGetApplicationQuery,
   useApplyToJobMutation,
+  useWithdrawApplicationMutation,
   useGetAiInterviewsQuery,
   useGetAiInterviewQuery,
   useGetAiInterviewResultQuery,
