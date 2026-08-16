@@ -55,7 +55,7 @@ function toFormValues(job?: JobPostResponse): JobFormValues {
     title: job?.title ?? "",
     description: job?.description ?? "",
     requirements: requirements?.contentMarkdown ?? "",
-    categoryId: job?.categoryId ? String(job.categoryId) : NOT_SPECIFIED,
+    categoryId: job?.categoryId ? String(job.categoryId) : "",
     location: job?.location ?? "",
     jobType: job?.jobType || NOT_SPECIFIED,
     workMode: job?.workMode || NOT_SPECIFIED,
@@ -115,10 +115,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
     return {
       title: values.title,
       description: values.description,
-      categoryId:
-        values.categoryId === NOT_SPECIFIED
-          ? undefined
-          : Number(values.categoryId),
+      categoryId: values.categoryId ? Number(values.categoryId) : undefined,
       location: optional(values.location.trim()),
       jobType: optional(values.jobType),
       workMode: optional(values.workMode),
@@ -162,12 +159,19 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
     router.push(`/recruiter/jobs/${saved.id}`);
   };
 
-  const categoryOptions = withNotSpecified(
-    (categories.data ?? []).map((category) => ({
-      value: String(category.id),
-      label: category.name,
-    })),
-  );
+  const categoryMap = new Map<number, string>();
+  for (const category of categories.data ?? []) {
+    if (category.id && category.name?.trim()) {
+      categoryMap.set(category.id, category.name);
+    }
+  }
+  if (job?.categoryId && job.categoryName) {
+    categoryMap.set(job.categoryId, job.categoryName);
+  }
+  const categoryOptions = [...categoryMap.entries()]
+      .sort((first, second) => first[1].localeCompare(second[1]))
+      .slice(0, 20)
+      .map(([id, name]) => ({ value: String(id), label: name }));
   return (
     <Form {...form}>
       <form
@@ -204,7 +208,13 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
             control={form.control}
             name="categoryId"
             label="Category / department"
+            placeholder={categories.isLoading ? "Loading categories…" : "Select a category"}
             options={categoryOptions}
+            description={
+              categories.isError
+                ? "Categories could not be loaded. Refresh and try again."
+                : undefined
+            }
           />
           <LocationField control={form.control} />
           <SelectField

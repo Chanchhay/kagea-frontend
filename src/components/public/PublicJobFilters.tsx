@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { jobTypeOptions, workModeOptions } from "@/lib/job-options";
 
 export type PublicJobFilterValues = {
   keyword: string;
@@ -28,9 +29,6 @@ type PublicJobFiltersProps = {
   skills: PublicSkillResponse[];
   onChange: (nextValues: PublicJobFilterValues) => void;
 };
-
-const workModes = ["HYBRID", "ONSITE", "REMOTE"];
-const jobTypes = ["FULL_TIME", "CONTRACT"];
 
 export function PublicJobFilters({
   values,

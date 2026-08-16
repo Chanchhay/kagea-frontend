@@ -108,10 +108,17 @@ export function SelectField<T extends FieldValues>({
           <Select value={field.value} onValueChange={field.onChange}>
             <FormControl>
               <SelectTrigger className="h-11 w-full rounded-xl">
-                <SelectValue placeholder={placeholder} />
+                <SelectValue placeholder={placeholder}>
+                  {options.find((option) => option.value === field.value)?.label}
+                </SelectValue>
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
+            <SelectContent
+              alignItemWithTrigger={false}
+              side="bottom"
+              align="start"
+              className="max-h-64"
+            >
               {options.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
