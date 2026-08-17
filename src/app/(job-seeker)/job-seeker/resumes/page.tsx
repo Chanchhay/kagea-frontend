@@ -3,13 +3,14 @@
 import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { FilePlus2, FileText, Pencil, Star, Trash2 } from "lucide-react";
+import { FilePlus2, FileText, Globe2, Pencil, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { ResumeResponse } from "@/contracts";
-import { ResumeDocument } from "@/components/job-seeker/ResumeDocument";
+import { ResumePreview } from "@/components/job-seeker/ResumeDocument";
 import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
+import { hasResumeContent } from "@/lib/resume-data";
 import { useDeleteResumeMutation, useGetResumesQuery, useSetDefaultResumeMutation } from "@/services/jobSeekerApi";
 
 type Filter = "ALL" | "DEFAULT" | "HAS_FILE" | "DRAFT";
@@ -51,10 +52,13 @@ export default function ResumesPage() {
     </div>
 
     {visible.length ? <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{visible.map((resume) => <article key={resume.id} className={`group relative overflow-hidden rounded-2xl border bg-ws-panel p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${resume.isDefault ? "border-primary" : "border-ws-line"}`}>
-      {resume.isDefault ? <span className="absolute right-4 top-4 z-10 rounded-lg bg-chip-soft px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-chip-soft-fg">Default</span> : null}
+      <div className="absolute right-4 top-4 z-10 flex gap-1.5">
+        {resume.visibility === "PUBLIC" ? <span className="inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground"><Globe2 className="size-3" /> Public</span> : null}
+        {resume.isDefault ? <span className="rounded-lg bg-chip-soft px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-chip-soft-fg">Default</span> : null}
+      </div>
       <Link href={`/job-seeker/resumes/${resume.id}`} className="block">
         <div className="relative flex h-64 items-center justify-center overflow-hidden rounded-xl bg-ws-card-hover p-4">
-          {resume.resumeFileUrl ? <iframe src={`${resolveFileUrl(resume.resumeFileUrl)}#page=1&view=Fit&zoom=page-fit&toolbar=0&navpanes=0&scrollbar=0`} title={`${resume.title} preview`} tabIndex={-1} scrolling="no" className="pointer-events-none size-full border-0 bg-white shadow-sm" /> : hasContent(resume) ? <div className="flex size-full items-center justify-center overflow-hidden bg-[#292929]"><div className="relative h-[220px] w-[156px] shrink-0 overflow-hidden bg-white shadow-sm"><div className="absolute left-0 top-0 w-[595px] origin-top-left scale-[0.262]"><ResumeDocument title={resume.title} data={resume.resumeData} /></div></div></div> : <FileText className="size-12 text-ws-faint" />}
+          {resume.resumeFileUrl ? <iframe src={`${resolveFileUrl(resume.resumeFileUrl)}#page=1&view=Fit&zoom=page-fit&toolbar=0&navpanes=0&scrollbar=0`} title={`${resume.title} preview`} tabIndex={-1} scrolling="no" className="pointer-events-none size-full border-0 bg-white shadow-sm" /> : hasContent(resume) ? <div className="flex size-full items-center justify-center overflow-hidden bg-[#292929]"><div className="h-[220px] w-[156px] shrink-0 overflow-hidden"><ResumePreview title={resume.title} data={resume.resumeData} /></div></div> : <FileText className="size-12 text-ws-faint" />}
         </div>
         <h2 className="mt-5 truncate text-base font-semibold text-ws-fg">{resume.title}</h2>
         <p className="mt-2 flex items-center gap-2 text-sm text-ws-muted"><span className={`size-2 rounded-full ${resume.resumeFileUrl || hasContent(resume) ? "bg-primary" : "bg-warning"}`} /> {resume.resumeFileUrl ? "File attached" : hasContent(resume) ? "Profile completed" : "Draft"}</p>
@@ -69,5 +73,5 @@ export default function ResumesPage() {
   </div>;
 }
 
-function hasContent(resume: ResumeResponse) { return Object.values(resume.resumeData ?? {}).some((value) => typeof value === "string" && value.trim()); }
+function hasContent(resume: ResumeResponse) { return hasResumeContent(resume.resumeData); }
 function formatDate(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? "recently" : new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(date); }

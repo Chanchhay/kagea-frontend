@@ -4,10 +4,14 @@ import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, CalendarDays, Check, Download, Eye, FileText, Loader2, Pencil, Shield, Star, Trash2 } from "lucide-react";
+import { ArrowLeft, CalendarDays, Check, Download, Eye, FileText, Loader2, Pencil, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { ResumeDocument } from "@/components/job-seeker/ResumeDocument";
+import { ResumeBuilder } from "@/components/job-seeker/ResumeBuilder";
+import { ResumePreview } from "@/components/job-seeker/ResumeDocument";
 import { ResumeForm } from "@/components/job-seeker/ResumeForm";
+import { ResumePublishCard } from "@/components/job-seeker/ResumePublishCard";
+import { getTemplate } from "@/components/job-seeker/resume-templates";
+import { hasResumeContent, normalizeResumeData } from "@/lib/resume-data";
 import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -34,6 +38,14 @@ export default function ResumeDetailPage() {
     } catch { toast.error("Could not update your default resume."); }
   }
 
+  async function save(body: { title: string; resumeFileUrl?: string; resumeData?: Record<string, unknown> }) {
+    try {
+      await updateResume({ resumeId, body }).unwrap();
+      toast.success("Resume updated");
+      setIsEditing(false);
+    } catch { toast.error("Could not save your changes."); }
+  }
+
   async function removeResume() {
     if (!window.confirm(`Delete “${resume.title}”? This cannot be undone.`)) return;
     try {
@@ -44,30 +56,33 @@ export default function ResumeDetailPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className={isEditing && !resume.resumeFileUrl ? "mx-auto max-w-7xl" : "mx-auto max-w-6xl"}>
       <PageIntro title={resume.title} description="Review and manage this resume." />
       <Link href="/job-seeker/resumes" className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-ws-muted hover:text-ws-fg"><ArrowLeft className="size-4" /> All resumes</Link>
 
       {isEditing ? (
-        <div className="mx-auto max-w-3xl rounded-[24px] bg-ws-card p-6 lg:p-8">
-          <div className="mb-7"><p className="text-xs font-semibold uppercase tracking-widest text-primary">Edit document</p><h2 className="mt-2 text-xl font-semibold text-ws-fg">Update resume details</h2></div>
-          <ResumeForm
-            mode="builder"
+        resume.resumeFileUrl ? (
+          <div className="mx-auto max-w-3xl rounded-[24px] bg-ws-card p-6 lg:p-8">
+            <div className="mb-7"><p className="text-xs font-semibold uppercase tracking-widest text-primary">Edit document</p><h2 className="mt-2 text-xl font-semibold text-ws-fg">Update resume details</h2></div>
+            <ResumeForm
+              initialTitle={resume.title}
+              initialFileUrl={resume.resumeFileUrl}
+              submitLabel="Save changes"
+              isSubmitting={updateState.isLoading}
+              onCancel={() => setIsEditing(false)}
+              onSubmit={(body) => save(body)}
+            />
+          </div>
+        ) : (
+          <ResumeBuilder
             initialTitle={resume.title}
-            initialFileUrl={resume.resumeFileUrl}
-            initialResumeData={resume.resumeData}
+            initialData={resume.resumeData}
             submitLabel="Save changes"
             isSubmitting={updateState.isLoading}
             onCancel={() => setIsEditing(false)}
-            onSubmit={async (body) => {
-              try {
-                await updateResume({ resumeId, body }).unwrap();
-                toast.success("Resume updated");
-                setIsEditing(false);
-              } catch { toast.error("Could not save your changes."); }
-            }}
+            onSubmit={(body) => save(body)}
           />
-        </div>
+        )
       ) : (
         <div className="grid gap-5 lg:grid-cols-[1.45fr_0.75fr]">
           <section className="overflow-hidden rounded-[24px] bg-ws-card">
@@ -80,7 +95,7 @@ export default function ResumeDetailPage() {
                     className="size-full border-0"
                   />
                 </div>
-              ) : hasResumeContent(resume.resumeData) ? <ResumeDocument title={resume.title} data={resume.resumeData} compact /> : <div className="relative flex aspect-[0.72] w-full max-w-65 flex-col rounded-sm bg-white p-7 shadow-[0_18px_50px_rgba(0,0,0,0.12)]">
+              ) : hasResumeContent(resume.resumeData) ? <ResumePreview title={resume.title} data={resume.resumeData} className="w-full max-w-105" /> : <div className="relative flex aspect-[0.72] w-full max-w-65 flex-col rounded-sm bg-white p-7 shadow-[0_18px_50px_rgba(0,0,0,0.12)]">
                 <div className="h-3 w-2/3 rounded-full bg-slate-800" />
                 <div className="mt-3 h-1.5 w-1/2 rounded-full bg-slate-300" />
                 <div className="mt-8 grid gap-2"><span className="h-1 rounded bg-slate-200"/><span className="h-1 rounded bg-slate-200"/><span className="h-1 w-5/6 rounded bg-slate-200"/></div>
@@ -90,7 +105,7 @@ export default function ResumeDetailPage() {
               </div>}
             </div>
             <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-              <div className="min-w-0"><h2 className="truncate text-lg font-semibold text-ws-fg">{resume.title}</h2><p className="mt-1 text-sm text-ws-muted">PDF document</p></div>
+              <div className="min-w-0"><h2 className="truncate text-lg font-semibold text-ws-fg">{resume.title}</h2><p className="mt-1 text-sm text-ws-muted">{resume.resumeFileUrl ? "Uploaded PDF" : `${getTemplate(normalizeResumeData(resume.resumeData).templateId).name} template`}</p></div>
               <div className="flex gap-2">
                 <Button variant="secondary" onClick={() => setIsEditing(true)} className="rounded-xl"><Pencil /> Edit</Button>
                 {resume.resumeFileUrl ? <Button render={<a href={resolveFileUrl(resume.resumeFileUrl)} target="_blank" rel="noreferrer" />} className="rounded-xl"><Download /> View PDF</Button> : <Button render={<Link href={`/job-seeker/resumes/${resume.id}/view`} />} className="rounded-xl"><Eye /> View resume</Button>}
@@ -99,11 +114,12 @@ export default function ResumeDetailPage() {
           </section>
 
           <aside className="space-y-5">
+            <ResumePublishCard resume={resume} />
+
             <section className="rounded-[22px] bg-ws-card p-5">
               <h2 className="text-sm font-semibold text-ws-fg">Resume status</h2>
               <div className="mt-5 space-y-4">
                 <InfoRow icon={resume.isDefault ? Check : Star} label="Application default" value={resume.isDefault ? "Default resume" : "Not default"} active={resume.isDefault} />
-                <InfoRow icon={Shield} label="Visibility" value={resume.visibility?.toLowerCase() ?? "private"} />
                 <InfoRow icon={CalendarDays} label="Last updated" value={formatDate(resume.updatedAt)} />
               </div>
               {!resume.isDefault ? <Button onClick={makeDefault} disabled={defaultState.isLoading} variant="secondary" className="mt-6 w-full rounded-xl">{defaultState.isLoading ? <Loader2 className="animate-spin" /> : <Star />} Make default</Button> : null}
@@ -129,8 +145,4 @@ function formatDate(value?: string) {
   if (!value) return "Recently";
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? "Recently" : new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(date);
-}
-
-function hasResumeContent(data: Record<string, unknown>) {
-  return Object.values(data ?? {}).some((value) => typeof value === "string" && value.trim());
 }

@@ -179,6 +179,7 @@ export type PublicPortfolioResponse = {
   title: string;
   summary: string;
   publicUrl: string;
+  portfolioData: Record<string, unknown>;
   publishedAt: string;
   projects: PublicPortfolioProjectResponse[];
 };
@@ -187,6 +188,9 @@ export type PublicResumeResponse = {
   id: number;
   title: string;
   isDefault: boolean;
+  /** Empty for resumes built in the app; those render from `resumeData`. */
+  resumeFileUrl: string;
+  resumeData: Record<string, unknown>;
   publishedAt: string;
 };
 

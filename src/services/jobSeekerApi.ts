@@ -99,6 +99,22 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         unwrapApiResponse(response),
       invalidatesTags: ["Resumes"],
     }),
+    updateResumePublication: builder.mutation<
+      ResumeResponse,
+      { resumeId: string | number; body: PublicationRequest }
+    >({
+      query: ({ resumeId, body }) => ({
+        url: `/job-seeker/resumes/${resumeId}/publication`,
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (response: ApiResponseResumeResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, { resumeId }) => [
+        "Resumes",
+        { type: "Resumes", id: resumeId },
+      ],
+    }),
     updateResume: builder.mutation<
       ResumeResponse,
       { resumeId: string | number; body: ResumeUpdateRequest }
@@ -156,6 +172,11 @@ export const jobSeekerApi = baseApi.injectEndpoints({
       query: (portfolioId) => ({ url: `/job-seeker/portfolios/${portfolioId}`, method: "DELETE" }),
       transformResponse: (response: ApiResponseVoid) => unwrapApiResponse(response),
       invalidatesTags: ["Portfolios"],
+    }),
+    updatePortfolioPublication: builder.mutation<PortfolioResponse, { portfolioId: string | number; body: PublicationRequest }>({
+      query: ({ portfolioId, body }) => ({ url: `/job-seeker/portfolios/${portfolioId}/publication`, method: "PATCH", body }),
+      transformResponse: (response: ApiResponsePortfolioResponse) => unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, { portfolioId }) => ["Portfolios", { type: "Portfolios", id: portfolioId }],
     }),
     createPortfolioProject: builder.mutation<PortfolioProjectResponse, { portfolioId: string | number; body: PortfolioProjectRequest }>({
       query: ({ portfolioId, body }) => ({ url: `/job-seeker/portfolios/${portfolioId}/projects`, method: "POST", body }),
@@ -297,12 +318,14 @@ export const {
   useCreateResumeMutation,
   useSetDefaultResumeMutation,
   useUpdateResumeMutation,
+  useUpdateResumePublicationMutation,
   useDeleteResumeMutation,
   useGetPortfoliosQuery,
   useGetPortfolioQuery,
   useCreatePortfolioMutation,
   useUpdatePortfolioMutation,
   useDeletePortfolioMutation,
+  useUpdatePortfolioPublicationMutation,
   useCreatePortfolioProjectMutation,
   useUpdatePortfolioProjectMutation,
   useDeletePortfolioProjectMutation,

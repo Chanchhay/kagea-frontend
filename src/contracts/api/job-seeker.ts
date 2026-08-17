@@ -55,6 +55,8 @@ export type PortfolioCreateRequest = {
   title: string;
   summary?: string;
   publicUrl?: string;
+  /** Frontend-owned presentation settings: chosen template and accent color. */
+  portfolioData?: Record<string, unknown>;
 };
 
 export type PortfolioUpdateRequest = Partial<PortfolioCreateRequest>;
@@ -64,6 +66,7 @@ export type PortfolioResponse = {
   title: string;
   summary: string;
   publicUrl: string;
+  portfolioData: Record<string, unknown>;
   visibility: PublicationVisibility;
   publishedAt: string;
   status: "ACTIVE" | "INACTIVE" | "PENDING" | "SUSPENDED";
