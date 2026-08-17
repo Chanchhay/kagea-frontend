@@ -30,6 +30,8 @@ import type {
   ResumeCreateRequest,
   ResumeResponse,
   ResumeUpdateRequest,
+  VapiCallBindingRequest,
+  VoiceTranscriptRequest,
 } from "@/contracts";
 import { baseApi, unwrapApiResponse } from "./baseApi";
 
@@ -275,6 +277,36 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         { type: "Interviews", id: sessionId },
       ],
     }),
+    bindAiInterviewVapiCall: builder.mutation<
+      AiInterviewSessionResponse,
+      { sessionId: string | number; body: VapiCallBindingRequest }
+    >({
+      query: ({ sessionId, body }) => ({
+        url: `/job-seeker/ai-interviews/${sessionId}/vapi-call`,
+        method: "PUT",
+        body,
+      }),
+      transformResponse: (response: ApiResponseAiInterviewSessionResponse) =>
+        unwrapApiResponse(response),
+      // Deliberately does not invalidate: this fires mid-call and a refetch
+      // would churn the questions the live voice session is reading from.
+    }),
+    submitAiInterviewTranscript: builder.mutation<
+      AiInterviewSessionResponse,
+      { sessionId: string | number; body: VoiceTranscriptRequest }
+    >({
+      query: ({ sessionId, body }) => ({
+        url: `/job-seeker/ai-interviews/${sessionId}/transcript`,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: ApiResponseAiInterviewSessionResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, { sessionId }) => [
+        "Interviews",
+        { type: "Interviews", id: sessionId },
+      ],
+    }),
     submitAiInterviewAnswer: builder.mutation<
       AiInterviewSessionResponse,
       {
@@ -338,6 +370,8 @@ export const {
   useCreateAiInterviewForJobMutation,
   useCreateAiInterviewForApplicationMutation,
   useStartAiInterviewMutation,
+  useBindAiInterviewVapiCallMutation,
+  useSubmitAiInterviewTranscriptMutation,
   useSubmitAiInterviewAnswerMutation,
   useCompleteAiInterviewMutation,
 } = jobSeekerApi;

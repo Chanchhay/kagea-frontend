@@ -29,6 +29,12 @@ export type JobPostRequest = {
   salaryMax?: number;
   experienceLevel?: string;
   expiredAt?: string;
+  /**
+   * App-relative URL of the PDF this post was parsed from, echoed back from
+   * `parseJobDocument`. Private to the recruiter — the public job endpoints
+   * never return it.
+   */
+  sourceFileUrl?: string;
   sections?: JobPostSectionRequest[];
   skills?: JobPostSkillRequest[];
 };
@@ -74,8 +80,65 @@ export type JobPostResponse = {
   status: JobPostStatus;
   publishedAt: string;
   expiredAt: string;
+  sourceFileUrl: string;
   sections: JobPostSectionResponse[];
   skills: JobPostSkillResponse[];
+};
+
+/**
+ * A skill an uploaded PDF asked for, resolved to a row and attached.
+ *
+ * `created` is true when the import added it to the shared skills list, false
+ * when it was already there.
+ */
+export type ParsedJobSkill = {
+  skillId: number;
+  name: string;
+  /** The type it is stored under, not the model's guess. */
+  skillType: string | null;
+  created: boolean;
+};
+
+export type SkillCreateRequest = {
+  name: string;
+  skillType?: string;
+};
+
+export type SkillResponse = {
+  id: number;
+  name: string;
+  skillType: string | null;
+  /** Set when a recruiter added this skill; null for admin-entered ones. */
+  createdByRecruiterProfileId: number | null;
+  createdByCompanyName: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/**
+ * Prefill data from `POST /recruiter/jobs/parse-document`. No job post exists
+ * yet — the recruiter reviews these values and saves through the normal
+ * create/update endpoints.
+ *
+ * Every field except `sourceFileUrl` may be null: the extraction leaves out
+ * whatever the document did not state rather than guessing. `expiredAt` is not
+ * extracted at all.
+ */
+export type JobDocumentParseResponse = {
+  sourceFileUrl: string;
+  title: string | null;
+  description: string | null;
+  location: string | null;
+  jobType: string | null;
+  workMode: string | null;
+  experienceLevel: string | null;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  categoryId: number | null;
+  categoryName: string | null;
+  sections: JobPostSectionRequest[];
+  /** Every skill the document named, attached and ready to save. */
+  skills: ParsedJobSkill[];
 };
 
 export type CompanyCreateRequest = {
@@ -251,6 +314,9 @@ export type ForwardedApplicationResponse = {
 };
 
 export type ApiResponseJobPostResponse = ApiResponse<JobPostResponse>;
+export type ApiResponseJobDocumentParseResponse =
+  ApiResponse<JobDocumentParseResponse>;
+export type ApiResponseSkillResponse = ApiResponse<SkillResponse>;
 export type ApiResponseListJobPostResponse = ApiResponse<JobPostResponse[]>;
 export type ApiResponseCompanyResponse = ApiResponse<CompanyResponse>;
 export type ApiResponseCompanyDocumentResponse =

@@ -2,6 +2,7 @@ import type {
   ApiResponseCompanyDocumentResponse,
   ApiResponseCompanyResponse,
   ApiResponseForwardedApplicationResponse,
+  ApiResponseJobDocumentParseResponse,
   ApiResponseJobPostResponse,
   ApiResponseListCompanyDocumentResponse,
   ApiResponseListForwardedApplicationResponse,
@@ -10,6 +11,7 @@ import type {
   ApiResponsePublicResumeDownloadResponse,
   ApiResponsePublicTalentDetailResponse,
   ApiResponseRecruiterProfileResponse,
+  ApiResponseSkillResponse,
   CompanyCreateRequest,
   CompanyDocumentRequest,
   CompanyDocumentResponse,
@@ -17,6 +19,7 @@ import type {
   CompanyUpdateRequest,
   FindTalentParams,
   ForwardedApplicationResponse,
+  JobDocumentParseResponse,
   JobPostRequest,
   JobPostResponse,
   Page,
@@ -25,6 +28,8 @@ import type {
   PublicTalentListItemResponse,
   RecruiterProfileResponse,
   RecruiterProfileUpdateRequest,
+  SkillCreateRequest,
+  SkillResponse,
 } from "@/contracts";
 import { baseApi, unwrapApiResponse } from "./baseApi";
 
@@ -116,6 +121,37 @@ export const recruiterApi = baseApi.injectEndpoints({
       transformResponse: (response: ApiResponseJobPostResponse) =>
         unwrapApiResponse(response),
       providesTags: (_result, _error, id) => [{ type: "RecruiterJobs", id }],
+    }),
+    /**
+     * Extracts job post fields from an uploaded PDF job description.
+     *
+     * Creates no job post — the result prefills the form. The PDF itself is
+     * stored privately, and the returned `sourceFileUrl` rides along on the
+     * eventual save. Sends a `FormData` body, which RTK Query passes through
+     * untouched so the browser sets the multipart boundary itself.
+     */
+    parseJobDocument: builder.mutation<JobDocumentParseResponse, File>({
+      query: (file) => {
+        const body = new FormData();
+        body.append("file", file);
+        return { url: "/recruiter/jobs/parse-document", method: "POST", body };
+      },
+      transformResponse: (response: ApiResponseJobDocumentParseResponse) =>
+        unwrapApiResponse(response),
+    }),
+    /**
+     * Names a skill the admin-curated list is missing, so a job can carry the
+     * technologies it actually asks for.
+     *
+     * Idempotent: an existing skill with the same name in any casing comes back
+     * as-is instead of becoming a second row. Invalidates the public skills
+     * list, which the form's autocomplete reads.
+     */
+    createSkill: builder.mutation<SkillResponse, SkillCreateRequest>({
+      query: (body) => ({ url: "/recruiter/skills", method: "POST", body }),
+      transformResponse: (response: ApiResponseSkillResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: ["Skills"],
     }),
     createJobDraft: builder.mutation<JobPostResponse, JobPostRequest>({
       query: (body) => ({ url: "/recruiter/jobs", method: "POST", body }),
@@ -238,6 +274,8 @@ export const {
   useDeleteCompanyDocumentMutation,
   useGetRecruiterJobsQuery,
   useGetRecruiterJobQuery,
+  useParseJobDocumentMutation,
+  useCreateSkillMutation,
   useCreateJobDraftMutation,
   useUpdateJobMutation,
   usePublishJobMutation,
