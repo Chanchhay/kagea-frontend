@@ -15,6 +15,7 @@ export const baseApi = createApi({
     "Session",
     "CurrentUser",
     "PublicJobs",
+    "Skills",
     "JobSeekerProfile",
     "Resumes",
     "Portfolios",

@@ -11,6 +11,9 @@ import type {
 import { PlainCard, StatusPill } from "@/components/shared/ApiCards";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { VoiceInterviewPanel } from "@/components/job-seeker/VoiceInterviewPanel";
+import { isVapiConfigured } from "@/lib/vapi";
+import { useGetCurrentUserQuery } from "@/services/authApi";
 import {
   useCompleteAiInterviewMutation,
   useStartAiInterviewMutation,
@@ -90,12 +93,20 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
   const router = useRouter();
   const [start, starting] = useStartAiInterviewMutation();
   const [complete, completion] = useCompleteAiInterviewMutation();
+  const [mode, setMode] = useState<"voice" | "typing">(
+    isVapiConfigured ? "voice" : "typing",
+  );
+  const { data: currentUser } = useGetCurrentUserQuery();
 
   const questions = useMemo(
     () => [...(session.questions ?? [])].sort((a, b) => a.displayOrder - b.displayOrder),
     [session.questions],
   );
-  const currentQuestion = questions.find((question) => !question.answered);
+  const unansweredQuestions = useMemo(
+    () => questions.filter((question) => !question.answered),
+    [questions],
+  );
+  const currentQuestion = unansweredQuestions[0];
   const answeredCount = questions.filter((question) => question.answered).length;
   const progress = questions.length
     ? Math.round((answeredCount / questions.length) * 100)
@@ -220,12 +231,33 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
       </PlainCard>
 
       {currentQuestion ? (
-        // Keyed so the draft answer resets when the next question arrives.
-        <AnswerForm
-          key={currentQuestion.id}
-          sessionId={session.id}
-          question={currentQuestion}
-        />
+        mode === "voice" ? (
+          <VoiceInterviewPanel
+            sessionId={session.id}
+            questions={unansweredQuestions}
+            candidateName={currentUser?.fullName ?? "there"}
+            jobTitle={session.jobTitle}
+            onSwitchToTyping={() => setMode("typing")}
+          />
+        ) : (
+          <div className="space-y-3">
+            {/* Keyed so the draft answer resets when the next question arrives. */}
+            <AnswerForm
+              key={currentQuestion.id}
+              sessionId={session.id}
+              question={currentQuestion}
+            />
+            {isVapiConfigured ? (
+              <button
+                type="button"
+                className="text-xs font-medium text-muted-fg underline underline-offset-4"
+                onClick={() => setMode("voice")}
+              >
+                Answer by voice instead
+              </button>
+            ) : null}
+          </div>
+        )
       ) : (
         <PlainCard>
           <div className="flex flex-col items-center gap-3 py-6 text-center">
