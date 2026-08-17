@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { VoiceInterviewPanel } from "@/components/job-seeker/VoiceInterviewPanel";
 import { isVapiConfigured } from "@/lib/vapi";
+import { resolveFileUrl } from "@/lib/file-url";
 import { useGetCurrentUserQuery } from "@/services/authApi";
 import {
   useCompleteAiInterviewMutation,
@@ -236,6 +237,7 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
             sessionId={session.id}
             questions={unansweredQuestions}
             candidateName={currentUser?.fullName ?? "there"}
+            candidateAvatarUrl={resolveFileUrl(currentUser?.avatarUrl) || undefined}
             jobTitle={session.jobTitle}
             onSwitchToTyping={() => setMode("typing")}
           />
