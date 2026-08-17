@@ -282,6 +282,13 @@
 }
 
 @media print {
+  /* Resume documents are laid out at A4 96dpi, so they print 1:1 with no margin
+     of the browser's own on top of the sheet's padding. */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
   body {
     background: white !important;
   }
