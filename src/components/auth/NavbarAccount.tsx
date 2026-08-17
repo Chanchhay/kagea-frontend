@@ -1,11 +1,11 @@
 "use client";
 
+import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { KeycloakLoginButton, KeycloakLogoutButton } from "./AuthActions";
-import { authClient } from "@/lib/auth-client";
-import { cn } from "@/lib/utils";
-import { useGetCurrentUserQuery } from "@/services/authApi";
+import { cn, getInitials } from "@/lib/utils";
+import { useGetCurrentUserQuery, useGetSessionQuery } from "@/services/authApi";
 
 type NavbarAccountProps = {
   mobile?: boolean;
@@ -16,16 +16,17 @@ export function NavbarAccount({
   mobile = false,
   onNavigate,
 }: NavbarAccountProps) {
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, isLoading } = useGetSessionQuery();
   const currentUser = useGetCurrentUserQuery(undefined, {
-    skip: !session?.user,
+    skip: !session?.authenticated,
   });
 
-  if (isPending || !session?.user) {
+  if (isLoading || !session?.authenticated) {
     return <SignedOutActions mobile={mobile} onNavigate={onNavigate} />;
   }
 
-  const name = currentUser.data?.fullName || session.user.name || session.user.email;
+  const name =
+    currentUser.data?.fullName || session.username || session.email || "Account";
   const role = getRoleLabel(currentUser.data?.roles);
 
   if (mobile) {
@@ -34,7 +35,7 @@ export function NavbarAccount({
         <ProfileLink
           name={name}
           role={role}
-          image={session.user.image}
+          image={resolveFileUrl(currentUser.data?.avatarUrl)}
           mobile
           onClick={onNavigate}
         />
@@ -46,7 +47,13 @@ export function NavbarAccount({
     );
   }
 
-  return <ProfileLink name={name} role={role} image={session.user.image} />;
+  return (
+    <ProfileLink
+      name={name}
+      role={role}
+      image={resolveFileUrl(currentUser.data?.avatarUrl)}
+    />
+  );
 }
 
 function SignedOutActions({
@@ -127,17 +134,6 @@ function ProfileLink({
       />
     </Link>
   );
-}
-
-function getInitials(name: string) {
-  const initials = name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("");
-
-  return initials || "U";
 }
 
 function getRoleLabel(roles?: string[]) {

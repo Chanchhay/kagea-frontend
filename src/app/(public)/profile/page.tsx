@@ -1,5 +1,7 @@
 "use client";
 
+import { resolveFileUrl } from "@/lib/file-url";
+import { getInitials } from "@/lib/utils";
 import Link from "next/link";
 import {
   BriefcaseBusiness,
@@ -29,10 +31,8 @@ import {
 } from "@/components/ui/card";
 import { useGetCurrentUserQuery } from "@/services/authApi";
 import { useGetJobSeekerProfileQuery } from "@/services/jobSeekerApi";
-import { authClient } from "@/lib/auth-client";
 
 export default function ProfilePage() {
-  const { data: session } = authClient.useSession();
   const currentUser = useGetCurrentUserQuery();
   const isJobSeeker =
     currentUser.data?.roles.some((role) =>
@@ -61,7 +61,7 @@ export default function ProfilePage() {
             <ProfileContent
               user={currentUser.data}
               jobSeekerProfile={jobSeekerProfile.data}
-              image={session?.user.image}
+              image={resolveFileUrl(currentUser.data.avatarUrl)}
             />
           ) : null}
         </PageContainer>
@@ -331,17 +331,6 @@ function formatRoles(roles: string[]) {
         .map((role) => role.replace(/^ROLE_/, "").replaceAll("_", " "))
         .join(", ")
     : "—";
-}
-
-function getInitials(name: string) {
-  return (
-    name
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase())
-      .join("") || "U"
-  );
 }
 
 function formatSalary(value?: number, currency?: string) {

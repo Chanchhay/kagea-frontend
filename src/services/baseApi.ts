@@ -8,8 +8,11 @@ export function unwrapApiResponse<T>(response: ApiResponse<T>) {
 
 export const baseApi = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/backend" }),
+  // Same origin as the page: the Spring Cloud Gateway serves this app and
+  // forwards /api/** to the backend, attaching the access token itself.
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/v1" }),
   tagTypes: [
+    "Session",
     "CurrentUser",
     "PublicJobs",
     "JobSeekerProfile",
@@ -17,6 +20,7 @@ export const baseApi = createApi({
     "Portfolios",
     "Applications",
     "Interviews",
+    "RecruiterProfile",
     "RecruiterCompany",
     "RecruiterJobs",
     "CompanyDocuments",

@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -74,7 +75,7 @@ export default function ResumeDetailPage() {
               {resume.resumeFileUrl ? (
                 <div className="aspect-[0.707] w-full max-w-105 overflow-hidden bg-white shadow-[0_18px_50px_rgba(0,0,0,0.12)]">
                   <iframe
-                    src={`${resume.resumeFileUrl}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
+                    src={`${resolveFileUrl(resume.resumeFileUrl)}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
                     title={`${resume.title} preview`}
                     className="size-full border-0"
                   />
@@ -92,7 +93,7 @@ export default function ResumeDetailPage() {
               <div className="min-w-0"><h2 className="truncate text-lg font-semibold text-ws-fg">{resume.title}</h2><p className="mt-1 text-sm text-ws-muted">PDF document</p></div>
               <div className="flex gap-2">
                 <Button variant="secondary" onClick={() => setIsEditing(true)} className="rounded-xl"><Pencil /> Edit</Button>
-                {resume.resumeFileUrl ? <Button render={<a href={resume.resumeFileUrl} target="_blank" rel="noreferrer" />} className="rounded-xl"><Download /> View PDF</Button> : <Button render={<Link href={`/job-seeker/resumes/${resume.id}/view`} />} className="rounded-xl"><Eye /> View resume</Button>}
+                {resume.resumeFileUrl ? <Button render={<a href={resolveFileUrl(resume.resumeFileUrl)} target="_blank" rel="noreferrer" />} className="rounded-xl"><Download /> View PDF</Button> : <Button render={<Link href={`/job-seeker/resumes/${resume.id}/view`} />} className="rounded-xl"><Eye /> View resume</Button>}
               </div>
             </div>
           </section>

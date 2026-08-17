@@ -125,12 +125,15 @@ export type CompanyDocumentResponse = {
 };
 
 export type RecruiterProfileUpdateRequest = {
+  /** App-relative URL of the avatar stored in MinIO. Send "" to remove it. */
+  avatarUrl?: string;
   position?: string;
   linkedinUrl?: string;
 };
 
 export type RecruiterProfileResponse = {
   id: number;
+  avatarUrl?: string;
   position: string;
   linkedinUrl: string;
   status: EntityStatus;
@@ -148,6 +151,7 @@ export type FindTalentParams = {
 export type PublicTalentListItemResponse = {
   profileId: number;
   publicProfileSlug: string;
+  avatarUrl?: string;
   headline: string;
   bio: string;
   currentPosition: string;

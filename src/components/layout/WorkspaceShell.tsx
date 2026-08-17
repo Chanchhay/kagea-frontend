@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
@@ -16,10 +17,9 @@ import {
   PageHeadingProvider,
   usePageHeading,
 } from "@/components/layout/PageHeader";
-import { authClient } from "@/lib/auth-client";
 import { jobSeekerNavigation, recruiterNavigation } from "@/lib/navigation";
-import { cn } from "@/lib/utils";
-import { useGetCurrentUserQuery } from "@/services/authApi";
+import { cn, getInitials } from "@/lib/utils";
+import { useGetCurrentUserQuery, useGetSessionQuery } from "@/services/authApi";
 
 type NavLink = {
   href: string;
@@ -141,7 +141,7 @@ function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
 
 function SignOutRailButton() {
   return (
-    <form action="/api/auth/keycloak/logout" method="post" className="mt-auto">
+    <form action="/logout" method="post" className="mt-auto">
       <button
         type="submit"
         aria-label="Sign out"
@@ -233,32 +233,27 @@ function QuickSearch({ href, placeholder }: { href: string; placeholder: string 
 }
 
 function Avatar() {
-  const { data: session } = authClient.useSession();
+  const { data: session } = useGetSessionQuery();
   const currentUser = useGetCurrentUserQuery(undefined, {
-    skip: !session?.user,
+    skip: !session?.authenticated,
   });
 
-  if (!session?.user) return null;
+  if (!session?.authenticated) return null;
 
   const name =
-    currentUser.data?.fullName || session.user.name || session.user.email;
+    currentUser.data?.fullName || session.username || session.email || "Account";
+  // The uploaded avatar lives on the backend profile; the auth session only
+  // carries whatever picture Keycloak happens to hold.
+  const avatar = resolveFileUrl(currentUser.data?.avatarUrl);
 
   return (
     <Link
       href="/profile"
       aria-label={`Open ${name}'s profile`}
       className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 bg-cover bg-center text-xs font-bold text-primary ring-2 ring-ws-line"
-      style={
-        session.user.image
-          ? { backgroundImage: `url("${session.user.image}")` }
-          : undefined
-      }
+      style={avatar ? { backgroundImage: `url("${avatar}")` } : undefined}
     >
-      {session.user.image ? (
-        <span className="sr-only">Profile image</span>
-      ) : (
-        getInitials(name)
-      )}
+      {avatar ? <span className="sr-only">Profile image</span> : getInitials(name)}
     </Link>
   );
 }
@@ -299,17 +294,6 @@ function MobileDock({ links, pathname }: { links: NavLink[]; pathname: string })
 }
 
 /* -------------------------------------------------------------- helpers --- */
-
-function getInitials(name: string) {
-  const initials = name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("");
-
-  return initials || "U";
-}
 
 function isActivePath(pathname: string, href: string) {
   return href.endsWith("/dashboard")
