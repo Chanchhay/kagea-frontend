@@ -176,7 +176,8 @@ export const recruiterApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: ApiResponseRecruiterProfileResponse) =>
         unwrapApiResponse(response),
-      invalidatesTags: ["CurrentUser", "RecruiterProfile"],
+      // CurrentUser too: /me serves the avatar shown in the shell and navbar.
+      invalidatesTags: ["RecruiterProfile", "CurrentUser"],
     }),
     getForwardedApplications: builder.query<
       ForwardedApplicationResponse[],

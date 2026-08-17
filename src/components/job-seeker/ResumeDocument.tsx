@@ -1,6 +1,7 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { resolveFileUrl } from "@/lib/file-url";
 
 type ResumeDocumentProps = {
   title: string;
@@ -12,7 +13,7 @@ export function ResumeDocument({ title, data, compact = false }: ResumeDocumentP
   const safeData = data ?? {};
   const value = (key: string) => typeof safeData[key] === "string" ? safeData[key] as string : "";
   const name = value("fullName") || title;
-  const photo = value("profilePhotoUrl");
+  const photo = resolveFileUrl(value("profilePhotoUrl"));
 
   return (
     <article className={`mx-auto aspect-[0.707] w-full overflow-hidden bg-white text-slate-800 shadow-[0_18px_50px_rgba(0,0,0,0.12)] ${compact ? "max-w-82 p-6 text-[8px]" : "max-w-210 p-10 sm:p-14"}`}>

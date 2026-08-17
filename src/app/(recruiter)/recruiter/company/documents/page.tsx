@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveFileUrl } from "@/lib/file-url";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { Trash2 } from "lucide-react";
@@ -68,7 +69,7 @@ export default function CompanyDocumentsPage() {
                       {document.documentType}
                     </h2>
                     <a
-                      href={document.documentUrl}
+                      href={resolveFileUrl(document.documentUrl)}
                       target="_blank"
                       rel="noreferrer"
                       className="mt-1 block truncate text-sm text-body underline-offset-2 hover:text-brand hover:underline"

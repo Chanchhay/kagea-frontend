@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { authClient } from "@/lib/auth-client";
 import {
   registerSchema,
   type RegisterFormValues,
@@ -53,11 +52,9 @@ export function RegisterForm() {
     try {
       await register({ ...values, phoneNumber: values.phoneNumber || undefined }).unwrap();
       toast.success("Account created. Continue with secure sign in.");
-      await authClient.signIn.oauth2({
-        providerId: "keycloak",
-        callbackURL: "/auth/continue",
-        errorCallbackURL: "/?error=keycloak",
-      });
+      // The gateway owns the OAuth2 flow now, so hand off with a full-page
+      // navigation rather than a client-side route change.
+      window.location.assign("/oauth2/authorization/keycloak");
     } catch {
       toast.error("Unable to create the account.");
     }

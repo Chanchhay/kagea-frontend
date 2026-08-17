@@ -1,13 +1,22 @@
 "use client";
 
 import { useRef, useState, type DragEvent } from "react";
-import { FileCheck2, Loader2, UploadCloud, X } from "lucide-react";
+import { FileCheck2, UploadCloud, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { validateFile } from "@/lib/upload-file";
 
 type FileDropzoneProps = {
-  /** URL of the already-uploaded file, if any. */
+  /** URL of the file already saved on the record, if any. */
   value?: string;
-  onChange: (url: string) => void;
+  /** The staged file, held by the parent until it saves. */
+  file?: File | null;
+  /**
+   * Called when the user picks a file, or clears the field. Nothing is sent to
+   * the server here — the parent uploads on submit via `uploadFile`.
+   */
+  onFileChange: (file: File | null) => void;
+  /** Called when the user clears an already-saved file. */
+  onClear?: () => void;
   accept?: string;
   hint?: string;
   className?: string;
@@ -15,64 +24,52 @@ type FileDropzoneProps = {
 
 const DEFAULT_ACCEPT = ".pdf,.png,.jpg,.jpeg,.webp,.svg";
 
+/**
+ * Stages a file for upload. Selection is local: the bytes travel only when the
+ * surrounding form is saved, so abandoning an edit leaves no orphaned object in
+ * the bucket.
+ */
 export function FileDropzone({
   value,
-  onChange,
+  file = null,
+  onFileChange,
+  onClear,
   accept = DEFAULT_ACCEPT,
   hint = "PDF, PNG, JPG, WebP or SVG up to 5 MB.",
   className,
 }: FileDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [fileName, setFileName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const upload = async (file: File) => {
-    setError(null);
-    setIsUploading(true);
-
-    try {
-      const body = new FormData();
-      body.append("file", file);
-      const response = await fetch("/api/uploads", { method: "POST", body });
-      const payload = await response.json();
-
-      if (!response.ok) {
-        throw new Error(payload?.message ?? "Upload failed.");
-      }
-
-      setFileName(payload.name ?? file.name);
-      onChange(payload.url);
-    } catch (uploadError) {
-      setError(
-        uploadError instanceof Error ? uploadError.message : "Upload failed.",
-      );
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const onDrop = (event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setIsDragging(false);
-    const file = event.dataTransfer.files?.[0];
-    if (file) void upload(file);
+  const select = (picked: File) => {
+    // Checked here so the user is told at pick time, not after pressing save.
+    const problem = validateFile(picked);
+    setError(problem);
+    onFileChange(problem ? null : picked);
+    if (problem && inputRef.current) inputRef.current.value = "";
   };
 
   const clear = () => {
-    setFileName(null);
     setError(null);
-    onChange("");
+    onFileChange(null);
+    onClear?.();
     if (inputRef.current) inputRef.current.value = "";
   };
+
+  const hasFile = Boolean(file ?? value);
+  const label = file
+    ? file.name
+    : value
+      ? "File saved"
+      : "Drag and drop, or click to browse";
 
   return (
     <div className={className}>
       <div
         role="button"
         tabIndex={0}
-        aria-label="Upload a file"
+        aria-label="Choose a file"
         onClick={() => inputRef.current?.click()}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
@@ -85,7 +82,12 @@ export function FileDropzone({
           setIsDragging(true);
         }}
         onDragLeave={() => setIsDragging(false)}
-        onDrop={onDrop}
+        onDrop={(event: DragEvent<HTMLDivElement>) => {
+          event.preventDefault();
+          setIsDragging(false);
+          const dropped = event.dataTransfer.files?.[0];
+          if (dropped) select(dropped);
+        }}
         className={cn(
           "flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-4 py-8 text-center transition-colors",
           isDragging
@@ -94,21 +96,13 @@ export function FileDropzone({
         )}
       >
         <span className="flex size-11 items-center justify-center rounded-full bg-surface text-brand shadow-sm">
-          {isUploading ? (
-            <Loader2 aria-hidden="true" className="size-5 animate-spin" />
-          ) : value ? (
+          {hasFile ? (
             <FileCheck2 aria-hidden="true" className="size-5" />
           ) : (
             <UploadCloud aria-hidden="true" className="size-5" />
           )}
         </span>
-        <p className="mt-3 text-sm font-medium text-heading">
-          {isUploading
-            ? "Uploading…"
-            : value
-              ? (fileName ?? "File uploaded")
-              : "Drag and drop, or click to browse"}
-        </p>
+        <p className="mt-3 text-sm font-medium text-heading">{label}</p>
         <p className="mt-1 text-xs text-body">{hint}</p>
 
         <input
@@ -117,13 +111,19 @@ export function FileDropzone({
           accept={accept}
           className="sr-only"
           onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) void upload(file);
+            const picked = event.target.files?.[0];
+            if (picked) select(picked);
           }}
         />
       </div>
 
-      {value ? (
+      {file ? (
+        <p className="mt-2 text-xs text-body">
+          Selected. It uploads when you save.
+        </p>
+      ) : null}
+
+      {hasFile ? (
         <div className="mt-2 flex justify-end text-xs">
           <button
             type="button"

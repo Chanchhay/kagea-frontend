@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveFileUrl } from "@/lib/file-url";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ export function ResumeDownloadButton({
     try {
       const { downloadUrl } = await getDownload({ slug, resumeId }).unwrap();
       if (!downloadUrl) throw new Error("No download URL returned.");
-      window.open(downloadUrl, "_blank", "noopener,noreferrer");
+      window.open(resolveFileUrl(downloadUrl), "_blank", "noopener,noreferrer");
     } catch {
       toast.error("Unable to download this resume.");
     }

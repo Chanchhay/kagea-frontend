@@ -5,8 +5,7 @@ import { BriefcaseBusiness, Camera, Check, ExternalLink, Link as LinkIcon, Loade
 import { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
-import type { CurrentUserResponse } from "@/contracts/api/auth";
-import type { RecruiterProfileResponse } from "@/contracts/api/recruiter";
+import type { RecruiterProfileResponse } from "@/contracts";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { saveProfileAvatar } from "@/lib/use-profile-avatar";
 import { recruiterProfileSchema, type RecruiterProfileFormValues } from "@/lib/validation/recruiter.schema";
@@ -14,26 +13,25 @@ import { useUpdateRecruiterProfileMutation } from "@/services/recruiterApi";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { TextField } from "@/components/shared/FormFields";
+import {
+  recruiterProfileSchema,
+  type RecruiterProfileFormValues,
+} from "@/lib/validation/recruiter.schema";
+import { useUpdateRecruiterProfileMutation } from "@/services/recruiterApi";
 
-export function RecruiterProfileForm({ currentUser, profile }: { currentUser: CurrentUserResponse; profile: RecruiterProfileResponse }) {
-  const [saveProfile, save] = useUpdateRecruiterProfileMutation();
-  const [editing, setEditing] = useState(false);
-  const [avatar, setAvatar] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const avatarKey = `recruiter-avatar-${currentUser.userAccountId}`;
+export function RecruiterProfileForm({
+  profile,
+}: {
+  profile?: RecruiterProfileResponse;
+}) {
+  const [updateRecruiterProfile, update] = useUpdateRecruiterProfileMutation();
   const form = useForm<RecruiterProfileFormValues>({
     resolver: zodResolver(recruiterProfileSchema),
-    values: {
-      position: profile.position ?? "",
-      linkedinUrl: profile.linkedinUrl ?? "",
+    defaultValues: {
+      position: profile?.position ?? "",
+      linkedinUrl: profile?.linkedinUrl ?? "",
     },
   });
-
-  useEffect(() => {
-    const savedAvatar = localStorage.getItem(avatarKey);
-    if (savedAvatar) queueMicrotask(() => setAvatar(savedAvatar));
-  }, [avatarKey]);
 
   const position = useWatch({ control: form.control, name: "position" });
   const linkedin = useWatch({ control: form.control, name: "linkedinUrl" });

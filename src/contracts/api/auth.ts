@@ -44,6 +44,8 @@ export type CurrentUserResponse = {
   phoneNumber: string;
   registrationSource: string;
   roles: string[];
+  /** App-relative avatar URL from whichever profile the account owns. */
+  avatarUrl?: string;
   profiles: CurrentUserProfilesResponse;
 };
 

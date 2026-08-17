@@ -175,6 +175,8 @@ export type AiInterviewResultResponse = {
 };
 
 export type JobSeekerProfileUpdateRequest = {
+  /** App-relative URL of the avatar stored in MinIO. Send "" to remove it. */
+  avatarUrl?: string;
   headline?: string;
   bio?: string;
   currentPosition?: string;

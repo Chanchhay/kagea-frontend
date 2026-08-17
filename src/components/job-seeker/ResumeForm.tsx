@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { BriefcaseBusiness, FileText, GraduationCap, Loader2, Save, Sparkles, UserRound } from "lucide-react";
 import { FileDropzone } from "@/components/shared/FileDropzone";
+import { uploadFile } from "@/lib/upload-file";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -57,6 +58,9 @@ export function ResumeForm({
     education: textValue(savedDetails.education),
   });
   const [error, setError] = useState<string | null>(null);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -65,13 +69,39 @@ export function ResumeForm({
       setError("Give your resume a name so you can find it later.");
       return;
     }
-    if (mode === "upload" && !resumeFileUrl) {
-      setError("Upload a PDF resume before continuing.");
+    if (mode === "upload" && !resumeFile && !resumeFileUrl) {
+      setError("Choose a PDF resume before continuing.");
       return;
     }
 
     setError(null);
-    await onSubmit({ title: cleanTitle, resumeFileUrl, resumeData: details });
+
+    // Staged files travel now, on save — not when they were picked.
+    let fileUrl = resumeFileUrl;
+    let resumeData = details;
+    try {
+      setIsUploading(true);
+      if (resumeFile) {
+        fileUrl = await uploadFile(resumeFile, "private");
+        setResumeFileUrl(fileUrl);
+      }
+      if (photoFile) {
+        const photoUrl = await uploadFile(photoFile, "public");
+        resumeData = { ...details, profilePhotoUrl: photoUrl };
+        setDetails(resumeData);
+      }
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof Error ? uploadError.message : "Upload failed.",
+      );
+      return;
+    } finally {
+      setIsUploading(false);
+    }
+
+    setResumeFile(null);
+    setPhotoFile(null);
+    await onSubmit({ title: cleanTitle, resumeFileUrl: fileUrl, resumeData });
   }
 
   const updateDetail = (field: keyof ResumeDetails, value: string) =>
@@ -102,7 +132,9 @@ export function ResumeForm({
         <p className="mb-2 text-sm font-semibold text-ws-fg">Resume file</p>
         <FileDropzone
           value={resumeFileUrl}
-          onChange={setResumeFileUrl}
+          file={resumeFile}
+          onFileChange={setResumeFile}
+          onClear={() => setResumeFileUrl("")}
           accept=".pdf,application/pdf"
           hint="PDF only, up to 5 MB. Your file stays private until you share it."
         />
@@ -115,7 +147,9 @@ export function ResumeForm({
           <p className="mb-2 text-sm font-medium text-ws-fg">Profile photo</p>
           <FileDropzone
             value={details.profilePhotoUrl}
-            onChange={(url) => updateDetail("profilePhotoUrl", url)}
+            file={photoFile}
+            onFileChange={setPhotoFile}
+            onClear={() => updateDetail("profilePhotoUrl", "")}
             accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
             hint="PNG, JPG or WebP up to 5 MB. Use a clear, professional portrait."
           />
@@ -154,9 +188,9 @@ export function ResumeForm({
             Cancel
           </Button>
         ) : null}
-        <Button type="submit" disabled={isSubmitting} className="h-11 rounded-xl px-5">
-          {isSubmitting ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Save aria-hidden="true" />}
-          {isSubmitting ? "Saving…" : submitLabel}
+        <Button type="submit" disabled={isSubmitting || isUploading} className="h-11 rounded-xl px-5">
+          {isSubmitting || isUploading ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Save aria-hidden="true" />}
+          {isUploading ? "Uploading…" : isSubmitting ? "Saving…" : submitLabel}
         </Button>
       </div>
     </form>

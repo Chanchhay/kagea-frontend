@@ -52,7 +52,8 @@ export const jobSeekerApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: ApiResponseJobSeekerProfileResponse) =>
         unwrapApiResponse(response),
-      invalidatesTags: ["JobSeekerProfile"],
+      // CurrentUser too: /me serves the avatar shown in the shell and navbar.
+      invalidatesTags: ["JobSeekerProfile", "CurrentUser"],
     }),
     updateJobSeekerPublication: builder.mutation<
       PublicationResponse,
