@@ -125,17 +125,58 @@ Gemini failure is logged and marks the session `FAILED` rather than propagating 
 
 ## Assistant configuration
 
-The assistant must match the transcript mapping: **one question per turn, in
-order, no clarifying questions.** A clarification exchange is indistinguishable
-from a new question and would split one answer across two records.
+**Almost all of it is set from code**, in `vapi.start()`'s `assistantOverrides`,
+so the dashboard assistant is a shell and the behaviour the interview depends on
+is versioned alongside the code that depends on it:
 
-First message:
+| Setting | Value | Why |
+| --- | --- | --- |
+| `transcriber` | Deepgram `nova-3`, `en`, smart formatting | The newest model; the old default is what produced "I'm already let's go" |
+| `transcriber.keyterm` | extracted from the questions | Lifts recall on the jargon the answers are scored on |
+| `startSpeakingPlan` | see the endpointing table below | Stops the interviewer cutting candidates off |
+| `firstMessage` | greeting naming candidate, role, question count | |
+| `backgroundSound` | `off` | Silence is a candidate thinking, not dead air to fill |
+| `maxDurationSeconds` | 1800 | An abandoned call should not bill forever |
 
+**Model and voice are deliberately not overridden** — those are the account's
+billing choices, and forcing a provider from the client could break a call.
+
+### The assistant record
+
+What cannot be sent per call — the system prompt, because overriding it means
+overriding `model` and with it the provider — lives on the assistant. Applied by
+script rather than by hand, so it is reproducible and diffable:
+
+```bash
+VAPI_PRIVATE_KEY=... \
+NEXT_PUBLIC_VAPI_ASSISTANT_ID=... \
+node scripts/configure-vapi-assistant.mjs
 ```
-Hello {{candidateName}}. Welcome to your interview for the {{jobTitle}}
-position. I will ask you {{questionCount}} questions, one at a time. Answer
-each one as clearly as you can.
+
+It is idempotent: it reads the assistant, keeps the model provider and voice as
+they are, ensures an `endCall` tool is attached, and writes the prompt,
+transcriber and endpointing. Optionally point Vapi's webhook at a reachable
+backend in the same run:
+
+```bash
+VAPI_SERVER_URL=https://<host>/api/v1/integrations/vapi/webhook \
+VAPI_WEBHOOK_SECRET=<same value as the backend> \
+node scripts/configure-vapi-assistant.mjs
 ```
+
+The **private** key is read from the environment and never written to a file or
+committed — unlike the public key, it grants full account access.
+
+The prompt's job is to stop the model behaving like a conversationalist. It is
+given the interview length as `{{questionCount}}` and told the question list *is*
+the whole interview, because an interviewer that improvises follow-ups asks more
+questions than exist, and muddies which speech belongs to which question.
+
+The rule worth knowing about: **"I don't know" ends a question.** The interviewer
+accepts it and moves on rather than offering hints or another chance, and the
+segmenter records it verbatim as the answer. Treating a refusal as no-answer
+would silently reopen a question the candidate had already dealt with — that is
+what left questions apparently unsaved after an interview.
 
 System prompt:
 
@@ -162,16 +203,12 @@ RULES:
    time." then call the endCall tool.
 ```
 
-Add the built-in **End Call** tool so rule 7 can hang up on its own.
+The first message is overridden from code, so the dashboard's own first message
+is unused and can be left as anything.
 
-Server URL, under Assistant → Advanced → Webhook Server:
-
-```
-https://<public-host>/api/v1/integrations/vapi/webhook
-```
-
-Enable at least `end-of-call-report` and `status-update`. Per-turn `transcript`
-events are received but ignored — the end-of-call report repeats them in full.
+The webhook subscribes to `end-of-call-report` and `status-update`. Per-turn
+`transcript` events are deliberately not enabled — the end-of-call report repeats
+them in full, and the browser already renders the live ones.
 
 ## Testing locally
 
@@ -196,6 +233,53 @@ Worth checking: deny microphone permission and confirm the panel says so rather
 than connecting deaf; hang up mid-interview and confirm the session stays
 `IN_PROGRESS` with the answered questions filled in and the rest left to type;
 and finish every question, then watch the session reach `COMPLETED`.
+
+## Relation to adrianhajdin/ai_mock_interviews
+
+The call UI follows that project's `Agent.tsx`: the two participant cards, the
+speaking pulse on the interviewer, a single fading caption line, and one
+call/end button. Its transcript treatment is the better one — showing only the
+line currently being spoken, with the history out of the way.
+
+Two things from it are deliberately **not** adopted.
+
+### The workflow
+
+That project uses a Vapi **workflow** for one screen only: the voice agent that
+asks a visitor which role, level and tech stack they want, then calls an API to
+generate an interview. Its actual interview runs on an assistant, not a
+workflow.
+
+This app generates questions in Spring Boot from a real job posting, keyed to an
+application. Replacing that with a voice agent interrogating the candidate about
+what they would like to be asked would be a downgrade, so there is nothing here
+for a workflow to do.
+
+The SDK signature did change, which is worth knowing if that project is used as a
+reference. `@vapi-ai/web@2.6.2` declares:
+
+```ts
+start(assistant?, assistantOverrides?, squad?, workflow?, workflowOverrides?, options?)
+```
+
+So `vapi.start(workflowId, { variableValues })` — as the reference repo writes
+it, on SDK 2.2 — now passes a workflow id into the *assistant* slot. The current
+form is `vapi.start(undefined, undefined, undefined, workflowId, { variableValues })`.
+
+### The inline assistant
+
+That project defines the whole assistant in code and passes the object to
+`start()`. Tempting — one source of truth, no dashboard drift — but an inline
+assistant is transient, so there is no assistant record to hang a webhook on.
+Receiving `end-of-call-report` would mean putting `server: { url, secret }` in
+the object, and that object ships to the browser: the webhook secret would be
+public.
+
+So the assistant id stays, and everything that can be varies per call through
+`assistantOverrides` instead. The secret lives on the assistant record at Vapi,
+where the browser never sees it. (Vapi's organisation-level Server URL would be
+the way to combine an inline assistant with a webhook, if that trade ever looks
+worth making.)
 
 ## Why there is no WebSocket
 
@@ -253,6 +337,35 @@ echo test (which ate answers reusing the question's terminology).
 for the rest of the call with nothing on screen to explain it. The mute
 therefore releases itself after `MAX_MUTE_MS` (12s) and logs a warning, rather
 than trusting a single event to arrive.
+
+Vapi also emits into a transport that no longer exists: its internal speaking
+timeout fires `speech-end` *after* the call is torn down, and muting a destroyed
+call throws `Call object is not available` out of Daily. Every call that reaches
+through to Daily is gated on `callActiveRef` for that reason.
+
+### Ending a call is reported as an error
+
+A normal, successful hangup produces this sequence:
+
+```
+Meeting ended due to ejection: Meeting has ended     ← error fires first
+Vapi error: { type: "daily-error" }
+status-update  endedReason: "customer-ended-call"    ← ending reported after
+                             (or "assistant-ended-call")
+```
+
+The `error` event is teardown, not a fault — and note the order. It arrives
+*before* `call-end`, so "is the call still up?" cannot tell a teardown error from
+a real one; at that moment the call still looks live. Two guards instead:
+
+- `stop()` marks the call down before asking Vapi to stop, which covers the
+  candidate pressing End (`customer-ended-call`).
+- `isTeardownError()` matches the message — Daily ejects participants when a
+  meeting ends — which covers the assistant hanging up on its own
+  (`assistant-ended-call`), where nothing local initiated the stop.
+
+Anything that is not recognisably teardown still raises the toast, and an
+`Error` instance serialises to `{}`, so real faults fail toward being reported.
 
 The trade-off is that the candidate cannot interrupt the interviewer. For a
 scored interview that reads as correct behaviour rather than a limitation.

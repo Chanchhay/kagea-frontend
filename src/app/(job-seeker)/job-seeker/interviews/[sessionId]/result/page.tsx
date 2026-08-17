@@ -101,6 +101,18 @@ export default function InterviewResultPage() {
                       {question.answer.feedback}
                     </p>
                   ) : null}
+                  {/* Kept visually distinct from the feedback above: one judges
+                      what was said, the other is what could have been said. */}
+                  {question.answer?.modelAnswer ? (
+                    <div className="mt-2 rounded-lg border border-brand/25 bg-brand-tint p-3">
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-brand">
+                        A strong answer
+                      </h3>
+                      <p className="mt-1.5 text-sm leading-6 text-body">
+                        {question.answer.modelAnswer}
+                      </p>
+                    </div>
+                  ) : null}
                 </li>
               ))}
           </ul>

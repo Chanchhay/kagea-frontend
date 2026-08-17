@@ -1,8 +1,9 @@
 "use client";
 
-import { AlertTriangle, Loader2, Mic, MicOff, PhoneOff } from "lucide-react";
+import { useMemo } from "react";
+import { AlertTriangle, Bot, Loader2, PhoneOff } from "lucide-react";
 import type { AiInterviewQuestionResponse } from "@/contracts";
-import { PlainCard, StatusPill } from "@/components/shared/ApiCards";
+import { PlainCard } from "@/components/shared/ApiCards";
 import { Button } from "@/components/ui/button";
 import { isVapiConfigured } from "@/lib/vapi";
 import { useVapiInterview } from "@/components/job-seeker/useVapiInterview";
@@ -12,33 +13,53 @@ type VoiceInterviewPanelProps = {
   /** Unanswered questions in display order. */
   questions: AiInterviewQuestionResponse[];
   candidateName: string;
+  candidateAvatarUrl?: string;
   jobTitle: string;
   onSwitchToTyping: () => void;
 };
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
 
 export function VoiceInterviewPanel({
   sessionId,
   questions,
   candidateName,
+  candidateAvatarUrl,
   jobTitle,
   onSwitchToTyping,
 }: VoiceInterviewPanelProps) {
   const {
     status,
     assistantSpeaking,
-    volume,
     micLevel,
     micSilent,
     micMuted,
     assistantTranscript,
-    currentIndex,
-    turns,
     candidatePartial,
+    turns,
     submitFailed,
     retrySubmit,
     start,
     stop,
   } = useVapiInterview({ sessionId, questions, candidateName, jobTitle });
+
+  const isLive = status === "live";
+
+  // One line, not a feed. Whoever holds the floor is what the candidate needs to
+  // read; the rest of the call is behind a disclosure below.
+  const lastTurn = turns.length > 0 ? turns[turns.length - 1] : undefined;
+  const caption = useMemo(() => {
+    if (assistantSpeaking && assistantTranscript) return assistantTranscript;
+    if (candidatePartial) return candidatePartial;
+    return lastTurn?.text ?? "";
+  }, [assistantSpeaking, assistantTranscript, candidatePartial, lastTurn]);
 
   if (!isVapiConfigured) {
     return (
@@ -60,64 +81,48 @@ export function VoiceInterviewPanel({
     );
   }
 
-  const isLive = status === "live";
-  // The live pointer leads the server by one round trip, so prefer it and fall
-  // back to the server's first unanswered question before the call starts.
-  const nextQuestion = questions[currentIndex] ?? questions[0];
-
   return (
     <div className="space-y-4">
-      <PlainCard>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <StatusPill>
-            {status === "idle"
-              ? "Not connected"
-              : status === "connecting"
-                ? "Connecting…"
-                : status === "ending"
-                  ? "Ending…"
-                  : status === "scoring"
-                    ? "Scoring"
-                    : assistantSpeaking
-                      ? "Interviewer speaking"
-                      : "Listening"}
-          </StatusPill>
-          {status === "scoring" ? (
-            <span className="flex items-center gap-1.5 text-xs text-muted-fg">
-              <Loader2 aria-hidden="true" className="size-3 animate-spin" />
-              Scoring your interview…
+      {/* Two participants, side by side, so it reads as a call rather than a form. */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <PlainCard>
+          <div className="flex flex-col items-center gap-3 py-6 text-center">
+            <span className="relative grid size-24 place-items-center rounded-full bg-primary/10">
+              {/* Ring pulses only while the interviewer actually speaks. */}
+              {assistantSpeaking ? (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 animate-ping rounded-full bg-primary/20"
+                />
+              ) : null}
+              <Bot aria-hidden="true" className="relative size-10 text-primary" />
             </span>
-          ) : null}
-        </div>
-
-        <div className="mt-6 flex flex-col items-center gap-4 text-center">
-          <div
-            aria-hidden="true"
-            className="grid size-20 place-items-center rounded-full bg-surface-muted transition-transform"
-            style={{ transform: `scale(${1 + Math.min(volume, 1) * 0.25})` }}
-          >
-            {isLive && !micMuted ? (
-              <Mic className="size-8 text-brand" />
-            ) : (
-              <MicOff className="size-8 text-muted-fg" />
-            )}
+            <h3 className="text-sm font-semibold text-heading">AI Interviewer</h3>
+            <p className="text-xs text-muted-fg">{jobTitle}</p>
           </div>
+        </PlainCard>
 
-          {isLive ? (
-            <div className="w-full max-w-md space-y-3">
-              <p aria-live="polite" className="text-sm leading-6 text-body">
-                {micMuted
-                  ? "The interviewer is asking a question. Your microphone is muted until it finishes."
-                  : "Your turn — take as long as you need. The whole interview is scored once the call ends."}
-              </p>
-              {/* Mic input meter — a flat bar on your turn means Vapi hears nothing. */}
+        <PlainCard>
+          <div className="flex flex-col items-center gap-3 py-6 text-center">
+            <span
+              className="grid size-24 place-items-center rounded-full bg-primary/15 bg-cover bg-center text-lg font-bold text-primary"
+              style={
+                candidateAvatarUrl
+                  ? { backgroundImage: `url("${candidateAvatarUrl}")` }
+                  : undefined
+              }
+            >
+              {candidateAvatarUrl ? null : initials(candidateName)}
+            </span>
+            <h3 className="text-sm font-semibold text-heading">{candidateName}</h3>
+            {isLive ? (
               <div
                 role="meter"
                 aria-valuenow={Math.round(Math.min(micLevel, 1) * 100)}
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Microphone input level"
-                className="h-1.5 w-full overflow-hidden rounded-full bg-surface-muted"
+                className="h-1 w-24 overflow-hidden rounded-full bg-surface-muted"
               >
                 <span
                   className="block h-full rounded-full bg-brand transition-[width] duration-150"
@@ -126,44 +131,103 @@ export function VoiceInterviewPanel({
                   }}
                 />
               </div>
-            </div>
-          ) : (
-            <p className="max-w-md text-sm leading-6 text-body">
-              {questions.length} question{questions.length === 1 ? "" : "s"} left.
-              The AI interviewer will ask them one at a time — allow microphone
-              access when your browser prompts.
-            </p>
-          )}
+            ) : (
+              <p className="text-xs text-muted-fg">Candidate</p>
+            )}
+          </div>
+        </PlainCard>
+      </div>
 
-          {isLive || status === "ending" ? (
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => void stop()}
-              disabled={status === "ending"}
-            >
-              <PhoneOff aria-hidden="true" className="size-4" />
-              End interview
-            </Button>
-          ) : (
-            <Button
-              type="button"
-              onClick={() => void start()}
-              disabled={status !== "idle" || questions.length === 0}
-            >
-              {status === "connecting" ? "Connecting…" : "Start voice interview"}
-            </Button>
-          )}
-
-          <button
-            type="button"
-            className="text-xs font-medium text-muted-fg underline underline-offset-4"
-            onClick={onSwitchToTyping}
+      {caption ? (
+        <PlainCard>
+          {/* Keyed on the text so each new line fades in rather than snapping. */}
+          <p
+            key={caption}
+            aria-live="polite"
+            className="animate-in fade-in text-center text-base leading-7 text-heading duration-500"
           >
-            Type my answers instead
-          </button>
-        </div>
-      </PlainCard>
+            {caption}
+          </p>
+        </PlainCard>
+      ) : null}
+
+      <div className="flex flex-col items-center gap-3">
+        {isLive || status === "ending" ? (
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={() => void stop()}
+            disabled={status === "ending"}
+          >
+            <PhoneOff aria-hidden="true" className="size-4" />
+            End interview
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            onClick={() => void start()}
+            disabled={status !== "idle" || questions.length === 0}
+          >
+            {status === "connecting" ? (
+              <>
+                <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+                Connecting…
+              </>
+            ) : status === "scoring" ? (
+              <>
+                <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+                Scoring your interview…
+              </>
+            ) : (
+              "Start voice interview"
+            )}
+          </Button>
+        )}
+
+        <p aria-live="polite" className="text-xs leading-5 text-muted-fg">
+          {status === "scoring"
+            ? "Reading back the transcript and scoring your answers."
+            : isLive
+              ? micMuted
+                ? "Microphone muted while the interviewer speaks"
+                : "Your turn — take as long as you need"
+              : `${questions.length} question${questions.length === 1 ? "" : "s"} left. Allow microphone access when prompted.`}
+        </p>
+
+        <button
+          type="button"
+          className="text-xs font-medium text-muted-fg underline underline-offset-4"
+          onClick={onSwitchToTyping}
+        >
+          Type my answers instead
+        </button>
+      </div>
+
+      {turns.length > 0 ? (
+        <PlainCard>
+          <details className="group">
+            <summary className="cursor-pointer list-none text-xs font-semibold uppercase tracking-wide text-muted-fg marker:content-none">
+              Full transcript ({turns.length})
+              <span className="ml-1 font-normal normal-case group-open:hidden">
+                — show
+              </span>
+              <span className="ml-1 hidden font-normal normal-case group-open:inline">
+                — hide
+              </span>
+            </summary>
+            <ul className="mt-4 space-y-3">
+              {turns.map((turn) => (
+                <li key={turn.id}>
+                  <p className="text-[0.7rem] font-semibold uppercase tracking-wide text-muted-fg">
+                    {turn.role === "interviewer" ? "Interviewer" : "You"}
+                  </p>
+                  <p className="mt-0.5 text-sm leading-6 text-body">{turn.text}</p>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </PlainCard>
+      ) : null}
 
       {micSilent ? (
         <PlainCard>
@@ -174,10 +238,10 @@ export function VoiceInterviewPanel({
                 We can&apos;t hear your microphone
               </h3>
               <p className="mt-1 text-sm leading-6 text-body">
-                The interviewer is speaking but no audio is reaching it. Check
+                The interviewer is waiting but no audio is reaching it. Check
                 that the right input device is selected and unmuted at the
-                operating-system level, then restart the call — or switch to
-                typing so you don&apos;t lose the session.
+                operating-system level, or switch to typing so you don&apos;t
+                lose the session.
               </p>
               <Button
                 type="button"
@@ -190,86 +254,6 @@ export function VoiceInterviewPanel({
               </Button>
             </div>
           </div>
-        </PlainCard>
-      ) : null}
-
-      {isLive ? (
-        <PlainCard>
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-fg">
-              Transcript
-            </h3>
-            {assistantSpeaking ? (
-              <span
-                aria-hidden="true"
-                className="size-1.5 animate-pulse rounded-full bg-brand"
-              />
-            ) : null}
-          </div>
-
-          {/* The whole call stays on screen: a candidate who missed a word of
-              the question can re-read it instead of guessing or asking. */}
-          <ul className="mt-3 space-y-3">
-            {turns.map((turn) => (
-              <li key={turn.id}>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-fg">
-                  {turn.role === "interviewer" ? "Interviewer" : "You"}
-                </p>
-                <p
-                  className={
-                    turn.role === "interviewer"
-                      ? "mt-0.5 text-base leading-7 text-heading"
-                      : "mt-0.5 text-sm leading-6 text-body"
-                  }
-                >
-                  {turn.text}
-                </p>
-              </li>
-            ))}
-
-            {/* Turns still in progress, streaming word by word. Finalised text
-                has already been appended above, so only the partial shows here. */}
-            {assistantSpeaking && assistantTranscript ? (
-              <li>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-fg">
-                  Interviewer
-                </p>
-                <p aria-live="polite" className="mt-0.5 text-base leading-7 text-heading">
-                  {assistantTranscript}
-                </p>
-              </li>
-            ) : null}
-
-            {candidatePartial ? (
-              <li>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-fg">
-                  You
-                </p>
-                <p aria-live="polite" className="mt-0.5 text-sm leading-6 text-muted-fg">
-                  {candidatePartial}
-                </p>
-              </li>
-            ) : null}
-          </ul>
-
-          {!candidatePartial ? (
-            <p aria-live="polite" className="mt-4 text-sm leading-6 text-muted-fg">
-              {micMuted
-                ? "Waiting for the interviewer to finish…"
-                : "Listening for your answer…"}
-            </p>
-          ) : null}
-
-          {nextQuestion ? (
-            <>
-              <h3 className="mt-5 text-sm font-semibold uppercase tracking-wide text-muted-fg">
-                Question on record
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-body">
-                {nextQuestion.questionText}
-              </p>
-            </>
-          ) : null}
         </PlainCard>
       ) : null}
 
@@ -297,26 +281,6 @@ export function VoiceInterviewPanel({
               </Button>
             </div>
           </div>
-        </PlainCard>
-      ) : null}
-
-      {/* Kept visible after the call so the candidate can read back what was
-          transcribed, which is what the scoring is based on. */}
-      {!isLive && turns.length > 0 ? (
-        <PlainCard>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-fg">
-            Transcript
-          </h3>
-          <ul className="mt-3 space-y-3">
-            {turns.map((turn) => (
-              <li key={turn.id}>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-fg">
-                  {turn.role === "interviewer" ? "Interviewer" : "You"}
-                </p>
-                <p className="mt-0.5 text-sm leading-6 text-body">{turn.text}</p>
-              </li>
-            ))}
-          </ul>
         </PlainCard>
       ) : null}
     </div>

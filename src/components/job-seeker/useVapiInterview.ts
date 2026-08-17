@@ -7,6 +7,7 @@ import type { AiInterviewQuestionResponse } from "@/contracts";
 import {
   VAPI_ASSISTANT_ID,
   VAPI_PUBLIC_KEY,
+  extractKeyterms,
   formatQuestionList,
   matchQuestionIndex,
 } from "@/lib/vapi";
@@ -79,6 +80,28 @@ const PATIENT_ENDPOINTING = {
   },
 } as const;
 
+/** A long interview should end on its own rather than bill forever. */
+const MAX_CALL_SECONDS = 1800;
+
+/**
+ * Recognises the errors a call emits on its way down.
+ *
+ * Vapi reports teardown through the same `error` event as a real fault, and it
+ * arrives *before* `call-end` — so "is the call still up?" cannot tell them
+ * apart. The distinguishing feature is the message: Daily ejects participants
+ * when a meeting ends, whether the assistant hung up or the candidate did.
+ */
+function isTeardownError(error: unknown): boolean {
+  let text: string;
+  try {
+    text = JSON.stringify(error) ?? "";
+  } catch {
+    text = String(error);
+  }
+
+  return /meeting (has )?ended|eject/i.test(text);
+}
+
 export function useVapiInterview({
   sessionId,
   questions,
@@ -118,6 +141,9 @@ export function useVapiInterview({
   const micPeakRef = useRef(0);
   const micTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const muteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Whether a call is up. Vapi emits into a torn-down transport, so this gates
+   *  anything that would reach through to Daily. */
+  const callActiveRef = useRef(false);
 
   useEffect(() => {
     questionsRef.current = questions;
@@ -200,12 +226,31 @@ export function useVapiInterview({
       }, MIC_SILENCE_GRACE_MS);
     };
 
+    /**
+     * Mutes or unmutes, but only while a call is actually up.
+     *
+     * Vapi keeps an internal speaking timeout that can emit `speech-end` after
+     * the transport is torn down, and muting a destroyed call throws
+     * "Call object is not available" out of Daily. Muting is a courtesy to a
+     * call that has ended, so it is skipped rather than allowed to surface as an
+     * uncaught error.
+     */
+    const setMutedSafely = (muted: boolean) => {
+      if (!callActiveRef.current) return;
+      try {
+        vapi.setMuted(muted);
+      } catch (error) {
+        console.debug("Ignoring mute on a closed call:", error);
+      }
+    };
+
     vapi.on("call-start", () => {
+      callActiveRef.current = true;
       setStatus("live");
       setMicSilent(false);
       micPeakRef.current = 0;
       // Start from a known state: a previous call may have ended mid-mute.
-      vapi.setMuted(false);
+      setMutedSafely(false);
       setMicMuted(false);
       // Vapi exposes the local mic level precisely so a dead input can be
       // surfaced instead of looking like a candidate who never answers.
@@ -213,6 +258,7 @@ export function useVapiInterview({
     });
 
     vapi.on("call-end", () => {
+      callActiveRef.current = false;
       clearMicTimer();
       if (muteTimerRef.current) clearTimeout(muteTimerRef.current);
       muteTimerRef.current = null;
@@ -230,15 +276,16 @@ export function useVapiInterview({
     const openMic = () => {
       if (muteTimerRef.current) clearTimeout(muteTimerRef.current);
       muteTimerRef.current = null;
-      vapi.setMuted(false);
+      setMutedSafely(false);
       setMicMuted(false);
       setAssistantSpeaking(false);
-      armMicSilenceWatch();
+      if (callActiveRef.current) armMicSilenceWatch();
     };
 
     vapi.on("speech-start", () => {
+      if (!callActiveRef.current) return;
       setAssistantSpeaking(true);
-      vapi.setMuted(true);
+      setMutedSafely(true);
       setMicMuted(true);
       clearMicTimer();
       setMicSilent(false);
@@ -297,12 +344,22 @@ export function useVapiInterview({
     });
 
     vapi.on("call-start-failed", (event) => {
+      callActiveRef.current = false;
       console.error("Vapi call start failed:", event);
       toast.error("The voice interview could not connect.");
       setStatus("idle");
     });
 
     vapi.on("error", (error) => {
+      // Ending a call is itself reported as an error, and it lands before
+      // `call-end` does, so the call still looks live at this point. Telling a
+      // candidate their connection dropped at the moment their interview
+      // finished successfully is worse than saying nothing.
+      if (!callActiveRef.current || isTeardownError(error)) {
+        console.debug("Vapi error during teardown:", error);
+        return;
+      }
+
       console.error("Vapi error:", error);
       toast.error("The voice connection dropped. You can restart or type instead.");
       clearMicTimer();
@@ -314,6 +371,7 @@ export function useVapiInterview({
 
   useEffect(
     () => () => {
+      callActiveRef.current = false;
       clearMicTimer();
       if (muteTimerRef.current) clearTimeout(muteTimerRef.current);
       muteTimerRef.current = null;
@@ -359,8 +417,29 @@ export function useVapiInterview({
     setStatus("connecting");
 
     try {
+      // Everything the interview depends on is set here rather than left to the
+      // dashboard, so the assistant record is a shell and the behaviour that
+      // matters is versioned with the code that relies on it. Model and voice
+      // are deliberately left alone — those are the account's billing choices.
       const call = await vapi.start(VAPI_ASSISTANT_ID, {
+        firstMessage:
+          `Hello ${candidateName}. Welcome to your interview for the ${jobTitle} ` +
+          `position. I will ask you ${pending.length} question` +
+          `${pending.length === 1 ? "" : "s"}, one at a time. ` +
+          `Take as long as you need to answer each one.`,
+        transcriber: {
+          provider: "deepgram",
+          model: "nova-3",
+          language: "en",
+          smartFormat: true,
+          // Lifts recall on the technical vocabulary these questions ask about,
+          // which is also the vocabulary the answers are scored on.
+          keyterm: extractKeyterms(pending),
+        },
         startSpeakingPlan: PATIENT_ENDPOINTING,
+        // Silence is the candidate thinking, not a problem to fill.
+        backgroundSound: "off",
+        maxDurationSeconds: MAX_CALL_SECONDS,
         variableValues: {
           candidateName,
           jobTitle,
@@ -390,6 +469,10 @@ export function useVapiInterview({
   const stop = useCallback(async () => {
     const vapi = vapiRef.current;
     if (!vapi) return;
+    // Marked down before asking Vapi to stop, not after: the teardown errors
+    // that follow arrive ahead of `call-end`, and this is the earliest point at
+    // which the call is known to be closing.
+    callActiveRef.current = false;
     setStatus("ending");
     await vapi.stop();
   }, []);

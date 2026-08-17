@@ -140,6 +140,11 @@ export type AiInterviewAnswerResponse = {
   answerText: string;
   score: number;
   feedback: string;
+  /**
+   * What a strong answer to this question sounds like, written by the AI when
+   * the interview was scored. Absent until the interview is complete.
+   */
+  modelAnswer?: string;
 };
 
 export type AiInterviewQuestionResponse = {

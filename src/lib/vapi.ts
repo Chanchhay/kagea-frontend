@@ -61,3 +61,43 @@ export function matchQuestionIndex(
 
   return bestRatio >= 0.6 ? bestIndex : -1;
 }
+
+/** Deepgram accepts up to 100; well short of it keeps the boost focused. */
+const MAX_KEYTERMS = 50;
+
+/**
+ * Pulls the vocabulary this interview is likely to contain out of its questions.
+ *
+ * Handed to Deepgram as keyterms, which lifts recall on exactly the words a
+ * general model mishears — "Flexbox", "endpointing", a framework name — and
+ * which are also the words the answer is scored on. The questions are the only
+ * preview of that vocabulary available before the candidate speaks.
+ */
+export function extractKeyterms(
+  questions: AiInterviewQuestionResponse[],
+): string[] {
+  const seen = new Set<string>();
+  const terms: string[] = [];
+
+  for (const question of questions) {
+    // Matched against the source text rather than a lowercased copy: capitals
+    // and internal punctuation are what mark "CSS", "Node.js" or "C#" as jargon.
+    const candidates = question.questionText.match(/[A-Za-z][A-Za-z0-9.+#-]{2,}/g) ?? [];
+
+    for (const candidate of candidates) {
+      const term = candidate.replace(/[.,-]+$/, "");
+      if (term.length < 3) continue;
+
+      const isJargon = /[A-Z0-9.+#]/.test(term.slice(1)) || term.length > 6;
+      const key = term.toLowerCase();
+      if (!isJargon || STOP_WORDS.has(key) || seen.has(key)) continue;
+
+      seen.add(key);
+      terms.push(term);
+
+      if (terms.length >= MAX_KEYTERMS) return terms;
+    }
+  }
+
+  return terms;
+}
