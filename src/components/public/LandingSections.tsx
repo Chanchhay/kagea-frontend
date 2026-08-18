@@ -166,24 +166,43 @@ const showcaseCompanies = [
   "Notion",
 ];
 
-const orbitImages = Array.from(
-  { length: 10 },
-  (_, index) =>
-    `/landing-assets/orbit-${String(index + 1).padStart(2, "0")}.png`,
-);
-
-const orbitPositions = [
-  [50, 2],
-  [90, 29],
-  [79, 76],
-  [20, 77],
-  [5, 29],
-  [50, 27],
-  [71, 51],
-  [29, 51],
-  [50, 51],
-  [50, 94],
-];
+const teamOrbitMembers = [
+  {
+    name: "Srey ChanChhay",
+    role: "Leader",
+    avatar: "/images/avatar/chanchhay.jpg",
+  },
+  {
+    name: "Khan Kanhchana",
+    role: "Sub Leader",
+    avatar: "/images/avatar/kanhchana.jpg",
+  },
+  {
+    name: "Lut Lina",
+    role: "Member",
+    avatar: "/images/avatar/lina.jpg",
+  },
+  {
+    name: "Heang BunLong",
+    role: "Member",
+    avatar: "/images/avatar/bunlong.jpg",
+  },
+  {
+    name: "Man Tolfary",
+    role: "Member",
+    avatar: "/images/avatar/fary.jpg",
+  },
+  {
+    name: "Sithon Somrach",
+    role: "Member",
+    avatar: "/images/avatar/samrach.jpg",
+  },
+  {
+    name: "Pech PhakLey",
+    role: "Member",
+    avatar: "/images/avatar/phakley.jpg",
+  },
+] as const;
 
 /**
  * Ordered clockwise from the top — the index drives each point's angle around
@@ -598,6 +617,9 @@ function HowItWorks() {
 }
 
 function GlobalReach() {
+  const [centerMember, innerTopMember, innerBottomMember, ...outerMembers] =
+    teamOrbitMembers;
+
   return (
     <section className="bg-surface py-20">
       {/* Inline styles for Infinite Orbit Animations */}
@@ -651,54 +673,57 @@ function GlobalReach() {
           {/* Right Animated Orbit Graphic */}
           <div className="relative mx-auto aspect-square w-full max-w-[500px]">
             {/* Center Fixed Avatar */}
-            <div className="absolute left-1/2 top-1/2 z-10 size-[64px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-2 border-surface bg-brand-tint shadow-md transition-transform hover:scale-110">
-              <Image
-                src={orbitImages[8]}
-                alt=""
-                fill
-                sizes="64px"
-                loading="eager"
-                unoptimized
-                className="object-cover"
-              />
+            <div className="group absolute left-1/2 top-1/2 z-10 size-[88px] -translate-x-1/2 -translate-y-1/2 overflow-visible">
+              <div className="relative size-full overflow-hidden rounded-full border-[3px] border-warning bg-brand-tint shadow-[0_18px_40px_rgba(243,190,0,0.28)] transition-transform duration-300 group-hover:scale-110">
+                <Image
+                  src={centerMember.avatar}
+                  alt={centerMember.name}
+                  fill
+                  sizes="88px"
+                  loading="eager"
+                  className="object-cover"
+                />
+              </div>
+              <div className="pointer-events-none absolute left-1/2 top-full mt-3 -translate-x-1/2 rounded-full bg-brand px-3 py-1 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-white opacity-0 shadow-lg transition duration-300 group-hover:opacity-100">
+                {centerMember.role}
+              </div>
             </div>
 
             {/* Inner Orbit (Dashed Line & Rotating Layer) */}
             <div className="absolute inset-[24%] rounded-full border-2 border-dashed border-warning/60">
               <div className="animate-orbit-ccw absolute inset-0 size-full">
                 {/* Inner Node 1 */}
-                <div className="absolute left-1/2 top-0 size-[52px] -translate-x-1/2 -translate-y-1/2">
-                  <div className="animate-counter-ccw size-full overflow-hidden rounded-full border-2 border-surface bg-brand-tint shadow-sm transition-transform hover:scale-110">
+                <div className="group absolute left-1/2 top-0 size-[60px] -translate-x-1/2 -translate-y-1/2 overflow-visible">
+                  <div className="animate-counter-ccw relative size-full overflow-hidden rounded-full border-[3px] border-warning bg-brand-tint shadow-md transition-transform duration-300 group-hover:scale-110">
                     <Image
-                      src={orbitImages[5]}
-                      alt=""
+                      src={innerTopMember.avatar}
+                      alt={innerTopMember.name}
                       fill
-                      sizes="52px"
+                      sizes="60px"
                       loading="eager"
-                      unoptimized
                       className="object-cover"
                     />
+                  </div>
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                    {innerTopMember.name}
                   </div>
                 </div>
 
                 {/* Inner Node 2 */}
-                <div className="absolute bottom-6 right-2 size-[52px] translate-x-1/2">
-                  <div className="animate-counter-ccw size-full overflow-hidden rounded-full border-2 border-surface bg-brand-tint shadow-sm transition-transform hover:scale-110">
+                <div className="group absolute bottom-6 right-2 size-[60px] translate-x-1/2 overflow-visible">
+                  <div className="animate-counter-ccw relative size-full overflow-hidden rounded-full border-[3px] border-warning bg-brand-tint shadow-md transition-transform duration-300 group-hover:scale-110">
                     <Image
-                      src={orbitImages[6]}
-                      alt=""
+                      src={innerBottomMember.avatar}
+                      alt={innerBottomMember.name}
                       fill
-                      sizes="52px"
+                      sizes="60px"
                       loading="eager"
-                      unoptimized
                       className="object-cover"
                     />
                   </div>
-                </div>
-
-                {/* Inner Node 3 (Placeholder Soft Circle) */}
-                <div className="absolute left-2 top-1/2 size-[44px] -translate-x-1/2 -translate-y-1/2">
-                  <div className="animate-counter-ccw animate-pulse size-full rounded-full border border-sky-100 bg-sky-100/70 shadow-2xs" />
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                    {innerBottomMember.name}
+                  </div>
                 </div>
               </div>
             </div>
@@ -707,84 +732,74 @@ function GlobalReach() {
             <div className="absolute inset-[4%] rounded-full border-2 border-dashed border-warning/70">
               <div className="animate-orbit-cw absolute inset-0 size-full">
                 {/* Outer Node 1 */}
-                <div className="absolute left-1/2 top-0 size-[58px] -translate-x-1/2 -translate-y-1/2">
-                  <div className="animate-counter-cw size-full overflow-hidden rounded-full border-2 border-surface bg-brand-tint shadow-sm transition-transform hover:scale-110">
+                <div className="group absolute left-1/2 top-0 size-[64px] -translate-x-1/2 -translate-y-1/2 overflow-visible">
+                  <div className="animate-counter-cw relative size-full overflow-hidden rounded-full border-[3px] border-warning bg-brand-tint shadow-md transition-transform duration-300 group-hover:scale-110">
                     <Image
-                      src={orbitImages[0]}
-                      alt=""
+                      src={outerMembers[0].avatar}
+                      alt={outerMembers[0].name}
                       fill
-                      sizes="58px"
+                      sizes="64px"
                       loading="eager"
-                      unoptimized
                       className="object-cover"
                     />
+                  </div>
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                    {outerMembers[0].name}
                   </div>
                 </div>
 
                 {/* Outer Node 2 */}
-                <div className="absolute right-0 top-1/3 size-[58px] translate-x-1/2 -translate-y-1/2">
-                  <div className="animate-counter-cw animate-pulse size-full rounded-full border border-sky-100 bg-sky-100/70 shadow-2xs" />
+                <div className="group absolute right-0 top-1/3 size-[64px] translate-x-1/2 -translate-y-1/2 overflow-visible">
+                  <div className="animate-counter-cw relative size-full overflow-hidden rounded-full border-[3px] border-warning bg-brand-tint shadow-md transition-transform duration-300 group-hover:scale-110">
+                    <Image
+                      src={outerMembers[1].avatar}
+                      alt={outerMembers[1].name}
+                      fill
+                      sizes="64px"
+                      loading="eager"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                    {outerMembers[1].name}
+                  </div>
                 </div>
 
                 {/* Outer Node 3 */}
-                <div className="absolute bottom-8 right-12 size-[58px] translate-x-1/2 translate-y-1/2">
-                  <div className="animate-counter-cw size-full overflow-hidden rounded-full border-2 border-surface bg-brand-tint shadow-sm transition-transform hover:scale-110">
+                <div className="group absolute bottom-0 left-1/2 size-[64px] -translate-x-1/2 translate-y-1/2 overflow-visible">
+                  <div className="animate-counter-cw relative size-full overflow-hidden rounded-full border-[3px] border-warning bg-brand-tint shadow-md transition-transform duration-300 group-hover:scale-110">
                     <Image
-                      src={orbitImages[2]}
-                      alt=""
+                      src={outerMembers[2].avatar}
+                      alt={outerMembers[2].name}
                       fill
-                      sizes="58px"
+                      sizes="64px"
                       loading="eager"
-                      unoptimized
                       className="object-cover"
                     />
+                  </div>
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                    {outerMembers[2].name}
                   </div>
                 </div>
 
                 {/* Outer Node 4 */}
-                <div className="absolute bottom-0 left-1/2 size-[58px] -translate-x-1/2 translate-y-1/2">
-                  <div className="animate-counter-cw size-full overflow-hidden rounded-full border-2 border-surface bg-brand-tint shadow-sm transition-transform hover:scale-110">
+                <div className="group absolute bottom-8 left-12 size-[64px] -translate-x-1/2 translate-y-1/2 overflow-visible">
+                  <div className="animate-counter-cw relative size-full overflow-hidden rounded-full border-[3px] border-warning bg-brand-tint shadow-md transition-transform duration-300 group-hover:scale-110">
                     <Image
-                      src={orbitImages[9]}
-                      alt=""
+                      src={outerMembers[3].avatar}
+                      alt={outerMembers[3].name}
                       fill
-                      sizes="58px"
+                      sizes="64px"
                       loading="eager"
-                      unoptimized
                       className="object-cover"
                     />
+                  </div>
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                    {outerMembers[3].name}
                   </div>
                 </div>
 
-                {/* Outer Node 5 */}
-                <div className="absolute bottom-8 left-12 size-[58px] -translate-x-1/2 translate-y-1/2">
-                  <div className="animate-counter-cw size-full overflow-hidden rounded-full border-2 border-surface bg-brand-tint shadow-sm transition-transform hover:scale-110">
-                    <Image
-                      src={orbitImages[4]}
-                      alt=""
-                      fill
-                      sizes="58px"
-                      loading="eager"
-                      unoptimized
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-
-                {/* Outer Node 6 */}
-                <div className="absolute left-0 top-1/3 size-[58px] -translate-x-1/2 -translate-y-1/2">
-                  <div className="animate-counter-cw size-full overflow-hidden rounded-full border-2 border-surface bg-brand-tint shadow-sm transition-transform hover:scale-110">
-                    <Image
-                      src={orbitImages[3]}
-                      alt=""
-                      fill
-                      sizes="58px"
-                      loading="eager"
-                      unoptimized
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
+                <div className="absolute inset-[14%] rounded-full bg-warning/8 blur-3xl" />
               </div>
             </div>
           </div>
