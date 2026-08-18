@@ -16,6 +16,7 @@ export type PublicJobsQuery = {
   jobType?: string;
   page?: number;
   size?: number;
+  sort?: string;
 };
 
 function unwrapPublicJobs(response: ApiResponsePagePublicJobResponse) {

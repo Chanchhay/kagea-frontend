@@ -20,7 +20,7 @@ export function PublicJobList({ jobs, state = "populated" }: PublicJobListProps)
     return (
       <EmptyState
         title="No jobs found"
-        description="Adjust keyword, location, category, skill, work mode, or job type filters."
+        description="Adjust keyword, location, category, skill, work mode, job type, or salary filters."
       />
     );
   }

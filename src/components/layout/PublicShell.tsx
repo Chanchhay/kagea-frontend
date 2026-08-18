@@ -35,8 +35,8 @@ export function PublicShell({ children }: { children: ReactNode }) {
     );
 
     return (
-        <div className="min-h-screen overflow-x-hidden bg-surface text-heading">
-            <header className="sticky top-0 z-40 border-b border-border/70 bg-surface/90 backdrop-blur-xl">
+        <div className="min-h-screen bg-surface text-heading">
+            <header className="sticky top-0 z-50 border-b border-border/70 bg-surface/95 backdrop-blur-xl">
                 <div className="mx-auto flex h-[78px] max-w-[1408px] items-center justify-between px-4 sm:px-6 lg:px-8">
                     <Link
                         href="/"
@@ -133,7 +133,9 @@ export function PublicShell({ children }: { children: ReactNode }) {
                     </Sheet>
                 </div>
             </header>
-            {children}
+            <main className="overflow-x-hidden">
+                {children}
+            </main>
         </div>
     );
 }
@@ -206,8 +208,6 @@ export function PublicFooter() {
                     <h2 className="text-base font-semibold text-brand">
                         Sponsor and organize
                     </h2>
-                    {/* The white wordmark disappears on the light surface, so each theme
-              gets its own file rather than a filter. */}
                     <div className="relative mt-4 h-24 w-52">
                         <Image
                             src="/landing-assets/istad-logo-color.png"

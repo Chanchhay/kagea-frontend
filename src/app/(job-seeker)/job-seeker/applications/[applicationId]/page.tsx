@@ -2,18 +2,21 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, BriefcaseBusiness, CalendarDays, Check, Clock3, ExternalLink, FileText, MessageSquareText } from "lucide-react";
+import { ArrowLeft, BriefcaseBusiness, CalendarDays, Check, Clock3, ExternalLink, FileText, Loader2, MessageSquareText, Undo2 } from "lucide-react";
+import { toast } from "sonner";
 import type { JobApplicationStatus } from "@/contracts";
 import { StartApplicationInterviewButton } from "@/components/job-seeker/StartApplicationInterviewButton";
 import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
-import { useGetApplicationQuery, useGetResumeQuery } from "@/services/jobSeekerApi";
+import { Button } from "@/components/ui/button";
+import { useGetApplicationQuery, useGetResumeQuery, useWithdrawApplicationMutation } from "@/services/jobSeekerApi";
 
 export default function ApplicationDetailPage() {
   const { applicationId } = useParams<{ applicationId: string }>();
   const query = useGetApplicationQuery(applicationId);
   const resumeQuery = useGetResumeQuery(query.data?.resumeId ?? 0, { skip: !query.data?.resumeId });
+  const [withdrawApplication, withdrawal] = useWithdrawApplicationMutation();
   if (query.isLoading) return <LoadingState rows={4} />;
   if (query.isError || !query.data) return <ErrorState message="Unable to load this application." />;
   const application = query.data;
@@ -36,6 +39,7 @@ export default function ApplicationDetailPage() {
       <aside className="space-y-5">
         <section className="rounded-[22px] bg-ws-card p-5"><h2 className="text-sm font-semibold text-ws-fg">Submitted resume</h2><div className="mt-4 flex items-center gap-3 rounded-2xl bg-ws-panel p-4"><span className="flex size-10 items-center justify-center rounded-xl bg-chip-soft text-chip-soft-fg"><FileText className="size-4.5" /></span><div className="min-w-0"><p className="truncate text-sm font-semibold text-ws-fg">{application.resumeTitle || resumeQuery.data?.title || "Attached resume"}</p><p className="mt-0.5 text-xs text-ws-muted">Submitted with application</p></div></div>{application.resumeId ? <Link href={`/job-seeker/resumes/${application.resumeId}`} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold text-primary hover:bg-chip-soft">View resume <ExternalLink className="size-3.5" /></Link> : null}</section>
         <section className="rounded-[22px] bg-ws-card p-5"><h2 className="text-sm font-semibold text-ws-fg">Application reference</h2><dl className="mt-4 space-y-3 text-sm"><div className="flex justify-between gap-3"><dt className="text-ws-muted">Application ID</dt><dd className="font-medium text-ws-fg">#{application.id}</dd></div><div className="flex justify-between gap-3"><dt className="text-ws-muted">Job ID</dt><dd className="font-medium text-ws-fg">#{application.jobId}</dd></div><div className="flex justify-between gap-3"><dt className="text-ws-muted">Last update</dt><dd className="font-medium text-ws-fg">{formatDate(application.createdAt)}</dd></div></dl></section>
+        {!isClosed(application.status) ? <section className="rounded-[22px] border border-destructive/15 bg-ws-card p-5"><h2 className="text-sm font-semibold text-ws-fg">Withdraw application</h2><p className="mt-2 text-xs leading-5 text-ws-muted">Stop your application for this role. This action cannot be reversed.</p><Button variant="destructive" disabled={withdrawal.isLoading} onClick={async () => { if (!window.confirm("Withdraw this application? You cannot undo this action.")) return; try { await withdrawApplication(applicationId).unwrap(); toast.success("Application withdrawn."); } catch { toast.error("Could not withdraw this application."); } }} className="mt-4 w-full rounded-xl">{withdrawal.isLoading ? <Loader2 className="animate-spin" /> : <Undo2 />}Withdraw application</Button></section> : null}
       </aside>
     </div>
   </div>;
@@ -49,4 +53,5 @@ function ApplicationTimeline({ status }: { status: JobApplicationStatus }) {
 }
 function stageIndex(status: JobApplicationStatus) { if (status === "SUBMITTED") return 0; if (status === "UNDER_REVIEW") return 1; if (status.includes("AI_INTERVIEW")) return 2; if (["MODERATOR_REVIEW_PENDING", "SHORTLISTED", "HUMAN_INTERVIEW_SCHEDULED"].includes(status)) return 3; return 4; }
 function displayStatus(status: JobApplicationStatus) { const label = status.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase()); if (["HIRED", "SHORTLISTED", "AI_INTERVIEW_PASSED"].includes(status)) return { label, className: "bg-chip-soft text-chip-soft-fg" }; if (["REJECTED", "WITHDRAWN", "AI_INTERVIEW_FAILED"].includes(status)) return { label, className: "bg-chip-alert text-chip-alert-fg" }; return { label, className: "bg-chip-quiet text-chip-quiet-fg" }; }
+function isClosed(status: JobApplicationStatus) { return ["HIRED", "REJECTED", "WITHDRAWN"].includes(status); }
 function formatDate(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? "Recently" : new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(date); }
