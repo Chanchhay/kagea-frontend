@@ -12,24 +12,30 @@ type PublicJobCardProps = {
   className?: string;
 };
 
-function formatEnum(value: string) {
+function formatEnum(value?: string | null) {
+  if (!value) return "Not specified";
   return value
     .split("_")
     .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
     .join(" ");
 }
 
-function formatDate(value: string) {
+function formatDate(value?: string | null) {
+  if (!value) return "Not specified";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Not specified";
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
     timeZone: "UTC",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 function formatSalary(job: PublicJobResponse) {
-  if (!job.salaryMin && !job.salaryMax) return null;
+  if (job.salaryMin == null && job.salaryMax == null) return null;
+  if (job.salaryMin == null) return `Up to $${job.salaryMax?.toLocaleString()}`;
+  if (job.salaryMax == null) return `From $${job.salaryMin.toLocaleString()}`;
   return `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`;
 }
 
@@ -55,11 +61,11 @@ export function PublicJobCard({ job, compact = false, className }: PublicJobCard
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-body">
               <span className="inline-flex items-center gap-1.5">
                 <BriefcaseBusiness aria-hidden="true" className="size-4 text-brand" />
-                {job.companyName}
+                {job.companyName || "Company not specified"}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <MapPin aria-hidden="true" className="size-4 text-muted-fg" />
-                {job.location}
+                {job.location || "Location not specified"}
               </span>
             </div>
           </div>
@@ -75,15 +81,15 @@ export function PublicJobCard({ job, compact = false, className }: PublicJobCard
 
         {!compact ? (
           <p className="line-clamp-2 text-sm leading-6 text-body">
-            {markdownToPlainText(job.description)}
+            {job.description ? markdownToPlainText(job.description) : "No description provided."}
           </p>
         ) : null}
 
         <div className="flex flex-wrap gap-2">
-          <span className="rounded-md border border-border px-2.5 py-1 text-xs text-body">
+          {job.categoryName ? <span className="rounded-md border border-border px-2.5 py-1 text-xs text-body">
             {job.categoryName}
-          </span>
-          {job.skills.slice(0, compact ? 2 : 4).map((skill) => (
+          </span> : null}
+          {(job.skills ?? []).slice(0, compact ? 2 : 4).map((skill) => (
             <span
               key={skill.id}
               className="rounded-md border border-border px-2.5 py-1 text-xs text-body"

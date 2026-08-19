@@ -64,7 +64,7 @@ export const jobSchema = z
       .min(20, "Description must be at least 20 characters."),
     /** Markdown, stored as a REQUIREMENT_RESPONSIBILITY job section. */
     requirements: z.string(),
-    categoryId: z.string(),
+    categoryId: z.string().min(1, "Select a job category."),
     location: z.string(),
     jobType: z.string(),
     workMode: z.string(),

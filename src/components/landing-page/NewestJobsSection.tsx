@@ -1,106 +1,43 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { jobs } from './data';
-import { UsersIcon } from './icons';
-import { Button } from './shared/moving-border';
-
-const tabs = ['All', 'Development', 'Design', 'Marketing', 'Accounting'];
+import Link from "next/link";
+import { ArrowUpRight, BriefcaseBusiness, CalendarDays, MapPin } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useGetPublicJobCategoriesQuery, useGetPublicJobsQuery } from "@/services/publicApi";
 
 export default function NewestJobsSection() {
-  const [activeTab, setActiveTab] = useState('All');
+  const jobsQuery = useGetPublicJobsQuery({ size: 100, sort: "publishedAt,desc" });
+  const categoriesQuery = useGetPublicJobCategoriesQuery();
+  const [categoryId, setCategoryId] = useState<number | null>(null);
 
-  return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+  const jobs = useMemo(() => [...(jobsQuery.data?.content ?? [])]
+    .filter((job) => categoryId === null || job.categoryId === categoryId)
+    .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt)), [categoryId, jobsQuery.data?.content]);
 
-      {/* Header */}
-      <div className="text-center">
-        <h2 data-reveal className="text-3xl font-extrabold sm:text-4xl">
-          <span className="text-[#008A1E]">Newest </span>
-          <span className="text-[#F3BE00]">Jobs</span>
-          <span className="text-[#008A1E]"> For You</span>
-        </h2>
-        <p data-reveal className="mt-2 text-xs font-semibold text-[#008A1E] sm:text-sm">
-          Get The Fastest Application So That Your Name Is Above Other Application
-        </p>
-      </div>
+  return <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="text-center"><h2 data-reveal className="text-3xl font-extrabold sm:text-4xl"><span className="text-[#008A1E]">Newest </span><span className="text-[#F3BE00]">Jobs</span><span className="text-[#008A1E]"> For You</span></h2><p data-reveal className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">Fresh opportunities published by verified recruiters.</p></div>
 
-      {/* Tab Navigation */}
-      <div data-reveal className="mt-8 flex justify-center border-b border-slate-100 dark:border-slate-800">
-        <div className="flex flex-wrap justify-center gap-6 sm:gap-10">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`relative pb-3 text-xs sm:text-sm font-semibold transition ${
-                activeTab === tab
-                  ? 'text-[#008A1E] dark:text-emerald-400'
-                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
-              }`}
-            >
-              {tab}
-              {activeTab === tab && (
-                <span className="absolute bottom-0 left-0 h-0.5 w-full bg-[#008A1E] rounded-full" />
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div data-reveal className="mt-8 overflow-x-auto border-b border-slate-200 dark:border-slate-700"><div className="flex min-w-max justify-center gap-7 px-2 sm:gap-10">
+      <Tab active={categoryId === null} onClick={() => setCategoryId(null)}>All</Tab>
+      {(categoriesQuery.data ?? []).map((category) => <Tab key={category.id} active={categoryId === category.id} onClick={() => setCategoryId(category.id)}>{category.name}</Tab>)}
+    </div></div>
 
-      {/* Job Cards Grid */}
-      <div data-stagger className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {jobs.map((job) => (
-          <Button
-            key={job.id}
-            as="div"
-            borderRadius="1rem"
-            duration={4000}
-            containerClassName="h-56 w-full cursor-pointer"
-            borderClassName="h-48 w-48 bg-[radial-gradient(#F3BE00_40%,transparent_60%)] opacity-100"
-            className="bg-[#00921A] border-none p-0"
-          >
-            <div className="relative w-full h-full p-6 flex flex-col justify-between overflow-hidden">
-              {/* Background decorative circles */}
-              <div className="pointer-events-none absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-[#007F16] opacity-60 blur-xl" />
-              <div className="pointer-events-none absolute -bottom-4 -right-4 h-28 w-28 rounded-full bg-emerald-500/20" />
+    {jobsQuery.isLoading || categoriesQuery.isLoading ? <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }).map((_, index) => <div key={index} className="h-64 animate-pulse rounded-2xl border border-slate-200 bg-white" />)}</div>
+      : jobsQuery.isError || categoriesQuery.isError ? <Message title="Unable to load jobs" description="Please refresh the page and try again." />
+      : jobs.length === 0 ? <Message title="No published jobs" description="There are no jobs in this category yet." />
+      : <div data-stagger className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{jobs.map((job) => <article key={job.id} className="group flex min-h-64 flex-col rounded-2xl border border-primary bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg dark:border-primary dark:bg-slate-900">
+        <div className="flex flex-wrap gap-2"><Chip>{formatLabel(job.jobType || "Job")}</Chip><Chip>{formatLabel(job.workMode || "Flexible")}</Chip>{job.categoryName && <Chip>{job.categoryName}</Chip>}</div>
+        <div className="mt-6 flex-1"><h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{job.title}</h3><p className="mt-1.5 flex items-center gap-1.5 text-sm font-medium text-[#008A1E]"><BriefcaseBusiness className="size-4" />{job.companyName}</p><p className="mt-3 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400"><MapPin className="size-4" />{job.location || "Location not specified"}</p></div>
+        <div className="mt-6 flex items-end justify-between gap-3 border-t border-slate-100 pt-4 dark:border-slate-800"><div><p className="text-sm font-bold text-slate-900 dark:text-white">{salary(job.salaryMin, job.salaryMax)}</p>{job.expiredAt && <p className="mt-1 flex items-center gap-1 text-xs text-slate-500"><CalendarDays className="size-3.5" />Closes {date(job.expiredAt)}</p>}</div><Link href={`/jobs/${job.id}`} className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#008A1E] text-white transition-transform group-hover:scale-105" aria-label={`View ${job.title}`}><ArrowUpRight className="size-4" /></Link></div>
+      </article>)}</div>}
 
-              {/* Tags */}
-              <div className="flex items-center gap-2">
-                <span className="rounded-lg border border-white/40 bg-white/10 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
-                  Fulltime
-                </span>
-                <span className="rounded-lg border border-white/40 bg-white/10 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
-                  Onsite
-                </span>
-                <span className="rounded-lg border border-white/40 bg-white/10 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
-                  $200K
-                </span>
-              </div>
-
-              {/* Job Info */}
-              <div className="z-10 mt-4">
-                <h3 className="text-xl font-bold tracking-tight text-white">
-                  {job.title}
-                </h3>
-                <p className="text-xs text-white/80 mt-1">
-                  {job.company}
-                </p>
-              </div>
-
-              {/* Actions */}
-              <div className="z-10 mt-6 flex items-center justify-between">
-                <button className="rounded-lg bg-[#F3BE00] px-6 py-2 text-xs font-bold text-slate-900 transition hover:bg-[#e0af00] active:scale-[0.98]">
-                  Apply
-                </button>
-                <div className="flex items-center gap-1.5 text-xs font-medium text-white/90">
-                  <UsersIcon />
-                  <span>24 Applied</span>
-                </div>
-              </div>
-            </div>
-          </Button>
-        ))}
-      </div>
-    </section>
-  );
+    {jobs.length > 0 && <div className="mt-8 text-center"><Link href="/jobs" className="inline-flex h-11 items-center rounded-full border border-[#008A1E] bg-white px-6 text-sm font-semibold text-[#008A1E] transition-colors hover:bg-[#008A1E] hover:text-white dark:bg-slate-900">View all jobs <ArrowUpRight className="ml-2 size-4" /></Link></div>}
+  </section>;
 }
+
+function Tab({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) { return <button type="button" onClick={onClick} className={`relative pb-3 text-sm font-semibold transition-colors ${active ? "text-[#008A1E]" : "text-slate-500 hover:text-slate-800 dark:hover:text-white"}`}>{children}{active && <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-[#008A1E]" />}</button>; }
+function Chip({ children }: { children: React.ReactNode }) { return <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">{children}</span>; }
+function Message({ title, description }: { title: string; description: string }) { return <div className="mt-10 rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center dark:border-slate-700 dark:bg-slate-900"><h3 className="font-semibold text-slate-900 dark:text-white">{title}</h3><p className="mt-2 text-sm text-slate-500">{description}</p></div>; }
+function formatLabel(value: string) { return value.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase()); }
+function salary(min?: number, max?: number) { if (!min && !max) return "Salary negotiable"; const money = (value: number) => `$${new Intl.NumberFormat().format(value)}`; return min && max ? `${money(min)} – ${money(max)}` : min ? `From ${money(min)}` : `Up to ${money(max!)}`; }
+function date(value: string) { const parsed = new Date(value); return Number.isNaN(parsed.getTime()) ? "Soon" : new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(parsed); }

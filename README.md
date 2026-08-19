@@ -176,7 +176,7 @@ Runtime authentication requires the Better Auth and Keycloak environment values 
 ### Moderator
 
 - [ ] Moderator dashboard
-- [ ] Company verification queue
+- [ ] Company verification queue!
 - [ ] Company verification detail
 - [ ] Candidate review queue
 - [ ] Candidate application detail

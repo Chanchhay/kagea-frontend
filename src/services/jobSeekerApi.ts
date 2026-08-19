@@ -220,6 +220,21 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         unwrapApiResponse(response),
       invalidatesTags: ["Applications"],
     }),
+    withdrawApplication: builder.mutation<
+      JobApplicationResponse,
+      string | number
+    >({
+      query: (applicationId) => ({
+        url: `/job-seeker/applications/${applicationId}/withdraw`,
+        method: "POST",
+      }),
+      transformResponse: (response: ApiResponseJobApplicationResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, applicationId) => [
+        "Applications",
+        { type: "Applications", id: applicationId },
+      ],
+    }),
     getAiInterviews: builder.query<AiInterviewSessionResponse[], void>({
       query: () => "/job-seeker/ai-interviews",
       transformResponse: (response: ApiResponseListAiInterviewSessionResponse) =>
@@ -364,6 +379,7 @@ export const {
   useGetApplicationsQuery,
   useGetApplicationQuery,
   useApplyToJobMutation,
+  useWithdrawApplicationMutation,
   useGetAiInterviewsQuery,
   useGetAiInterviewQuery,
   useGetAiInterviewResultQuery,
