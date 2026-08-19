@@ -1,97 +1,131 @@
-import Image from 'next/image';
+import { GlobeBackground } from './shared/GlobeBackground';
 
 export default function Hero() {
   return (
-    <section className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col justify-between text-white font-sans">
-      {/* Background Globe Image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/purple-moon-bg.png"
-          alt="Purple Planet Background"
-          fill
-          priority
-          className="object-cover object-center scale-105"
-        />
-      </div>
-
-      {/* Subtle Overlay for Contrast */}
-      <div className="absolute inset-0 bg-black/40 z-10" />
-
-      {/* Header / Navbar */}
-      <header className="relative z-20 flex items-center justify-between px-6 md:px-16 py-6 max-w-7xl mx-auto w-full">
+    <section className="relative flex min-h-screen w-full flex-col overflow-hidden bg-white font-sans text-slate-900">
+      <header className="relative z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6 md:px-16">
         <div className="flex items-center gap-2">
-          <span className="font-bold text-lg tracking-wider bg-neutral-900/80 px-3 py-1.5 rounded-md border border-neutral-800">
+          <span className="rounded-md border border-emerald-200 bg-white/80 px-3 py-1.5 text-lg font-bold tracking-wider text-emerald-700 shadow-sm backdrop-blur-sm">
             LOGOTIPUM
           </span>
         </div>
-        <nav className="hidden md:flex items-center gap-8 text-sm text-gray-300">
-          <a href="#" className="hover:text-white transition">Home</a>
-          <a href="#" className="hover:text-white transition flex items-center gap-1">Services ▾</a>
-          <a href="#" className="hover:text-white transition">Reviews</a>
-          <a href="#" className="hover:text-white transition">Contact us</a>
+        <nav className="hidden items-center gap-8 text-sm text-slate-500 md:flex">
+          <a href="#" className="transition hover:text-emerald-700">
+            Home
+          </a>
+          <a href="#" className="transition hover:text-emerald-700">
+            Services
+          </a>
+          <a href="#" className="transition hover:text-emerald-700">
+            Reviews
+          </a>
+          <a href="#" className="transition hover:text-emerald-700">
+            Contact us
+          </a>
         </nav>
         <div className="flex items-center gap-4 text-sm font-medium">
-          <button className="hidden sm:block hover:text-gray-300 transition">Sign In</button>
-          <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition shadow-lg shadow-purple-900/50">
+          <button className="hidden transition hover:text-emerald-700 sm:block">
+            Sign In
+          </button>
+          <button className="rounded-xl bg-emerald-600 px-4 py-2 text-white shadow-lg shadow-emerald-200 transition hover:bg-emerald-700">
             Get Started
           </button>
         </div>
       </header>
 
-      {/* Hero Main Content */}
-      <div className="relative z-20 text-center px-4 max-w-4xl mx-auto mt-8 mb-12">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4">
-          Automate repetitive. <br />
-          <span className="italic font-normal font-serif text-purple-200">Focus on growth.</span>
-        </h1>
-        <p className="text-gray-300 text-sm md:text-base mb-8 max-w-xl mx-auto leading-relaxed">
-          The next-generation AI agent platform that handles lead generation, customer support, and data entry while you build.
-        </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl transition shadow-lg shadow-purple-900/50">
-            Get Started Free
-          </button>
-          <button className="px-6 py-3 bg-neutral-900/80 hover:bg-neutral-800 text-white font-medium rounded-xl border border-neutral-700 transition">
-            Watch 2min Demo
-          </button>
-        </div>
-      </div>
-
-      {/* Dashboard Preview Card overlapping the bottom */}
-      <div className="relative z-20 max-w-5xl mx-auto w-full px-4 transform translate-y-12 sm:translate-y-16">
-        <div className="bg-[#0b0c10]/90 backdrop-blur-md rounded-t-2xl border border-neutral-800 shadow-2xl p-4 sm:p-6 text-left">
-          {/* Dashboard Header Bar */}
-          <div className="flex items-center justify-between border-b border-neutral-800 pb-4 mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-purple-500" />
-              <span className="font-semibold text-sm text-gray-200">Finlytic</span>
-              <span className="text-xs text-neutral-500 ml-4">Dashboard Overview</span>
-            </div>
-            <div className="text-xs bg-neutral-900 px-3 py-1.5 rounded-lg border border-neutral-800 text-gray-400">
-              🔍 Search anything...
+      <div className="relative z-10 mx-auto w-full max-w-7xl flex-1 px-4 pb-12 pt-16 sm:pt-20">
+        <div className="relative overflow-hidden rounded-[2rem]">
+          <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
+            <div className="h-[720px] w-[720px] max-w-[115vw] opacity-45">
+              <GlobeBackground
+                className="h-full w-full"
+                color="#bfd9fb"
+                rotationSpeed={0.00035}
+                enableParallax={false}
+                scale={4.05}
+                latLines={18}
+                lonLines={24}
+                enableDots
+              />
             </div>
           </div>
 
-          {/* Dummy Table/Data Row Preview */}
-          <div className="space-y-3 text-xs sm:text-sm text-gray-400">
-            <div className="font-medium text-gray-300 pb-1">Recent Activity Logs</div>
-            <div className="grid grid-cols-4 gap-2 py-2 border-b border-neutral-900 text-neutral-500">
+          <div className="pointer-events-none absolute inset-x-0 top-28 z-0 flex justify-center">
+            <div className="h-72 w-72 rounded-full bg-emerald-100/60 blur-3xl" />
+          </div>
+
+          <div className="relative z-20 flex min-h-[32rem] flex-col items-center justify-center text-center">
+            <div className="max-w-4xl">
+          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-balance sm:text-5xl md:text-6xl lg:text-7xl">
+            Automate repetitive.
+            <br />
+            <span className="font-serif font-normal italic text-amber-500">
+              Focus on growth.
+            </span>
+          </h1>
+          <p className="mx-auto mb-8 max-w-2xl text-sm leading-relaxed text-slate-600 md:text-base">
+            The next-generation AI agent platform that handles lead generation,
+            customer support, and data entry while you build.
+          </p>
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
+            <button className="rounded-xl bg-emerald-600 px-6 py-3 font-medium text-white transition hover:bg-emerald-700">
+              Get Started Free
+            </button>
+            <button className="rounded-xl border border-slate-200 bg-white/85 px-6 py-3 font-medium text-slate-700 shadow-sm backdrop-blur-sm transition hover:bg-white">
+              Watch 2min Demo
+            </button>
+          </div>
+        </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-20 mx-auto w-full max-w-5xl translate-y-12 px-4 sm:translate-y-16">
+        <div className="rounded-t-2xl border border-slate-200 bg-white/88 p-4 text-left shadow-2xl backdrop-blur-md sm:p-6">
+          <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-4">
+            <div className="flex items-center gap-2">
+              <div className="h-3 w-3 rounded-full bg-emerald-500" />
+              <span className="text-sm font-semibold text-slate-800">
+                Finlytic
+              </span>
+              <span className="ml-4 text-xs text-slate-500">
+                Dashboard Overview
+              </span>
+            </div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-500">
+              Search anything...
+            </div>
+          </div>
+
+          <div className="space-y-3 text-xs text-slate-500 sm:text-sm">
+            <div className="pb-1 font-medium text-slate-700">
+              Recent Activity Logs
+            </div>
+            <div className="grid grid-cols-4 gap-2 border-b border-slate-100 py-2 text-slate-400">
               <span>Timestamp</span>
               <span>Status</span>
               <span>Source</span>
               <span>Data Rate</span>
             </div>
-            <div className="grid grid-cols-4 gap-2 items-center py-1">
-              <span className="text-gray-300">2025-05-03 10:24</span>
-              <span><span className="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded text-xs">In Queue</span></span>
+            <div className="grid grid-cols-4 items-center gap-2 py-1">
+              <span className="text-slate-700">2025-05-03 10:24</span>
+              <span>
+                <span className="rounded bg-amber-500/20 px-2 py-0.5 text-xs text-amber-700">
+                  In Queue
+                </span>
+              </span>
               <span>CRM</span>
-              <span className="text-gray-300">$347.09</span>
+              <span className="text-slate-700">$347.09</span>
             </div>
-            <div className="grid grid-cols-4 gap-2 items-center py-1">
-              <span className="text-gray-300">2025-05-02 18:50</span>
-              <span><span className="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded text-xs">Processed</span></span>
+            <div className="grid grid-cols-4 items-center gap-2 py-1">
+              <span className="text-slate-700">2025-05-02 18:50</span>
+              <span>
+                <span className="rounded bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-700">
+                  Processed
+                </span>
+              </span>
               <span>Traffic Event</span>
-              <span className="text-gray-300">Web Analytics</span>
+              <span className="text-slate-700">Web Analytics</span>
             </div>
           </div>
         </div>

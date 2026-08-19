@@ -21,6 +21,15 @@ export default function InterviewSessionPage() {
     skip: interview?.status !== "PREPARING",
   });
 
+  // A voice interview can also be scored without the browser asking: Vapi's
+  // end-of-call webhook completes the session server-side. Poll more slowly
+  // while it is running so that result appears on its own.
+  useGetAiInterviewQuery(sessionId, {
+    pollingInterval: 10000,
+    skipPollingIfUnfocused: true,
+    skip: interview?.status !== "IN_PROGRESS",
+  });
+
   if (interviewQuery.isLoading) return <LoadingState rows={5} />;
   if (interviewQuery.isError || !interview)
     return (

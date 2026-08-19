@@ -123,7 +123,7 @@ export default function AboutHeroSection() {
               <motion.div
                 animate={{ y: [0, -12, 0] }}
                 transition={{
-                  duration: 5,
+                  duration: 2.8,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}

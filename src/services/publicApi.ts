@@ -16,6 +16,7 @@ export type PublicJobsQuery = {
   jobType?: string;
   page?: number;
   size?: number;
+  sort?: string;
 };
 
 function unwrapPublicJobs(response: ApiResponsePagePublicJobResponse) {
@@ -66,6 +67,7 @@ export const publicApi = baseApi.injectEndpoints({
     >({
       query: () => "/public/skills",
       transformResponse: unwrapPublicSkills,
+      providesTags: ["Skills"],
     }),
     getPublicJobCategories: builder.query<
       ReturnType<typeof unwrapPublicJobCategories>,

@@ -122,11 +122,29 @@ export type AiInterviewAnswerRequest = {
   answerText: string;
 };
 
+/** Binds the Vapi voice call to the session so its webhook can find it again. */
+export type VapiCallBindingRequest = {
+  callId: string;
+};
+
+/**
+ * The finished voice interview, sent for splitting into answers and scoring.
+ * The backend runs the same work from Vapi's webhook; either path may win.
+ */
+export type VoiceTranscriptRequest = {
+  turns: { role: "interviewer" | "candidate"; text: string }[];
+};
+
 export type AiInterviewAnswerResponse = {
   id: number;
   answerText: string;
   score: number;
   feedback: string;
+  /**
+   * What a strong answer to this question sounds like, written by the AI when
+   * the interview was scored. Absent until the interview is complete.
+   */
+  modelAnswer?: string;
 };
 
 export type AiInterviewQuestionResponse = {

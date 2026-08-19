@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import type {
+  JobDocumentParseResponse,
   JobPostRequest,
   JobPostResponse,
   JobPostSectionRequest,
@@ -20,22 +23,28 @@ import {
 } from "@/components/ui/form";
 import { RichTextEditor } from "@/components/shared/RichTextEditor";
 import { SelectField, TextField } from "@/components/shared/FormFields";
+import { JobDocumentImport } from "@/components/recruiter/JobDocumentImport";
+import { JobImportSummary } from "@/components/recruiter/JobImportSummary";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { markdownToPlainText } from "@/lib/markdown";
 import {
+  deriveSectionType,
   experienceLevelOptions,
   jobTypeOptions,
   NOT_SPECIFIED,
+  sectionTypeLabels,
   withNotSpecified,
   workModeOptions,
 } from "@/lib/job-options";
+import { jobSchema, type JobFormValues } from "@/lib/validation/recruiter.schema";
+import { Input } from "@/components/ui/input";
 import {
-  jobSchema,
-  type JobFormValues,
-} from "@/lib/validation/recruiter.schema";
-import { useGetPublicJobCategoriesQuery } from "@/services/publicApi";
+  useGetPublicJobCategoriesQuery,
+  useGetPublicSkillsQuery,
+} from "@/services/publicApi";
 import {
   useCreateJobDraftMutation,
+  useCreateSkillMutation,
   usePublishJobMutation,
   useUpdateJobMutation,
 } from "@/services/recruiterApi";
@@ -43,7 +52,10 @@ import {
 const REQUIREMENTS_SECTION = "REQUIREMENT_RESPONSIBILITY";
 
 function toFormValues(job?: JobPostResponse): JobFormValues {
-  const requirements = job?.sections?.find(
+  const sections = [...(job?.sections ?? [])].sort(
+    (a, b) => a.displayOrder - b.displayOrder,
+  );
+  const requirements = sections.find(
     (section) => section.sectionType === REQUIREMENTS_SECTION,
   );
 
@@ -60,6 +72,21 @@ function toFormValues(job?: JobPostResponse): JobFormValues {
     salaryMax: job?.salaryMax ? String(job.salaryMax) : "",
     // The API returns an ISO timestamp; <input type="date"> needs just the date.
     expiredAt: job?.expiredAt ? job.expiredAt.slice(0, 10) : "",
+    // Saving replaces the whole section and skill lists, so anything the form
+    // does not carry would be dropped on the next edit.
+    extraSections: sections
+      .filter((section) => section.sectionType !== REQUIREMENTS_SECTION)
+      .map((section) => ({
+        sectionType: section.sectionType,
+        title: section.title ?? sectionTypeLabels[section.sectionType],
+        contentMarkdown: section.contentMarkdown ?? "",
+      })),
+    skills: (job?.skills ?? []).map((skill) => ({
+      skillId: skill.skillId,
+      name: skill.skillName,
+      skillType: skill.skillType ?? null,
+    })),
+    sourceFileUrl: job?.sourceFileUrl ?? "",
   };
 }
 
@@ -90,23 +117,93 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
     resolver: zodResolver(jobSchema),
     values: toFormValues(job),
   });
+  const extraSections = useFieldArray({
+    control: form.control,
+    name: "extraSections",
+  });
+  const skills = useWatch({ control: form.control, name: "skills" });
+  const publicSkills = useGetPublicSkillsQuery();
+  const [createSkill, skillCreation] = useCreateSkillMutation();
+  const [skillDraft, setSkillDraft] = useState("");
+  /** The last import, kept so its full readout stays on screen. */
+  const [lastImport, setLastImport] = useState<JobDocumentParseResponse | null>(
+    null,
+  );
+
+  /**
+   * Attaches a skill by name, creating it when the shared list is missing it.
+   *
+   * The endpoint is find-or-create, so there is nothing to resolve here first:
+   * a name that already exists comes back with its id, and one that doesn't
+   * becomes a row everyone can use. `skillType` is only a suggestion for the
+   * creating case — an existing skill keeps the type it has.
+   */
+  const attachSkill = async (name: string, skillType?: string | null) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+
+    const current = form.getValues("skills");
+    if (current.some((skill) => skill.name.toLowerCase() === trimmed.toLowerCase())) {
+      toast.info(`${trimmed} is already on this job.`);
+      setSkillDraft("");
+      return;
+    }
+
+    try {
+      const skill = await createSkill({
+        name: trimmed,
+        skillType: skillType ?? undefined,
+      }).unwrap();
+
+      // Re-read rather than close over `current`: the request is a round trip,
+      // and the chip list may have changed while it was in flight.
+      const latest = form.getValues("skills");
+      if (!latest.some((attached) => attached.skillId === skill.id)) {
+        form.setValue(
+          "skills",
+          [
+            ...latest,
+            { skillId: skill.id, name: skill.name, skillType: skill.skillType },
+          ],
+          { shouldDirty: true },
+        );
+      }
+
+      setSkillDraft("");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, `Unable to add ${trimmed}.`));
+    }
+  };
 
   const isSaving = creation.isLoading || update.isLoading || publication.isLoading;
 
   const toRequest = (values: JobFormValues): JobPostRequest => {
-    const sections: JobPostSectionRequest[] = values.requirements.trim()
-      ? [
-          {
-            sectionType: REQUIREMENTS_SECTION,
-            title: "Requirements & responsibilities",
-            contentMarkdown: values.requirements,
-            // Plain-text mirror, so anything indexing the section body sees words
-            // rather than markdown punctuation.
-            contentText: markdownToPlainText(values.requirements),
-            displayOrder: 1,
-          },
-        ]
-      : [];
+    const sections: JobPostSectionRequest[] = [];
+
+    if (values.requirements.trim()) {
+      sections.push({
+        sectionType: REQUIREMENTS_SECTION,
+        title: sectionTypeLabels[REQUIREMENTS_SECTION],
+        // Plain-text mirror, so anything indexing the section body sees words
+        // rather than markdown punctuation.
+        contentText: markdownToPlainText(values.requirements),
+        contentMarkdown: values.requirements,
+        displayOrder: sections.length,
+      });
+    }
+
+    values.extraSections.forEach((section) => {
+      if (!section.contentMarkdown.trim()) return;
+      sections.push({
+        // Sections the recruiter added carry no type until here, where the
+        // heading they wrote decides it.
+        sectionType: section.sectionType ?? deriveSectionType(section.title),
+        title: section.title,
+        contentMarkdown: section.contentMarkdown,
+        contentText: markdownToPlainText(section.contentMarkdown),
+        displayOrder: sections.length,
+      });
+    });
 
     return {
       title: values.title,
@@ -122,8 +219,66 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
       salaryMin: values.salaryMin ? Number(values.salaryMin) : undefined,
       salaryMax: values.salaryMax ? Number(values.salaryMax) : undefined,
       expiredAt: toDateTime(values.expiredAt),
+      sourceFileUrl: values.sourceFileUrl || undefined,
       sections,
+      skills: values.skills.map((skill) => ({ skillId: skill.skillId })),
     };
+  };
+
+  /**
+   * Merges extracted fields over the form. Anything the document did not state
+   * comes back null and leaves what the recruiter already typed alone, so
+   * importing a PDF into a half-filled form never erases their work.
+   */
+  const applyParsed = (parsed: JobDocumentParseResponse) => {
+    const current = form.getValues();
+    const requirements = parsed.sections.find(
+      (section) => section.sectionType === REQUIREMENTS_SECTION,
+    );
+    const descriptionSection = parsed.sections.find(
+      (section) => section.sectionType === "DESCRIPTION",
+    );
+
+    // A DESCRIPTION section duplicates the description field; it is only worth
+    // keeping when the extraction gave no description of its own.
+    const description = parsed.description ?? descriptionSection?.contentMarkdown;
+
+    const parsedExtras = parsed.sections
+      .filter((section) => section.sectionType !== REQUIREMENTS_SECTION)
+      .filter(
+        (section) =>
+          section.sectionType !== "DESCRIPTION" || !parsed.description,
+      )
+      .map((section) => ({
+        sectionType: section.sectionType,
+        title: section.title,
+        contentMarkdown: section.contentMarkdown,
+      }));
+
+    form.reset({
+      ...current,
+      title: parsed.title ?? current.title,
+      description: description ?? current.description,
+      requirements: requirements?.contentMarkdown ?? current.requirements,
+      categoryId:
+        parsed.categoryId === null
+          ? current.categoryId
+          : String(parsed.categoryId),
+      location: parsed.location ?? current.location,
+      jobType: parsed.jobType ?? current.jobType,
+      workMode: parsed.workMode ?? current.workMode,
+      experienceLevel: parsed.experienceLevel ?? current.experienceLevel,
+      salaryMin:
+        parsed.salaryMin === null ? current.salaryMin : String(parsed.salaryMin),
+      salaryMax:
+        parsed.salaryMax === null ? current.salaryMax : String(parsed.salaryMax),
+      extraSections:
+        parsedExtras.length > 0 ? parsedExtras : current.extraSections,
+      skills: parsed.skills.length > 0 ? parsed.skills : current.skills,
+      sourceFileUrl: parsed.sourceFileUrl,
+    });
+
+    setLastImport(parsed);
   };
 
   /** Saves, then optionally publishes — a new post is always created as a draft. */
@@ -189,6 +344,10 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
             {publication.isLoading ? "Publishing…" : "Publish Job"}
           </Button>
         </div>
+
+        <JobDocumentImport onParsed={applyParsed} disabled={isSaving} />
+
+        {lastImport ? <JobImportSummary parsed={lastImport} /> : null}
 
         <div className="grid gap-5 md:grid-cols-2">
           <TextField
@@ -284,6 +443,180 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
             </FormItem>
           )}
         />
+
+        {/*
+          Free-form sections: the recruiter writes the heading, and the order
+          here is the order job seekers read. Empty ones are dropped on save,
+          so an unused block costs nothing.
+        */}
+        {extraSections.fields.map((section, index) => (
+          <div
+            key={section.id}
+            className="space-y-3 rounded-xl border border-border p-4"
+          >
+            <div className="flex items-start gap-2">
+              <FormField
+                control={form.control}
+                name={`extraSections.${index}.title`}
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel className="sr-only">
+                      Section {index + 1} heading
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Section heading, e.g. Benefits, Our stack, How we hire"
+                        className="h-10 font-medium"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex shrink-0 items-center gap-1 pt-1">
+                <button
+                  type="button"
+                  aria-label="Move section up"
+                  disabled={index === 0}
+                  onClick={() => extraSections.move(index, index - 1)}
+                  className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-heading disabled:pointer-events-none disabled:opacity-40"
+                >
+                  <ArrowUp aria-hidden="true" className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Move section down"
+                  disabled={index === extraSections.fields.length - 1}
+                  onClick={() => extraSections.move(index, index + 1)}
+                  className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-heading disabled:pointer-events-none disabled:opacity-40"
+                >
+                  <ArrowDown aria-hidden="true" className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Remove section"
+                  onClick={() => extraSections.remove(index)}
+                  className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-destructive"
+                >
+                  <X aria-hidden="true" className="size-4" />
+                </button>
+              </div>
+            </div>
+
+            <FormField
+              control={form.control}
+              name={`extraSections.${index}.contentMarkdown`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="sr-only">
+                    Section {index + 1} content
+                  </FormLabel>
+                  <FormControl>
+                    <RichTextEditor
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Write this section…"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        ))}
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-full"
+            onClick={() =>
+              extraSections.append({ title: "", contentMarkdown: "" })
+            }
+          >
+            <Plus aria-hidden="true" className="size-3.5" />
+            Add a section
+          </Button>
+          <span className="text-xs text-body">
+            Anything else worth saying — benefits, your stack, the hiring
+            process.
+          </span>
+        </div>
+
+        <div>
+          <p className="text-sm font-medium text-heading">Skills</p>
+          <p className="mt-1 text-xs text-body">
+            Everything your PDF asked for is already here. Type a skill and press
+            Enter to add another — anything we don&apos;t have yet joins the
+            shared list for everyone.
+          </p>
+
+          {skills.length > 0 ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {skills.map((skill, index) => (
+                <span
+                  key={skill.skillId}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-muted/60 py-1 pl-3 pr-2 text-xs font-medium text-heading"
+                >
+                  {skill.name}
+                  {skill.skillType ? (
+                    <span className="font-normal text-body/70">
+                      {skill.skillType.toLowerCase()}
+                    </span>
+                  ) : null}
+                  <button
+                    type="button"
+                    aria-label={`Remove ${skill.name}`}
+                    onClick={() =>
+                      form.setValue(
+                        "skills",
+                        skills.filter((_, position) => position !== index),
+                        { shouldDirty: true },
+                      )
+                    }
+                    className="text-body hover:text-destructive"
+                  >
+                    <X aria-hidden="true" className="size-3.5" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          ) : null}
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Input
+              list="known-skills"
+              value={skillDraft}
+              disabled={skillCreation.isLoading}
+              onChange={(event) => setSkillDraft(event.target.value)}
+              // Enter inside a form submits it; this field adds a skill instead.
+              onKeyDown={(event) => {
+                if (event.key !== "Enter") return;
+                event.preventDefault();
+                void attachSkill(skillDraft);
+              }}
+              placeholder="e.g. Zustand"
+              className="h-10 w-full sm:w-64"
+            />
+            <datalist id="known-skills">
+              {(publicSkills.data ?? []).map((skill) => (
+                <option key={skill.id} value={skill.name} />
+              ))}
+            </datalist>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10"
+              disabled={!skillDraft.trim() || skillCreation.isLoading}
+              onClick={() => void attachSkill(skillDraft)}
+            >
+              {skillCreation.isLoading ? "Adding…" : "Add skill"}
+            </Button>
+          </div>
+
+        </div>
 
         <div className="flex justify-end border-t border-border pt-6">
           <Button

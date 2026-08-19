@@ -30,6 +30,8 @@ import type {
   ResumeCreateRequest,
   ResumeResponse,
   ResumeUpdateRequest,
+  VapiCallBindingRequest,
+  VoiceTranscriptRequest,
 } from "@/contracts";
 import { baseApi, unwrapApiResponse } from "./baseApi";
 
@@ -218,6 +220,21 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         unwrapApiResponse(response),
       invalidatesTags: ["Applications"],
     }),
+    withdrawApplication: builder.mutation<
+      JobApplicationResponse,
+      string | number
+    >({
+      query: (applicationId) => ({
+        url: `/job-seeker/applications/${applicationId}/withdraw`,
+        method: "POST",
+      }),
+      transformResponse: (response: ApiResponseJobApplicationResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, applicationId) => [
+        "Applications",
+        { type: "Applications", id: applicationId },
+      ],
+    }),
     getAiInterviews: builder.query<AiInterviewSessionResponse[], void>({
       query: () => "/job-seeker/ai-interviews",
       transformResponse: (response: ApiResponseListAiInterviewSessionResponse) =>
@@ -271,6 +288,36 @@ export const jobSeekerApi = baseApi.injectEndpoints({
       transformResponse: (response: ApiResponseAiInterviewSessionResponse) =>
         unwrapApiResponse(response),
       invalidatesTags: (_result, _error, sessionId) => [
+        "Interviews",
+        { type: "Interviews", id: sessionId },
+      ],
+    }),
+    bindAiInterviewVapiCall: builder.mutation<
+      AiInterviewSessionResponse,
+      { sessionId: string | number; body: VapiCallBindingRequest }
+    >({
+      query: ({ sessionId, body }) => ({
+        url: `/job-seeker/ai-interviews/${sessionId}/vapi-call`,
+        method: "PUT",
+        body,
+      }),
+      transformResponse: (response: ApiResponseAiInterviewSessionResponse) =>
+        unwrapApiResponse(response),
+      // Deliberately does not invalidate: this fires mid-call and a refetch
+      // would churn the questions the live voice session is reading from.
+    }),
+    submitAiInterviewTranscript: builder.mutation<
+      AiInterviewSessionResponse,
+      { sessionId: string | number; body: VoiceTranscriptRequest }
+    >({
+      query: ({ sessionId, body }) => ({
+        url: `/job-seeker/ai-interviews/${sessionId}/transcript`,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: ApiResponseAiInterviewSessionResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, { sessionId }) => [
         "Interviews",
         { type: "Interviews", id: sessionId },
       ],
@@ -332,12 +379,15 @@ export const {
   useGetApplicationsQuery,
   useGetApplicationQuery,
   useApplyToJobMutation,
+  useWithdrawApplicationMutation,
   useGetAiInterviewsQuery,
   useGetAiInterviewQuery,
   useGetAiInterviewResultQuery,
   useCreateAiInterviewForJobMutation,
   useCreateAiInterviewForApplicationMutation,
   useStartAiInterviewMutation,
+  useBindAiInterviewVapiCallMutation,
+  useSubmitAiInterviewTranscriptMutation,
   useSubmitAiInterviewAnswerMutation,
   useCompleteAiInterviewMutation,
 } = jobSeekerApi;

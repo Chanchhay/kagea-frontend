@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { sectionTypes } from "@/lib/job-options";
+
 /** Optional URL field: either a valid URL or left blank. */
 const optionalUrl = (message: string) => z.url(message).or(z.literal(""));
 
@@ -28,6 +30,28 @@ export const companyDocumentSchema = z.object({
 export type CompanyDocumentFormValues = z.infer<typeof companyDocumentSchema>;
 
 /**
+ * Sections beyond the dedicated requirements field: any number of them, with
+ * headings the recruiter writes themselves.
+ *
+ * `sectionType` is carried but never shown. A section that arrived from the API
+ * or a parsed PDF keeps the type it came with; one the recruiter added has none
+ * until save, when it is derived from the heading.
+ */
+const jobSectionSchema = z
+  .object({
+    sectionType: z.enum(sectionTypes).optional(),
+    title: z.string(),
+    contentMarkdown: z.string(),
+  })
+  // Only sections with something in them are saved, so an empty pair of fields
+  // is not an error — a heading is required once there is a body to head.
+  .refine(
+    (section) =>
+      !section.contentMarkdown.trim() || section.title.trim().length > 0,
+    { path: ["title"], message: "Give this section a heading." },
+  );
+
+/**
  * Numeric fields stay strings so an empty input is "" rather than NaN; they are
  * converted at submit time.
  */
@@ -40,7 +64,7 @@ export const jobSchema = z
       .min(20, "Description must be at least 20 characters."),
     /** Markdown, stored as a REQUIREMENT_RESPONSIBILITY job section. */
     requirements: z.string(),
-    categoryId: z.string(),
+    categoryId: z.string().min(1, "Select a job category."),
     location: z.string(),
     jobType: z.string(),
     workMode: z.string(),
@@ -48,6 +72,22 @@ export const jobSchema = z
     salaryMin: z.string(),
     salaryMax: z.string(),
     expiredAt: z.string(),
+    /** Kept on the form so a save never drops sections it did not show. */
+    extraSections: z.array(jobSectionSchema),
+    /**
+     * Attached skills. Round-tripped rather than edited freely: the API takes
+     * ids from the admin-managed skills table, so the form can drop a skill but
+     * not invent one.
+     */
+    skills: z.array(
+      z.object({
+        skillId: z.number(),
+        name: z.string(),
+        skillType: z.string().nullable(),
+      }),
+    ),
+    /** Set only when the post was imported from an uploaded PDF. */
+    sourceFileUrl: z.string(),
   })
   .refine(
     (value) =>
