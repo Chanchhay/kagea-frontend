@@ -49,6 +49,12 @@
   --chip-alert-fg: color-mix(in oklab, var(--error) 72%, #000000);
 }
 
+/*
+ * next-themes writes the resolved theme onto <html> as a class before first
+ * paint (including `system`), so the class is the single source of truth for
+ * both these tokens and Tailwind's `dark:` variant. A parallel
+ * prefers-color-scheme block would only be a second copy free to drift.
+ */
 .dark {
   --background: #101610;
   --surface: #171e17;
@@ -86,45 +92,4 @@
   --chip-quiet-fg: #9b9ba1;
   --chip-alert: color-mix(in oklab, var(--error) 20%, #1c1c1e);
   --chip-alert-fg: color-mix(in oklab, var(--error) 68%, #ffffff);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --background: #101610;
-    --surface: #171e17;
-    --surface-muted: #202920;
-    --border: #334033;
-    --text-primary: #f4f7f4;
-    --text-secondary: #c4cdc4;
-    --text-muted: #8f9a8f;
-    --primary: #27b733;
-    --primary-hover: #3bc846;
-    --primary-tint: #17361a;
-    --landing-tint: #17361a;
-    --primary-foreground: #ffffff;
-    --success: #35c84a;
-    --warning: #f3c623;
-    --error: #ff7777;
-    --info: #6aaeff;
-    --shadow-card: 0 12px 24px rgba(0, 0, 0, 0.22);
-    --shadow-dropdown: 0 18px 40px rgba(0, 0, 0, 0.38);
-
-    --ws-canvas: #080809;
-    --ws-panel: #131314;
-    --ws-card: #1c1c1e;
-    --ws-card-hover: #242427;
-    --ws-line: #2b2b2e;
-    --ws-fg: #f4f4f5;
-    --ws-muted: #9b9ba1;
-    --ws-faint: #6e6e75;
-
-    --chip-solid: var(--primary);
-    --chip-solid-fg: #08120a;
-    --chip-soft: color-mix(in oklab, var(--primary) 22%, #1c1c1e);
-    --chip-soft-fg: color-mix(in oklab, var(--primary) 62%, #ffffff);
-    --chip-quiet: #242427;
-    --chip-quiet-fg: #9b9ba1;
-    --chip-alert: color-mix(in oklab, var(--error) 20%, #1c1c1e);
-    --chip-alert-fg: color-mix(in oklab, var(--error) 68%, #ffffff);
-  }
 }
