@@ -2,18 +2,29 @@
 
 type RobotHeroLightProps = {
   className?: string;
+  /**
+   * Must mirror however the robot PNG is fitted into the same box, because the
+   * paths below are drawn in the artwork's own pixel space (the viewBox is
+   * exactly ai-hero.png's 1024x1338). `meet` matches `object-contain`, `slice`
+   * matches `object-cover`, and xMin/xMid/xMax + YMin/YMid/YMax match the
+   * corresponding `object-position`. Mismatch slides the strip off the robot.
+   */
+  preserveAspectRatio?: string;
 };
 
-export default function RobotHeroLight({ className = '' }: RobotHeroLightProps) {
+export default function RobotHeroLight({
+  className = '',
+  preserveAspectRatio = 'xMidYMid meet',
+}: RobotHeroLightProps) {
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute inset-0 z-10 ${className}`}
+      className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
     >
       <svg
         viewBox="0 0 1024 1338"
         className="h-full w-full"
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio={preserveAspectRatio}
       >
         <defs>
           <filter id="robot-strip-glow" x="-42%" y="-24%" width="184%" height="148%">

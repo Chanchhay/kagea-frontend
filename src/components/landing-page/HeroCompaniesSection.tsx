@@ -1,363 +1,217 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { ClipboardList, FileText, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { companies } from './data';
-import { ChevronDownIcon, MapPinIcon, SearchIcon } from './icons';
+import { MapPinIcon } from './icons';
 import RobotHeroLight from './RobotHeroLight';
-import { TypewriterText } from './shared/TypewriterText';
-import { AnimatedNumber } from './shared/animated-number';
 import { GlobeBackground } from './shared/GlobeBackground';
+import { TypewriterText } from './shared/TypewriterText';
 import { ScaleReveal } from './shared/ScaleReveal';
 
 export default function HeroCompaniesSection() {
-  const heroSectionRef = useRef<HTMLElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
-  const robotTiltRef = useRef<HTMLDivElement>(null);
-  const robotHighlightRef = useRef<HTMLDivElement>(null);
-  const [statsVisible, setStatsVisible] = useState(false);
-
-  useEffect(() => {
-    const el = statsRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setStatsVisible(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.5 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const heroEl = heroSectionRef.current;
-    const tiltEl = robotTiltRef.current;
-    const highlightEl = robotHighlightRef.current;
-    if (!heroEl || !tiltEl || !highlightEl) return;
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) {
-      tiltEl.style.transform = 'perspective(1400px) rotateX(0deg) rotateY(0deg) translateY(0px)';
-      highlightEl.style.transform = 'translate3d(0px, 0px, 0)';
-      highlightEl.style.opacity = '0.16';
-      return;
-    }
-
-    let rafId = 0;
-    let pointerInside = false;
-    let lastMoveAt = performance.now();
-
-    const current = { rotateX: 0, rotateY: 0, lightX: 0, lightY: 0 };
-    const target = { rotateX: 0, rotateY: 0, lightX: 0, lightY: 0 };
-
-    const animate = (time: number) => {
-      const idleBob = pointerInside ? 0 : Math.sin(time / 1100) * 3.5;
-      const easing = time - lastMoveAt < 180 ? 0.12 : 0.08;
-
-      current.rotateX += (target.rotateX - current.rotateX) * easing;
-      current.rotateY += (target.rotateY - current.rotateY) * easing;
-      current.lightX += (target.lightX - current.lightX) * 0.1;
-      current.lightY += (target.lightY - current.lightY) * 0.1;
-
-      tiltEl.style.transform =
-        `perspective(1400px) rotateX(${current.rotateX.toFixed(2)}deg) ` +
-        `rotateY(${current.rotateY.toFixed(2)}deg) translateY(${idleBob.toFixed(2)}px)`;
-
-      highlightEl.style.transform =
-        `translate3d(${current.lightX.toFixed(2)}px, ${(current.lightY + idleBob * 0.2).toFixed(2)}px, 0)`;
-      highlightEl.style.opacity = `${0.16 + Math.min(Math.abs(current.rotateX) + Math.abs(current.rotateY), 18) * 0.018}`;
-
-      rafId = window.requestAnimationFrame(animate);
-    };
-
-    const handlePointerMove = (event: PointerEvent) => {
-      const rect = heroEl.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = (event.clientY - rect.top) / rect.height;
-      const normalizedX = Math.max(-1, Math.min(1, (x - 0.5) * 2));
-      const normalizedY = Math.max(-1, Math.min(1, (y - 0.5) * 2));
-
-      pointerInside = true;
-      lastMoveAt = performance.now();
-      target.rotateY = normalizedX * 16;
-      target.rotateX = -normalizedY * 14;
-      target.lightX = normalizedX * 24;
-      target.lightY = normalizedY * 18;
-    };
-
-    const handlePointerLeave = () => {
-      pointerInside = false;
-      target.rotateX = 0;
-      target.rotateY = 0;
-      target.lightX = 0;
-      target.lightY = 0;
-    };
-
-    heroEl.addEventListener('pointermove', handlePointerMove);
-    heroEl.addEventListener('pointerleave', handlePointerLeave);
-    rafId = window.requestAnimationFrame(animate);
-
-    return () => {
-      heroEl.removeEventListener('pointermove', handlePointerMove);
-      heroEl.removeEventListener('pointerleave', handlePointerLeave);
-      window.cancelAnimationFrame(rafId);
-    };
-  }, []);
-
   return (
     <>
       {/* ═══════════════════════════════════════════ HERO SECTION ═══════════════════════════════════════════ */}
-      <section ref={heroSectionRef} className="relative overflow-hidden pb-12 pt-2 lg:pt-4">
+      {/* 78px is the sticky PublicShell header, so the hero fills exactly what is left of the viewport. */}
+      <section className="relative flex min-h-[calc(100svh-78px)] snap-start items-center overflow-hidden">
 
-        {/* Globe Background */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-0 flex justify-center">
-          <div className="h-[650px] w-[650px] max-w-[100vw] overflow-hidden rounded-full opacity-40 dark:opacity-25">
-            <GlobeBackground
-              className="h-full w-full"
-              color="#bfd9fb"
-              rotationSpeed={0.00035}
-              enableParallax={false}
-              scale={3.9}
-              latLines={18}
-              lonLines={24}
-              enableDots
-            />
-          </div>
+        {/*
+          * Globe: a square the full width of the viewport, centred on the
+          * section's bottom edge, so `overflow-hidden` clips it to the upper
+          * hemisphere -- a horizon spanning the whole screen rather than a
+          * floating ball.
+          *
+          * scale == the sphere's world radius, and a 45deg camera at z=10 sees
+          * 2 * 10 * tan(22.5deg) ~= 8.28 units across a square viewport, so
+          * scale 3.95 puts the globe (plus its radius+0.2 glow ring) just
+          * inside the container's full width.
+          */}
+        <div className="pointer-events-none absolute bottom-0 left-1/2 z-0 h-[190vw] w-[190vw] -translate-x-1/2 translate-y-1/2 opacity-40 sm:h-[140vw] sm:w-[140vw] lg:h-[100vw] lg:w-[100vw] dark:opacity-25">
+          <GlobeBackground
+            className="h-full w-full"
+            color="#bfd9fb"
+            rotationSpeed={0.00035}
+            enableParallax={false}
+            scale={3.95}
+            latLines={18}
+            lonLines={24}
+            enableDots
+          />
         </div>
 
-        {/* Ambient glow */}
-        <div className="pointer-events-none absolute left-1/3 top-10 z-0 h-64 w-64 rounded-full bg-emerald-100/40 blur-3xl dark:bg-emerald-950/20" />
-        <div className="pointer-events-none absolute right-[-12%] top-[6%] z-0 h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(circle,_rgba(243,190,0,0.28)_0%,_rgba(0,138,30,0.22)_42%,_transparent_72%)] blur-3xl sm:h-[34rem] sm:w-[34rem] lg:h-[42rem] lg:w-[42rem]" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[42vw] bg-[linear-gradient(270deg,rgba(255,255,255,0.9)_0%,rgba(255,255,255,0.52)_30%,rgba(255,255,255,0.16)_58%,rgba(255,255,255,0)_100%)] lg:block dark:hidden" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[42vw] bg-[linear-gradient(270deg,rgba(7,12,20,0.92)_0%,rgba(7,12,20,0.7)_28%,rgba(7,12,20,0.34)_58%,rgba(7,12,20,0)_100%)] lg:hidden dark:lg:block" />
+        {/*
+          * Artwork: full-height, bled off the right edge, anchored bottom-right.
+          * Hidden below lg -- on a phone it sat full-width behind the copy.
+          *
+          * `contain` rather than `cover` is deliberate. The box is far wider
+          * than the artwork's 1024x1338, so cover would crop the top -- which is
+          * precisely where RobotHeroLight's strip runs (y 128-483, on the
+          * helmet). Contain keeps the whole figure and the whole strip at every
+          * viewport, and the fades below remove the edges that made a contained
+          * image read as a floating rectangle before.
+          */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden overflow-hidden lg:block lg:w-[48%] xl:w-[50%]">
+          <Image
+            src="/images/ai-hero.png"
+            alt=""
+            aria-hidden="true"
+            fill
+            priority
+            sizes="(min-width: 1024px) 50vw, 1px"
+            className="object-contain object-[right_bottom]"
+          />
 
-        {/* 2-Column Hero Grid (Prevents text overlapping AI robot image) */}
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="relative grid grid-cols-1 items-center gap-10 lg:min-h-[46rem] lg:grid-cols-12 lg:gap-8">
+          {/*
+            * The animated light strip. `xMaxYMax meet` is the SVG spelling of
+            * the image's own `object-contain object-[right_bottom]`, so both fit
+            * the identical box the identical way and the strip stays welded to
+            * the helmet at every viewport size. It sits under the fades so it
+            * dissolves into the page along with the artwork.
+            */}
+          <RobotHeroLight className="z-[1]" preserveAspectRatio="xMaxYMax meet" />
 
-            {/* Left Column: Headline, Subtext, Stats */}
-            <div className="relative z-20 flex max-w-2xl flex-col items-center text-center lg:col-span-7 lg:max-w-[42rem] lg:items-start lg:justify-center lg:py-10 lg:text-left">
-
-              {/* Badge */}
-              <motion.div
-                initial={{ opacity: 0, y: -16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55 }}
-                className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-200/60 bg-[#EEF6F0] px-4 py-1.5 text-xs font-bold text-[#008A1E] shadow-xs dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-400"
-              >
-                <span className="flex h-2 w-2 animate-ping rounded-full bg-emerald-500" />
-                <span>⚡ #1 Job Search Engine in Cambodia &amp; Global</span>
-              </motion.div>
-
-              {/* Restored Main Headline with TypewriterText */}
-              <h1 className="max-w-[12.5ch] whitespace-pre-line font-['Inter',sans-serif] text-4xl font-black leading-[0.98] tracking-[-0.055em] sm:max-w-[12ch] sm:text-5xl sm:leading-[0.98] lg:max-w-[11.2ch] lg:text-[72px]">
-                <TypewriterText
-                  segments={[
-                    { text: 'Explore new ', className: 'text-[#008A1E]' },
-                    { text: 'job', className: 'text-[#F3BE00]' },
-                    { text: '\nvacancies', className: 'text-[#F3BE00]' },
-                    { text: '\nall over the world', className: 'text-[#F3BE00]' },
-                  ]}
-                  speed={50}
-                />
-              </h1>
-
-              {/* Subtext */}
-              <p className="mt-6 max-w-xl font-['Inter',sans-serif] text-base font-medium leading-relaxed text-slate-500 dark:text-slate-300">
-                Our platform features more than 1.2 million job vacancies worldwide, connecting
-                you with top employers who value your skills and experience.
-              </p>
-
-              {/* Animated Stats Pill */}
-              <ScaleReveal delay={0.3} className="w-full">
-                <div
-                  ref={statsRef}
-                  className="mt-8 grid w-full max-w-xl grid-cols-3 divide-x divide-slate-200 rounded-[24px] border border-slate-100 bg-white/85 p-4 shadow-[0_20px_60px_rgba(148,163,184,0.14)] backdrop-blur-md dark:divide-slate-800 dark:border-slate-800/80 dark:bg-slate-900/70"
-                >
-                  <div className="px-2 text-center">
-                    <p className="text-xl font-black text-[#008A1E] dark:text-emerald-400 sm:text-2xl lg:text-3xl">
-                      <AnimatedNumber
-                        value={statsVisible ? 1.2 : 0}
-                        className="inline"
-                        springOptions={{ bounce: 0, duration: 2000 }}
-                        format={(v) => v.toFixed(1)}
-                      />
-                      <span>M+</span>
-                    </p>
-                    <p className="mt-0.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                      Active Jobs
-                    </p>
-                  </div>
-
-                  <div className="px-2 text-center">
-                    <p className="text-xl font-black text-[#F3BE00] sm:text-2xl lg:text-3xl">
-                      <AnimatedNumber
-                        value={statsVisible ? 1200 : 0}
-                        className="inline"
-                        springOptions={{ bounce: 0, duration: 2000 }}
-                      />
-                      <span>+</span>
-                    </p>
-                    <p className="mt-0.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                      Top Companies
-                    </p>
-                  </div>
-
-                  <div className="px-2 text-center">
-                    <p className="text-xl font-black text-[#008A1E] dark:text-emerald-400 sm:text-2xl lg:text-3xl">
-                      <AnimatedNumber
-                        value={statsVisible ? 98 : 0}
-                        className="inline"
-                        springOptions={{ bounce: 0, duration: 2000 }}
-                      />
-                      <span>%</span>
-                    </p>
-                    <p className="mt-0.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                      Successful Matches
-                    </p>
-                  </div>
-                </div>
-              </ScaleReveal>
-            </div>
-
-            {/* Right Column: AI Robot Image */}
-            <div className="relative flex min-h-[20rem] justify-center lg:col-span-5 lg:min-h-[46rem] lg:justify-end">
-              <div
-                ref={robotTiltRef}
-                className="group relative z-10 h-[22rem] w-[17.5rem] transform-gpu opacity-75 sm:h-[29rem] sm:w-[22rem] sm:opacity-90 md:h-[33rem] md:w-[25rem] lg:absolute lg:bottom-[-12%] lg:right-[-5%] lg:h-[44rem] lg:w-[36rem] lg:opacity-100 xl:bottom-[-14%] xl:right-[-7%] xl:h-[49rem] xl:w-[40rem]"
-                style={{
-                  transform: 'perspective(1400px) rotateX(0deg) rotateY(0deg) translateY(0px)',
-                  transformStyle: 'preserve-3d',
-                  willChange: 'transform',
-                }}
-              >
-                {/* Glow behind robot */}
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-[14%_8%_6%_10%] rounded-full bg-[radial-gradient(circle,_rgba(251,146,60,0.38)_0%,_rgba(34,197,94,0.2)_42%,_transparent_74%)] blur-[70px] lg:inset-[10%_6%_2%_8%] lg:blur-[110px]"
-                />
-
-                {/* Floating mini status badge */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.8, duration: 0.5 }}
-                  className="absolute left-[-6px] top-10 z-20 hidden rounded-2xl border border-white/40 bg-white/90 p-3 shadow-lg backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/90 sm:flex sm:items-center sm:gap-3 lg:left-[6%] lg:top-[8%]"
-                >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-                    🤖
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-800 dark:text-white">AI Assistant</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400">Matching 24/7</p>
-                  </div>
-                </motion.div>
-
-                {/* Robot image */}
-                <Image
-                  src="/images/ai-hero.png"
-                  alt="AI recruiting assistant"
-                  fill
-                  priority={false}
-                  loading="lazy"
-                  sizes="(min-width: 1280px) 640px, (min-width: 1024px) 576px, (min-width: 768px) 400px, 280px"
-                  className="object-contain object-center drop-shadow-[0_32px_48px_rgba(15,23,42,0.22)] lg:object-right-top"
-                />
-                <div
-                  ref={robotHighlightRef}
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-[8%_10%_6%_10%] rounded-[44%] bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.38)_0%,_rgba(255,255,255,0.16)_18%,_rgba(255,255,255,0.07)_30%,_transparent_56%)] mix-blend-screen opacity-15 blur-2xl lg:inset-[6%_8%_4%_10%]"
-                  style={{ willChange: 'transform, opacity' }}
-                />
-                <RobotHeroLight />
-              </div>
-            </div>
-
-          </div>
+          {/*
+            * Keyed to the landing page's own background (white / #0B0F19 on the
+            * LandingPage wrapper) rather than a surface token, so the artwork
+            * dissolves into the page instead of ending on a visible band.
+            */}
+          {/* <div className="absolute inset-0 z-[2] bg-[linear-gradient(90deg,#fff_0%,rgba(255,255,255,.88)_18%,rgba(255,255,255,.45)_42%,rgba(255,255,255,0)_74%)] dark:bg-[linear-gradient(90deg,#0B0F19_0%,rgba(11,15,25,.9)_18%,rgba(11,15,25,.48)_42%,rgba(11,15,25,0)_74%)]" /> */}
+          {/* <div className="absolute inset-x-0 bottom-0 z-[2] h-40 bg-[linear-gradient(0deg,#fff_0%,rgba(255,255,255,.6)_38%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(0deg,#0B0F19_0%,rgba(11,15,25,.6)_38%,rgba(11,15,25,0)_100%)]" /> */}
         </div>
-      </section>
 
-      {/* ═══════════════════════════════════════════ SEARCH SECTION ═══════════════════════════════════════════ */}
-      <section className="mt-4 flex flex-col items-center px-4">
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          viewport={{ once: true, margin: '-50px' }}
-          className="flex w-full max-w-3xl flex-col items-center gap-2 rounded-2xl bg-[#EEF6F0] p-2 shadow-sm dark:bg-slate-900 sm:flex-row"
-        >
-          <div className="flex w-full flex-1 items-center gap-3 px-4 py-2.5">
-            <SearchIcon className="h-5 w-5 shrink-0 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Company or industry"
-              className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100"
-            />
-          </div>
+        {/* Ambient brand glow */}
+        <div className="pointer-events-none absolute right-[8%] top-[12%] z-0 h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(circle,rgba(31,166,40,.14)_0%,rgba(31,166,40,.06)_45%,transparent_72%)] blur-3xl lg:h-[34rem] lg:w-[34rem] dark:bg-[radial-gradient(circle,rgba(39,183,51,.16)_0%,rgba(39,183,51,.06)_45%,transparent_72%)]" />
 
-          <div className="hidden h-6 w-px bg-slate-300 dark:bg-slate-700 sm:block" />
+        {/*
+          * Full-width bottom fade. The three fades above are scoped to the
+          * artwork lane; this one spans the whole section so the hero dissolves
+          * into the next section instead of stopping on a hard edge mid-scroll.
+          */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-52 bg-[linear-gradient(to_top,#fff_0%,rgba(255,255,255,.97)_14%,rgba(255,255,255,.88)_27%,rgba(255,255,255,.72)_40%,rgba(255,255,255,.52)_54%,rgba(255,255,255,.31)_68%,rgba(255,255,255,.13)_84%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(to_top,#0B0F19_0%,rgba(11,15,25,.97)_14%,rgba(11,15,25,.88)_27%,rgba(11,15,25,.72)_40%,rgba(11,15,25,.52)_54%,rgba(11,15,25,.31)_68%,rgba(11,15,25,.13)_84%,rgba(11,15,25,0)_100%)]" />
 
-          <div className="flex w-full items-center gap-2 px-4 py-2.5 sm:w-auto">
-            <MapPinIcon className="h-5 w-5 shrink-0 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Location"
-              className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 sm:w-28"
-            />
-          </div>
+        <div className="relative z-10 w-full px-5 py-14 sm:px-8 sm:py-16 lg:px-12 lg:py-20 xl:px-16 2xl:px-24">
+          {/*
+            * The copy column is capped per breakpoint so it never runs under
+            * the artwork lane on the right (48% from lg, 50% from xl).
+            */}
+          <div className="flex w-full flex-col items-start text-left sm:max-w-xl lg:max-w-[28rem] xl:max-w-[34rem] 2xl:max-w-[38rem]">
 
-          <div className="hidden h-6 w-px bg-slate-300 dark:bg-slate-700 sm:block" />
-
-          <div className="relative flex shrink-0 items-center px-3 py-2">
-            <select className="cursor-pointer appearance-none bg-transparent pr-6 text-sm font-medium text-slate-700 outline-none dark:text-slate-200">
-              <option>20 mi</option>
-              <option>10 mi</option>
-              <option>50 mi</option>
-            </select>
-            <ChevronDownIcon className="pointer-events-none absolute right-2 h-4 w-4 text-slate-500" />
-          </div>
-
-          <button className="w-full shrink-0 rounded-xl bg-[#00921A] px-8 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#007A16] active:scale-[0.98] sm:w-auto">
-            Search
-          </button>
-        </motion.div>
-
-        {/* Tags */}
-        <motion.div className="mt-6 flex flex-wrap justify-center gap-2 sm:gap-3">
-          {['Remote', 'Work from home', 'Part-time', 'Design'].map((tag, idx) => (
-            <motion.span
-              key={tag}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.08, duration: 0.4 }}
-              viewport={{ once: true, margin: '-50px' }}
-              className="cursor-pointer rounded-xl bg-[#EEF6F0] px-4 py-2 text-xs font-semibold text-[#008A1E] transition hover:bg-emerald-100 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800"
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55 }}
+              className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200/60 bg-[#EEF6F0] px-4 py-1.5 text-xs font-bold text-[#008A1E] shadow-xs dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-400"
             >
-              {tag}
-            </motion.span>
-          ))}
-        </motion.div>
+              <span className="flex h-2 w-2 animate-ping rounded-full bg-emerald-500" />
+              <span>⚡ For job seekers &amp; recruiters</span>
+            </motion.div>
+
+            {/* Headline */}
+            <h1 className="max-w-[12.5ch] whitespace-pre-line font-['Inter',sans-serif] text-[clamp(2.25rem,9vw,2.75rem)] font-black leading-[1] tracking-[-0.055em] sm:max-w-[12ch] sm:text-5xl sm:leading-[0.98] lg:max-w-[11.2ch] lg:text-[52px] xl:text-[64px] 2xl:text-[72px]">
+              <TypewriterText
+                segments={[
+                  { text: 'Find jobs.', className: 'text-[#008A1E]' },
+                  { text: '\nPractice with AI.', className: 'text-[#F3BE00]' },
+                  { text: '\nGet hired.', className: 'text-[#F3BE00]' },
+                ]}
+                speed={50}
+              />
+            </h1>
+
+            {/* Subtext */}
+            <p className="mt-6 max-w-xl font-['Inter',sans-serif] text-base font-medium leading-relaxed text-slate-500 dark:text-slate-300">
+              Browse openings from employers hiring now, build your resume and portfolio, and
+              practice interviews generated from the jobs you actually want. Recruiters post
+              roles and review candidates from the same place.
+            </p>
+
+            {/* Actions */}
+            <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+              <Link
+                href="/jobs"
+                className="inline-flex h-11 w-full items-center justify-center rounded-full bg-brand px-7 sm:w-auto text-[15px] font-semibold text-white shadow-[0_12px_30px_rgba(36,169,68,.28)] transition-colors hover:bg-brand-hover"
+              >
+                Find a job
+              </Link>
+              <Link
+                href="/register"
+                className="inline-flex h-11 w-full items-center justify-center rounded-full border border-border bg-surface/80 px-7 sm:w-auto text-[15px] font-semibold text-heading backdrop-blur-md transition-colors hover:border-brand/40 hover:text-brand dark:bg-white/[.06]"
+              >
+                Create an account
+              </Link>
+            </div>
+
+            {/* What the platform actually does */}
+            <ScaleReveal delay={0.3} className="w-full">
+              <div className="mt-10 grid w-full gap-px overflow-hidden rounded-[24px] border border-border bg-border/60 sm:grid-cols-3">
+                {[
+                  {
+                    icon: Sparkles,
+                    title: 'AI interviews',
+                    body: 'Practice sessions generated from the job you are applying to.',
+                  },
+                  {
+                    icon: FileText,
+                    title: 'Resumes & portfolios',
+                    body: 'Build them once and reuse them across applications.',
+                  },
+                  {
+                    icon: ClipboardList,
+                    title: 'Application tracking',
+                    body: 'Follow every application from a single dashboard.',
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="bg-surface/90 p-4 backdrop-blur-md dark:bg-[#101624]/90">
+                    <item.icon aria-hidden="true" className="size-[1.05rem] text-brand" />
+                    <p className="mt-2.5 text-[13px] font-semibold text-heading">{item.title}</p>
+                    <p className="mt-1 text-[11.5px] leading-[1.45] text-body">{item.body}</p>
+                  </div>
+                ))}
+              </div>
+            </ScaleReveal>
+          </div>
+        </div>
       </section>
 
       {/* ═══════════════════════════════════════════ TOP COMPANIES SECTION ═══════════════════════════════════════════ */}
-      <section className="mt-12 sm:mt-16">
-        <motion.h2
+      {/*
+        * `mx-auto` matters here: the LandingPage wrapper no longer supplies a
+        * max-width container (the hero needs to bleed full width), so this
+        * section centres itself.
+        */}
+      <section className="relative mx-auto w-full max-w-7xl snap-start px-4 pb-16 pt-4 sm:px-6 sm:pb-20 lg:px-8">
+
+        {/* Soft rule carrying the eye out of the hero and into the grid. */}
+        <div
+          aria-hidden="true"
+          className="mx-auto h-px w-full max-w-3xl bg-[linear-gradient(90deg,transparent,var(--border),transparent)]"
+        />
+
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: '-100px' }}
-          className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+          className="mx-auto mt-12 flex max-w-2xl flex-col items-center text-center"
         >
-          Top companies
-        </motion.h2>
+          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[.12em] text-brand dark:bg-brand/20 dark:text-[#8df6a8]">
+            <span className="flex size-1.5 rounded-full bg-brand" />
+            Hiring now
+          </span>
+          <h2 className="mt-4 text-[clamp(1.9rem,3vw,2.6rem)] font-semibold tracking-[-0.045em] text-heading">
+            Top companies
+          </h2>
+          <p className="mt-3 text-[15px] leading-7 text-body">
+            Employers posting roles on the platform, across Cambodia.
+          </p>
+        </motion.div>
 
         <motion.div
-          className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          className="mx-auto mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 "
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
@@ -376,40 +230,53 @@ export default function HeroCompaniesSection() {
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
               }}
-              className="group relative flex cursor-pointer flex-col justify-between rounded-2xl border border-[#FDE68A] bg-white p-5 shadow-[0_14px_38px_rgba(245,158,11,0.10)] transition-all duration-300 hover:-translate-y-1 hover:border-[#F3BE00] hover:shadow-[0_18px_44px_rgba(245,158,11,0.16)] dark:border-slate-800 dark:bg-slate-900"
+              whileHover={{ y: -6 }}
+              whileTap={{ scale: 0.99 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+              /*
+               * Dark mode is a lit glass panel rather than a flat slate block:
+               * a gradient fill, a hairline top highlight, and a brand-green
+               * hover. The old `slate-900` card sat almost invisibly on the
+               * page background and hovered to an amber shadow that belongs to
+               * the light theme only.
+               */
+              className="
+              dark:bg-slate-800
+              group relative flex cursor-pointer flex-col justify-between rounded-2xl border border-[#FDE68A] bg-white p-5 shadow-[0_14px_38px_rgba(245,158,11,0.10)] transition-[border-color,box-shadow,background-color] duration-300 hover:border-[#F3BE00] hover:shadow-[0_18px_44px_rgba(245,158,11,0.16)] dark:border-white/10 dark:bg-gradient-to-b dark:from-white/[.07] dark:to-white/[.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,.08),0_16px_40px_-12px_rgba(0,0,0,.7)] dark:hover:border-brand/45 dark:hover:from-white/[.10] dark:hover:to-white/[.05] dark:hover:shadow-[inset_0_1px_0_rgba(255,255,255,.12),0_20px_46px_-12px_rgba(0,0,0,.8)]"
             >
               <div className="mb-6 flex items-start justify-between gap-2">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${company.bg} ${company.text} text-[11px] font-bold shadow-sm`}
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${company.bg} ${company.text} text-[11px] font-bold shadow-sm dark:shadow-[0_0_0_1px_rgba(255,255,255,.08)]`}
                   >
                     {company.logoText}
                   </div>
                   <div>
-                    <p className="text-base font-bold leading-tight text-slate-900 transition-colors group-hover:text-[#0F8A22] dark:text-white dark:group-hover:text-emerald-400">
+                    <p className="text-base font-bold leading-tight text-slate-900 transition-colors group-hover:text-[#0F8A22] dark:text-white dark:group-hover:text-[#7bf0a4]">
                       {company.category}
                     </p>
-                    <div className="mt-1 flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                      <MapPinIcon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                    <div className="mt-1 flex items-center gap-1 text-xs text-slate-500 dark:text-white/60">
+                      <MapPinIcon className="h-3.5 w-3.5 text-slate-400 dark:text-white/45" />
                       <span>{company.location}</span>
                     </div>
                   </div>
                 </div>
 
                 {company.featured && (
-                  <span className="shrink-0 rounded-full bg-white/75 px-2.5 py-1 text-[10px] font-semibold text-[#FB7185] ring-1 ring-[#FECDD3] backdrop-blur-sm dark:bg-red-950/30 dark:text-red-300 dark:ring-red-900/70">
+                  <span className="shrink-0 rounded-full bg-white/75 px-2.5 py-1 text-[10px] font-semibold text-[#FB7185] ring-1 ring-[#FECDD3] backdrop-blur-sm dark:bg-white/[.06] dark:text-[#ffb4bd] dark:ring-white/15">
                     Featured
                   </span>
                 )}
               </div>
 
-              <button className="w-full rounded-xl bg-[#ECFDF3] py-3 text-xs font-bold text-[#0F8A22] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] ring-1 ring-[#D1FAE5] transition-all duration-300 group-hover:bg-[#0F8A22] group-hover:text-white group-hover:ring-[#0F8A22] dark:bg-slate-800/80 dark:text-emerald-400 dark:ring-slate-700 dark:group-hover:bg-[#00921A] dark:group-hover:text-white dark:group-hover:ring-[#00921A]">
+              <button className="w-full rounded-xl bg-[#ECFDF3] py-3 text-xs font-bold text-[#0F8A22] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] ring-1 ring-[#D1FAE5] transition-all duration-300 group-hover:bg-[#0F8A22] group-hover:text-white group-hover:ring-[#0F8A22] dark:bg-brand/15 dark:text-[#7bf0a4] dark:shadow-none dark:ring-brand/30 dark:group-hover:bg-brand dark:group-hover:text-white dark:group-hover:ring-brand">
                 Open Position
               </button>
             </motion.div>
           ))}
         </motion.div>
       </section>
+
     </>
   );
 }

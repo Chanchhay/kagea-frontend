@@ -21,7 +21,7 @@ export default function LandingPage() {
         </div>
         <DecorativeBackground />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto">
           <HeroCompaniesSection />
         </div>
 
