@@ -105,10 +105,6 @@ export default function DecorativeBackground() {
         </svg>
       </div>
 
-      {/* Subtle dot pattern behind hero */}
-      <div className="pointer-events-none absolute left-1/2 top-40 -translate-x-1/2 hidden lg:block opacity-[0.03]">
-        <div className="h-96 w-96 rounded-full bg-[#008A1E]" />
-      </div>
     </>
   );
 }
