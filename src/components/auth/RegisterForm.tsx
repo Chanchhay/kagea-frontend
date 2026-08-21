@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -26,6 +27,11 @@ import {
   type RegisterFormValues,
 } from "@/lib/validation/register.schema";
 import { useRegisterMutation } from "@/services/authApi";
+import {
+  authFieldClass,
+  authFieldIconClass,
+  authLabelClass,
+} from "./authFieldStyles";
 import { KeycloakLoginButton } from "./AuthActions";
 import { PasswordInput } from "./PasswordInput";
 import { RoleSelector } from "./RoleSelector";
@@ -41,6 +47,20 @@ const defaultValues: RegisterFormValues = {
   role: "SEEKER",
   phoneNumber: "",
 };
+
+type TextFieldName =
+  | "firstName"
+  | "lastName"
+  | "username"
+  | "email"
+  | "phoneNumber";
+
+const genderOptions = [
+  { value: "UNSPECIFIED", label: "Prefer not to say" },
+  { value: "MALE", label: "Male" },
+  { value: "FEMALE", label: "Female" },
+  { value: "OTHER", label: "Other" },
+] as const;
 
 export function RegisterForm() {
   const [register, registration] = useRegisterMutation();
@@ -64,7 +84,7 @@ export function RegisterForm() {
 
   return (
     <Form {...form}>
-      <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="role"
@@ -76,15 +96,21 @@ export function RegisterForm() {
           )}
         />
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <TextField control={form.control} name="firstName" label="First name" />
-          <TextField control={form.control} name="lastName" label="Last name" />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField control={form.control} name="firstName" label="First name" placeholder="Sokha" />
+          <TextField control={form.control} name="lastName" label="Last name" placeholder="Chan" />
         </div>
 
-        <TextField control={form.control} name="username" label="Username" />
-        <TextField control={form.control} name="email" label="Email" type="email" />
+        <TextField control={form.control} name="username" label="Username" placeholder="sokha.chan" />
+        <TextField
+          control={form.control}
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="you@example.com"
+        />
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="password"
@@ -97,7 +123,6 @@ export function RegisterForm() {
                   error={fieldState.error?.message}
                   {...field}
                 />
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -113,41 +138,36 @@ export function RegisterForm() {
                   error={fieldState.error?.message}
                   {...field}
                 />
-                <FormMessage />
               </FormItem>
             )}
           />
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="gender"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-semibold text-heading">
-                  Gender
-                </FormLabel>
+                <FormLabel className={authLabelClass}>Gender</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger className="mt-1.5 h-10 w-full rounded-[18px] border-border bg-background/90 px-4 text-[14px] text-foreground shadow-none focus-visible:border-brand focus-visible:ring-brand/10 dark:border-white/10 dark:bg-black dark:text-white">
+                    <SelectTrigger className={cn(authFieldClass, "mt-1.5 px-4")}>
                       <span className="flex items-center gap-3">
                         <User
                           aria-hidden="true"
-                          className="size-4 text-muted-foreground"
+                          className="size-4 text-muted-fg dark:text-white/45"
                         />
                         <SelectValue />
                       </span>
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {(["UNSPECIFIED", "MALE", "FEMALE", "OTHER"] as const).map(
-                      (gender) => (
-                        <SelectItem key={gender} value={gender}>
-                          {gender}
-                        </SelectItem>
-                      ),
-                    )}
+                    {genderOptions.map((gender) => (
+                      <SelectItem key={gender.value} value={gender.value}>
+                        {gender.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -158,13 +178,14 @@ export function RegisterForm() {
             control={form.control}
             name="phoneNumber"
             label="Phone number"
+            placeholder="012 345 678"
           />
         </div>
 
         <Button
           type="submit"
           size="lg"
-          className="h-10 w-full rounded-full bg-brand text-base font-semibold text-white shadow-[0_12px_30px_rgba(36,169,68,.28)] hover:bg-brand-hover"
+          className="mt-1 h-11 w-full rounded-full bg-brand text-[15px] font-semibold text-white shadow-[0_12px_30px_rgba(36,169,68,.28)] transition-colors hover:bg-brand-hover dark:shadow-[0_12px_30px_rgba(36,169,68,.18)]"
           disabled={registration.isLoading}
         >
           <Sparkles aria-hidden="true" className="size-4" />
@@ -191,11 +212,13 @@ function TextField({
   name,
   label,
   type = "text",
+  placeholder,
 }: {
   control: ReturnType<typeof useForm<RegisterFormValues>>["control"];
-  name: "firstName" | "lastName" | "username" | "email" | "phoneNumber";
+  name: TextFieldName;
   label: string;
   type?: string;
+  placeholder?: string;
 }) {
   return (
     <FormField
@@ -203,14 +226,13 @@ function TextField({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-sm font-semibold text-heading">
-            {label}
-          </FormLabel>
+          <FormLabel className={authLabelClass}>{label}</FormLabel>
           <FormControl>
             <div className="relative mt-1.5">
               <Input
                 type={type}
-                className="h-10 rounded-[18px] border-border bg-background/90 pl-11 text-[14px] text-foreground shadow-none placeholder:text-muted-foreground focus-visible:border-brand focus-visible:ring-brand/10 dark:border-white/10 dark:bg-black dark:text-white dark:placeholder:text-white/30"
+                placeholder={placeholder}
+                className={cn(authFieldClass, "pl-11")}
                 {...field}
               />
               <FieldIcon name={name} />
@@ -223,11 +245,7 @@ function TextField({
   );
 }
 
-function FieldIcon({
-  name,
-}: {
-  name: "firstName" | "lastName" | "username" | "email" | "phoneNumber";
-}) {
+function FieldIcon({ name }: { name: TextFieldName }) {
   const Icon =
     name === "email"
       ? Mail
@@ -238,7 +256,7 @@ function FieldIcon({
   return (
     <Icon
       aria-hidden="true"
-      className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+      className={authFieldIconClass}
     />
   );
 }
