@@ -1,3 +1,4 @@
+import { BrandLogo } from '@/components/shared/BrandLogo';
 import { GlobeBackground } from './shared/GlobeBackground';
 
 export default function Hero() {
@@ -5,9 +6,7 @@ export default function Hero() {
     <section className="relative flex min-h-screen w-full flex-col overflow-hidden bg-white font-sans text-slate-900">
       <header className="relative z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6 md:px-16">
         <div className="flex items-center gap-2">
-          <span className="rounded-md border border-emerald-200 bg-white/80 px-3 py-1.5 text-lg font-bold tracking-wider text-emerald-700 shadow-sm backdrop-blur-sm">
-            LOGOTIPUM
-          </span>
+          <BrandLogo height={34} priority />
         </div>
         <nav className="hidden items-center gap-8 text-sm text-slate-500 md:flex">
           <a href="#" className="transition hover:text-emerald-700">
