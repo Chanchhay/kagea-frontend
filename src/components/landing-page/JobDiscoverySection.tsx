@@ -1,93 +1,50 @@
 'use client';
 
+import { motion } from 'framer-motion';
+import CommunityOrbit from './CommunityOrbit';
+import ParticleText from './ParticleText';
+import StrokeText from './StrokeText';
 import { jobCategoryRows } from './data';
 import { CheckIcon, SearchIcon, UploadIcon, UserPlusIcon } from './icons';
-import { Globe3D } from './shared/3d-globe';
-import type { GlobeMarker } from './shared/3d-globe';
 
-/* ------------------------------------------------------------------ */
-/*  Globe markers — world cities with avatar images                    */
-/* ------------------------------------------------------------------ */
-const globeMarkers: GlobeMarker[] = [
+const workSteps = [
   {
-    lat: 11.5564,
-    lng: 104.9282,
-    src: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-    label: 'Phnom Penh',
+    title: 'Create account',
+    description: 'Aliquam facilisis egestas sapien, nec tempor leo tristique at.',
+    Icon: UserPlusIcon,
+    iconMotion: {
+      whileHover: { scale: 1.08 },
+      transition: { type: 'spring', stiffness: 260, damping: 18 },
+    },
   },
   {
-    lat: 13.3633,
-    lng: 103.8564,
-    src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-    label: 'Siem Reap',
+    title: 'Upload CV/Resume',
+    description: 'Curabitur sit amet maximus ligula. Nam a nulla ante. Nam sodales.',
+    Icon: UploadIcon,
+    iconMotion: {
+      whileHover: { y: -4, scale: 1.04 },
+      transition: { type: 'spring', stiffness: 260, damping: 16 },
+    },
   },
   {
-    lat: 1.3521,
-    lng: 103.8198,
-    src: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
-    label: 'Singapore',
+    title: 'Find suitable job',
+    description: 'Phasellus quis eleifend ex. Morbi nec fringilla nibh.',
+    Icon: SearchIcon,
+    iconMotion: {
+      whileHover: { rotate: -9, x: 2, y: -2, scale: 1.04 },
+      transition: { type: 'spring', stiffness: 260, damping: 16 },
+    },
   },
   {
-    lat: 13.7563,
-    lng: 100.5018,
-    src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
-    label: 'Bangkok',
+    title: 'Apply job',
+    description: 'Curabitur sit amet maximus ligula. Nam a nulla ante. Nam sodales purus.',
+    Icon: CheckIcon,
+    iconMotion: {
+      whileHover: { scale: 1.1 },
+      transition: { type: 'spring', stiffness: 280, damping: 18 },
+    },
   },
-  {
-    lat: 35.6762,
-    lng: 139.6503,
-    src: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&auto=format&fit=crop&q=80',
-    label: 'Tokyo',
-  },
-  {
-    lat: 37.5665,
-    lng: 126.978,
-    src: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80',
-    label: 'Seoul',
-  },
-  {
-    lat: 51.5074,
-    lng: -0.1278,
-    src: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80',
-    label: 'London',
-  },
-  {
-    lat: 40.7128,
-    lng: -74.006,
-    src: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=80',
-    label: 'New York',
-  },
-  {
-    lat: -33.8688,
-    lng: 151.2093,
-    src: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-    label: 'Sydney',
-  },
-  {
-    lat: 25.2048,
-    lng: 55.2708,
-    src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-    label: 'Dubai',
-  },
-  {
-    lat: 48.8566,
-    lng: 2.3522,
-    src: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
-    label: 'Paris',
-  },
-  {
-    lat: 28.6139,
-    lng: 77.209,
-    src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
-    label: 'New Delhi',
-  },
-  {
-    lat: 31.2304,
-    lng: 121.4737,
-    src: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&auto=format&fit=crop&q=80',
-    label: 'Shanghai',
-  },
-];
+] as const;
 
 export default function JobDiscoverySection() {
   const [jobCategoriesRow1, jobCategoriesRow2, jobCategoriesRow3] = jobCategoryRows;
@@ -96,9 +53,26 @@ export default function JobDiscoverySection() {
     <>
       {/* POPULAR JOBS IN CAMBODIA */}
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 sm:py-12">
-        <h2 data-reveal className="mb-10 sm:mb-12 text-center text-3xl font-extrabold sm:text-4xl lg:text-5xl text-[#F3BE00] font-['Inter',sans-serif] tracking-tight">
-          Popular jobs in Cambodia
-        </h2>
+        <div data-reveal className="mb-8 h-[180px] sm:mb-10 sm:h-[220px]">
+          <ParticleText
+            text="Popular jobs in Cambodia"
+            particleSize={2.2}
+            density={5}
+            color="#F3BE00"
+            highlightColor="#008A1E"
+            scatter={150}
+            gatherDuration={1500}
+            stagger={360}
+            pointerRepel={34}
+            repelRadius={110}
+            idleDrift={0.55}
+            trigger="hover"
+            fontSize="clamp(2rem, 6vw, 4rem)"
+            fontWeight={800}
+            fontFamily="inherit"
+            glow
+          />
+        </div>
 
         <div data-stagger className="flex flex-col items-center gap-4 sm:gap-5">
           {[jobCategoriesRow1, jobCategoriesRow2, jobCategoriesRow3].map((row, rowIdx) => (
@@ -118,74 +92,128 @@ export default function JobDiscoverySection() {
 
       {/* HOW FIND WORK */}
       <section className="w-full py-12 sm:py-16 transition-colors">
-        <style>{`
-          @keyframes kgDashFlow {
-            from { stroke-dashoffset: 24; }
-            to   { stroke-dashoffset: 0; }
-          }
-          .kg-animated-dash {
-            stroke-dasharray: 6 6;
-            animation: kgDashFlow 1.2s linear infinite;
-          }
-        `}</style>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 data-reveal className="mb-14 text-center text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl">
-            How Find work
-          </h2>
+          <div data-reveal className="mx-auto mb-12 max-w-3xl">
+            <StrokeText
+              text="How Find work"
+              strokeColor="#008A1E"
+              fillColor="#0f172a"
+              strokeWidth={1.6}
+              drawDuration={1.35}
+              fillDelay={0.12}
+              stagger={0.045}
+              ease="power2.out"
+              trigger="scroll"
+              fillMode="wipe"
+              fontSize={72}
+              fontWeight={800}
+              letterSpacing={-2}
+              className="dark:[&_text:last-of-type]:fill-white"
+            />
+          </div>
 
           <div data-stagger className="relative grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
             {/* Dashed connector lines (desktop only) */}
             <div className="pointer-events-none absolute left-0 right-0 top-12 hidden lg:block z-0">
               <svg className="h-16 w-full" viewBox="0 0 1000 60" fill="none">
-                <path className="kg-animated-dash" d="M 170 30 Q 280 0 380 30" stroke="#008A1E" strokeWidth="2" strokeLinecap="round" fill="none" />
-                <path className="kg-animated-dash" d="M 420 30 Q 530 60 630 30" stroke="#008A1E" strokeWidth="2" strokeLinecap="round" fill="none" />
-                <path className="kg-animated-dash" d="M 670 30 Q 780 0 880 30" stroke="#008A1E" strokeWidth="2" strokeLinecap="round" fill="none" />
+                {[ 
+                  'M 170 30 Q 280 0 380 30',
+                  'M 420 30 Q 530 60 630 30',
+                  'M 670 30 Q 780 0 880 30',
+                ].map((path, index) => (
+                  <g key={path}>
+                    <motion.path
+                      d={path}
+                      stroke="currentColor"
+                      className="text-[#008A1E]/25 dark:text-emerald-500/25"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeDasharray="7 7"
+                      fill="none"
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      whileInView={{ scaleX: 1, opacity: 0.55 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 0.55,
+                        delay: 0.25 + index * 0.15,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      style={{ transformOrigin: 'left center' }}
+                    />
+                    <motion.path
+                      d={path}
+                      stroke="currentColor"
+                      className="text-[#008A1E] dark:text-emerald-400"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeDasharray="10 12"
+                      fill="none"
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      whileInView={{ scaleX: 1, opacity: 0.9 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 0.55,
+                        delay: 0.25 + index * 0.15,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      style={{ transformOrigin: 'left center' }}
+                    >
+                      <animate
+                        attributeName="stroke-dashoffset"
+                        from="0"
+                        to="-44"
+                        dur="1.25s"
+                        repeatCount="indefinite"
+                      />
+                      <animate
+                        attributeName="opacity"
+                        values="0.45;1;0.45"
+                        dur="1.8s"
+                        repeatCount="indefinite"
+                      />
+                    </motion.path>
+                  </g>
+                ))}
               </svg>
             </div>
 
-            {/* Step 1: Create account */}
-            <div className="group relative z-10 flex flex-col items-center rounded-3xl p-6 text-center bg-white/50 dark:bg-slate-800/40 backdrop-blur-xs border border-amber-200/60 dark:border-slate-700/40 shadow-xs transition-all duration-300 hover:bg-white dark:hover:bg-slate-800 hover:border-emerald-300 dark:hover:border-emerald-600 hover:shadow-2xl hover:-translate-y-2 cursor-pointer">
-              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-[#008A1E]/30 dark:border-emerald-700/50 shadow-md ring-4 ring-emerald-500/10 group-hover:bg-[#008A1E] group-hover:border-[#008A1E] group-hover:ring-8 group-hover:ring-[#008A1E]/20 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
-                <UserPlusIcon className="h-7 w-7 text-[#008A1E] group-hover:text-white transition-colors duration-300" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Create account</h3>
-              <p className="mt-2 max-w-[220px] text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-                Aliquam facilisis egestas sapien, nec tempor leo tristique at.
-              </p>
-            </div>
+            {workSteps.map(({ title, description, Icon, iconMotion }, index) => (
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 26 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  duration: 0.55,
+                  delay: index * 0.15,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                whileHover={{ y: -6 }}
+                className="group relative z-10 flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-3xl p-6 text-center"
+              >
+                {/* Theme-aware hover card backdrop */}
+                <motion.div
+                  aria-hidden="true"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileHover={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute inset-[-4px] rounded-[24px] border border-[#008A1E]/20 bg-white/95 shadow-[0_20px_50px_rgba(15,23,42,0.12)] backdrop-blur-md dark:border-emerald-500/35 dark:bg-slate-800/95 dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                />
 
-            {/* Step 2: Upload CV */}
-            <div className="group relative z-10 flex flex-col items-center rounded-3xl p-6 text-center bg-white/50 dark:bg-slate-800/40 backdrop-blur-xs border border-amber-200/60 dark:border-slate-700/40 shadow-xs transition-all duration-300 hover:bg-white dark:hover:bg-slate-800 hover:border-emerald-300 dark:hover:border-emerald-600 hover:shadow-2xl hover:-translate-y-2 cursor-pointer">
-              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-[#008A1E]/30 dark:border-emerald-700/50 shadow-md ring-4 ring-emerald-500/10 group-hover:bg-[#008A1E] group-hover:border-[#008A1E] group-hover:ring-8 group-hover:ring-[#008A1E]/20 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
-                <UploadIcon className="h-7 w-7 text-[#008A1E] group-hover:text-white transition-colors duration-300" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Upload CV/Resume</h3>
-              <p className="mt-2 max-w-[220px] text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-                Curabitur sit amet maximus ligula. Nam a nulla ante. Nam sodales.
-              </p>
-            </div>
-
-            {/* Step 3: Find suitable job */}
-            <div className="group relative z-10 flex flex-col items-center rounded-3xl p-6 text-center bg-white/50 dark:bg-slate-800/40 backdrop-blur-xs border border-amber-200/60 dark:border-slate-700/40 shadow-xs transition-all duration-300 hover:bg-white dark:hover:bg-slate-800 hover:border-emerald-300 dark:hover:border-emerald-600 hover:shadow-2xl hover:-translate-y-2 cursor-pointer">
-              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-[#008A1E]/30 dark:border-emerald-700/50 shadow-md ring-4 ring-emerald-500/10 group-hover:bg-[#008A1E] group-hover:border-[#008A1E] group-hover:ring-8 group-hover:ring-[#008A1E]/20 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
-                <SearchIcon className="h-7 w-7 text-[#008A1E] group-hover:text-white transition-colors duration-300" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Find suitable job</h3>
-              <p className="mt-2 max-w-[220px] text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-                Phasellus quis eleifend ex. Morbi nec fringilla nibh.
-              </p>
-            </div>
-
-            {/* Step 4: Apply job */}
-            <div className="group relative z-10 flex flex-col items-center rounded-3xl p-6 text-center bg-white/50 dark:bg-slate-800/40 backdrop-blur-xs border border-amber-200/60 dark:border-slate-700/40 shadow-xs transition-all duration-300 hover:bg-white dark:hover:bg-slate-800 hover:border-emerald-300 dark:hover:border-emerald-600 hover:shadow-2xl hover:-translate-y-2 cursor-pointer">
-              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-[#008A1E]/30 dark:border-emerald-700/50 shadow-md ring-4 ring-emerald-500/10 group-hover:bg-[#008A1E] group-hover:border-[#008A1E] group-hover:ring-8 group-hover:ring-[#008A1E]/20 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
-                <CheckIcon className="h-7 w-7 text-[#008A1E] group-hover:text-white transition-colors duration-300" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Apply job</h3>
-              <p className="mt-2 max-w-[220px] text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-                Curabitur sit amet maximus ligula. Nam a nulla ante. Nam sodales purus.
-              </p>
-            </div>
+                <motion.div
+                  className="relative z-10 mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-[#008A1E]/15 bg-white/70 shadow-[0_10px_28px_rgba(15,23,42,0.06)] ring-1 ring-emerald-500/10 transition-all duration-300 group-hover:border-[#008A1E] group-hover:bg-[#008A1E] group-hover:ring-8 group-hover:ring-[#008A1E]/20 dark:border-emerald-500/25 dark:bg-slate-900/80 dark:ring-emerald-500/20"
+                  {...iconMotion}
+                >
+                  <Icon className="h-7 w-7 text-[#008A1E] transition-colors duration-300 group-hover:text-white dark:text-emerald-400 dark:group-hover:text-white" />
+                </motion.div>
+                <h3 className="relative z-10 text-base font-bold text-slate-900 transition-colors duration-300 group-hover:text-[#008A1E] dark:text-white dark:group-hover:text-emerald-400">
+                  {title}
+                </h3>
+                <p className="relative z-10 mt-2 max-w-[220px] text-xs font-medium leading-relaxed text-slate-600 transition-colors duration-300 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200">
+                  {description}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -212,30 +240,9 @@ export default function JobDiscoverySection() {
             </button>
           </div>
 
-          {/* ---------- 3D Globe ---------- */}
+          {/* ---------- Community Orbit ---------- */}
           <div data-reveal data-parallax="20" className="relative w-full">
-            <Globe3D
-              markers={globeMarkers}
-              className="h-[450px] sm:h-[500px] lg:h-[550px]"
-              config={{
-                atmosphereColor: '#008A1E',
-                atmosphereIntensity: 20,
-                showAtmosphere: true,
-                atmosphereBlur: 3,
-                bumpScale: 5,
-                autoRotateSpeed: 0.3,
-                enableZoom: false,
-                enablePan: false,
-              }}
-              onMarkerClick={(marker) => {
-                console.log('Clicked marker:', marker.label);
-              }}
-              onMarkerHover={(marker) => {
-                if (marker) {
-                  console.log('Hovering:', marker.label);
-                }
-              }}
-            />
+            <CommunityOrbit />
           </div>
         </div>
       </section>

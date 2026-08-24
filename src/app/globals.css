@@ -103,6 +103,22 @@
 
   html {
     scroll-behavior: smooth;
+    /* Sticky PublicShell header, so a snapped section starts below it. */
+    scroll-padding-top: 78px;
+  }
+
+  /*
+   * Section-to-section snapping. `proximity`, not `mandatory`: several landing
+   * sections are taller than the viewport, and mandatory snapping makes their
+   * middles unreachable — the scroll keeps yanking back to a snap point.
+   * Proximity still jumps to the next section from a nudge near a boundary.
+   * Opted out entirely for reduced-motion users, for whom hijacked scrolling
+   * is exactly the kind of movement they asked not to have.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-snap-type: y proximity;
+    }
   }
 
   ::selection {
@@ -282,6 +298,13 @@
 }
 
 @media print {
+  /* Resume documents are laid out at A4 96dpi, so they print 1:1 with no margin
+     of the browser's own on top of the sheet's padding. */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
   body {
     background: white !important;
   }

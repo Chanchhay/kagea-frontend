@@ -232,7 +232,3 @@ export default function ForwardedCandidatesPage() {
     </div>
   );
 }
-
-function Status({ value }: { value: string }) { return <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{formatLabel(value)}</span>; }
-function formatLabel(value: string) { return value.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase()); }
-function formatDate(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? "Recently" : new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date); }

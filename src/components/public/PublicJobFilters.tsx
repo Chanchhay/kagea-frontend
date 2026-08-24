@@ -105,9 +105,9 @@ export function PublicJobFilters({
             <SelectValue placeholder="Work mode" />
           </SelectTrigger>
           <SelectContent>
-            {workModeOptions.map((mode) => (
-              <SelectItem key={mode.value} value={mode.value}>
-                {mode.label}
+            {workModeOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -123,9 +123,9 @@ export function PublicJobFilters({
             <SelectValue placeholder="Job type" />
           </SelectTrigger>
           <SelectContent>
-            {jobTypeOptions.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                {type.label}
+            {jobTypeOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
               </SelectItem>
             ))}
           </SelectContent>

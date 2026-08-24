@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, Printer } from "lucide-react";
-import { ResumeDocument } from "@/components/job-seeker/ResumeDocument";
+import { ResumeDocument, ResumePreview } from "@/components/job-seeker/ResumeDocument";
 import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -19,13 +19,22 @@ export default function ViewResumePage() {
   const resume = resumeQuery.data;
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <PageIntro title={`Preview: ${resume.title}`} description="Review your resume before using it in an application." />
-      <div className="mb-5 flex items-center justify-between gap-3 print:hidden">
-        <Link href={`/job-seeker/resumes/${resume.id}`} className="inline-flex items-center gap-2 text-sm font-medium text-ws-muted hover:text-ws-fg"><ArrowLeft className="size-4" /> Back to resume</Link>
-        <Button onClick={() => window.print()} className="rounded-xl"><Printer /> Print or save PDF</Button>
+    <div className="mx-auto max-w-4xl">
+      <div className="print:hidden">
+        <PageIntro title={`Preview: ${resume.title}`} description="Review your resume before using it in an application." />
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <Link href={`/job-seeker/resumes/${resume.id}`} className="inline-flex items-center gap-2 text-sm font-medium text-ws-muted hover:text-ws-fg">
+            <ArrowLeft className="size-4" /> Back to resume
+          </Link>
+          <Button onClick={() => window.print()} className="rounded-xl"><Printer /> Print or save PDF</Button>
+        </div>
       </div>
-      <div className="rounded-[24px] bg-ws-card-hover p-4 sm:p-8 print:bg-white print:p-0">
+
+      {/* On screen the sheet is scaled to fit; printing uses the unscaled A4 document. */}
+      <div className="rounded-[24px] bg-ws-card-hover p-4 sm:p-8 print:hidden">
+        <ResumePreview title={resume.title} data={resume.resumeData} />
+      </div>
+      <div className="hidden print:block">
         <ResumeDocument title={resume.title} data={resume.resumeData} />
       </div>
     </div>

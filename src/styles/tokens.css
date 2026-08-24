@@ -49,6 +49,12 @@
   --chip-alert-fg: color-mix(in oklab, var(--error) 72%, #000000);
 }
 
+/*
+ * next-themes writes the resolved theme onto <html> as a class before first
+ * paint (including `system`), so the class is the single source of truth for
+ * both these tokens and Tailwind's `dark:` variant. A parallel
+ * prefers-color-scheme block would only be a second copy free to drift.
+ */
 .dark {
   --background: #101610;
   --surface: #171e17;
