@@ -34,10 +34,6 @@ import { useGetJobSeekerProfileQuery } from "@/services/jobSeekerApi";
 
 export default function ProfilePage() {
   const currentUser = useGetCurrentUserQuery();
-  const profileImage = useProfileAvatar(
-    currentUser.data?.userAccountId,
-    session?.user.image,
-  );
   const isJobSeeker =
     currentUser.data?.roles.some((role) =>
       role.toUpperCase().includes("SEEKER"),

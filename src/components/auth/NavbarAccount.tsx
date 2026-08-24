@@ -20,10 +20,6 @@ export function NavbarAccount({
   const currentUser = useGetCurrentUserQuery(undefined, {
     skip: !session?.authenticated,
   });
-  const profileImage = useProfileAvatar(
-    currentUser.data?.userAccountId,
-    session?.user.image,
-  );
 
   if (isLoading || !session?.authenticated) {
     return <SignedOutActions mobile={mobile} onNavigate={onNavigate} />;
