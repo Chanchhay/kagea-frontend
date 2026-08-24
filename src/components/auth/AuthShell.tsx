@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
+import { BrandLogo } from "@/components/shared/BrandLogo";
 import { cn } from "@/lib/utils";
 
 type AuthShellProps = {
@@ -41,15 +42,7 @@ export function AuthShell({
           <div className="pointer-events-none absolute z-[2] bottom-[-16%] left-[-2%] h-[30rem] w-[30rem] rounded-full border border-[#34df72]/8 dark:hidden" />
           <div className="pointer-events-none absolute z-[2] bottom-[4%] left-[10%] h-[21rem] w-[21rem] rounded-full border border-[#34df72]/8 dark:hidden" />
           <Link href="/" className="relative z-10 w-fit">
-            <Image
-              src="/figma/brand-logo.png"
-              alt="KAGEA"
-              width={240}
-              height={120}
-              priority
-              unoptimized
-              className="h-auto w-[172px] object-contain object-left brightness-[.95] contrast-[1.02] xl:w-[190px] dark:brightness-[1.04]"
-            />
+            <BrandLogo height={44} priority />
           </Link>
 
           {/*

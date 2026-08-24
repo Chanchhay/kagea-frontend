@@ -12,6 +12,7 @@ import {
   Search,
   type LucideIcon,
 } from "lucide-react";
+import { BrandMark } from "@/components/shared/BrandLogo";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import {
   PageHeadingProvider,
@@ -103,10 +104,10 @@ function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
     >
       <Link
         href="/"
-        aria-label="Home"
-        className="flex size-10 items-center justify-center rounded-full bg-primary text-lg font-black text-primary-foreground transition-transform hover:scale-105"
+        aria-label="Kagea home"
+        className="flex size-10 items-center justify-center transition-transform hover:scale-105"
       >
-        A
+        <BrandMark height={30} />
       </Link>
 
       <nav className="mt-8 flex flex-col items-center gap-1.5">

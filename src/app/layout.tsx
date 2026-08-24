@@ -9,9 +9,9 @@ export const metadata: Metadata = {
     description:
         "Public jobs, job seeker workspace, and recruiter hiring tools for the AI Career Platform.",
     icons: {
-        icon: "/figma/brand-logo.png",
-        shortcut: "/figma/brand-logo.png",
-        apple: "/figma/brand-logo.png",
+        icon: "/images/brand/favicon-64.png",
+        shortcut: "/images/brand/favicon-64.png",
+        apple: "/images/brand/apple-icon-180.png",
     },
 };
 
