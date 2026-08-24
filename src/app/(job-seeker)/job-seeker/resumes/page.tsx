@@ -1,16 +1,16 @@
 "use client";
 
-import { resolveFileUrl } from "@/lib/file-url";
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FilePlus2, FileText, Globe2, Pencil, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { ResumeResponse } from "@/contracts";
-import { ResumePreview } from "@/components/job-seeker/ResumeDocument";
 import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
-import { hasResumeContent } from "@/lib/resume-data";
+import { resolveFileUrl } from "@/lib/file-url";
+import { hasResumeContent, normalizeResumeData } from "@/lib/resume-data";
 import { useDeleteResumeMutation, useGetResumesQuery, useSetDefaultResumeMutation } from "@/services/jobSeekerApi";
 
 type Filter = "ALL" | "DEFAULT" | "HAS_FILE" | "DRAFT";
@@ -51,20 +51,23 @@ export default function ResumesPage() {
       <label className="mb-3 flex items-center gap-3 text-sm text-ws-muted">Sort by:<select value={newestFirst ? "newest" : "oldest"} onChange={(e) => setNewestFirst(e.target.value === "newest")} className="bg-transparent font-semibold text-ws-fg outline-none"><option value="newest">Newest</option><option value="oldest">Oldest</option></select></label>
     </div>
 
-    {visible.length ? <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{visible.map((resume) => <article key={resume.id} className={`group relative overflow-hidden rounded-2xl border bg-ws-panel p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${resume.isDefault ? "border-primary" : "border-ws-line"}`}>
-      <div className="absolute right-4 top-4 z-10 flex gap-1.5">
+    {visible.length ? <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{visible.map((resume) => <article key={resume.id} className={`group rounded-[22px] border bg-ws-panel p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${resume.isDefault ? "border-primary ring-1 ring-primary/15" : "border-ws-line"}`}>
+      {resume.visibility === "PUBLIC" || resume.isDefault ? <div className="mb-4 flex flex-wrap justify-end gap-1.5">
         {resume.visibility === "PUBLIC" ? <span className="inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground"><Globe2 className="size-3" /> Public</span> : null}
         {resume.isDefault ? <span className="rounded-lg bg-chip-soft px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-chip-soft-fg">Default</span> : null}
-      </div>
-      <Link href={`/job-seeker/resumes/${resume.id}`} className="block">
-        <div className="relative flex h-64 items-center justify-center overflow-hidden rounded-xl bg-ws-card-hover p-4">
-          {resume.resumeFileUrl ? <iframe src={`${resolveFileUrl(resume.resumeFileUrl)}#page=1&view=Fit&zoom=page-fit&toolbar=0&navpanes=0&scrollbar=0`} title={`${resume.title} preview`} tabIndex={-1} scrolling="no" className="pointer-events-none size-full border-0 bg-white shadow-sm" /> : hasContent(resume) ? <div className="flex size-full items-center justify-center overflow-hidden bg-[#292929]"><div className="h-[220px] w-[156px] shrink-0 overflow-hidden"><ResumePreview title={resume.title} data={resume.resumeData} /></div></div> : <FileText className="size-12 text-ws-faint" />}
+      </div> : null}
+      <Link href={`/job-seeker/resumes/${resume.id}`} className="flex items-center gap-4 rounded-2xl bg-linear-to-r from-chip-soft/70 to-ws-card-hover p-4 transition hover:from-chip-soft hover:to-ws-card">
+        <div className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-chip-soft text-primary shadow-sm ring-1 ring-primary/15 dark:border-ws-panel">
+          {getResumePhoto(resume) ? <Image src={getResumePhoto(resume)!} alt={`${resume.title} profile`} fill unoptimized sizes="64px" className="object-cover" /> : <FileText className="size-6" />}
         </div>
-        <h2 className="mt-5 truncate text-base font-semibold text-ws-fg">{resume.title}</h2>
-        <p className="mt-2 flex items-center gap-2 text-sm text-ws-muted"><span className={`size-2 rounded-full ${resume.resumeFileUrl || hasContent(resume) ? "bg-primary" : "bg-warning"}`} /> {resume.resumeFileUrl ? "File attached" : hasContent(resume) ? "Profile completed" : "Draft"}</p>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary">Resume profile</p>
+          <h2 className="mt-1 truncate text-base font-semibold text-ws-fg">{resume.title}</h2>
+          <p className="mt-1.5 flex items-center gap-2 text-xs text-ws-muted"><span className={`size-2 rounded-full ${resume.resumeFileUrl || hasContent(resume) ? "bg-primary" : "bg-warning"}`} /> {resume.resumeFileUrl ? "PDF attached" : hasContent(resume) ? "Profile completed" : "Draft"}</p>
+        </div>
       </Link>
-      <div className="mt-4 flex items-center justify-between gap-2"><span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${resume.resumeFileUrl || hasContent(resume) ? "bg-chip-soft text-chip-soft-fg" : "bg-chip-quiet text-chip-quiet-fg"}`}>{resume.resumeFileUrl || hasContent(resume) ? "Complete" : "Draft"}</span><span className="text-xs text-ws-muted">Updated {formatDate(resume.updatedAt)}</span></div>
-      <div className="mt-5 grid grid-cols-3 gap-3">
+      <div className="mt-4 flex items-center justify-between gap-2 px-1"><span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${resume.resumeFileUrl || hasContent(resume) ? "bg-chip-soft text-chip-soft-fg" : "bg-chip-quiet text-chip-quiet-fg"}`}>{resume.resumeFileUrl || hasContent(resume) ? "Complete" : "Draft"}</span><span className="text-xs text-ws-muted">Updated {formatDate(resume.updatedAt)}</span></div>
+      <div className="mt-4 grid grid-cols-3 gap-2">
         <Link href={`/job-seeker/resumes/${resume.id}`} aria-label={`Edit ${resume.title}`} className="flex h-11 items-center justify-center rounded-xl border border-ws-line text-ws-muted hover:border-primary hover:text-primary"><Pencil className="size-4" /></Link>
         <button onClick={() => void remove(resume)} disabled={deleteState.isLoading} aria-label={`Delete ${resume.title}`} className="flex h-11 items-center justify-center rounded-xl border border-ws-line text-ws-muted hover:border-destructive hover:text-destructive disabled:opacity-50"><Trash2 className="size-4" /></button>
         <button onClick={() => void makeDefault(resume)} disabled={resume.isDefault || defaultState.isLoading} aria-label={resume.isDefault ? "Default resume" : `Make ${resume.title} default`} className={`flex h-11 items-center justify-center rounded-xl border transition disabled:opacity-60 ${resume.isDefault ? "border-primary/30 bg-chip-soft text-primary" : "border-ws-line text-ws-muted hover:border-primary hover:text-primary"}`}><Star className={`size-4 ${resume.isDefault ? "fill-current" : ""}`} /></button>
@@ -74,4 +77,7 @@ export default function ResumesPage() {
 }
 
 function hasContent(resume: ResumeResponse) { return hasResumeContent(resume.resumeData); }
+function getResumePhoto(resume: ResumeResponse) {
+  return resolveFileUrl(normalizeResumeData(resume.resumeData).profilePhotoUrl);
+}
 function formatDate(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? "recently" : new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(date); }

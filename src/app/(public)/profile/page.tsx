@@ -2,7 +2,6 @@
 
 import { resolveFileUrl } from "@/lib/file-url";
 import { getInitials } from "@/lib/utils";
-import Link from "next/link";
 import {
   Mail,
   MapPin,
@@ -10,7 +9,6 @@ import {
   Building2,
   UserCheck,
   Pencil,
-  ExternalLink,
   ShieldCheck,
   BadgeCheck,
 } from "lucide-react";
@@ -18,7 +16,6 @@ import type {
   CurrentUserResponse,
   JobSeekerProfileResponse,
 } from "@/contracts";
-import { KeycloakLogoutButton } from "@/components/auth/AuthActions";
 import { PublicFooter, PublicShell } from "@/components/layout/PublicShell";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -82,11 +79,6 @@ function ProfileContent({
   const isJobSeeker = user.roles.some((role) =>
     role.toUpperCase().includes("SEEKER"),
   );
-  const workspaceHref = isRecruiter
-    ? "/recruiter/dashboard"
-    : isJobSeeker
-      ? "/job-seeker/dashboard"
-      : "/";
 
   return (
     <div className="space-y-5">
@@ -101,20 +93,6 @@ function ProfileContent({
             aria-hidden="true"
             className="absolute inset-0 opacity-60 [background:radial-gradient(120%_140%_at_15%_0%,rgba(255,255,255,0.28),transparent_60%)]"
           />
-          <div className="relative flex items-center justify-end gap-2 px-5 py-4 sm:px-7">
-            <Button
-              render={<Link href={workspaceHref} />}
-              size="sm"
-              className="bg-surface/90 font-semibold text-heading backdrop-blur-md hover:bg-surface"
-            >
-              Workspace <ExternalLink className="ml-1.5 size-3.5" />
-            </Button>
-            <KeycloakLogoutButton
-              size="sm"
-              variant="outline"
-              className="border-transparent bg-surface/90 text-heading backdrop-blur-md hover:border-error/30 hover:bg-error/10 hover:text-error"
-            />
-          </div>
         </div>
 
         <div className="px-5 pb-6 sm:px-7">

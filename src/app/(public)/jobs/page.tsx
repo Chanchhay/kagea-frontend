@@ -1,10 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
+  Building2,
   CalendarDays,
   MapPin,
   Search,
@@ -13,6 +15,7 @@ import {
 import Link from "next/link";
 import type { PublicJobResponse } from "@/contracts";
 import { markdownToPlainText } from "@/lib/markdown";
+import { resolveFileUrl } from "@/lib/file-url";
 import { PublicFooter, PublicShell } from "@/components/layout/PublicShell";
 import DecorativeBackground from "@/components/landing-page/DecorativeBackground";
 import { ScrollReveal } from "@/components/landing-page/shared/ScrollReveal";
@@ -113,33 +116,54 @@ export default function PublicJobsPage() {
 
         <div className="relative z-10">
           <ScrollReveal>
-            <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
+            <section className="mx-auto max-w-352 px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
               {/* Same emerald bloom the landing hero sits inside. */}
               <div className="pointer-events-none absolute right-[8%] top-[6%] -z-10 h-104 w-104 rounded-full bg-[radial-gradient(circle,rgba(31,166,40,.14)_0%,rgba(31,166,40,.06)_45%,transparent_72%)] blur-3xl lg:h-136 lg:w-136 dark:bg-[radial-gradient(circle,rgba(39,183,51,.16)_0%,rgba(39,183,51,.06)_45%,transparent_72%)]" />
 
-              <div className="text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 24, scale: 0.985 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                className="relative overflow-hidden rounded-[36px] bg-[#008A1E] px-5 py-10 text-primary-foreground shadow-[0_28px_80px_-40px_color-mix(in_srgb,var(--primary)_70%,transparent)] sm:px-10 sm:py-14 lg:px-14"
+              >
+                <motion.span
+                  aria-hidden="true"
+                  className="absolute -right-24 -top-32 size-96 rounded-full border-40 border-white/5"
+                  animate={{ rotate: 360, scale: [1, 1.06, 1] }}
+                  transition={{ rotate: { duration: 30, repeat: Infinity, ease: "linear" }, scale: { duration: 7, repeat: Infinity, ease: "easeInOut" } }}
+                />
+                <motion.span
+                  aria-hidden="true"
+                  className="absolute -bottom-36 right-48 size-72 rounded-full bg-amber-300/10 blur-3xl"
+                  animate={{ x: [0, 28, 0], y: [0, -16, 0] }}
+                  transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+                />
+              <div className="relative max-w-4xl text-left">
+                <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-emerald-100 backdrop-blur">
+                  New opportunities every day
+                </span>
                 <h1
                   data-reveal
-                  className="text-3xl font-extrabold sm:text-4xl"
+                  className="mt-5 text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl"
                 >
-                  <span className="text-[#008A1E]">Find </span>
-                  <span className="text-[#F3BE00]">Your Next</span>
-                  <span className="text-[#008A1E]"> Role</span>
+                  Find your next <span className="text-amber-300">great role.</span>
                 </h1>
                 <p
                   data-reveal
-                  className="mx-auto mt-2 max-w-2xl text-sm font-medium text-slate-600 dark:text-slate-300"
+                  className="mt-4 max-w-2xl text-base leading-7 text-emerald-50/80 sm:text-lg"
                 >
                   Every published opening from verified recruiters, searchable in
                   one place.
                 </p>
               </div>
 
-              <div
+              <motion.div
                 data-reveal
-                className="mx-auto mt-8 flex max-w-4xl flex-col items-stretch gap-1.5 rounded-2xl border border-primary bg-white p-1.5 shadow-sm md:flex-row md:items-center dark:bg-slate-900"
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.2 }}
+                className="relative mt-9 flex max-w-5xl flex-col items-stretch gap-1.5 rounded-2xl bg-white p-2 shadow-[0_20px_50px_-24px_rgba(0,0,0,.6)] md:flex-row md:items-center"
               >
-                <label className="flex w-full items-center gap-2.5 border-b border-slate-100 px-3 py-2.5 md:flex-[1.4] md:border-b-0 md:border-r dark:border-slate-800">
+                <label className="flex w-full items-center gap-2.5 border-b border-slate-200 px-3 py-2.5 md:flex-[1.4] md:border-b-0 md:border-r">
                   <Search
                     aria-hidden="true"
                     className="size-4 shrink-0 text-[#008A1E]"
@@ -150,7 +174,7 @@ export default function PublicJobsPage() {
                     placeholder="Search by title, company, or skill"
                     value={keyword}
                     onChange={(event) => setKeyword(event.target.value)}
-                    className="w-full bg-transparent text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white"
+                    className="w-full bg-transparent text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-slate-900"
                   />
                 </label>
 
@@ -165,7 +189,7 @@ export default function PublicJobsPage() {
                     placeholder="Location or work mode"
                     value={locationTerm}
                     onChange={(event) => setLocationTerm(event.target.value)}
-                    className="w-full bg-transparent text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white"
+                    className="w-full bg-transparent text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-slate-900"
                   />
                 </label>
 
@@ -175,19 +199,20 @@ export default function PublicJobsPage() {
                   <button
                     type="button"
                     onClick={clearFilters}
-                    className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-full border border-[#008A1E] bg-white px-6 text-sm font-semibold text-[#008A1E] transition-colors hover:bg-[#008A1E] hover:text-white dark:bg-slate-900"
+                    className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-700 px-6 text-sm font-semibold text-white transition-colors hover:bg-emerald-800"
                   >
                     <X aria-hidden="true" className="size-4" /> Clear
                   </button>
                 ) : null}
-              </div>
+              </motion.div>
+              </motion.div>
 
               {(categories.data ?? []).length > 0 ? (
                 <div
                   data-reveal
-                  className="mt-8 overflow-x-auto border-b border-slate-200 dark:border-slate-700"
+                  className="mt-6 overflow-x-auto"
                 >
-                  <div className="flex min-w-max justify-center gap-7 px-2 sm:gap-10">
+                  <div className="flex min-w-max justify-center gap-2 px-2">
                     <Tab
                       active={categoryId === null}
                       onClick={() => setCategoryId(null)}
@@ -209,7 +234,7 @@ export default function PublicJobsPage() {
             </section>
           </ScrollReveal>
 
-          <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+          <section className="mx-auto max-w-352 px-4 pb-12 sm:px-6 lg:px-8">
             {isLoading ? (
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, index) => (
@@ -238,8 +263,16 @@ export default function PublicJobsPage() {
                 }
               />
             ) : (
-              <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
-                <div className="overflow-hidden rounded-2xl border border-primary bg-white shadow-sm lg:col-span-5 dark:bg-slate-900">
+              <div>
+                <div className="mb-5 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-400">Job discovery</p>
+                    <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Explore open positions</h2>
+                  </div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{filteredJobs.length} matching {filteredJobs.length === 1 ? "role" : "roles"}</p>
+                </div>
+              <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+                <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_18px_50px_-36px_rgba(15,23,42,.55)] lg:col-span-5 dark:border-slate-700 dark:bg-slate-900">
                   <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                     <span className="text-sm font-bold text-slate-900 dark:text-white">
                       Open roles
@@ -262,7 +295,7 @@ export default function PublicJobsPage() {
                   </ul>
                 </div>
 
-                <div className="min-h-145 rounded-2xl border border-primary bg-white p-6 shadow-sm lg:sticky lg:top-6 lg:col-span-7 lg:p-8 dark:bg-slate-900">
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_18px_50px_-36px_rgba(15,23,42,.55)] lg:sticky lg:top-24 lg:col-span-7 lg:p-8 dark:border-slate-700 dark:bg-slate-900">
                   <AnimatePresence mode="wait">
                     {activeJob ? (
                       <JobDetailPanel key={activeJob.id} job={activeJob} />
@@ -274,13 +307,14 @@ export default function PublicJobsPage() {
                   </AnimatePresence>
                 </div>
               </div>
+              </div>
             )}
           </section>
 
           {/* Category / skill / industry catalog carried over from the previous
            * jobs page — it is the only browse-by-taxonomy entry point. */}
           <ScrollReveal delay={0.08} direction="right">
-            <PageContainer className="pb-14">
+            <PageContainer className="max-w-352 pb-14">
               <PublicJobCatalog
                 categories={categories.data ?? []}
                 skills={skills.data ?? []}
@@ -307,7 +341,10 @@ function JobListRow({
   const salary = formatSalary(job);
 
   return (
-    <li>
+    <motion.li
+      whileHover={{ x: 4 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+    >
       <button
         type="button"
         onClick={onSelect}
@@ -318,7 +355,8 @@ function JobListRow({
             : "border-l-transparent hover:bg-slate-50 dark:hover:bg-slate-800/60"
         }`}
       >
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start gap-3">
+          <CompanyLogo job={job} className="size-11 rounded-xl" />
           <div className="min-w-0">
             <h3 className="truncate text-base font-bold tracking-tight text-slate-900 dark:text-white">
               {job.title}
@@ -332,7 +370,7 @@ function JobListRow({
               {job.location || formatEnum(job.workMode)}
             </p>
           </div>
-          <span className="shrink-0 text-xs font-medium text-slate-400">
+          <span className="ml-auto shrink-0 text-xs font-medium text-slate-400">
             {formatDate(job.publishedAt)}
           </span>
         </div>
@@ -345,7 +383,7 @@ function JobListRow({
           </span>
         </div>
       </button>
-    </li>
+    </motion.li>
   );
 }
 
@@ -362,19 +400,24 @@ function JobDetailPanel({ job }: { job: PublicJobResponse }) {
       className="space-y-6"
     >
       <div className="border-b border-slate-100 pb-6 dark:border-slate-800">
+        <div className="flex items-start gap-4">
+          <CompanyLogo job={job} className="size-14 rounded-2xl" />
+          <div className="min-w-0 flex-1">
         <div className="flex flex-wrap gap-2">
           <Chip>{formatEnum(job.jobType)}</Chip>
           <Chip>{formatEnum(job.workMode)}</Chip>
           {job.categoryName ? <Chip>{job.categoryName}</Chip> : null}
         </div>
 
-        <h2 className="mt-5 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+        <h2 className="mt-4 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
           {job.title}
         </h2>
         <p className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-[#008A1E]">
           <BriefcaseBusiness aria-hidden="true" className="size-4" />
           {job.companyName}
         </p>
+          </div>
+        </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
           <span className="flex items-center gap-1.5">
@@ -451,17 +494,28 @@ function Tab({
     <button
       type="button"
       onClick={onClick}
-      className={`relative pb-3 text-sm font-semibold transition-colors ${
+      className={`rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 ${
         active
-          ? "text-[#008A1E]"
-          : "text-slate-500 hover:text-slate-800 dark:hover:text-white"
+          ? "bg-emerald-600 text-white shadow-sm"
+          : "bg-slate-100 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-emerald-950 dark:hover:text-emerald-300"
       }`}
     >
       {children}
-      {active ? (
-        <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-[#008A1E]" />
-      ) : null}
     </button>
+  );
+}
+
+function CompanyLogo({ job, className }: { job: PublicJobResponse; className: string }) {
+  const logo = resolveFileUrl(job.companyLogoUrl || job.logoUrl);
+
+  return (
+    <span className={`relative flex shrink-0 items-center justify-center overflow-hidden border border-slate-200 bg-white text-slate-400 shadow-sm dark:border-slate-700 dark:bg-slate-800 ${className}`}>
+      {logo ? (
+        <Image src={logo} alt={`${job.companyName} logo`} fill unoptimized sizes="56px" className="object-contain p-1.5" />
+      ) : (
+        <Building2 aria-hidden="true" className="size-5" />
+      )}
+    </span>
   );
 }
 
