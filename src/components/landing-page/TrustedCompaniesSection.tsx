@@ -121,7 +121,7 @@ export default function TrustedCompaniesSection() {
           viewport={{ once: true, margin: '-100px' }}
           data-reveal
           data-parallax="14"
-          className="rounded-3xl bg-[#EEF6EF] dark:bg-slate-900/90 border border-emerald-100/50 dark:border-slate-800 p-8 sm:p-10 shadow-sm"
+          className="rounded-3xl bg-[#EEF6EF] dark:bg-[#23272D] border border-emerald-100/50 dark:border-[#3E444B] p-8 sm:p-10 shadow-sm dark:shadow-[0_18px_44px_-24px_rgba(0,0,0,.85)]"
         >
           {/* Header */}
           <motion.div
@@ -159,7 +159,7 @@ export default function TrustedCompaniesSection() {
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
                 }}
-                className="flex items-center justify-center h-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300"
+                className="flex items-center justify-center h-12 bg-slate-50 dark:bg-[#2B3036] border border-slate-200 dark:border-[#3E444B] rounded-lg p-3 hover:shadow-md hover:border-slate-300 dark:hover:border-[#F3BE00]/50 transition-all duration-300"
               >
                 <Image
                   src={company.logoPath}

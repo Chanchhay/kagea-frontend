@@ -1,7 +1,6 @@
 export { default as LandingPage } from './LandingPage';
 export { default } from './LandingPage';
 export { default as CtaBannerSection } from './CtaBannerSection';
-export { default as DecorativeBackground } from './DecorativeBackground';
 export { default as Hero } from './Hero';
 export { default as HeroCompaniesSection } from './HeroCompaniesSection';
 export { default as JobDiscoverySection } from './JobDiscoverySection';

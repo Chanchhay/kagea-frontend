@@ -14,7 +14,6 @@ import Link from "next/link";
 import type { PublicJobResponse } from "@/contracts";
 import { markdownToPlainText } from "@/lib/markdown";
 import { PublicFooter, PublicShell } from "@/components/layout/PublicShell";
-import DecorativeBackground from "@/components/landing-page/DecorativeBackground";
 import { ScrollReveal } from "@/components/landing-page/shared/ScrollReveal";
 import { PublicJobCatalog } from "@/components/public/PublicJobCatalog";
 import { ApplyJobDialog } from "@/components/public/ApplyJobDialog";
@@ -109,7 +108,6 @@ export default function PublicJobsPage() {
         <div className="pointer-events-none absolute inset-0 z-0 hidden dark:block">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_14%,rgba(22,163,74,0.12),transparent_30%),radial-gradient(circle_at_72%_16%,rgba(234,179,8,0.05),transparent_18%)]" />
         </div>
-        <DecorativeBackground />
 
         <div className="relative z-10">
           <ScrollReveal>
