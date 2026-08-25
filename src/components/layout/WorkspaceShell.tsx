@@ -6,13 +6,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import {
   ArrowLeft,
-  Bell,
   LogOut,
   Plus,
   Search,
   type LucideIcon,
 } from "lucide-react";
 import { BrandMark } from "@/components/shared/BrandLogo";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import {
   PageHeadingProvider,
@@ -192,13 +192,13 @@ function TopBar({ title, role }: { title: string; role: Role }) {
 
         <ThemeToggle className="size-10 rounded-full bg-ws-card text-ws-muted hover:bg-ws-card-hover hover:text-ws-fg" />
 
-        <Link
-          href={actions.alerts}
-          aria-label={role === "recruiter" ? "Forwarded candidates" : "AI interviews"}
-          className="hidden size-10 items-center justify-center rounded-full bg-ws-card text-ws-muted transition-colors hover:bg-ws-card-hover hover:text-ws-fg sm:flex"
-        >
-          <Bell aria-hidden="true" className="size-4.5" />
-        </Link>
+        {/*
+          * Path prefixes this app can route to. The inbox is shared with the
+          * admin console, whose deep links would 404 here, so those render as
+          * plain text instead of links. Every seeker- and recruiter-targeted
+          * notification uses one of these two prefixes.
+          */}
+        <NotificationBell pathPrefixes={["/job-seeker", "/recruiter"]} />
 
         <Avatar />
       </div>

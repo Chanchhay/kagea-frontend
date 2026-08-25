@@ -24,6 +24,7 @@ import {
 import { PageIntro, StatusPill } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
+import { ReportHireDialog } from "@/components/finance/ReportHireDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGetForwardedApplicationQuery } from "@/services/recruiterApi";
@@ -84,6 +85,10 @@ export default function ForwardedCandidateDetailPage() {
               </span>
             )}
             <StatusPill>{application.status}</StatusPill>
+            <ReportHireDialog
+              applicationId={application.id}
+              alreadyReported={application.status === "HIRED"}
+            />
           </div>
         </div>
       </div>

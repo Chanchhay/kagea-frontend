@@ -61,6 +61,12 @@ export type PublicJobResponse = {
   expiredAt: string;
   sections: JobPostSectionResponse[];
   skills: JobPostSkillResponse[];
+  /**
+   * Whether the signed-in job seeker has saved this job. `null` for anyone
+   * else — anonymous visitors and recruiters — which is why these responses
+   * vary per caller and must not be cached across users.
+   */
+  isFavorite: boolean | null;
 };
 
 export type ApiResponsePagePublicJobResponse = ApiResponse<

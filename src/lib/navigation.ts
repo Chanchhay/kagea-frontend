@@ -1,6 +1,10 @@
 import {
   Bell,
+  Bookmark,
   Briefcase,
+  HandCoins,
+  MessagesSquare,
+  ReceiptText,
   Building2,
   FileText,
   FolderKanban,
@@ -62,10 +66,22 @@ export const jobSeekerNavigation: RoleNavigationItem[] = [
     description: "Showcase the projects recruiters can discover.",
   },
   {
+    href: "/job-seeker/saved-jobs",
+    label: "Saved Jobs",
+    icon: Bookmark,
+    description: "Roles you bookmarked while browsing.",
+  },
+  {
     href: "/job-seeker/applications",
     label: "Applications",
     icon: Briefcase,
     description: "Track every role you have applied to.",
+  },
+  {
+    href: "/job-seeker/messages",
+    label: "Messages",
+    icon: MessagesSquare,
+    description: "Threads a moderator has opened with you.",
   },
   {
     href: "/job-seeker/interviews",
@@ -105,6 +121,24 @@ export const recruiterNavigation: RoleNavigationItem[] = [
     label: "Forwarded Candidates",
     icon: UsersRound,
     description: "Applications a moderator has forwarded to you.",
+  },
+  {
+    href: "/recruiter/hires",
+    label: "Hires",
+    icon: HandCoins,
+    description: "Candidates you reported as hired, and their review status.",
+  },
+  {
+    href: "/recruiter/invoices",
+    label: "Invoices",
+    icon: ReceiptText,
+    description: "Placement commissions billed to your company.",
+  },
+  {
+    href: "/recruiter/messages",
+    label: "Messages",
+    icon: MessagesSquare,
+    description: "Threads a moderator has opened with you.",
   },
   {
     href: "/recruiter/profile",

@@ -19,6 +19,26 @@ export type SortObject = {
   unsorted: boolean;
 };
 
+/**
+ * What the backend actually sends for a paged endpoint.
+ *
+ * The application sets `pageSerializationMode = VIA_DTO`, so page metadata
+ * arrives nested under `page` rather than flattened alongside `content`. Note
+ * that `api-docs/api.json` still documents the old flat shape and is stale on
+ * this point.
+ */
+export type PagedModel<T> = {
+  content: T[];
+  page: {
+    size: number;
+    /** Zero-based, as Spring numbers pages. */
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
+};
+
+/** The flattened shape the app works with, produced by `normalizePage`. */
 export type Page<T> = {
   totalElements: number;
   totalPages: number;

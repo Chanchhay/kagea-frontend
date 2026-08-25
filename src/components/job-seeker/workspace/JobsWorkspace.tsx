@@ -22,6 +22,7 @@ import {
 import { useSetPageHeading } from "@/components/layout/PageHeader";
 import { Markdown } from "@/components/shared/Markdown";
 import type { PublicJobResponse } from "@/contracts/api/public";
+import { SaveJobButton } from "@/components/public/SaveJobButton";
 import type {
   JobApplicationResponse,
   ResumeResponse,
@@ -224,6 +225,7 @@ function JobDetail({
             {application ? (
               <Chip tone="solid">{humanize(application.status)}</Chip>
             ) : null}
+            <SaveJobButton jobId={job.id} isFavorite={job.isFavorite} />
           </div>
 
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-ws-fg lg:text-4xl">
