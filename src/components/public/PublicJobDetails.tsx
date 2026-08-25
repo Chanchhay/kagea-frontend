@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Markdown } from "@/components/shared/Markdown";
 import { ApplyJobDialog } from "./ApplyJobDialog";
+import { SaveJobButton } from "./SaveJobButton";
 import { formatDate, formatEnum, formatSalary } from "./PublicJobCard";
 
 type PublicJobDetailsProps = {
@@ -72,6 +73,12 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
             <Card>
               <CardContent className="space-y-4 p-5">
                 <ApplyJobDialog jobId={job.id} jobTitle={job.title} />
+                <SaveJobButton
+                  jobId={job.id}
+                  isFavorite={job.isFavorite}
+                  variant="full"
+                  className="w-full"
+                />
                 <dl className="space-y-3 text-sm">
                   <MetaRow label="Published" value={formatDate(job.publishedAt)} />
                   <MetaRow label="Expires" value={formatDate(job.expiredAt)} />

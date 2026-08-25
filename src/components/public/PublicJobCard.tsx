@@ -5,6 +5,7 @@ import { markdownToPlainText } from "@/lib/markdown";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { SaveJobButton } from "./SaveJobButton";
 
 type PublicJobCardProps = {
   job: PublicJobResponse;
@@ -69,13 +70,14 @@ export function PublicJobCard({ job, compact = false, className }: PublicJobCard
               </span>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 sm:justify-end">
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
             <span className="rounded-md bg-brand-tint px-2.5 py-1 text-xs font-medium text-brand">
               {formatEnum(job.jobType)}
             </span>
             <span className="rounded-md bg-surface-muted px-2.5 py-1 text-xs font-medium text-body">
               {formatEnum(job.workMode)}
             </span>
+            <SaveJobButton jobId={job.id} isFavorite={job.isFavorite} />
           </div>
         </div>
 

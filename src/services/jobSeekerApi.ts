@@ -5,7 +5,9 @@ import type {
   ApiResponseAiInterviewResultResponse,
   ApiResponseAiInterviewSessionResponse,
   ApiResponseJobApplicationResponse,
+  ApiResponseFavoriteJobResponse,
   ApiResponseJobSeekerProfileResponse,
+  ApiResponsePageFavoriteJobResponse,
   ApiResponsePublicationResponse,
   ApiResponseListAiInterviewSessionResponse,
   ApiResponseListJobApplicationResponse,
@@ -15,6 +17,7 @@ import type {
   ApiResponsePortfolioProjectResponse,
   ApiResponseResumeResponse,
   ApiResponseVoid,
+  FavoriteJobResponse,
   JobApplicationResponse,
   JobApplicationCreateRequest,
   JobSeekerProfileResponse,
@@ -32,8 +35,9 @@ import type {
   ResumeUpdateRequest,
   VapiCallBindingRequest,
   VoiceTranscriptRequest,
+  Page,
 } from "@/contracts";
-import { baseApi, unwrapApiResponse } from "./baseApi";
+import { baseApi, normalizePage, unwrapApiResponse } from "./baseApi";
 
 export const jobSeekerApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -353,6 +357,44 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         { type: "Interviews", id: sessionId },
       ],
     }),
+    getFavoriteJobs: builder.query<
+      Page<FavoriteJobResponse>,
+      { page?: number; size?: number } | void
+    >({
+      query: (params) => ({
+        url: "/job-seeker/favorite-jobs",
+        params: params ?? undefined,
+      }),
+      transformResponse: (response: ApiResponsePageFavoriteJobResponse) =>
+        normalizePage(unwrapApiResponse(response)),
+      providesTags: ["FavoriteJobs"],
+    }),
+    saveFavoriteJob: builder.mutation<FavoriteJobResponse, number>({
+      query: (jobId) => ({
+        url: `/job-seeker/favorite-jobs/${jobId}`,
+        method: "POST",
+      }),
+      transformResponse: (response: ApiResponseFavoriteJobResponse) =>
+        unwrapApiResponse(response),
+      // PublicJobs too: isFavorite is part of those responses, so a save that
+      // did not invalidate them would leave a stale outline bookmark behind.
+      invalidatesTags: (_result, _error, jobId) => [
+        "FavoriteJobs",
+        "PublicJobs",
+        { type: "PublicJobs", id: jobId },
+      ],
+    }),
+    removeFavoriteJob: builder.mutation<void, number>({
+      query: (jobId) => ({
+        url: `/job-seeker/favorite-jobs/${jobId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _error, jobId) => [
+        "FavoriteJobs",
+        "PublicJobs",
+        { type: "PublicJobs", id: jobId },
+      ],
+    }),
   }),
 });
 
@@ -390,4 +432,7 @@ export const {
   useSubmitAiInterviewTranscriptMutation,
   useSubmitAiInterviewAnswerMutation,
   useCompleteAiInterviewMutation,
+  useGetFavoriteJobsQuery,
+  useSaveFavoriteJobMutation,
+  useRemoveFavoriteJobMutation,
 } = jobSeekerApi;

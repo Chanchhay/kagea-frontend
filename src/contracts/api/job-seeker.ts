@@ -1,5 +1,6 @@
 import type {
   ApiResponse,
+  PagedModel,
   InterviewResult,
   InterviewStatus,
   PublicationVisibility,
@@ -239,3 +240,33 @@ export type ApiResponseAiInterviewResultResponse =
   ApiResponse<AiInterviewResultResponse>;
 export type ApiResponseJobSeekerProfileResponse =
   ApiResponse<JobSeekerProfileResponse>;
+
+/**
+ * One saved job. A save outlives the post it points at, so `status` and
+ * `available` describe a job that may since have closed or expired; the row
+ * stays on the page, greyed out, rather than disappearing.
+ */
+export type FavoriteJobResponse = {
+  id: number;
+  savedAt: string;
+  jobId: number;
+  title: string;
+  companyId: number;
+  companyName: string;
+  location: string | null;
+  jobType: string | null;
+  workMode: string | null;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  experienceLevel: string | null;
+  status: string;
+  publishedAt: string | null;
+  expiredAt: string | null;
+  available: boolean;
+};
+
+export type ApiResponseFavoriteJobResponse = ApiResponse<FavoriteJobResponse>;
+
+export type ApiResponsePageFavoriteJobResponse = ApiResponse<
+  PagedModel<FavoriteJobResponse>
+>;
