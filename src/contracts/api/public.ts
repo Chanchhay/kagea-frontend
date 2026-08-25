@@ -45,7 +45,13 @@ export type JobPostSkillResponse = {
 
 export type PublicJobResponse = {
   id: number;
-  companyId: number;
+  /**
+   * Null when an administrator has masked the company. The id is withheld along
+   * with the name, so there is nothing to link to and no way to tell that two
+   * confidential postings came from the same employer.
+   */
+  companyId: number | null;
+  /** "Confidential company" when the company is masked. */
   companyName: string;
   /** Uploaded company logo when included by the public jobs endpoint. */
   companyLogoUrl?: string;

@@ -285,7 +285,8 @@ export type FavoriteJobResponse = {
   savedAt: string;
   jobId: number;
   title: string;
-  companyId: number;
+  /** Null when the company is masked; see PublicJobResponse. */
+  companyId: number | null;
   companyName: string;
   location: string | null;
   jobType: string | null;
