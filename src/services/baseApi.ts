@@ -44,7 +44,13 @@ export const baseApi = createApi({
   reducerPath: "api",
   // Same origin as the page: the Spring Cloud Gateway serves this app and
   // forwards /api/** to the backend, attaching the access token itself.
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/v1" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "/api/v1",
+    // Authentication is owned by the gateway. Keep its HttpOnly session
+    // cookie attached even when the UI and gateway are reached through a
+    // development proxy or different local port.
+    credentials: "include",
+  }),
   tagTypes: [
     "Session",
     "CurrentUser",

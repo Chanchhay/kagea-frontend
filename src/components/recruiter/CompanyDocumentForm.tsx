@@ -96,8 +96,12 @@ export function CompanyDocumentForm({ companyId }: { companyId: number }) {
                 <FileDropzone
                   value={field.value}
                   file={documentFile}
-                  onFileChange={setDocumentFile}
+                  onFileChange={(file) => {
+                    setDocumentFile(file);
+                    if (file) form.clearErrors("documentUrl");
+                  }}
                   onClear={() => field.onChange("")}
+                  className="[&_[role=button]]:min-h-52 [&_[role=button]]:bg-ws-panel"
                 />
               </FormControl>
               <FormMessage />
@@ -105,10 +109,10 @@ export function CompanyDocumentForm({ companyId }: { companyId: number }) {
           )}
         />
 
-        <div className="flex justify-end">
+        <div className="flex justify-end border-t border-ws-line pt-5">
           <Button
             type="submit"
-            className="h-11 rounded-lg px-6"
+            className="h-11 rounded-xl px-6 shadow-none"
             disabled={addition.isLoading || isUploading}
           >
             <Plus aria-hidden="true" className="size-4" />

@@ -45,48 +45,48 @@ export default function TalentDetailPage() {
   const projectCount = portfolios.reduce((total, portfolio) => total + (portfolio.projects?.length ?? 0), 0);
 
   return (
-    <div className="space-y-6">
-      <BackLink />
+    <div className="mx-auto w-full max-w-7xl space-y-6">
+      <div className="flex items-center justify-between gap-4">
+        <BackLink />
+        <p className="hidden text-xs font-medium uppercase tracking-[0.14em] text-ws-faint sm:block">Public candidate profile</p>
+      </div>
 
-      <ProfileHero talent={talent} />
-
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div>
+        <ProfileHero talent={talent} />
+        <div className="relative z-10 mx-4 -mt-5 grid gap-3 sm:mx-7 sm:grid-cols-3">
         <StatTile icon={FileText} value={resumes.length} label={resumes.length === 1 ? "Published resume" : "Published resumes"} />
         <StatTile icon={FolderGit2} value={portfolios.length} label={portfolios.length === 1 ? "Portfolio" : "Portfolios"} />
         <StatTile icon={Layers3} value={projectCount} label={projectCount === 1 ? "Project" : "Projects"} />
+        </div>
       </div>
 
       {talent.bio ? (
-        <section className="relative overflow-hidden rounded-2xl border border-border bg-surface p-6 shadow-sm sm:p-8">
+        <section className="relative overflow-hidden rounded-[22px] border border-ws-line bg-ws-panel p-6 sm:p-7">
           <Quote aria-hidden="true" className="absolute -right-3 -top-3 size-24 text-brand/5" />
-          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">About this candidate</h2>
-          <p className="relative mt-4 max-w-3xl whitespace-pre-wrap text-[15px] leading-7 text-slate-700 dark:text-slate-300">
+          <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-primary">About this candidate</h2>
+          <p className="relative mt-3 max-w-4xl whitespace-pre-wrap text-[15px] leading-7 text-ws-muted">
             {talent.bio}
           </p>
         </section>
       ) : null}
 
-      <SectionHeading icon={FileText} title="Published resumes" count={resumes.length} />
-      {resumes.length ? (
-        <div className="grid gap-5 md:grid-cols-2">
-          {resumes.map((resume) => (
-            <ResumeCard key={resume.id} resume={resume} slug={publicProfileSlug} />
-          ))}
-        </div>
-      ) : (
-        <EmptyPanel icon={FileText} message="This candidate has not published any resumes yet." />
-      )}
+      <section className="rounded-[26px] border border-ws-line bg-ws-panel p-5 sm:p-7">
+        <SectionHeading icon={FileText} title="Published resumes" count={resumes.length} />
+        {resumes.length ? (
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {resumes.map((resume) => <ResumeCard key={resume.id} resume={resume} slug={publicProfileSlug} />)}
+          </div>
+        ) : <div className="mt-5"><EmptyPanel icon={FileText} message="This candidate has not published any resumes yet." /></div>}
+      </section>
 
-      <SectionHeading icon={FolderGit2} title="Portfolios" count={portfolios.length} />
-      {portfolios.length ? (
-        <div className="space-y-8">
-          {portfolios.map((portfolio) => (
-            <PortfolioBlock key={portfolio.id} portfolio={portfolio} />
-          ))}
-        </div>
-      ) : (
-        <EmptyPanel icon={FolderGit2} message="This candidate has not published any portfolios yet." />
-      )}
+      <section className="rounded-[26px] border border-ws-line bg-ws-panel p-5 sm:p-7">
+        <SectionHeading icon={FolderGit2} title="Portfolios and projects" count={portfolios.length} />
+        {portfolios.length ? (
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            {portfolios.map((portfolio) => <PortfolioBlock key={portfolio.id} portfolio={portfolio} />)}
+          </div>
+        ) : <div className="mt-5"><EmptyPanel icon={FolderGit2} message="This candidate has not published any portfolios yet." /></div>}
+      </section>
     </div>
   );
 }
@@ -98,11 +98,12 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
   const showSalary = talent.salaryVisibility === "PUBLIC" && (talent.expectedSalaryMin || talent.expectedSalaryMax);
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-border bg-linear-to-r from-emerald-50 via-emerald-50/55 to-surface shadow-[var(--shadow-card)] dark:from-emerald-950/35 dark:via-emerald-950/15 dark:to-surface">
-      <span aria-hidden="true" className="absolute -right-20 -top-28 size-72 rounded-full bg-brand/5" />
-      <span aria-hidden="true" className="absolute -bottom-24 right-40 size-48 rounded-full bg-brand/4" />
+    <section className="relative overflow-hidden rounded-[30px] border border-ws-line bg-ws-panel">
+      <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-primary" />
+      <span aria-hidden="true" className="absolute -right-20 -top-28 size-72 rounded-full border-50 border-primary/4" />
+      <span aria-hidden="true" className="absolute -bottom-28 right-1/3 size-56 rounded-full bg-primary/5 blur-3xl" />
 
-      <div className="relative px-5 py-6 sm:px-8 sm:py-8">
+      <div className="relative px-6 pb-12 pt-7 sm:px-9 sm:pb-14 sm:pt-9">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           {avatar ? (
             <Image
@@ -111,35 +112,36 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
               width={104}
               height={104}
               unoptimized
-              className="size-24 shrink-0 rounded-full border-4 border-white bg-surface object-cover shadow-md sm:size-26 dark:border-slate-800"
+              className="size-24 shrink-0 rounded-3xl border-4 border-ws-panel bg-ws-card object-cover ring-1 ring-ws-line sm:size-28"
             />
           ) : (
-            <span className="flex size-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-brand-tint text-3xl font-bold text-brand shadow-md sm:size-26 dark:border-slate-800">
+            <span className="flex size-24 shrink-0 items-center justify-center rounded-3xl border-4 border-ws-panel bg-primary/10 text-3xl font-bold text-primary ring-1 ring-ws-line sm:size-28">
               {initial}
             </span>
           )}
 
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-[28px]">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Talent profile</p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-ws-fg sm:text-3xl">
               {talent.headline || "Candidate profile"}
             </h1>
             {talent.currentPosition ? (
-              <p className="mt-1 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400">
-                <Briefcase className="size-4 text-brand" />
+              <p className="mt-2 flex items-center gap-2 text-sm font-medium text-ws-muted">
+                <Briefcase className="size-4 text-primary" />
                 {talent.currentPosition}
               </p>
             ) : null}
           </div>
 
           {talent.availabilityStatus ? (
-            <span className="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-white/85 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:ring-emerald-900">
+            <span className="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-primary/10 px-3 py-2 text-xs font-semibold text-primary ring-1 ring-primary/20">
               <BadgeCheck className="size-3.5" />
               {formatEnum(talent.availabilityStatus)}
             </span>
           ) : null}
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-2.5 sm:ml-30">
+        <div className="mt-6 flex flex-wrap gap-2.5 sm:ml-32">
           {talent.preferredLocation ? <Fact icon={MapPin}>{talent.preferredLocation}</Fact> : null}
           {showSalary ? (
             <Fact icon={DollarSign} highlight>
@@ -158,8 +160,8 @@ function ResumeCard({ resume, slug }: { resume: PublicResumeResponse; slug: stri
   const isBuilt = !resume.resumeFileUrl && hasResumeContent(resume.resumeData);
 
   return (
-    <article className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-5 shadow-sm transition hover:border-brand/25 hover:shadow-[var(--shadow-card)] sm:flex-row sm:items-center">
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand-tint text-brand">
+    <article className="group flex flex-col gap-4 rounded-[20px] border border-ws-line bg-ws-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 sm:flex-row sm:items-center">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
         <FileText className="size-5" />
       </span>
 
@@ -195,7 +197,7 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
   const linked = projects.filter((project) => project.projectUrl || project.githubUrl);
 
   return (
-    <div className="space-y-3">
+    <article className="rounded-[20px] border border-ws-line bg-ws-card p-5 transition hover:border-primary/30">
       <div>
         <div className="min-w-0">
           <h3 className="truncate text-base font-bold text-heading">{portfolio.title}</h3>
@@ -210,7 +212,7 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
           href={portfolio.publicUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface p-5 transition hover:border-brand/40 hover:bg-brand-tint/30"
+          className="group mt-4 flex items-center justify-between gap-4 rounded-2xl border border-ws-line bg-ws-panel p-4 transition hover:border-primary/40 hover:bg-primary/5"
         >
           <div className="min-w-0">
             <p className="font-semibold text-heading">Open portfolio</p>
@@ -219,13 +221,13 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
           <ExternalLink className="size-5 shrink-0 text-brand transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </a>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border bg-surface-muted/30 px-5 py-4">
+        <div className="mt-4 rounded-2xl border border-dashed border-ws-line bg-ws-panel px-5 py-4">
           <p className="text-sm text-slate-500">No portfolio website link was provided.</p>
         </div>
       )}
 
       {linked.length ? (
-        <div className="flex flex-wrap gap-2 text-xs">
+        <div className="mt-4 flex flex-wrap gap-2 text-xs">
           {linked.map((project) => (
             <span key={project.id} className="flex items-center gap-2 rounded-lg border border-border/80 bg-surface px-2.5 py-1.5">
               <span className="font-semibold text-heading">{project.title}</span>
@@ -243,7 +245,7 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
           ))}
         </div>
       ) : null}
-    </div>
+    </article>
   );
 }
 
@@ -258,7 +260,7 @@ function BackLink() {
 
 function SectionHeading({ icon: Icon, title, count }: { icon: typeof FileText; title: string; count: number }) {
   return (
-    <div className="flex items-center gap-3 pt-2">
+    <div className="flex items-center gap-3">
       <span className="flex size-9 items-center justify-center rounded-xl bg-brand-tint text-brand">
         <Icon className="size-4.5" />
       </span>
@@ -271,8 +273,8 @@ function SectionHeading({ icon: Icon, title, count }: { icon: typeof FileText; t
 
 function StatTile({ icon: Icon, value, label }: { icon: typeof FileText; value: number; label: string }) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-border bg-surface p-5 shadow-sm">
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-tint text-brand">
+    <div className="flex items-center gap-4 rounded-2xl border border-ws-line bg-ws-panel p-4 shadow-[0_14px_35px_-28px_rgba(15,23,42,.5)] sm:p-5">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
         <Icon className="size-5" />
       </span>
       <div>
@@ -287,7 +289,7 @@ function Fact({ icon: Icon, highlight, children }: { icon: typeof MapPin; highli
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
-        highlight ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" : "bg-surface-muted text-slate-600 dark:text-slate-400"
+        highlight ? "bg-primary/10 text-primary ring-1 ring-primary/15" : "bg-ws-card text-ws-muted ring-1 ring-ws-line"
       }`}
     >
       <Icon className="size-3.5" />

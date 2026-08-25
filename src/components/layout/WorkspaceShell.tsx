@@ -184,7 +184,7 @@ function TopBar({ title, role }: { title: string; role: Role }) {
 
         <Link
           href={actions.create}
-          aria-label={role === "recruiter" ? "Post a job" : "Find a new role"}
+          aria-label={role === "recruiter" ? "Post a job" : "Find a new job"}
           className="flex size-10 items-center justify-center rounded-full bg-ws-fg text-ws-panel transition-transform hover:scale-105"
         >
           <Plus aria-hidden="true" className="size-5" />

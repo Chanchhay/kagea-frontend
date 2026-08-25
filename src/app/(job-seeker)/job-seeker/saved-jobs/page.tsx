@@ -7,7 +7,10 @@ import {
   BookmarkX,
   BriefcaseBusiness,
   CalendarDays,
+  ArrowUpRight,
+  Banknote,
   MapPin,
+  Radio,
   Trash2,
 } from "lucide-react";
 import type { FavoriteJobResponse } from "@/contracts";
@@ -33,25 +36,34 @@ export default function SavedJobsPage() {
   const openCount = saved.filter((job) => job.available).length;
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="mx-auto w-full max-w-7xl">
       <PageIntro
         title="Saved jobs"
         description="Roles you bookmarked while browsing. Closed and expired posts stay here until you remove them."
       />
 
       {saved.length ? (
-        <>
-          <p className="mb-5 text-xs text-ws-muted">
-            {saved.length} saved · {openCount} still accepting applications
-          </p>
-          <div className="space-y-3">
+        <section className="overflow-hidden rounded-[28px] border border-ws-line bg-ws-panel shadow-[0_18px_60px_-42px_rgba(15,23,42,.45)]">
+          <div className="flex flex-col gap-5 border-b border-ws-line bg-linear-to-r from-primary/8 via-transparent to-transparent px-5 py-6 sm:px-7 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Your shortlist</p>
+              <h2 className="mt-1 text-xl font-bold tracking-tight text-ws-fg">Opportunities worth revisiting</h2>
+              <p className="mt-1 text-sm text-ws-muted">Keep track of roles you may want to apply for.</p>
+            </div>
+            <div className="flex gap-3">
+              <SummaryValue value={saved.length} label="Saved" icon={Bookmark} />
+              <SummaryValue value={openCount} label="Open" icon={Radio} accent />
+            </div>
+          </div>
+
+          <div className="grid gap-5 p-5 sm:p-7 lg:grid-cols-2">
             {saved.map((job) => (
               <SavedJobRow key={job.id} job={job} />
             ))}
           </div>
 
           {totalPages > 1 ? (
-            <div className="mt-6 flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-3 border-t border-ws-line px-5 py-4">
               <button
                 type="button"
                 onClick={() => setPage((current) => Math.max(0, current - 1))}
@@ -75,7 +87,7 @@ export default function SavedJobsPage() {
               </button>
             </div>
           ) : null}
-        </>
+        </section>
       ) : (
         <div className="rounded-[24px] bg-ws-card px-6 py-16 text-center">
           <BookmarkX className="mx-auto size-10 text-ws-faint" />
@@ -99,16 +111,22 @@ function SavedJobRow({ job }: { job: FavoriteJobResponse }) {
   const [removeJob, { isLoading }] = useRemoveFavoriteJobMutation();
 
   return (
-    <div
-      className={`grid gap-4 rounded-[20px] bg-ws-card p-5 sm:grid-cols-[auto_1fr_auto] sm:items-center ${
+    <article
+      className={`group relative flex min-h-64 flex-col overflow-hidden rounded-[22px] border border-ws-line bg-ws-panel p-5 transition duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_20px_45px_-30px_rgba(15,23,42,.45)] ${
         job.available ? "" : "opacity-60"
       }`}
     >
-      <span className="flex size-12 items-center justify-center rounded-2xl bg-ws-panel text-primary shadow-sm">
-        <Bookmark className="size-5" />
-      </span>
+      <span aria-hidden="true" className={`absolute inset-x-0 top-0 h-1 ${job.available ? "bg-primary" : "bg-ws-faint"}`} />
 
-      <div className="min-w-0">
+      <div className="flex items-start justify-between gap-3">
+        <span className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15 transition group-hover:bg-primary group-hover:text-primary-foreground"><Bookmark className="size-5 fill-current" /></span>
+        <div className="flex items-center gap-2">
+          <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${job.available ? "bg-primary/10 text-primary" : "bg-chip-alert text-chip-alert-fg"}`}>{job.available ? "Accepting applications" : "Closed"}</span>
+          <button type="button" onClick={() => removeJob(job.jobId)} disabled={isLoading} aria-label={`Remove ${job.title} from saved jobs`} title="Remove saved job" className="inline-flex size-9 items-center justify-center rounded-xl bg-ws-card text-ws-muted transition hover:bg-destructive/10 hover:text-destructive disabled:opacity-40"><Trash2 className="size-4" /></button>
+        </div>
+      </div>
+
+      <div className="mt-5 min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           {/*
            * Only an open job links out: the public detail page returns 404 for
@@ -117,20 +135,15 @@ function SavedJobRow({ job }: { job: FavoriteJobResponse }) {
           {job.available ? (
             <Link
               href={`/jobs/${job.jobId}`}
-              className="truncate font-semibold text-ws-fg hover:text-primary"
+              className="truncate text-lg font-bold tracking-tight text-ws-fg hover:text-primary"
             >
               {job.title}
             </Link>
           ) : (
-            <h2 className="truncate font-semibold text-ws-fg">{job.title}</h2>
-          )}
-          {job.available ? null : (
-            <span className="rounded-full bg-chip-alert px-2.5 py-1 text-[11px] font-semibold text-chip-alert-fg">
-              No longer accepting applications
-            </span>
+            <h2 className="truncate text-lg font-bold tracking-tight text-ws-fg">{job.title}</h2>
           )}
         </div>
-        <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-ws-muted">
+        <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ws-muted">
           <span className="flex items-center gap-1.5">
             <BriefcaseBusiness className="size-3.5" /> {job.companyName}
           </span>
@@ -143,20 +156,25 @@ function SavedJobRow({ job }: { job: FavoriteJobResponse }) {
             <CalendarDays className="size-3.5" /> Saved {formatDate(job.savedAt)}
           </span>
         </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {job.workMode ? <JobChip>{formatEnum(job.workMode)}</JobChip> : null}
+          {job.jobType ? <JobChip>{formatEnum(job.jobType)}</JobChip> : null}
+          {job.experienceLevel ? <JobChip>{formatEnum(job.experienceLevel)}</JobChip> : null}
+        </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => removeJob(job.jobId)}
-        disabled={isLoading}
-        aria-label={`Remove ${job.title} from saved jobs`}
-        className="inline-flex size-10 items-center justify-center rounded-xl bg-ws-panel text-ws-muted transition hover:text-chip-alert-fg disabled:opacity-40"
-      >
-        <Trash2 className="size-4" />
-      </button>
-    </div>
+      <div className="mt-5 flex items-end justify-between gap-4 border-t border-ws-line pt-4">
+        <div><p className="flex items-center gap-1.5 text-xs text-ws-muted"><Banknote className="size-3.5" /> Salary</p><p className="mt-1 text-sm font-bold text-ws-fg">{formatSalary(job.salaryMin, job.salaryMax)}</p></div>
+        {job.available ? <Link href={`/jobs/${job.jobId}`} className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-brand-hover">View job <ArrowUpRight className="size-4" /></Link> : null}
+      </div>
+    </article>
   );
 }
+
+function SummaryValue({ value, label, icon: Icon, accent = false }: { value: number; label: string; icon: typeof Bookmark; accent?: boolean }) { return <div className="flex min-w-24 items-center gap-3 rounded-2xl border border-ws-line bg-ws-panel px-4 py-3"><span className={`flex size-9 items-center justify-center rounded-xl ${accent ? "bg-primary text-primary-foreground" : "bg-ws-card text-ws-muted"}`}><Icon className="size-4" /></span><div><p className="font-bold leading-none text-ws-fg">{value}</p><p className="mt-1 text-[11px] text-ws-muted">{label}</p></div></div>; }
+function JobChip({ children }: { children: React.ReactNode }) { return <span className="rounded-lg bg-ws-card px-2.5 py-1.5 text-xs font-semibold text-ws-muted">{children}</span>; }
+function formatEnum(value: string) { return value.toLowerCase().replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
+function formatSalary(min: number | null, max: number | null) { const number = new Intl.NumberFormat("en", { maximumFractionDigits: 0 }); if (min && max) return `$${number.format(min)} – $${number.format(max)}`; if (min) return `From $${number.format(min)}`; if (max) return `Up to $${number.format(max)}`; return "Negotiable"; }
 
 function formatDate(value: string) {
   const date = new Date(value);
