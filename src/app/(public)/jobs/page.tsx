@@ -1,291 +1,97 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  ArrowUpRight,
-  BriefcaseBusiness,
-  CalendarDays,
-  MapPin,
-  Search,
-  X,
-} from "lucide-react";
 import Link from "next/link";
+import { useMemo, useState } from "react";
+import { ArrowUpRight, Bookmark, BriefcaseBusiness, MapPin, Search, SlidersHorizontal } from "lucide-react";
 import type { PublicJobResponse } from "@/contracts";
-import { markdownToPlainText } from "@/lib/markdown";
 import { PublicFooter, PublicShell } from "@/components/layout/PublicShell";
-import { ScrollReveal } from "@/components/landing-page/shared/ScrollReveal";
-import { PublicJobCatalog } from "@/components/public/PublicJobCatalog";
-import { ApplyJobDialog } from "@/components/public/ApplyJobDialog";
-import {
-  formatDate,
-  formatEnum,
-  formatSalary,
-} from "@/components/public/PublicJobCard";
-import { PageContainer } from "@/components/shared/PageContainer";
 import { ErrorState } from "@/components/shared/ErrorState";
-import {
-  useGetPublicJobCategoriesQuery,
-  useGetPublicJobsQuery,
-  useGetPublicSkillsQuery,
-  useGetPublicIndustriesQuery,
-} from "@/services/publicApi";
+import { jobTypeOptions, workModeOptions } from "@/lib/job-options";
+import { useGetPublicJobCategoriesQuery, useGetPublicJobsQuery } from "@/services/publicApi";
+
+type SortOrder = "newest" | "salary" | "title";
 
 export default function PublicJobsPage() {
-  const jobsQuery = useGetPublicJobsQuery({
-    size: 100,
-    sort: "publishedAt,desc",
-  });
-  const categories = useGetPublicJobCategoriesQuery();
-  const skills = useGetPublicSkillsQuery();
-  const industries = useGetPublicIndustriesQuery();
-
+  const jobsQuery = useGetPublicJobsQuery({ size: 100, sort: "publishedAt,desc" });
+  const categoriesQuery = useGetPublicJobCategoriesQuery();
   const [keyword, setKeyword] = useState("");
-  const [locationTerm, setLocationTerm] = useState("");
-  const [categoryId, setCategoryId] = useState<number | null>(null);
-  /*
-   * The selection is held by id, not by list index: filtering rebuilds the
-   * array, and an index would silently point at a different job — or past the
-   * end of it — the moment the keyword changes.
-   */
-  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+  const [location, setLocation] = useState("");
+  const [experience, setExperience] = useState("");
+  const [minimumSalary, setMinimumSalary] = useState(0);
+  const [jobTypes, setJobTypes] = useState<Set<string>>(() => new Set());
+  const [workModes, setWorkModes] = useState<Set<string>>(() => new Set());
+  const [categoryIds, setCategoryIds] = useState<Set<number>>(() => new Set());
+  const [savedJobs, setSavedJobs] = useState<Set<number>>(() => new Set());
+  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const jobs = useMemo(
-    () => jobsQuery.data?.content ?? [],
-    [jobsQuery.data?.content],
-  );
-
-  const filteredJobs = useMemo(() => {
+  const jobs = useMemo(() => {
     const term = keyword.trim().toLowerCase();
-    const place = locationTerm.trim().toLowerCase();
-
-    return jobs.filter((job) => {
-      const matchesCategory = categoryId === null || job.categoryId === categoryId;
-
-      const matchesTerm =
-        term === "" ||
-        [job.title, job.companyName, job.categoryName, job.description].some(
-          (field) => field?.toLowerCase().includes(term),
-        ) ||
-        job.skills?.some((skill) =>
-          skill.skillName?.toLowerCase().includes(term),
-        );
-
-      const matchesPlace =
-        place === "" ||
-        job.location?.toLowerCase().includes(place) ||
-        job.workMode?.toLowerCase().includes(place);
-
-      return matchesCategory && matchesTerm && matchesPlace;
+    const place = location.trim().toLowerCase();
+    const filtered = (jobsQuery.data?.content ?? []).filter((job) => {
+      const searchable = [job.title, job.companyName, job.categoryName, job.description].filter(Boolean).join(" ").toLowerCase();
+      return (!term || searchable.includes(term) || job.skills?.some((skill) => skill.skillName.toLowerCase().includes(term))) &&
+        (!place || job.location?.toLowerCase().includes(place) || job.workMode?.toLowerCase().includes(place)) &&
+        (!experience || job.experienceLevel === experience) &&
+        (!minimumSalary || (job.salaryMax ?? 0) >= minimumSalary) &&
+        (!jobTypes.size || jobTypes.has(job.jobType)) &&
+        (!workModes.size || workModes.has(job.workMode)) &&
+        (!categoryIds.size || categoryIds.has(job.categoryId));
     });
-  }, [jobs, keyword, locationTerm, categoryId]);
-
-  const activeJob =
-    filteredJobs.find((job) => job.id === selectedJobId) ?? filteredJobs[0];
-
-  const isLoading =
-    jobsQuery.isLoading ||
-    categories.isLoading ||
-    skills.isLoading ||
-    industries.isLoading;
-  const isError =
-    jobsQuery.isError ||
-    categories.isError ||
-    skills.isError ||
-    industries.isError;
-  const hasFilters =
-    keyword !== "" || locationTerm !== "" || categoryId !== null;
+    return filtered.sort((a, b) => sortOrder === "salary" ? (b.salaryMax ?? 0) - (a.salaryMax ?? 0) : sortOrder === "title" ? a.title.localeCompare(b.title) : Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
+  }, [categoryIds, experience, jobTypes, jobsQuery.data?.content, keyword, location, minimumSalary, sortOrder, workModes]);
 
   const clearFilters = () => {
-    setKeyword("");
-    setLocationTerm("");
-    setCategoryId(null);
+    setKeyword(""); setLocation(""); setExperience(""); setMinimumSalary(0);
+    setJobTypes(new Set()); setWorkModes(new Set()); setCategoryIds(new Set());
   };
 
   return (
     <PublicShell>
-      <main className="relative overflow-x-hidden bg-white text-slate-900 transition-colors duration-300 dark:bg-[#0B0F19] dark:text-slate-50">
-        <div className="pointer-events-none absolute inset-0 z-0 hidden dark:block">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_14%,rgba(22,163,74,0.12),transparent_30%),radial-gradient(circle_at_72%_16%,rgba(234,179,8,0.05),transparent_18%)]" />
-        </div>
-
-        <div className="relative z-10">
-          <ScrollReveal>
-            <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
-              {/* Same emerald bloom the landing hero sits inside. */}
-              <div className="pointer-events-none absolute right-[8%] top-[6%] -z-10 h-104 w-104 rounded-full bg-[radial-gradient(circle,rgba(31,166,40,.14)_0%,rgba(31,166,40,.06)_45%,transparent_72%)] blur-3xl lg:h-136 lg:w-136 dark:bg-[radial-gradient(circle,rgba(39,183,51,.16)_0%,rgba(39,183,51,.06)_45%,transparent_72%)]" />
-
-              <div className="text-center">
-                <h1
-                  data-reveal
-                  className="text-3xl font-extrabold sm:text-4xl"
-                >
-                  <span className="text-[#008A1E]">Find </span>
-                  <span className="text-[#F3BE00]">Your Next</span>
-                  <span className="text-[#008A1E]"> Role</span>
-                </h1>
-                <p
-                  data-reveal
-                  className="mx-auto mt-2 max-w-2xl text-sm font-medium text-slate-600 dark:text-slate-300"
-                >
-                  Every published opening from verified recruiters, searchable in
-                  one place.
-                </p>
-              </div>
-
-              <div
-                data-reveal
-                className="mx-auto mt-8 flex max-w-4xl flex-col items-stretch gap-1.5 rounded-2xl border border-primary bg-white p-1.5 shadow-sm md:flex-row md:items-center dark:bg-slate-900"
-              >
-                <label className="flex w-full items-center gap-2.5 border-b border-slate-100 px-3 py-2.5 md:flex-[1.4] md:border-b-0 md:border-r dark:border-slate-800">
-                  <Search
-                    aria-hidden="true"
-                    className="size-4 shrink-0 text-[#008A1E]"
-                  />
-                  <span className="sr-only">Search jobs</span>
-                  <input
-                    type="search"
-                    placeholder="Search by title, company, or skill"
-                    value={keyword}
-                    onChange={(event) => setKeyword(event.target.value)}
-                    className="w-full bg-transparent text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white"
-                  />
-                </label>
-
-                <label className="flex w-full items-center gap-2.5 px-3 py-2.5 md:flex-1">
-                  <MapPin
-                    aria-hidden="true"
-                    className="size-4 shrink-0 text-[#F3BE00]"
-                  />
-                  <span className="sr-only">Filter by location</span>
-                  <input
-                    type="search"
-                    placeholder="Location or work mode"
-                    value={locationTerm}
-                    onChange={(event) => setLocationTerm(event.target.value)}
-                    className="w-full bg-transparent text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white"
-                  />
-                </label>
-
-                {/* Results update as you type, so the affordance here is undoing
-                 * the filters rather than submitting them. */}
-                {hasFilters ? (
-                  <button
-                    type="button"
-                    onClick={clearFilters}
-                    className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-full border border-[#008A1E] bg-white px-6 text-sm font-semibold text-[#008A1E] transition-colors hover:bg-[#008A1E] hover:text-white dark:bg-slate-900"
-                  >
-                    <X aria-hidden="true" className="size-4" /> Clear
-                  </button>
-                ) : null}
-              </div>
-
-              {(categories.data ?? []).length > 0 ? (
-                <div
-                  data-reveal
-                  className="mt-8 overflow-x-auto border-b border-slate-200 dark:border-slate-700"
-                >
-                  <div className="flex min-w-max justify-center gap-7 px-2 sm:gap-10">
-                    <Tab
-                      active={categoryId === null}
-                      onClick={() => setCategoryId(null)}
-                    >
-                      All
-                    </Tab>
-                    {(categories.data ?? []).map((category) => (
-                      <Tab
-                        key={category.id}
-                        active={categoryId === category.id}
-                        onClick={() => setCategoryId(category.id)}
-                      >
-                        {category.name}
-                      </Tab>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </section>
-          </ScrollReveal>
-
-          <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-            {isLoading ? (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="h-64 animate-pulse rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
-                  />
-                ))}
-              </div>
-            ) : isError ? (
-              <ErrorState message="Unable to load published jobs." />
-            ) : filteredJobs.length === 0 ? (
-              <Message
-                title="No matching jobs"
-                description="Try a different keyword, or clear the filters to see every published role."
-                action={
-                  hasFilters ? (
-                    <button
-                      type="button"
-                      onClick={clearFilters}
-                      className="mt-6 inline-flex h-11 items-center rounded-full border border-[#008A1E] bg-white px-6 text-sm font-semibold text-[#008A1E] transition-colors hover:bg-[#008A1E] hover:text-white dark:bg-slate-900"
-                    >
-                      Clear filters
-                    </button>
-                  ) : undefined
-                }
-              />
-            ) : (
-              <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
-                <div className="overflow-hidden rounded-2xl border border-primary bg-white shadow-sm lg:col-span-5 dark:bg-slate-900">
-                  <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">
-                      Open roles
-                    </span>
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                      {filteredJobs.length}{" "}
-                      {filteredJobs.length === 1 ? "job" : "jobs"}
-                    </span>
-                  </div>
-
-                  <ul className="max-h-180 divide-y divide-slate-100 overflow-y-auto dark:divide-slate-800">
-                    {filteredJobs.map((job) => (
-                      <JobListRow
-                        key={job.id}
-                        job={job}
-                        selected={job.id === activeJob?.id}
-                        onSelect={() => setSelectedJobId(job.id)}
-                      />
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="min-h-145 rounded-2xl border border-primary bg-white p-6 shadow-sm lg:sticky lg:top-6 lg:col-span-7 lg:p-8 dark:bg-slate-900">
-                  <AnimatePresence mode="wait">
-                    {activeJob ? (
-                      <JobDetailPanel key={activeJob.id} job={activeJob} />
-                    ) : (
-                      <p className="flex h-full items-center justify-center text-sm text-slate-500 dark:text-slate-400">
-                        Select a job on the left to review the details.
-                      </p>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-            )}
+      <main className="min-h-screen bg-[#FCFCFC] text-slate-950 dark:bg-[#0B0F19] dark:text-white">
+        <div className="mx-auto max-w-352 px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
+          <section aria-label="Search jobs" className="relative grid gap-2 overflow-hidden rounded-[22px] border border-slate-200/80 bg-white/95 p-2 shadow-[0_18px_50px_-28px_rgba(15,23,42,.35)] backdrop-blur-xl md:grid-cols-[1.2fr_1.15fr_1fr_1.25fr_auto] md:items-stretch dark:border-[#303741] dark:bg-[#151A24]/95 dark:shadow-[0_22px_55px_-30px_rgba(0,0,0,.9)]">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-10 top-0 h-px bg-linear-to-r from-transparent via-[#1FA628]/65 to-transparent" />
+            <SearchField icon={Search} label="Job title or keyword" value={keyword} onChange={setKeyword} />
+            <SearchField icon={MapPin} label="Location" value={location} onChange={setLocation} />
+            <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#1D232E] dark:focus-within:bg-[#1D232E]">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-[#E9F7EB] group-focus-within:text-[#1FA628] dark:bg-[#242B35] dark:text-[#929AA3] dark:group-focus-within:bg-[#1FA628]/10 dark:group-focus-within:text-[#75D47C]"><BriefcaseBusiness className="size-4" /></span>
+              <span className="min-w-0 flex-1"><span className="block text-[10px] font-bold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]">Experience</span>
+              <select value={experience} onChange={(event) => setExperience(event.target.value)} className="mt-0.5 w-full cursor-pointer bg-transparent text-sm font-semibold text-slate-800 outline-none [&>option]:bg-white [&>option]:text-slate-800 dark:text-[#F5F5F5] dark:[color-scheme:dark] dark:[&>option]:bg-[#1D232E] dark:[&>option]:text-[#F5F5F5]">
+                <option value="">Any experience</option><option value="ENTRY">Entry level</option><option value="JUNIOR">Junior</option><option value="MID">Mid level</option><option value="SENIOR">Senior</option><option value="LEAD">Lead</option>
+              </select></span>
+            </label>
+            <label className="flex min-h-15 flex-col justify-center rounded-2xl px-4 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#1D232E] dark:focus-within:bg-[#1D232E]">
+              <span className="flex items-center justify-between gap-3 text-[10px] font-bold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]"><span>Minimum salary</span><span className="rounded-full bg-[#FFF5CE] px-2 py-0.5 text-[#9A7400] dark:bg-[#F3BE00]/12 dark:text-[#F3BE00]">${minimumSalary.toLocaleString()}</span></span>
+              <input aria-label="Minimum monthly salary" type="range" min="0" max="5000" step="250" value={minimumSalary} onChange={(event) => setMinimumSalary(Number(event.target.value))} className="mt-2 h-1.5 cursor-pointer accent-[#F3BE00]" />
+            </label>
+            <button type="button" className="group inline-flex h-11 self-center items-center justify-center gap-2 rounded-xl bg-[#159B23] px-5 text-xs font-bold text-white shadow-[0_8px_18px_-11px_rgba(21,155,35,.9)] transition-[background-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#0F861C] hover:shadow-[0_12px_22px_-12px_rgba(21,155,35,.8)] active:translate-y-0 motion-reduce:transform-none md:mx-1"><Search className="size-3.5 transition-transform duration-300 group-hover:scale-110 motion-reduce:transform-none" />Search</button>
           </section>
 
-          {/* Category / skill / industry catalog carried over from the previous
-           * jobs page — it is the only browse-by-taxonomy entry point. */}
-          <ScrollReveal delay={0.08} direction="right">
-            <PageContainer className="pb-14">
-              <PublicJobCatalog
-                categories={categories.data ?? []}
-                skills={skills.data ?? []}
-                industries={industries.data ?? []}
-              />
-            </PageContainer>
-          </ScrollReveal>
+          <div className="mt-8 flex items-center justify-between gap-4 lg:hidden">
+            <button type="button" onClick={() => setFiltersOpen((open) => !open)} className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold dark:border-slate-700 dark:bg-[#171C27]"><SlidersHorizontal className="size-4" />Filters</button>
+            <SortSelect value={sortOrder} onChange={setSortOrder} />
+          </div>
+
+          <div className="mt-6 grid items-start gap-7 lg:mt-10 lg:grid-cols-[240px_minmax(0,1fr)]">
+            <aside className={`${filtersOpen ? "block" : "hidden"} rounded-xl border border-slate-200 bg-white p-5 lg:sticky lg:top-28 lg:block lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto dark:border-slate-700 dark:bg-[#171C27]`}>
+              <div className="flex items-center justify-between"><h2 className="text-xl font-extrabold">Filters</h2><button type="button" onClick={clearFilters} className="text-xs font-medium text-slate-400 hover:text-[#008A1E]">Clear all</button></div>
+              <FilterGroup title="Job Type">{jobTypeOptions.map((option) => <FilterCheckbox key={option.value} label={option.label} checked={jobTypes.has(option.value)} onChange={() => setJobTypes(toggleSet(jobTypes, option.value))} />)}</FilterGroup>
+              <FilterGroup title="Work Type">{workModeOptions.map((option) => <FilterCheckbox key={option.value} label={option.label} checked={workModes.has(option.value)} onChange={() => setWorkModes(toggleSet(workModes, option.value))} />)}</FilterGroup>
+              <FilterGroup title="Job Functions">{(categoriesQuery.data ?? []).map((category) => <FilterCheckbox key={category.id} label={category.name} checked={categoryIds.has(category.id)} onChange={() => setCategoryIds(toggleSet(categoryIds, category.id))} />)}</FilterGroup>
+            </aside>
+
+            <section>
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <h1 className="text-xl font-extrabold sm:text-2xl">{keyword.trim() || "All Jobs"} <span className="text-sm font-medium text-slate-500">Search Result ({jobs.length})</span></h1>
+                <div className="hidden lg:block"><SortSelect value={sortOrder} onChange={setSortOrder} /></div>
+              </div>
+              {jobsQuery.isLoading || categoriesQuery.isLoading ? <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 6 }).map((_, index) => <div key={index} className="h-72 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />)}</div> :
+                jobsQuery.isError || categoriesQuery.isError ? <ErrorState message="Unable to load published jobs." /> : jobs.length ?
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{jobs.map((job) => <JobCard key={job.id} job={job} saved={savedJobs.has(job.id)} onSave={() => setSavedJobs(toggleSet(savedJobs, job.id))} />)}</div> :
+                <div className="rounded-2xl border border-dashed border-slate-300 px-6 py-20 text-center dark:border-slate-700"><h2 className="text-lg font-bold">No matching jobs</h2><p className="mt-2 text-sm text-slate-500">Try changing or clearing your filters.</p><button type="button" onClick={clearFilters} className="mt-5 rounded-lg bg-black px-5 py-2.5 text-sm font-bold text-white dark:bg-white dark:text-black">Clear filters</button></div>}
+            </section>
+          </div>
         </div>
       </main>
       <PublicFooter />
@@ -293,223 +99,69 @@ export default function PublicJobsPage() {
   );
 }
 
-function JobListRow({
-  job,
-  selected,
-  onSelect,
-}: {
-  job: PublicJobResponse;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  const salary = formatSalary(job);
-
+function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolean; onSave: () => void }) {
   return (
-    <li>
-      <button
-        type="button"
-        onClick={onSelect}
-        aria-current={selected ? "true" : undefined}
-        className={`w-full border-l-4 p-5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008A1E] ${
-          selected
-            ? "border-l-[#008A1E] bg-[#008A1E]/6 dark:bg-[#008A1E]/15"
-            : "border-l-transparent hover:bg-slate-50 dark:hover:bg-slate-800/60"
-        }`}
-      >
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h3 className="truncate text-base font-bold tracking-tight text-slate-900 dark:text-white">
-              {job.title}
-            </h3>
-            <p className="mt-1 flex items-center gap-1.5 truncate text-sm font-medium text-[#008A1E]">
-              <BriefcaseBusiness aria-hidden="true" className="size-4 shrink-0" />
-              {job.companyName}
-            </p>
-            <p className="mt-2 flex items-center gap-1.5 truncate text-sm text-slate-500 dark:text-slate-400">
-              <MapPin aria-hidden="true" className="size-4 shrink-0" />
-              {job.location || formatEnum(job.workMode)}
-            </p>
+    <article className="group relative flex min-h-[205px] flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_-4px_rgba(15,23,42,.08)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:border-[#1FA628]/60 hover:shadow-[0_20px_40px_-15px_rgba(31,166,40,0.18),0_10px_20px_-8px_rgba(15,23,42,0.06)] dark:border-[#3E444B] dark:bg-[#22262C] dark:shadow-[0_14px_32px_-18px_rgba(0,0,0,.9)] dark:hover:border-[#1FA628]/50 dark:hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8),0_0_24px_rgba(31,166,40,0.2)] will-change-transform">
+      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-linear-to-b from-[#1FA628]/[0.05] via-transparent to-transparent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 dark:from-[#1FA628]/[0.10]" />
+      <div>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#1FA628]/15 bg-[#EEF8F0] text-[10px] font-black tracking-wide text-[#1FA628] shadow-[inset_0_0_0_2px_white] transition-all duration-300 ease-out group-hover:scale-105 group-hover:border-[#1FA628]/40 group-hover:shadow-[0_4px_12px_rgba(31,166,40,0.25)] dark:border-[#4A5159] dark:bg-[#2B3036] dark:text-[#F3BE00] dark:shadow-none dark:group-hover:border-[#F3BE00]/40">
+            {initials(job.companyName)}
           </div>
-          <span className="shrink-0 text-xs font-medium text-slate-400">
-            {formatDate(job.publishedAt)}
-          </span>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <Chip>{formatEnum(job.jobType)}</Chip>
-          <Chip>{formatEnum(job.workMode)}</Chip>
-          <span className="ml-auto text-sm font-bold text-slate-900 dark:text-white">
-            {salary ?? "Negotiable"}
-          </span>
-        </div>
-      </button>
-    </li>
-  );
-}
-
-function JobDetailPanel({ job }: { job: PublicJobResponse }) {
-  const salary = formatSalary(job);
-  const summary = markdownToPlainText(job.description);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -12 }}
-      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-      className="space-y-6"
-    >
-      <div className="border-b border-slate-100 pb-6 dark:border-slate-800">
-        <div className="flex flex-wrap gap-2">
-          <Chip>{formatEnum(job.jobType)}</Chip>
-          <Chip>{formatEnum(job.workMode)}</Chip>
-          {job.categoryName ? <Chip>{job.categoryName}</Chip> : null}
-        </div>
-
-        <h2 className="mt-5 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-          {job.title}
-        </h2>
-        <p className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-[#008A1E]">
-          <BriefcaseBusiness aria-hidden="true" className="size-4" />
-          {job.companyName}
-        </p>
-
-        <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
-          <span className="flex items-center gap-1.5">
-            <MapPin aria-hidden="true" className="size-4" />
-            {job.location || formatEnum(job.workMode)}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <CalendarDays aria-hidden="true" className="size-4" />
-            Posted {formatDate(job.publishedAt)}
-          </span>
-        </div>
-
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <Link
-            href={`/jobs/${job.id}`}
-            className="inline-flex h-11 items-center rounded-full bg-[#008A1E] px-6 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(36,169,68,.28)] transition-colors hover:bg-[#007018]"
+          <button
+            type="button"
+            onClick={onSave}
+            aria-label={`${saved ? "Remove" : "Save"} ${job.title}`}
+            aria-pressed={saved}
+            className={`inline-flex h-7.5 items-center gap-1 rounded-md border px-2 text-[11px] font-semibold transition-all duration-200 active:scale-95 ${
+              saved
+                ? "border-[#1FA628]/20 bg-[#E8F5EA] text-[#1FA628] dark:border-[#59616A] dark:bg-[#3A4047] dark:text-white"
+                : "border-slate-200 bg-[#FAFAF9] text-slate-500 hover:border-slate-300 hover:bg-white hover:text-slate-700 dark:border-[#3E444B] dark:bg-[#22262C] dark:text-[#CBD0D5] dark:hover:bg-[#2B3036] dark:hover:text-white"
+            }`}
           >
-            View details
-            <ArrowUpRight aria-hidden="true" className="ml-2 size-4" />
-          </Link>
-          {/* Carries its own sign-in path and AI-interview action for guests. */}
-          <ApplyJobDialog jobId={job.id} jobTitle={job.title} />
+            {saved ? "Saved" : "Save"}
+            <Bookmark className={`size-3 transition-transform duration-200 ${saved ? "fill-current scale-110" : ""}`} />
+          </button>
+        </div>
+        <div className="mt-2.5">
+          <p className="flex flex-wrap items-baseline gap-x-1.5 text-xs font-semibold text-slate-900 dark:text-[#F5F5F5]">
+            <span>{job.companyName}</span>
+            <span className="text-[10px] font-normal text-slate-400 dark:text-[#929AA3]">{timeAgo(job.publishedAt)}</span>
+          </p>
+          <h2 className="mt-1 line-clamp-2 text-[15px] font-bold leading-snug tracking-[-.015em] text-slate-950 transition-colors duration-200 group-hover:text-[#008A1E] dark:text-white dark:group-hover:text-[#F3BE00]">
+            {job.title}
+          </h2>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            <Tag>{formatLabel(job.jobType || "Job")}</Tag>
+            <Tag>{formatLabel(job.workMode || "Flexible")}</Tag>
+          </div>
         </div>
       </div>
-
-      <dl className="grid grid-cols-2 gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-5 sm:grid-cols-3 dark:border-slate-800 dark:bg-slate-800/40">
-        <JobFact label="Compensation" value={salary ?? "Negotiable"} accent />
-        <JobFact label="Experience" value={formatEnum(job.experienceLevel)} />
-        <JobFact label="Employment" value={formatEnum(job.jobType)} />
-        <JobFact label="Work mode" value={formatEnum(job.workMode)} />
-        <JobFact label="Category" value={job.categoryName} />
-        <JobFact label="Closes" value={formatDate(job.expiredAt)} />
-      </dl>
-
-      {summary ? (
-        <div className="space-y-2">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            Job description
-          </h3>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            {summary}
-          </p>
+      <div className="mt-3 flex items-end justify-between gap-3 border-t border-slate-100 pt-2.5 dark:border-[#3E444B]">
+        <div className="min-w-0">
+          <p className="truncate text-xs font-bold text-slate-950 sm:text-sm dark:text-[#F5F5F5]">{salary(job.salaryMin, job.salaryMax)}</p>
+          <p className="mt-0.5 flex items-center gap-1 truncate text-[10px] text-slate-400 dark:text-[#929AA3]"><MapPin className="size-2.5 shrink-0" />{job.location || "Location not specified"}</p>
         </div>
-      ) : null}
-
-      {job.skills?.length ? (
-        <div className="space-y-3 pt-2">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            Required skills
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {job.skills.map((skill) => (
-              <Chip key={skill.skillId ?? skill.skillName}>
-                {skill.skillName}
-              </Chip>
-            ))}
-          </div>
-        </div>
-      ) : null}
-    </motion.div>
+        <Link
+          href={`/jobs/${job.id}`}
+          aria-label={`Apply for ${job.title}`}
+          className="group/btn relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#1FA628] px-3.5 text-xs font-bold text-white shadow-sm transition-all duration-300 ease-out group-hover:shadow-[0_4px_14px_rgba(31,166,40,0.35)] hover:!bg-[#F3BE00] hover:!text-slate-950 hover:!shadow-[#F3BE00]/30 active:scale-95"
+        >
+          Apply now
+          <ArrowUpRight className="size-3.5 transition-transform duration-300 ease-out group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+        </Link>
+      </div>
+    </article>
   );
 }
 
-function Tab({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`relative pb-3 text-sm font-semibold transition-colors ${
-        active
-          ? "text-[#008A1E]"
-          : "text-slate-500 hover:text-slate-800 dark:hover:text-white"
-      }`}
-    >
-      {children}
-      {active ? (
-        <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-[#008A1E]" />
-      ) : null}
-    </button>
-  );
-}
-
-function Chip({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-      {children}
-    </span>
-  );
-}
-
-function Message({
-  title,
-  description,
-  action,
-}: {
-  title: string;
-  description: string;
-  action?: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center dark:border-slate-700 dark:bg-slate-900">
-      <h3 className="font-semibold text-slate-900 dark:text-white">{title}</h3>
-      <p className="mt-2 text-sm text-slate-500">{description}</p>
-      {action}
-    </div>
-  );
-}
-
-function JobFact({
-  label,
-  value,
-  accent = false,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-}) {
-  return (
-    <div>
-      <dt className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-        {label}
-      </dt>
-      <dd
-        className={`mt-0.5 text-sm font-bold ${
-          accent ? "text-[#008A1E]" : "text-slate-900 dark:text-white"
-        }`}
-      >
-        {value}
-      </dd>
-    </div>
-  );
-}
+function SearchField({ icon: Icon, label, value, onChange }: { icon: typeof Search; label: string; value: string; onChange: (value: string) => void }) { return <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#1D232E] dark:focus-within:bg-[#1D232E]"><span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-[#E9F7EB] group-focus-within:text-[#1FA628] dark:bg-[#242B35] dark:text-[#929AA3] dark:group-focus-within:bg-[#1FA628]/10 dark:group-focus-within:text-[#75D47C]"><Icon className="size-4" /></span><span className="min-w-0 flex-1"><span className="block text-[10px] font-bold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]">{label === "Location" ? "Location" : "Search jobs"}</span><input type="search" value={value} onChange={(event) => onChange(event.target.value)} placeholder={label} className="mt-0.5 w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:font-medium placeholder:text-slate-400 dark:text-[#F5F5F5] dark:placeholder:text-[#7F8995]" /></span></label>; }
+function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) { return <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-700"><h3 className="mb-3 text-sm font-extrabold">{title}</h3><div className="space-y-2.5">{children}</div></div>; }
+function FilterCheckbox({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) { return <label className="flex cursor-pointer items-center gap-2.5 text-xs text-slate-600 dark:text-slate-300"><input type="checkbox" checked={checked} onChange={onChange} className="size-4 rounded accent-[#F3BE00]" />{label}</label>; }
+function SortSelect({ value, onChange }: { value: SortOrder; onChange: (value: SortOrder) => void }) { return <select aria-label="Sort jobs" value={value} onChange={(event) => onChange(event.target.value as SortOrder)} className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold outline-none dark:border-slate-700 dark:bg-[#171C27]"><option value="newest">Newest</option><option value="salary">Highest salary</option><option value="title">Job title</option></select>; }
+function Tag({ children }: { children: React.ReactNode }) { return <span className="inline-flex min-h-6 items-center rounded-lg border border-slate-200/70 bg-[#F1F2F0] px-2.5 text-[10px] font-semibold text-slate-600 transition-all duration-200 group-hover:border-[#1FA628]/25 group-hover:bg-[#EBF7ED] group-hover:text-[#008A1E] dark:border-transparent dark:bg-[#30353B] dark:text-[#CBD0D5] dark:group-hover:border-[#F3BE00]/25 dark:group-hover:bg-[#2B3036] dark:group-hover:text-[#F3BE00]">{children}</span>; }
+function formatLabel(value: string) { return value.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase()); }
+function salary(min?: number, max?: number) { if (!min && !max) return "Salary negotiable"; const money = (value: number) => `$${new Intl.NumberFormat().format(value)}`; return min && max ? `${money(min)} – ${money(max)}` : min ? `From ${money(min)}` : `Up to ${money(max!)}`; }
+function timeAgo(value: string) { const time = Date.parse(value); if (Number.isNaN(time)) return "Recently"; const days = Math.max(0, Math.floor((Date.now() - time) / 86_400_000)); if (days === 0) return "Today"; if (days === 1) return "1 day ago"; if (days < 30) return `${days} days ago`; const months = Math.floor(days / 30); return `${months} ${months === 1 ? "month" : "months"} ago`; }
+function initials(name: string) { return name.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join("").toUpperCase() || "CO"; }
+function toggleSet<T>(current: Set<T>, value: T) { const next = new Set(current); if (next.has(value)) next.delete(value); else next.add(value); return next; }

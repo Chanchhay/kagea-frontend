@@ -45,7 +45,7 @@ export function PublicJobCard({ job, compact = false, className }: PublicJobCard
   return (
     <Card
       className={cn(
-        "group border-border transition hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-[var(--shadow-dropdown)]",
+        "group relative overflow-hidden border-border transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:border-brand/60 hover:shadow-[0_20px_40px_-15px_rgba(31,166,40,0.15),0_10px_20px_-8px_rgba(15,23,42,0.06)] dark:hover:border-brand/50 dark:hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7),0_0_20px_rgba(31,166,40,0.15)] will-change-transform",
         className,
       )}
     >
@@ -54,7 +54,7 @@ export function PublicJobCard({ job, compact = false, className }: PublicJobCard
           <div className="min-w-0">
             <Link
               href={`/jobs/${job.id}`}
-              className="text-lg font-semibold text-heading outline-none transition hover:text-brand focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring"
+              className="text-lg font-semibold text-heading outline-none transition-colors duration-200 hover:text-brand focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring group-hover:text-brand"
             >
               {job.title}
             </Link>

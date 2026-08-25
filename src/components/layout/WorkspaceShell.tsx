@@ -76,7 +76,7 @@ function WorkspaceFrame({ role, title, links, children }: WorkspaceShellProps) {
     <div className="flex min-h-screen gap-3 bg-ws-canvas p-0 text-ws-fg lg:p-3">
       <Rail links={links} pathname={pathname} />
 
-      <div className="ws-panel relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-none lg:rounded-[28px]">
+      <div className="ws-panel relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-none lg:ml-20 lg:rounded-[28px]">
         <TopBar title={pageTitle} role={role} />
 
         <main className="ws-scroll flex-1 overflow-y-auto px-4 pb-28 pt-2 lg:px-7 lg:pb-8">
@@ -100,7 +100,7 @@ function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
   return (
     <aside
       aria-label="Workspace navigation"
-      className="ws-panel hidden w-17 shrink-0 flex-col items-center rounded-[28px] py-5 lg:flex"
+      className="ws-panel fixed inset-y-3 left-3 z-40 hidden w-17 flex-col items-center rounded-[28px] py-5 shadow-[var(--shadow-card)] lg:flex"
     >
       <Link
         href="/"
@@ -142,14 +142,18 @@ function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
 
 function SignOutRailButton() {
   return (
-    <form action="/logout" method="post" className="mt-auto">
+    <form
+      action="/logout"
+      method="post"
+      className="mt-auto border-t border-ws-line pt-3"
+    >
       <button
         type="submit"
         aria-label="Sign out"
-        className="group relative flex size-11 items-center justify-center rounded-2xl text-ws-faint transition-colors hover:bg-ws-card hover:text-ws-fg"
+        className="group relative flex size-11 items-center justify-center rounded-2xl bg-error/8 text-error transition-all duration-200 hover:bg-error hover:text-white focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-error/25"
       >
         <LogOut aria-hidden="true" className="size-5" />
-        <span className="pointer-events-none absolute left-full z-30 ml-3 hidden whitespace-nowrap rounded-lg bg-ws-card px-2.5 py-1.5 text-xs font-medium text-ws-fg shadow-(--shadow-dropdown) group-hover:block">
+        <span className="pointer-events-none absolute left-full z-30 ml-3 hidden whitespace-nowrap rounded-lg bg-ws-card px-3 py-2 text-xs font-semibold text-ws-fg shadow-(--shadow-dropdown) group-hover:block">
           Sign out
         </span>
       </button>
@@ -249,8 +253,8 @@ function Avatar() {
 
   return (
     <Link
-      href="/profile"
-      aria-label={`Open ${name}'s profile`}
+      href="/recruiter/dashboard"
+      aria-label={`Open ${name}'s recruiter dashboard`}
       className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 bg-cover bg-center text-xs font-bold text-primary ring-2 ring-ws-line"
       style={avatar ? { backgroundImage: `url("${avatar}")` } : undefined}
     >

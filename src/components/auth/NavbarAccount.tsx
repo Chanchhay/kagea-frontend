@@ -108,29 +108,32 @@ function ProfileLink({
 }) {
   return (
     <Link
-      href="/profile"
+      href="/recruiter/dashboard"
       onClick={onClick}
       className={cn(
-        "group flex items-center gap-3 rounded-lg border border-border bg-surface text-left transition-colors hover:border-brand/40 hover:bg-brand-tint focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30",
-        mobile ? "px-3 py-3" : "max-w-64 px-2.5 py-1.5 shadow-sm",
+        "group relative flex items-center gap-2.5 rounded-xl border border-border/70 bg-surface/95 text-left shadow-[0_2px_10px_rgba(15,23,42,0.07)] backdrop-blur transition-all duration-200 hover:border-brand/25 hover:shadow-[0_5px_18px_rgba(15,23,42,0.11)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30",
+        mobile ? "px-3 py-2.5" : "min-w-50 max-w-58 px-2.5 py-2",
       )}
-      aria-label={`Open ${name}'s profile`}
+      aria-label={`Open ${name}'s recruiter dashboard`}
     >
       <span
-        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-tint bg-cover bg-center text-xs font-bold text-brand ring-1 ring-brand/20"
+        className="relative flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-tint bg-cover bg-center text-xs font-extrabold text-brand ring-1 ring-brand/15 transition-colors duration-200 group-hover:bg-brand group-hover:text-primary-foreground"
         style={image ? { backgroundImage: `url("${image}")` } : undefined}
       >
         {image ? <span className="sr-only">Profile image</span> : getInitials(name)}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold text-heading">
+        <span className="block truncate text-sm font-semibold leading-4 text-heading">
           {name}
         </span>
-        <span className="block truncate text-xs text-body">{role}</span>
+        <span className="mt-1 flex items-center gap-1.5 truncate text-[11px] font-medium leading-none text-muted-fg">
+          <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-brand" />
+          <span className="truncate">{role}</span>
+        </span>
       </span>
       <ChevronRight
         aria-hidden="true"
-        className="size-4 shrink-0 text-muted-fg transition-transform group-hover:translate-x-0.5"
+        className="mr-0.5 size-4 shrink-0 text-muted-fg/70 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-brand"
       />
     </Link>
   );
