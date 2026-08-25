@@ -45,8 +45,8 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
   const isPublic = profile.profileVisibility === "PUBLIC";
 
   return (
-    <Card className="overflow-hidden border border-border shadow-sm">
-      <CardHeader className="bg-surface-muted/50 pb-4">
+    <Card className="overflow-hidden rounded-3xl border border-border shadow-sm">
+      <CardHeader className="border-b border-border bg-surface-muted/40 px-6 py-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2 text-lg font-semibold text-heading">
             <Globe className="size-5 text-brand" />
@@ -56,13 +56,13 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6 pt-6">
+      <CardContent className="space-y-6 p-6">
         <div className="grid gap-4 sm:grid-cols-3">
           <button
             type="button"
             onClick={() => handleVisibilityChange("PUBLIC")}
             disabled={isLoading}
-            className={`flex flex-col items-start rounded-xl border p-4 text-left transition-all ${
+            className={`flex flex-col items-start rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 ${
               profile.profileVisibility === "PUBLIC"
                 ? "border-brand bg-brand-tint/40 ring-2 ring-brand/20"
                 : "border-border bg-surface hover:border-slate-300"
@@ -86,7 +86,7 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
             type="button"
             onClick={() => handleVisibilityChange("PRIVATE")}
             disabled={isLoading}
-            className={`flex flex-col items-start rounded-xl border p-4 text-left transition-all ${
+            className={`flex flex-col items-start rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 ${
               profile.profileVisibility === "PRIVATE"
                 ? "border-brand bg-brand-tint/40 ring-2 ring-brand/20"
                 : "border-border bg-surface hover:border-slate-300"
@@ -110,7 +110,7 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
             type="button"
             onClick={() => handleVisibilityChange("HIDDEN")}
             disabled={isLoading}
-            className={`flex flex-col items-start rounded-xl border p-4 text-left transition-all ${
+            className={`flex flex-col items-start rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 ${
               profile.profileVisibility === "HIDDEN"
                 ? "border-brand bg-brand-tint/40 ring-2 ring-brand/20"
                 : "border-border bg-surface hover:border-slate-300"

@@ -47,6 +47,10 @@ export type PublicJobResponse = {
   id: number;
   companyId: number;
   companyName: string;
+  /** Uploaded company logo when included by the public jobs endpoint. */
+  companyLogoUrl?: string;
+  /** Compatibility with APIs that expose the company field without a prefix. */
+  logoUrl?: string;
   categoryId: number;
   categoryName: string;
   title: string;

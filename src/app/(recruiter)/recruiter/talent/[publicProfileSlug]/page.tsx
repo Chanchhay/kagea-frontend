@@ -19,8 +19,6 @@ import {
   Quote,
 } from "lucide-react";
 import type { PublicPortfolioResponse, PublicResumeResponse, PublicTalentListItemResponse } from "@/contracts";
-import { PortfolioPreview } from "@/components/job-seeker/PortfolioDocument";
-import { ResumePreview } from "@/components/job-seeker/ResumeDocument";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { ResumeDownloadButton } from "@/components/recruiter/ResumeDownloadButton";
@@ -100,35 +98,33 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
   const showSalary = talent.salaryVisibility === "PUBLIC" && (talent.expectedSalaryMin || talent.expectedSalaryMax);
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-border bg-surface shadow-[var(--shadow-card)]">
-      <div className="relative h-32 bg-linear-to-br from-brand via-brand/80 to-brand/40 sm:h-36">
-        <span aria-hidden="true" className="absolute -right-10 -top-16 size-56 rounded-full bg-white/10" />
-        <span aria-hidden="true" className="absolute -bottom-20 right-24 size-40 rounded-full bg-black/5" />
-      </div>
+    <section className="relative overflow-hidden rounded-3xl border border-border bg-linear-to-r from-emerald-50 via-emerald-50/55 to-surface shadow-[var(--shadow-card)] dark:from-emerald-950/35 dark:via-emerald-950/15 dark:to-surface">
+      <span aria-hidden="true" className="absolute -right-20 -top-28 size-72 rounded-full bg-brand/5" />
+      <span aria-hidden="true" className="absolute -bottom-24 right-40 size-48 rounded-full bg-brand/4" />
 
-      <div className="px-6 pb-6 sm:px-8 sm:pb-8">
-        <div className="-mt-14 flex flex-col gap-5 sm:-mt-16 sm:flex-row sm:items-end">
+      <div className="relative px-5 py-6 sm:px-8 sm:py-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           {avatar ? (
             <Image
               src={avatar}
               alt=""
-              width={128}
-              height={128}
+              width={104}
+              height={104}
               unoptimized
-              className="size-28 shrink-0 rounded-2xl border-4 border-surface object-cover shadow-md sm:size-32"
+              className="size-24 shrink-0 rounded-full border-4 border-white bg-surface object-cover shadow-md sm:size-26 dark:border-slate-800"
             />
           ) : (
-            <span className="flex size-28 shrink-0 items-center justify-center rounded-2xl border-4 border-surface bg-brand-tint text-4xl font-bold text-brand shadow-md sm:size-32">
+            <span className="flex size-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-brand-tint text-3xl font-bold text-brand shadow-md sm:size-26 dark:border-slate-800">
               {initial}
             </span>
           )}
 
-          <div className="min-w-0 flex-1 sm:pb-1">
-            <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-3xl">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-[28px]">
               {talent.headline || "Candidate profile"}
             </h1>
             {talent.currentPosition ? (
-              <p className="mt-1.5 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400">
+              <p className="mt-1 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400">
                 <Briefcase className="size-4 text-brand" />
                 {talent.currentPosition}
               </p>
@@ -136,14 +132,14 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
           </div>
 
           {talent.availabilityStatus ? (
-            <span className="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900">
+            <span className="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-white/85 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:ring-emerald-900">
               <BadgeCheck className="size-3.5" />
               {formatEnum(talent.availabilityStatus)}
             </span>
           ) : null}
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-2.5">
+        <div className="mt-5 flex flex-wrap gap-2.5 sm:ml-30">
           {talent.preferredLocation ? <Fact icon={MapPin}>{talent.preferredLocation}</Fact> : null}
           {showSalary ? (
             <Fact icon={DollarSign} highlight>
@@ -157,102 +153,77 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
   );
 }
 
-/**
- * Uploaded resumes are downloaded as a PDF; resumes built in the app have no
- * file, so their content is rendered here instead of offering a dead download.
- */
+/** Recruiters see resume metadata first; the full document stays behind download. */
 function ResumeCard({ resume, slug }: { resume: PublicResumeResponse; slug: string }) {
   const isBuilt = !resume.resumeFileUrl && hasResumeContent(resume.resumeData);
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition hover:shadow-[var(--shadow-card)]">
-      <div className="flex justify-center bg-surface-muted/50 p-5">
-        {isBuilt ? (
-          <ResumePreview title={resume.title} data={resume.resumeData} className="w-full max-w-52" />
-        ) : resume.resumeFileUrl ? (
-          <div className="aspect-[0.707] w-full max-w-52 overflow-hidden bg-white shadow-sm">
-            <iframe
-              src={`${resolveFileUrl(resume.resumeFileUrl)}#page=1&view=Fit&toolbar=0&navpanes=0&scrollbar=0`}
-              title={`${resume.title} preview`}
-              tabIndex={-1}
-              scrolling="no"
-              className="pointer-events-none size-full border-0"
-            />
-          </div>
-        ) : (
-          <div className="flex aspect-[0.707] w-full max-w-52 items-center justify-center bg-white">
-            <FileText className="size-10 text-slate-300" />
-          </div>
-        )}
-      </div>
+    <article className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-5 shadow-sm transition hover:border-brand/25 hover:shadow-[var(--shadow-card)] sm:flex-row sm:items-center">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand-tint text-brand">
+        <FileText className="size-5" />
+      </span>
 
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h3 className="truncate font-semibold text-heading">{resume.title}</h3>
-            <p className="mt-1 text-xs text-slate-500">{isBuilt ? "Built in app" : "PDF document"}</p>
-          </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="truncate font-semibold text-heading">{resume.title}</h3>
           {resume.isDefault ? (
-            <span className="shrink-0 rounded bg-brand-tint px-2 py-0.5 text-[10px] font-semibold text-brand">Default</span>
+            <span className="shrink-0 rounded-full bg-brand-tint px-2 py-0.5 text-[10px] font-semibold text-brand">Default</span>
           ) : null}
         </div>
+        <p className="mt-1 text-xs text-slate-500">{isBuilt ? "Created in Kagea" : "PDF resume"}</p>
 
         {resume.publishedAt ? (
-          <p className="flex items-center gap-1 text-xs text-slate-500">
+          <p className="mt-2 flex items-center gap-1 text-xs text-slate-500">
             <Calendar className="size-3" />
             Published {new Date(resume.publishedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
           </p>
         ) : null}
-
-        <div className="mt-auto pt-2">
-          {resume.resumeFileUrl ? (
-            <ResumeDownloadButton slug={slug} resumeId={resume.id} title={resume.title} />
-          ) : (
-            <p className="text-xs text-slate-500">Shown in full above — this candidate did not attach a PDF.</p>
-          )}
-        </div>
       </div>
+
+      {resume.resumeFileUrl ? (
+        <ResumeDownloadButton slug={slug} resumeId={resume.id} title={resume.title} />
+      ) : (
+        <span className="shrink-0 text-xs text-slate-500">No PDF attached</span>
+      )}
     </article>
   );
 }
 
-/** The portfolio as its owner designed it, plus links a recruiter can click. */
+/** Portfolios are shared as web links; unlike resumes, they are not documents. */
 function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
   const projects = [...(portfolio.projects ?? [])].sort((a, b) => a.displayOrder - b.displayOrder);
   const linked = projects.filter((project) => project.projectUrl || project.githubUrl);
 
   return (
     <div className="space-y-3">
-      <div className="flex items-start justify-between gap-2">
+      <div>
         <div className="min-w-0">
           <h3 className="truncate text-base font-bold text-heading">{portfolio.title}</h3>
           <p className="mt-0.5 text-xs text-slate-500">
             {projects.length} {projects.length === 1 ? "project" : "projects"}
           </p>
         </div>
-        {portfolio.publicUrl ? (
-          <Button
-            render={<a href={portfolio.publicUrl} target="_blank" rel="noopener noreferrer" />}
-            variant="ghost"
-            size="sm"
-            className="h-8 shrink-0 gap-1 rounded-lg text-brand"
-          >
-            <Globe className="size-3.5" /> Website
-          </Button>
-        ) : null}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface-muted/30 p-4">
-        <PortfolioPreview
-          title={portfolio.title}
-          summary={portfolio.summary ?? ""}
-          publicUrl={portfolio.publicUrl ?? ""}
-          projects={projects}
-          theme={portfolio.portfolioData}
-        />
-      </div>
+      {portfolio.publicUrl ? (
+        <a
+          href={portfolio.publicUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface p-5 transition hover:border-brand/40 hover:bg-brand-tint/30"
+        >
+          <div className="min-w-0">
+            <p className="font-semibold text-heading">Open portfolio</p>
+            <p className="mt-1 truncate text-sm text-slate-500">{portfolio.publicUrl}</p>
+          </div>
+          <ExternalLink className="size-5 shrink-0 text-brand transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        </a>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-border bg-surface-muted/30 px-5 py-4">
+          <p className="text-sm text-slate-500">No portfolio website link was provided.</p>
+        </div>
+      )}
 
-      {/* The rendered page shows links as text, so repeat them here as real links. */}
       {linked.length ? (
         <div className="flex flex-wrap gap-2 text-xs">
           {linked.map((project) => (

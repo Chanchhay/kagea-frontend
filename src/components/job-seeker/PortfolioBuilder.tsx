@@ -185,9 +185,9 @@ export function PortfolioBuilder({
                 maxLength={5000}
                 className="min-h-32"
               />
-              <Field label="Public website">
+              <Field label="Portfolio link">
                 <Input type="url" value={publicUrl} onChange={(event) => setPublicUrl(event.target.value)} placeholder="https://yourportfolio.com" maxLength={500} />
-                <span className="mt-1.5 block text-xs text-ws-muted">Optional. Shown as a link on your portfolio page.</span>
+                <span className="mt-1.5 block text-xs text-ws-muted">Recruiters open this link to view your portfolio online.</span>
               </Field>
             </div>
           </BuilderSection>
@@ -243,10 +243,8 @@ export function PortfolioBuilder({
                     placeholder="Explain the problem, your approach, and the outcome…"
                     maxLength={5000}
                   />
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <TextField label="Live project URL" value={project.projectUrl} onChange={(value) => updateProject(project.key, { projectUrl: value })} placeholder="https://project.com" />
-                    <TextField label="GitHub URL" value={project.githubUrl} onChange={(value) => updateProject(project.key, { githubUrl: value })} placeholder="https://github.com/…" />
-                  </div>
+                  <TextField label="Live project URL" value={project.projectUrl} onChange={(value) => updateProject(project.key, { projectUrl: value })} placeholder="https://project.com" />
+                  <TextField label="GitHub URL" value={project.githubUrl} onChange={(value) => updateProject(project.key, { githubUrl: value })} placeholder="https://github.com/…" />
                   <TextField label="Tech stack" value={project.techStack} onChange={(value) => updateProject(project.key, { techStack: value })} placeholder="Next.js, TypeScript, PostgreSQL" />
                 </EntryCard>
               ))}

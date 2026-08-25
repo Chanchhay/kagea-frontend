@@ -45,18 +45,20 @@ function ThemedImage({
   height: number;
 }) {
   const width = Math.round(height * asset.ratio);
-  const shared = "w-auto object-contain object-left";
+  const shared = "absolute inset-0 size-full object-contain object-left";
 
   return (
-    <>
+    <span
+      className={cn("relative inline-block shrink-0", className)}
+      style={{ width, height }}
+    >
       <Image
         src={asset.light}
         alt={alt}
         width={width}
         height={height}
         priority={priority}
-        className={cn(shared, "dark:hidden", className)}
-        style={{ height, width: "auto" }}
+        className={cn(shared, "dark:hidden")}
       />
       <Image
         src={asset.dark}
@@ -65,10 +67,9 @@ function ThemedImage({
         width={width}
         height={height}
         priority={priority}
-        className={cn(shared, "hidden dark:block", className)}
-        style={{ height, width: "auto" }}
+        className={cn(shared, "hidden dark:block")}
       />
-    </>
+    </span>
   );
 }
 
