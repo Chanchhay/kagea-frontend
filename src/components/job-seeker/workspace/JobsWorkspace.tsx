@@ -156,7 +156,9 @@ export function JobsWorkspace({
                 active={job.id === selected?.id}
                 applied={(() => {
                   const item = applicationByJob.get(job.id);
-                  return item !== undefined && !isClosedApplication(item.status);
+                  return (
+                    item !== undefined && !isClosedApplication(item.status)
+                  );
                 })()}
                 onSelect={() => setSelectedId(job.id)}
               />
@@ -207,7 +209,9 @@ function JobListRow({
       aria-current={active ? "true" : undefined}
       className={cn(
         "w-full rounded-[20px] p-4 text-left transition-colors",
-        active ? "bg-chip-soft text-chip-soft-fg" : "bg-ws-card hover:bg-ws-card-hover",
+        active
+          ? "bg-chip-soft text-chip-soft-fg"
+          : "bg-ws-card hover:bg-ws-card-hover",
       )}
     >
       <div className="flex items-start gap-2">
@@ -252,7 +256,9 @@ function JobDetail({
               <Building2 aria-hidden="true" className="size-3.5" />
               {job.companyName}
             </GhostChip>
-            {job.categoryName ? <GhostChip>{job.categoryName}</GhostChip> : null}
+            {job.categoryName ? (
+              <GhostChip>{job.categoryName}</GhostChip>
+            ) : null}
             {application ? (
               <Chip tone="solid">{humanize(application.status)}</Chip>
             ) : null}
@@ -297,7 +303,9 @@ function JobDetail({
               <Chip key={skill.id} tone="quiet">
                 {skill.skillName}
                 {skill.requiredLevel ? (
-                  <span className="opacity-60">{humanize(skill.requiredLevel)}</span>
+                  <span className="opacity-60">
+                    {humanize(skill.requiredLevel)}
+                  </span>
                 ) : null}
               </Chip>
             ))}
@@ -349,7 +357,9 @@ function AiInterviewPanel({
    * gives the practice route, which is the only one that makes sense here.
    */
   const liveApplication =
-    application && !isClosedApplication(application.status) ? application : undefined;
+    application && !isClosedApplication(application.status)
+      ? application
+      : undefined;
 
   const start = async () => {
     try {
@@ -371,7 +381,9 @@ function AiInterviewPanel({
 
       <div className="min-w-0 flex-1">
         <h3 className="text-[15px] font-semibold">
-          {liveApplication ? "Interview for this application" : "Practise this interview"}
+          {liveApplication
+            ? "Interview for this application"
+            : "Practise this interview"}
         </h3>
         <p className="text-sm opacity-70">
           {liveApplication
@@ -404,7 +416,8 @@ function ApplyPanel({
   resumes: ResumeResponse[];
   application?: JobApplicationResponse;
 }) {
-  const defaultResume = resumes.find((resume) => resume.isDefault) ?? resumes[0];
+  const defaultResume =
+    resumes.find((resume) => resume.isDefault) ?? resumes[0];
   const [resumeId, setResumeId] = useState(
     defaultResume ? String(defaultResume.id) : "",
   );
@@ -423,7 +436,9 @@ function ApplyPanel({
           <Check aria-hidden="true" className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">Applied {formatDate(application.appliedAt)}</p>
+          <p className="text-sm font-semibold">
+            Applied {formatDate(application.appliedAt)}
+          </p>
           <p className="text-xs text-ws-faint">
             {application.resumeTitle || "No resume attached"}
           </p>
@@ -449,7 +464,9 @@ function ApplyPanel({
     } catch (error) {
       // The API's reason is specific — an open application, or a cooldown that
       // has not elapsed — and worth showing verbatim.
-      toast.error(getApiErrorMessage(error, "Unable to submit the application."));
+      toast.error(
+        getApiErrorMessage(error, "Unable to submit the application."),
+      );
     }
   };
 

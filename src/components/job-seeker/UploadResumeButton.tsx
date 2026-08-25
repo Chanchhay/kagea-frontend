@@ -59,7 +59,7 @@ export function UploadResumeButton() {
         disabled={isLoading}
         className={`inline-flex h-12 items-center gap-2 rounded-xl border px-6 text-sm font-semibold transition disabled:opacity-60 ${
           dragging
-            ? "border-primary bg-chip-soft text-primary"
+            ? "border-chip-soft-fg bg-chip-soft text-chip-soft-fg"
             : "border-ws-line text-ws-fg hover:border-primary hover:text-primary"
         }`}
       >

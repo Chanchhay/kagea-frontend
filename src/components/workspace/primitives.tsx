@@ -6,13 +6,28 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * The workspace's whole accent range. Emphasis comes from weight, not hue:
- * `solid` is the brand green, `soft` its tint, `quiet` a neutral. `alert` is
- * the one non-brand fill and exists only so a rejection reads as one.
+ * Chip range — small fills only. `solid` is the brand primary, `soft` the
+ * secondary surface, `quiet` a step below it, `alert` the one error fill. All
+ * flat and fully opaque: no gradients, and no brand tint at low alpha. The
+ * brand earns attention at this size; at panel size it shouts, which is what
+ * `NoteFill` is for.
  */
 export type Tone = "solid" | "soft" | "quiet" | "alert";
 
-const toneFill: Record<Tone, string> = {
+/**
+ * Note-card fills, kept separate from the chips on purpose: a note card is a
+ * big block of colour and must not be the brand green.
+ */
+export type NoteFill = "warm" | "cool" | "plain";
+
+/** The note fills, as the custom property the notched panel paints with. */
+const noteVar: Record<NoteFill, string> = {
+  warm: "[--panel-fill:var(--note-warm)] text-note-warm-fg",
+  cool: "[--panel-fill:var(--note-cool)] text-note-cool-fg",
+  plain: "[--panel-fill:var(--ws-card)] text-ws-fg",
+};
+
+export const toneFill: Record<Tone, string> = {
   solid: "bg-chip-solid text-chip-solid-fg",
   soft: "bg-chip-soft text-chip-soft-fg",
   quiet: "bg-chip-quiet text-chip-quiet-fg",
@@ -31,7 +46,7 @@ export function Chip({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+        "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold",
         toneFill[tone],
         className,
       )}
@@ -78,7 +93,7 @@ export function Panel({
   return (
     <section
       className={cn(
-        "rounded-[22px] p-5",
+        "rounded-[2rem] p-5",
         tone ? toneFill[tone] : "bg-ws-card text-ws-fg",
         className,
       )}
@@ -101,8 +116,99 @@ export function PanelHeader({
     <header className="mb-4 flex items-center gap-2">
       {icon}
       <h2 className="text-[15px] font-semibold tracking-tight">{title}</h2>
-      {action ? <div className="ml-auto flex items-center gap-1">{action}</div> : null}
+      {action ? (
+        <div className="ml-auto flex items-center gap-1">{action}</div>
+      ) : null}
     </header>
+  );
+}
+
+/**
+ * A panel whose top-right corner is cut away, with the header's round actions
+ * living in the cut. The title sits in the short strip beside it; everything
+ * else goes in the body below, which runs the panel's full width.
+ */
+export function NotchedPanel({
+  fill = "plain",
+  title,
+  icon,
+  actions,
+  className,
+  children,
+}: {
+  /** The card's block of colour; never a brand tone. */
+  fill?: NoteFill;
+  title: string;
+  icon?: ReactNode;
+  /** Round controls, rendered on the sheet inside the cut. */
+  actions?: ReactNode;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className={cn("ws-notch flex flex-col", noteVar[fill], className)}>
+      <header className="ws-notch__top flex shrink-0 items-center gap-2 px-5">
+        {icon}
+        <h2 className="truncate text-[15px] font-semibold tracking-tight">
+          {title}
+        </h2>
+      </header>
+
+      <span aria-hidden="true" className="ws-notch__joint" />
+
+      <div className="ws-notch__body flex-1 px-5 pb-4 pt-2">{children}</div>
+
+      {actions ? <div className="ws-notch__actions">{actions}</div> : null}
+    </section>
+  );
+}
+
+/**
+ * Tabs cut from the same sheet as the panel they open: the active one keeps its
+ * feet on the card below and fillets into it on both sides, the rest stay flat
+ * against the background. Render this directly above the panel it belongs to.
+ */
+export function FolderTabs<T extends string>({
+  tabs,
+  value,
+  onChange,
+  aside,
+}: {
+  tabs: readonly T[];
+  value: T;
+  onChange: (tab: T) => void;
+  /** Optional trailing note, kept clear of the tabs themselves. */
+  aside?: ReactNode;
+}) {
+  return (
+    <div className="flex items-end gap-3">
+      {/* The left pad lives on the scroller so the active tab's fillet has room
+          inside the scroll box — outside it, overflow would clip it away. */}
+      <div className="ws-scroll flex items-end gap-4 overflow-x-auto pl-12 pr-4 pt-1">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => onChange(tab)}
+            aria-pressed={value === tab}
+            className={cn(
+              "shrink-0 px-4 text-[13px] font-semibold transition-colors",
+              value === tab
+                ? "ws-foldertab pb-3 pt-2.5 text-ws-fg"
+                : "rounded-full py-2 text-ws-faint hover:bg-ws-card hover:text-ws-fg",
+            )}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {aside ? (
+        <span className="ml-auto hidden shrink-0 pb-3 pr-2 text-xs text-ws-faint sm:block">
+          {aside}
+        </span>
+      ) : null}
+    </div>
   );
 }
 
@@ -129,16 +235,20 @@ export function PipelineTrack({
             key={segment.label}
             style={{ flexGrow: segment.count / total }}
             className={cn(
-              "flex min-w-fit items-center justify-between gap-3 rounded-full px-4 py-2.5 text-[13px] font-semibold",
+              "flex min-w-fit items-center justify-between gap-3 rounded-full py-2.5 pl-5 pr-2.5 text-[13px] font-semibold",
               toneFill[segment.tone],
             )}
           >
             <span className="truncate">{segment.label}</span>
-            <span className="tabular-nums opacity-70">{segment.count}</span>
+            {/* The count rides in a disc at the end of the capsule, the way the
+                reference caps each filled segment, rather than as loose text. */}
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-current/15 text-xs tabular-nums">
+              {segment.count}
+            </span>
           </div>
         ))}
 
-      <div className="ws-track-rest flex min-w-fit grow items-center justify-end rounded-full px-4 py-2.5 text-[13px] font-medium text-ws-faint">
+      <div className="ws-track-rest flex min-w-fit grow items-center justify-end rounded-full px-5 py-3 text-[13px] font-medium text-ws-faint">
         {restLabel}
       </div>
     </div>
@@ -160,7 +270,7 @@ export function IconAction({
   children: ReactNode;
 }) {
   const classes = cn(
-    "flex size-8 items-center justify-center rounded-full opacity-60 transition-all hover:bg-ws-fg/10 hover:opacity-100",
+    "flex size-9 items-center justify-center rounded-full opacity-60 transition-all hover:bg-current/10 hover:opacity-100",
     className,
   );
 
@@ -169,7 +279,12 @@ export function IconAction({
       {children}
     </Link>
   ) : (
-    <button type="button" onClick={onClick} aria-label={label} className={classes}>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className={classes}
+    >
       {children}
     </button>
   );
@@ -188,7 +303,12 @@ export function PillTabs<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={cn("ws-scroll flex items-center gap-1.5 overflow-x-auto", className)}>
+    <div
+      className={cn(
+        "ws-scroll flex items-center gap-1.5 overflow-x-auto",
+        className,
+      )}
+    >
       {tabs.map((tab) => (
         <button
           key={tab}
@@ -225,7 +345,8 @@ export function TimelineRow({
   done,
   last,
 }: {
-  href: string;
+  /** Omitted for rows that have nowhere to go yet; they render as plain cards. */
+  href?: string;
   date: string;
   icon: ReactNode;
   iconTone?: Tone;
@@ -248,7 +369,9 @@ export function TimelineRow({
         >
           {done ? <Check aria-hidden="true" className="size-4" /> : icon}
         </span>
-        <span className="mt-1.5 text-[10px] font-medium text-ws-faint">{date}</span>
+        <span className="mt-1.5 text-[10px] font-medium text-ws-faint">
+          {date}
+        </span>
         {last ? null : (
           <span
             aria-hidden="true"
@@ -257,12 +380,14 @@ export function TimelineRow({
         )}
       </div>
 
-      <Link
-        href={href}
-        className="mb-2 flex min-w-0 flex-1 items-center gap-3 rounded-[18px] bg-ws-card-hover px-4 py-3.5 transition-colors hover:bg-ws-panel"
-      >
+      <RowSurface href={href}>
         <span className="min-w-0 flex-1">
-          <span className={cn("block truncate text-sm font-semibold text-ws-fg", done && "line-through opacity-60")}>
+          <span
+            className={cn(
+              "block truncate text-sm font-semibold text-ws-fg",
+              done && "line-through opacity-60",
+            )}
+          >
             {title}
           </span>
           <span className="block truncate text-xs text-ws-faint">{meta}</span>
@@ -272,47 +397,99 @@ export function TimelineRow({
             {chip}
           </Chip>
         ) : null}
-      </Link>
+      </RowSurface>
     </li>
   );
 }
 
-/** Document card with a ruled-paper stand-in for the file preview. */
+/** The row's card: a link when it leads somewhere, a plain block when it does not. */
+function RowSurface({
+  href,
+  children,
+}: {
+  href?: string;
+  children: ReactNode;
+}) {
+  const className =
+    "mb-2 flex min-w-0 flex-1 items-center gap-3 rounded-[22px] bg-ws-card-hover px-4 py-3.5 transition-colors";
+
+  return href ? (
+    <Link href={href} className={cn(className, "hover:bg-ws-panel")}>
+      {children}
+    </Link>
+  ) : (
+    <div className={className}>{children}</div>
+  );
+}
+
+/**
+ * Document card. `preview` says what kind of file this is — a resume reads as
+ * ruled text under a header, a portfolio as a grid of work — so the thumbnail
+ * is legible at a glance instead of being an unreadable shrunk page. Without
+ * one the card falls back to the ruled-paper stand-in.
+ */
 export function FileCard({
   href,
   eyebrow,
   title,
+  meta,
   badge,
+  badgeTone = "solid",
   icon,
+  preview,
 }: {
-  href: string;
+  /** Omitted when the card is a readout rather than a way in. */
+  href?: string;
   eyebrow: string;
   title: string;
+  /** Whose file this is — the line the recruiter reads before the title. */
+  meta?: string;
   badge?: string;
+  badgeTone?: Tone;
   icon: ReactNode;
+  /** The document itself, cropped to the thumbnail; falls back to ruled paper. */
+  preview?: ReactNode;
 }) {
+  const Surface = href ? Link : "div";
+
   return (
-    <Link
-      href={href}
-      className="group rounded-[22px] bg-ws-card p-4 transition-colors hover:bg-ws-card-hover"
+    <Surface
+      href={href as string}
+      className="group rounded-[2rem] bg-ws-card p-4 transition-colors hover:bg-ws-card-hover"
     >
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-medium text-ws-faint">{eyebrow}</p>
           <p className="truncate text-sm font-semibold text-ws-fg">{title}</p>
+          {meta ? (
+            <p className="truncate text-xs text-ws-muted">{meta}</p>
+          ) : null}
         </div>
-        {badge ? <Chip tone="solid">{badge}</Chip> : null}
+        {badge ? (
+          <Chip tone={badgeTone} className="shrink-0">
+            {badge}
+          </Chip>
+        ) : null}
         <Pin
           aria-hidden="true"
           className="mt-1 size-4 shrink-0 text-ws-faint opacity-0 transition-opacity group-hover:opacity-100"
         />
       </div>
 
-      <div className="mt-3 flex h-28 items-end gap-3 overflow-hidden rounded-2xl bg-ws-panel p-3">
-        <span className="shrink-0 text-ws-faint">{icon}</span>
-        <span aria-hidden="true" className="ws-paper h-full flex-1 rounded-md opacity-70" />
-      </div>
-    </Link>
+      {preview ? (
+        <div className="mt-3 h-28 overflow-hidden rounded-[22px] bg-ws-panel p-2">
+          {preview}
+        </div>
+      ) : (
+        <div className="mt-3 flex h-28 items-end gap-3 overflow-hidden rounded-[22px] bg-ws-panel p-3">
+          <span className="shrink-0 text-ws-faint">{icon}</span>
+          <span
+            aria-hidden="true"
+            className="ws-paper h-full flex-1 rounded-lg"
+          />
+        </div>
+      )}
+    </Surface>
   );
 }
 

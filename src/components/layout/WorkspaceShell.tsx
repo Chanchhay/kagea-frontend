@@ -129,9 +129,9 @@ function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
               href={link.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "group relative flex size-11 items-center justify-center rounded-2xl transition-colors",
+                "group relative flex size-11 items-center justify-center rounded-[18px] transition-colors",
                 active
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-chip-solid text-chip-solid-fg"
                   : "text-ws-faint hover:bg-ws-card hover:text-ws-fg",
               )}
             >
@@ -156,7 +156,7 @@ function SignOutRailButton() {
       <button
         type="submit"
         aria-label="Sign out"
-        className="group relative flex size-11 items-center justify-center rounded-2xl text-ws-faint transition-colors hover:bg-ws-card hover:text-ws-fg"
+        className="group relative flex size-11 items-center justify-center rounded-[18px] text-ws-faint transition-colors hover:bg-ws-card hover:text-ws-fg"
       >
         <LogOut aria-hidden="true" className="size-5" />
         <span className="pointer-events-none absolute left-full z-30 ml-3 hidden whitespace-nowrap rounded-lg bg-ws-card px-2.5 py-1.5 text-xs font-medium text-ws-fg shadow-(--shadow-dropdown) group-hover:block">
@@ -261,7 +261,7 @@ function Avatar() {
     <Link
       href="/profile"
       aria-label={`Open ${name}'s profile`}
-      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 bg-cover bg-center text-xs font-bold text-primary ring-2 ring-ws-line"
+      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-chip-solid bg-cover bg-center text-xs font-bold text-chip-solid-fg ring-2 ring-ws-line"
       style={avatar ? { backgroundImage: `url("${avatar}")` } : undefined}
     >
       {avatar ? <span className="sr-only">Profile image</span> : getInitials(name)}
@@ -292,7 +292,7 @@ function MobileDock({ links, pathname }: { links: NavLink[]; pathname: string })
             className={cn(
               "flex size-11 shrink-0 items-center justify-center rounded-full transition-colors",
               active
-                ? "bg-primary text-primary-foreground"
+                ? "bg-chip-solid text-chip-solid-fg"
                 : "text-ws-faint hover:text-ws-fg",
             )}
           >
