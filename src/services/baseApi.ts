@@ -59,6 +59,7 @@ export const baseApi = createApi({
     "Skills",
     "JobSeekerProfile",
     "Resumes",
+    "ResumeTemplates",
     "Portfolios",
     "Applications",
     "Interviews",

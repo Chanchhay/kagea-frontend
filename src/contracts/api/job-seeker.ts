@@ -15,6 +15,8 @@ export type ResumeCreateRequest = {
 
 export type ResumeUpdateRequest = Partial<ResumeCreateRequest>;
 
+export type ResumeSourceType = "PLATFORM_TEMPLATE" | "USER_UPLOAD";
+
 export type ResumeResponse = {
   id: number;
   title: string;
@@ -25,7 +27,26 @@ export type ResumeResponse = {
   publishedAt: string;
   createdAt: string;
   updatedAt: string;
+  /** An uploaded resume is stored as supplied and cannot be regenerated. */
+  sourceType: ResumeSourceType;
+  generatedAt: string | null;
+  fileVersion: number;
+  hasFile: boolean;
 };
+
+/** A layout the builder offers. `templateKey` is what goes in resumeData.templateId. */
+export type PublicResumeTemplateResponse = {
+  id: number;
+  templateKey: string | null;
+  name: string;
+  description: string | null;
+  previewImageUrl: string | null;
+  templateSchema: Record<string, unknown>;
+};
+
+export type ApiResponseListResumeTemplate = ApiResponse<
+  PublicResumeTemplateResponse[]
+>;
 
 export type PortfolioProjectRequest = {
   title: string;
@@ -106,6 +127,19 @@ export type JobApplicationStatus =
   | "HIRED"
   | "REJECTED"
   | "WITHDRAWN";
+
+/**
+ * Whether an application is over and no longer occupies the candidate's single
+ * live slot for that job.
+ *
+ * <p>Mirrors `ApplicationStatus.isClosed()` on the backend, which is what
+ * actually decides whether a new application is accepted. A closed application
+ * is history: it should be shown as a past attempt rather than treated as the
+ * one in progress.
+ */
+export function isClosedApplication(status: JobApplicationStatus) {
+  return status === "REJECTED" || status === "WITHDRAWN";
+}
 
 export type JobApplicationResponse = {
   id: number;

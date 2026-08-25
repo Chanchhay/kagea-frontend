@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { ResumeBuilder } from "@/components/job-seeker/ResumeBuilder";
 import { ResumePreview } from "@/components/job-seeker/ResumeDocument";
 import { ResumeForm } from "@/components/job-seeker/ResumeForm";
+import { ResumeFileCard } from "@/components/job-seeker/ResumeFileCard";
 import { ResumePublishCard } from "@/components/job-seeker/ResumePublishCard";
 import { getTemplate } from "@/components/job-seeker/resume-templates";
 import { hasResumeContent, normalizeResumeData } from "@/lib/resume-data";
@@ -114,6 +115,7 @@ export default function ResumeDetailPage() {
           </section>
 
           <aside className="space-y-5">
+            <ResumeFileCard resume={resume} />
             <ResumePublishCard resume={resume} />
 
             <section className="rounded-[22px] bg-ws-card p-5">

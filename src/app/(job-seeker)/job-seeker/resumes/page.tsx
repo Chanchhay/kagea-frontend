@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { FilePlus2, FileText, Globe2, Pencil, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { ResumeResponse } from "@/contracts";
+import { UploadResumeButton } from "@/components/job-seeker/UploadResumeButton";
 import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -44,7 +45,7 @@ export default function ResumesPage() {
   return <div className="mx-auto max-w-6xl">
     <PageIntro title="Resumes" description="Manage and organize your resumes." />
 
-    <div className="mb-6 flex justify-end"><Link href="/job-seeker/resumes/new" className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition hover:bg-brand-hover"><FilePlus2 className="size-5" /> Create new resume</Link></div>
+    <div className="mb-6 flex flex-wrap justify-end gap-3"><UploadResumeButton /><Link href="/job-seeker/resumes/new" className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition hover:bg-brand-hover"><FilePlus2 className="size-5" /> Create new resume</Link></div>
 
     <div className="mb-7 flex flex-col gap-4 border-b border-ws-line sm:flex-row sm:items-end sm:justify-between">
       <div className="flex gap-8 overflow-x-auto">{(["ALL", "DEFAULT", "HAS_FILE", "DRAFT"] as Filter[]).map((item) => <button key={item} onClick={() => setFilter(item)} className={`relative px-1 pb-4 text-sm font-semibold transition ${filter === item ? "text-primary after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary" : "text-ws-muted hover:text-ws-fg"}`}>{item === "HAS_FILE" ? "Has file" : item.charAt(0) + item.slice(1).toLowerCase()}</button>)}</div>

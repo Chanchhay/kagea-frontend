@@ -357,6 +357,44 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         { type: "Interviews", id: sessionId },
       ],
     }),
+    /**
+     * Renders the resume's structured data into a stored PDF.
+     *
+     * Invalidates the resume so `hasFile`, `generatedAt`, and `fileVersion`
+     * refresh — the download button keys off those.
+     */
+    generateResumePdf: builder.mutation<ResumeResponse, string | number>({
+      query: (resumeId) => ({
+        url: `/job-seeker/resumes/${resumeId}/generate`,
+        method: "POST",
+      }),
+      transformResponse: (response: ApiResponseResumeResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, resumeId) => [
+        "Resumes",
+        { type: "Resumes", id: resumeId },
+      ],
+    }),
+    uploadOwnResume: builder.mutation<
+      ResumeResponse,
+      { title: string; file: File }
+    >({
+      query: ({ title, file }) => {
+        const body = new FormData();
+        body.append("file", file);
+
+        return {
+          // Title rides in the query string, not the form: the backend binds it
+          // with @RequestParam so the multipart body carries only the file.
+          url: `/job-seeker/resumes/upload?title=${encodeURIComponent(title)}`,
+          method: "POST",
+          body,
+        };
+      },
+      transformResponse: (response: ApiResponseResumeResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: ["Resumes"],
+    }),
     getFavoriteJobs: builder.query<
       Page<FavoriteJobResponse>,
       { page?: number; size?: number } | void
@@ -432,6 +470,8 @@ export const {
   useSubmitAiInterviewTranscriptMutation,
   useSubmitAiInterviewAnswerMutation,
   useCompleteAiInterviewMutation,
+  useGenerateResumePdfMutation,
+  useUploadOwnResumeMutation,
   useGetFavoriteJobsQuery,
   useSaveFavoriteJobMutation,
   useRemoveFavoriteJobMutation,
