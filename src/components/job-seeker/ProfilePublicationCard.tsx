@@ -178,7 +178,7 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 {copied ? "Copied" : "Copy Link"}
               </Button>
               <Button
-                render={<Link href="/profile" target="_blank" />}
+                render={<Link href="/job-seeker/profile" target="_blank" />}
                 variant="outline"
                 size="sm"
                 className="h-9 gap-1.5 rounded-lg border-emerald-200 hover:bg-emerald-100/50 dark:border-emerald-800"

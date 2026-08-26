@@ -210,7 +210,7 @@ function TopBar({ title, role }: { title: string; role: Role }) {
           */}
         <NotificationBell pathPrefixes={["/job-seeker", "/recruiter"]} />
 
-        <Avatar />
+        <Avatar role={role} />
       </div>
     </header>
   );
@@ -243,7 +243,7 @@ function QuickSearch({ href, placeholder }: { href: string; placeholder: string 
   );
 }
 
-function Avatar() {
+function Avatar({ role }: { role: Role }) {
   const { data: session } = useGetSessionQuery();
   const currentUser = useGetCurrentUserQuery(undefined, {
     skip: !session?.authenticated,
@@ -259,7 +259,7 @@ function Avatar() {
 
   return (
     <Link
-      href="/profile"
+      href={`/${role}/profile`}
       aria-label={`Open ${name}'s profile`}
       className="flex size-10 shrink-0 items-center justify-center rounded-full bg-chip-solid bg-cover bg-center text-xs font-bold text-chip-solid-fg ring-2 ring-ws-line"
       style={avatar ? { backgroundImage: `url("${avatar}")` } : undefined}
