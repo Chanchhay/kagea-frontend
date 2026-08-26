@@ -403,7 +403,7 @@ function ActivityStream({
           className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ws-fg px-5 py-3 text-sm font-semibold text-ws-panel shadow-(--shadow-dropdown) transition-transform hover:scale-105"
         >
           <Plus aria-hidden="true" className="size-4" />
-          Find a new role
+          Find a new job
         </Link>
       </Panel>
     </div>
