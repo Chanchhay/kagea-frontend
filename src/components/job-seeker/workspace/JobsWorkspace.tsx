@@ -22,6 +22,8 @@ import {
 import { useSetPageHeading } from "@/components/layout/PageHeader";
 import { Markdown } from "@/components/shared/Markdown";
 import type { PublicJobResponse } from "@/contracts/api/public";
+import { isClosedApplication } from "@/contracts";
+import { getApiErrorMessage } from "@/lib/api-error";
 import { SaveJobButton } from "@/components/public/SaveJobButton";
 import type {
   JobApplicationResponse,
@@ -85,10 +87,36 @@ export function JobsWorkspace({
   const selected =
     visibleJobs.find((job) => job.id === selectedId) ?? visibleJobs[0] ?? null;
 
-  const applicationByJob = useMemo(
-    () => new Map(applications.map((item) => [item.jobId, item])),
-    [applications],
-  );
+  /*
+   * One entry per job, preferring the application still in play.
+   *
+   * A candidate may now hold several attempts at the same job once earlier ones
+   * are closed. Building the map straight from the list kept whichever entry
+   * came last — and the API returns newest first, so that was the *oldest*
+   * attempt. A re-application would not have shown up at all.
+   */
+  const applicationByJob = useMemo(() => {
+    const byJob = new Map<number, JobApplicationResponse>();
+
+    for (const item of applications) {
+      const existing = byJob.get(item.jobId);
+
+      if (!existing) {
+        byJob.set(item.jobId, item);
+        continue;
+      }
+
+      const existingIsClosed = isClosedApplication(existing.status);
+      const itemIsClosed = isClosedApplication(item.status);
+
+      // A live attempt always wins; between two closed ones, the newer.
+      if (existingIsClosed && (!itemIsClosed || item.id > existing.id)) {
+        byJob.set(item.jobId, item);
+      }
+    }
+
+    return byJob;
+  }, [applications]);
 
   return (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
@@ -126,7 +154,12 @@ export function JobsWorkspace({
               <JobListRow
                 job={job}
                 active={job.id === selected?.id}
-                applied={applicationByJob.has(job.id)}
+                applied={(() => {
+                  const item = applicationByJob.get(job.id);
+                  return (
+                    item !== undefined && !isClosedApplication(item.status)
+                  );
+                })()}
                 onSelect={() => setSelectedId(job.id)}
               />
             </li>
@@ -176,7 +209,9 @@ function JobListRow({
       aria-current={active ? "true" : undefined}
       className={cn(
         "w-full rounded-[20px] p-4 text-left transition-colors",
-        active ? "bg-chip-soft text-chip-soft-fg" : "bg-ws-card hover:bg-ws-card-hover",
+        active
+          ? "bg-chip-soft text-chip-soft-fg"
+          : "bg-ws-card hover:bg-ws-card-hover",
       )}
     >
       <div className="flex items-start gap-2">
@@ -221,7 +256,9 @@ function JobDetail({
               <Building2 aria-hidden="true" className="size-3.5" />
               {job.companyName}
             </GhostChip>
-            {job.categoryName ? <GhostChip>{job.categoryName}</GhostChip> : null}
+            {job.categoryName ? (
+              <GhostChip>{job.categoryName}</GhostChip>
+            ) : null}
             {application ? (
               <Chip tone="solid">{humanize(application.status)}</Chip>
             ) : null}
@@ -266,7 +303,9 @@ function JobDetail({
               <Chip key={skill.id} tone="quiet">
                 {skill.skillName}
                 {skill.requiredLevel ? (
-                  <span className="opacity-60">{humanize(skill.requiredLevel)}</span>
+                  <span className="opacity-60">
+                    {humanize(skill.requiredLevel)}
+                  </span>
                 ) : null}
               </Chip>
             ))}
@@ -312,10 +351,20 @@ function AiInterviewPanel({
 
   const pending = jobCreation.isLoading || applicationCreation.isLoading;
 
+  /*
+   * A closed application is not something to interview against — the API
+   * refuses it — but the job can still be practised. Treating it as absent
+   * gives the practice route, which is the only one that makes sense here.
+   */
+  const liveApplication =
+    application && !isClosedApplication(application.status)
+      ? application
+      : undefined;
+
   const start = async () => {
     try {
-      const session = application
-        ? await createForApplication(application.id).unwrap()
+      const session = liveApplication
+        ? await createForApplication(liveApplication.id).unwrap()
         : await createForJob(job.id).unwrap();
 
       router.push(`/job-seeker/interviews/${session.id}`);
@@ -332,10 +381,12 @@ function AiInterviewPanel({
 
       <div className="min-w-0 flex-1">
         <h3 className="text-[15px] font-semibold">
-          {application ? "Interview for this application" : "Practise this interview"}
+          {liveApplication
+            ? "Interview for this application"
+            : "Practise this interview"}
         </h3>
         <p className="text-sm opacity-70">
-          {application
+          {liveApplication
             ? "Answer the generated questions and the recruiter sees your score."
             : "A scored mock round, generated from this job post. It does not apply you."}
         </p>
@@ -365,21 +416,29 @@ function ApplyPanel({
   resumes: ResumeResponse[];
   application?: JobApplicationResponse;
 }) {
-  const defaultResume = resumes.find((resume) => resume.isDefault) ?? resumes[0];
+  const defaultResume =
+    resumes.find((resume) => resume.isDefault) ?? resumes[0];
   const [resumeId, setResumeId] = useState(
     defaultResume ? String(defaultResume.id) : "",
   );
   const [coverLetter, setCoverLetter] = useState("");
   const [apply, submission] = useApplyToJobMutation();
 
-  if (application) {
+  const closedAttempt = application && isClosedApplication(application.status);
+
+  // Only a live application replaces the form. A closed one is shown above it
+  // as the previous attempt, so the candidate can see what happened and still
+  // apply again.
+  if (application && !closedAttempt) {
     return (
       <Panel className="flex flex-wrap items-center gap-3">
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-chip-solid text-chip-solid-fg">
           <Check aria-hidden="true" className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">Applied {formatDate(application.appliedAt)}</p>
+          <p className="text-sm font-semibold">
+            Applied {formatDate(application.appliedAt)}
+          </p>
           <p className="text-xs text-ws-faint">
             {application.resumeTitle || "No resume attached"}
           </p>
@@ -402,16 +461,34 @@ function ApplyPanel({
       }).unwrap();
       toast.success("Application submitted.");
       setCoverLetter("");
-    } catch {
-      toast.error("Unable to submit the application.");
+    } catch (error) {
+      // The API's reason is specific — an open application, or a cooldown that
+      // has not elapsed — and worth showing verbatim.
+      toast.error(
+        getApiErrorMessage(error, "Unable to submit the application."),
+      );
     }
   };
 
   return (
     <Panel>
+      {closedAttempt && application ? (
+        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl bg-ws-card-hover px-4 py-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">
+              Previous attempt {formatDate(application.appliedAt)}
+            </p>
+            <p className="text-xs text-ws-faint">
+              You can apply to this role again.
+            </p>
+          </div>
+          <Chip tone="alert">{humanize(application.status)}</Chip>
+        </div>
+      ) : null}
+
       <h3 className="mb-4 flex items-center gap-2 text-[15px] font-semibold">
         <Briefcase aria-hidden="true" className="size-4" />
-        Apply
+        {closedAttempt ? "Apply again" : "Apply"}
       </h3>
 
       <form className="flex flex-col gap-3" onSubmit={submit}>

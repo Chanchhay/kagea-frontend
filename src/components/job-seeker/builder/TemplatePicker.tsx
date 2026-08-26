@@ -31,7 +31,7 @@ export function TemplatePicker({
               onClick={() => onTemplateChange(template.id)}
               aria-pressed={active}
               className={`group rounded-2xl border p-2.5 text-left transition ${
-                active ? "border-primary bg-chip-soft ring-2 ring-primary/10" : "border-ws-line bg-ws-card hover:bg-ws-card-hover"
+                active ? "border-chip-soft-fg bg-chip-soft ring-2 ring-chip-soft" : "border-ws-line bg-ws-card hover:bg-ws-card-hover"
               }`}
             >
               <div className="relative aspect-[0.75] w-full overflow-hidden rounded-lg bg-white shadow-sm">

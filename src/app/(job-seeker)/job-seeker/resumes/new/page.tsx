@@ -92,7 +92,7 @@ export default function NewResumePage() {
 
 function ChoiceCard({ active, icon: Icon, title, description, onClick }: { active: boolean; icon: typeof FileUp; title: string; description: string; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} aria-pressed={active} className={`flex items-center gap-4 rounded-2xl border p-4 text-left transition-all ${active ? "border-primary bg-chip-soft ring-2 ring-primary/10" : "border-ws-line bg-ws-card hover:bg-ws-card-hover"}`}>
+    <button type="button" onClick={onClick} aria-pressed={active} className={`flex items-center gap-4 rounded-2xl border p-4 text-left transition-all ${active ? "border-chip-soft-fg bg-chip-soft ring-2 ring-chip-soft" : "border-ws-line bg-ws-card hover:bg-ws-card-hover"}`}>
       <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${active ? "bg-primary text-primary-foreground" : "bg-ws-panel text-ws-muted"}`}><Icon className="size-5" /></span>
       <span className="min-w-0"><span className="block font-semibold text-ws-fg">{title}</span><span className="mt-0.5 block text-xs leading-5 text-ws-muted">{description}</span></span>
       {active ? <Check className="ml-auto size-5 shrink-0 text-primary" /> : null}

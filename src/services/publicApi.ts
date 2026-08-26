@@ -1,4 +1,6 @@
 import type {
+  ApiResponseListResumeTemplate,
+  PublicResumeTemplateResponse,
   ApiResponseListPublicIndustryResponse,
   ApiResponseListPublicJobCategoryResponse,
   ApiResponseListPublicSkillResponse,
@@ -76,6 +78,15 @@ export const publicApi = baseApi.injectEndpoints({
       query: () => "/public/job-categories",
       transformResponse: unwrapPublicJobCategories,
     }),
+    getPublicResumeTemplates: builder.query<
+      PublicResumeTemplateResponse[],
+      void
+    >({
+      query: () => "/public/resume-templates",
+      transformResponse: (response: ApiResponseListResumeTemplate) =>
+        unwrapApiResponse(response),
+      providesTags: ["ResumeTemplates"],
+    }),
     getPublicIndustries: builder.query<
       ReturnType<typeof unwrapPublicIndustries>,
       void
@@ -92,4 +103,5 @@ export const {
   useGetPublicSkillsQuery,
   useGetPublicJobCategoriesQuery,
   useGetPublicIndustriesQuery,
+  useGetPublicResumeTemplatesQuery,
 } = publicApi;

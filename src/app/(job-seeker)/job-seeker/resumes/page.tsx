@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { FilePlus2, FileText, Globe2, Pencil, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { ResumeResponse } from "@/contracts";
+import { UploadResumeButton } from "@/components/job-seeker/UploadResumeButton";
 import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
@@ -44,7 +45,7 @@ export default function ResumesPage() {
   return <div className="mx-auto max-w-6xl">
     <PageIntro title="Resumes" description="Manage and organize your resumes." />
 
-    <div className="mb-6 flex justify-end"><Link href="/job-seeker/resumes/new" className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition hover:bg-brand-hover"><FilePlus2 className="size-5" /> Create new resume</Link></div>
+    <div className="mb-6 flex flex-wrap justify-end gap-3"><UploadResumeButton /><Link href="/job-seeker/resumes/new" className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition hover:bg-brand-hover"><FilePlus2 className="size-5" /> Create new resume</Link></div>
 
     <div className="mb-7 flex flex-col gap-4 border-b border-ws-line sm:flex-row sm:items-end sm:justify-between">
       <div className="flex gap-8 overflow-x-auto">{(["ALL", "DEFAULT", "HAS_FILE", "DRAFT"] as Filter[]).map((item) => <button key={item} onClick={() => setFilter(item)} className={`relative px-1 pb-4 text-sm font-semibold transition ${filter === item ? "text-primary after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary" : "text-ws-muted hover:text-ws-fg"}`}>{item === "HAS_FILE" ? "Has file" : item.charAt(0) + item.slice(1).toLowerCase()}</button>)}</div>
@@ -57,7 +58,7 @@ export default function ResumesPage() {
         {resume.isDefault ? <span className="rounded-lg bg-chip-soft px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-chip-soft-fg">Default</span> : null}
       </div> : null}
       <Link href={`/job-seeker/resumes/${resume.id}`} className="flex items-center gap-4 rounded-2xl bg-linear-to-r from-chip-soft/70 to-ws-card-hover p-4 transition hover:from-chip-soft hover:to-ws-card">
-        <div className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-chip-soft text-primary shadow-sm ring-1 ring-primary/15 dark:border-ws-panel">
+        <div className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-chip-soft text-chip-soft-fg shadow-sm ring-1 ring-chip-soft dark:border-ws-panel">
           {getResumePhoto(resume) ? <Image src={getResumePhoto(resume)!} alt={`${resume.title} profile`} fill unoptimized sizes="64px" className="object-cover" /> : <FileText className="size-6" />}
         </div>
         <div className="min-w-0 flex-1">
@@ -70,7 +71,7 @@ export default function ResumesPage() {
       <div className="mt-4 grid grid-cols-3 gap-2">
         <Link href={`/job-seeker/resumes/${resume.id}`} aria-label={`Edit ${resume.title}`} className="flex h-11 items-center justify-center rounded-xl border border-ws-line text-ws-muted hover:border-primary hover:text-primary"><Pencil className="size-4" /></Link>
         <button onClick={() => void remove(resume)} disabled={deleteState.isLoading} aria-label={`Delete ${resume.title}`} className="flex h-11 items-center justify-center rounded-xl border border-ws-line text-ws-muted hover:border-destructive hover:text-destructive disabled:opacity-50"><Trash2 className="size-4" /></button>
-        <button onClick={() => void makeDefault(resume)} disabled={resume.isDefault || defaultState.isLoading} aria-label={resume.isDefault ? "Default resume" : `Make ${resume.title} default`} className={`flex h-11 items-center justify-center rounded-xl border transition disabled:opacity-60 ${resume.isDefault ? "border-primary/30 bg-chip-soft text-primary" : "border-ws-line text-ws-muted hover:border-primary hover:text-primary"}`}><Star className={`size-4 ${resume.isDefault ? "fill-current" : ""}`} /></button>
+        <button onClick={() => void makeDefault(resume)} disabled={resume.isDefault || defaultState.isLoading} aria-label={resume.isDefault ? "Default resume" : `Make ${resume.title} default`} className={`flex h-11 items-center justify-center rounded-xl border transition disabled:opacity-60 ${resume.isDefault ? "border-chip-soft bg-chip-soft text-chip-soft-fg" : "border-ws-line text-ws-muted hover:border-primary hover:text-primary"}`}><Star className={`size-4 ${resume.isDefault ? "fill-current" : ""}`} /></button>
       </div>
     </article>)}</div> : <div className="rounded-xl border border-dashed border-ws-line bg-ws-card px-6 py-16 text-center"><FileText className="mx-auto size-10 text-ws-faint" /><h2 className="mt-4 font-semibold text-ws-fg">No resumes in this view</h2><p className="mt-2 text-sm text-ws-muted">Choose another filter or create a new resume.</p></div>}
   </div>;
