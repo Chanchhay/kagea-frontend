@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { PageIntro, PlainCard, StatusPill } from "@/components/shared/ApiCards";
+import { PageIntro, StatusPill } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { FileDropzone } from "@/components/shared/FileDropzone";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,14 @@ import {
   useGetRecruiterProfileQuery,
   useUpdateRecruiterProfileMutation,
 } from "@/services/recruiterApi";
+
+function ProfileCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-border bg-surface p-6 shadow-[0_1px_2px_rgba(16,24,40,0.04)] dark:bg-black lg:p-8">
+      {children}
+    </div>
+  );
+}
 
 export default function RecruiterProfilePage() {
   const currentUserQuery = useGetCurrentUserQuery();
@@ -62,7 +70,7 @@ export default function RecruiterProfilePage() {
         description="Manage the personal details of the business owner."
       />
       <div className="grid gap-6">
-        <PlainCard>
+        <ProfileCard>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-center gap-4">
               <div
@@ -88,9 +96,9 @@ export default function RecruiterProfilePage() {
             </div>
             <StatusPill>{currentUser.roles.join(", ")}</StatusPill>
           </div>
-        </PlainCard>
+        </ProfileCard>
 
-        <PlainCard>
+        <ProfileCard>
           <h2 className="font-semibold text-heading">Profile photo</h2>
           <p className="mt-1 mb-5 text-sm leading-6 text-body">
             Shown on your workspace header and anywhere your account appears.
@@ -109,18 +117,22 @@ export default function RecruiterProfilePage() {
               disabled={isBusy || (!photoFile && !avatarUrl)}
               className="h-11 rounded-lg px-6"
             >
-              {isUploading ? "Uploading…" : update.isLoading ? "Saving…" : "Save photo"}
+              {isUploading
+                ? "Uploading…"
+                : update.isLoading
+                  ? "Saving…"
+                  : "Save photo"}
             </Button>
           </div>
-        </PlainCard>
+        </ProfileCard>
 
-        <PlainCard>
+        <ProfileCard>
           <h2 className="font-semibold text-heading">Recruiter details</h2>
           <p className="mt-1 mb-5 text-sm leading-6 text-body">
             Your position and LinkedIn profile, shown to candidates you contact.
           </p>
           <RecruiterProfileForm profile={profileQuery.data} />
-        </PlainCard>
+        </ProfileCard>
       </div>
     </>
   );
