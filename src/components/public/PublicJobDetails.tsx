@@ -45,12 +45,21 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
               <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-body">
                 <span className="inline-flex items-center gap-1.5">
                   <Building2 aria-hidden="true" className="size-4 text-brand" />
-                  <Link
-                    href={`/companies/${job.companyId}`}
-                    className="hover:text-brand"
-                  >
-                    {job.companyName}
-                  </Link>
+                  {/*
+                    * A masked company has no id, so there is no page to open —
+                    * the name renders as plain text rather than as a link to
+                    * /companies/null.
+                    */}
+                  {job.companyId == null ? (
+                    job.companyName
+                  ) : (
+                    <Link
+                      href={`/companies/${job.companyId}`}
+                      className="hover:text-brand"
+                    >
+                      {job.companyName}
+                    </Link>
+                  )}
                 </span>
                 {job.location ? (
                   <span className="inline-flex items-center gap-1.5">

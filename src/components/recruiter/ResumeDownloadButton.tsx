@@ -1,12 +1,18 @@
 "use client";
 
-import { resolveFileUrl } from "@/lib/file-url";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useLazyGetTalentResumeDownloadQuery } from "@/services/recruiterApi";
 
-/** Resolves a short-lived download URL on click, then opens it. */
+/**
+ * Downloads a published resume.
+ *
+ * <p>The endpoint streams the file rather than returning a link, so the
+ * candidate's publication setting is checked on this request rather than once
+ * when a URL was minted. That means fetching the bytes here and handing the
+ * browser a blob, instead of opening a URL in a new tab.
+ */
 export function ResumeDownloadButton({
   slug,
   resumeId,
@@ -16,15 +22,31 @@ export function ResumeDownloadButton({
   resumeId: number;
   title: string;
 }) {
-  const [getDownload, download] = useLazyGetTalentResumeDownloadQuery();
+  const [downloading, setDownloading] = useState(false);
 
   const onDownload = async () => {
+    setDownloading(true);
+
     try {
-      const { downloadUrl } = await getDownload({ slug, resumeId }).unwrap();
-      if (!downloadUrl) throw new Error("No download URL returned.");
-      window.open(resolveFileUrl(downloadUrl), "_blank", "noopener,noreferrer");
+      const response = await fetch(
+        `/api/v1/recruiter/talent/${encodeURIComponent(slug)}/resumes/${resumeId}/download`,
+      );
+
+      if (!response.ok) throw new Error(String(response.status));
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${title || "resume"}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
     } catch {
       toast.error("Unable to download this resume.");
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -34,11 +56,11 @@ export function ResumeDownloadButton({
       variant="outline"
       className="h-9 rounded-lg px-4"
       aria-label={`Download ${title}`}
-      disabled={download.isLoading}
+      disabled={downloading}
       onClick={onDownload}
     >
       <Download aria-hidden="true" className="size-4" />
-      {download.isLoading ? "Preparing…" : "Download"}
+      {downloading ? "Preparing…" : "Download"}
     </Button>
   );
 }
