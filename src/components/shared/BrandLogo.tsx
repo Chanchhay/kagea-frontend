@@ -14,9 +14,9 @@ import { cn } from "@/lib/utils";
  */
 
 const WORDMARK = {
-  light: "/images/brand/logo-light.png",
-  dark: "/images/brand/logo-dark.png",
-  ratio: 1259 / 363,
+  light: "/images/brand/logo-light.png?v=khmer-20260831b",
+  dark: "/images/brand/logo-dark.png?v=khmer-20260831b",
+  ratio: 1345 / 424,
 } as const;
 
 const MARK = {
@@ -52,9 +52,10 @@ function ThemedImage({
       <Image
         src={asset.light}
         alt={alt}
-        width={width}
-        height={height}
-        priority={priority}
+      width={width}
+      height={height}
+      priority={priority}
+      unoptimized
         className={cn(shared, "dark:hidden", className)}
         style={{ height, width: "auto" }}
       />
@@ -62,9 +63,10 @@ function ThemedImage({
         src={asset.dark}
         alt=""
         aria-hidden="true"
-        width={width}
-        height={height}
-        priority={priority}
+      width={width}
+      height={height}
+      priority={priority}
+      unoptimized
         className={cn(shared, "hidden dark:block", className)}
         style={{ height, width: "auto" }}
       />

@@ -34,6 +34,7 @@ export function StartAiInterviewButton({ jobId }: StartAiInterviewButtonProps) {
     <Button
       type="button"
       variant="outline"
+      className="font-medium"
       onClick={start}
       disabled={creation.isLoading}
     >

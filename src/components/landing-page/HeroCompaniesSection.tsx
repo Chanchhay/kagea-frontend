@@ -40,7 +40,7 @@ function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
         whileHover={{ y: -4 }}
         whileTap={{ scale: 0.99 }}
         transition={{ type: 'spring', stiffness: 320, damping: 24 }}
-        className="group relative flex w-[270px] cursor-pointer items-center justify-between overflow-hidden rounded-2xl border border-[#FDE68A] bg-white p-5 shadow-[0_14px_38px_rgba(245,158,11,0.10)] transition-[border-color,box-shadow,background-color] duration-300 hover:border-[#F3BE00] hover:shadow-[0_18px_44px_rgba(245,158,11,0.16)] sm:w-[310px] dark:border-[#3E444B] dark:bg-[#23272D] dark:shadow-[0_16px_36px_-18px_rgba(0,0,0,.8)] dark:hover:border-[#F3BE00]/60 dark:hover:bg-[#2B3036] dark:hover:shadow-[0_20px_42px_-20px_rgba(0,0,0,.9)]"
+        className="group relative flex w-[270px] cursor-pointer items-center justify-between overflow-hidden rounded-2xl border border-[#FDE68A] bg-white p-5 shadow-[0_4px_16px_rgba(15,23,42,0.06)] transition-[border-color,box-shadow,background-color] duration-300 hover:border-[#F3BE00] hover:shadow-[0_10px_24px_rgba(15,23,42,0.10)] sm:w-[310px] dark:border-[#3E444B] dark:bg-[#22262C] dark:shadow-[0_14px_32px_-18px_rgba(0,0,0,.9)] dark:hover:border-[#F3BE00]/60 dark:hover:bg-[#2B3036] dark:hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,.8)]"
       >
       <div className="flex min-w-0 items-center gap-3">
         <div

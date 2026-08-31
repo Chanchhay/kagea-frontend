@@ -41,11 +41,11 @@ export function ApplyJobDialog({ jobId, jobTitle }: ApplyJobDialogProps) {
   return (
     <>
       <div className="grid gap-2">
-        <Button type="button" onClick={() => setOpen(true)}>
+        <Button type="button" className="font-medium" onClick={() => setOpen(true)}>
           Apply as job seeker
         </Button>
         <StartAiInterviewButton jobId={jobId} />
-        <KeycloakLoginButton variant="ghost">Sign in to apply</KeycloakLoginButton>
+        <KeycloakLoginButton className="font-medium" variant="ghost">Sign in to apply</KeycloakLoginButton>
       </div>
       {open ? (
         <div
