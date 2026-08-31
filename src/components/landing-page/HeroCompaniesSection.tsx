@@ -2,16 +2,116 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useMemo } from 'react';
 import { ClipboardList, FileText, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { companies } from './data';
+import { useGetPublicJobsQuery } from '@/services/publicApi';
 import { MapPinIcon } from './icons';
 import RobotHeroLight from './RobotHeroLight';
 import { GlobeBackground } from './shared/GlobeBackground';
 import { TypewriterText } from './shared/TypewriterText';
 import { ScaleReveal } from './shared/ScaleReveal';
 
+type CompanyCard = {
+  id: number;
+  name: string;
+  category: string;
+  location: string;
+  featured: boolean;
+  bg: string;
+  text: string;
+  logoText: string;
+  jobCount: number;
+};
+
+const companyColors = [
+  { bg: 'bg-[#063b2a]', text: 'text-emerald-200' },
+  { bg: 'bg-[#12325b]', text: 'text-blue-100' },
+  { bg: 'bg-[#69410b]', text: 'text-amber-100' },
+  { bg: 'bg-[#4c1d54]', text: 'text-fuchsia-100' },
+  { bg: 'bg-[#7f1d2d]', text: 'text-rose-100' },
+  { bg: 'bg-[#164e63]', text: 'text-cyan-100' },
+] as const;
+
+function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
+  return (
+    <Link href={`/companies/${company.id}`} className="block shrink-0" aria-label={`View ${company.name}`}>
+      <motion.div
+        whileHover={{ y: -4 }}
+        whileTap={{ scale: 0.99 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+        className="group relative flex w-[270px] cursor-pointer items-center justify-between overflow-hidden rounded-2xl border border-[#FDE68A] bg-white p-5 shadow-[0_14px_38px_rgba(245,158,11,0.10)] transition-[border-color,box-shadow,background-color] duration-300 hover:border-[#F3BE00] hover:shadow-[0_18px_44px_rgba(245,158,11,0.16)] sm:w-[310px] dark:border-[#3E444B] dark:bg-[#23272D] dark:shadow-[0_16px_36px_-18px_rgba(0,0,0,.8)] dark:hover:border-[#F3BE00]/60 dark:hover:bg-[#2B3036] dark:hover:shadow-[0_20px_42px_-20px_rgba(0,0,0,.9)]"
+      >
+      <div className="flex min-w-0 items-center gap-3">
+        <div
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${company.bg} ${company.text} text-[11px] font-bold shadow-sm dark:shadow-[0_0_0_1px_rgba(255,255,255,.08)]`}
+        >
+          {company.logoText}
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-base font-bold leading-tight text-slate-900 transition-colors group-hover:text-[#0F8A22] dark:text-white dark:group-hover:text-[#7bf0a4]">
+            {company.name}
+          </p>
+          <div className="mt-1 flex items-center gap-1 text-xs text-slate-500 dark:text-white/60">
+            <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-white/45" />
+            <span className="truncate">{company.location}</span>
+          </div>
+        </div>
+      </div>
+
+      {company.featured && (
+        <span className="ml-2 shrink-0 rounded-full bg-white/75 px-2.5 py-1 text-[10px] font-semibold text-[#FB7185] ring-1 ring-[#FECDD3] backdrop-blur-sm dark:bg-white/[.06] dark:text-[#ffb4bd] dark:ring-white/15">
+          {company.jobCount} {company.jobCount === 1 ? 'role' : 'roles'}
+        </span>
+      )}
+      </motion.div>
+    </Link>
+  );
+}
+
 export default function HeroCompaniesSection() {
+  const jobsQuery = useGetPublicJobsQuery({ size: 100, sort: 'publishedAt,desc' });
+  const companies = useMemo<CompanyCard[]>(() => {
+    const byCompany = new Map<number, Omit<CompanyCard, 'featured' | 'bg' | 'text' | 'logoText'>>();
+
+    for (const job of jobsQuery.data?.content ?? []) {
+      // Confidential postings mask their employer, so they carry no companyId
+      // and can't be grouped into (or linked from) a company card.
+      if (job.companyId === null) continue;
+
+      const company = byCompany.get(job.companyId);
+      if (company) {
+        company.jobCount += 1;
+        continue;
+      }
+
+      byCompany.set(job.companyId, {
+        id: job.companyId,
+        name: job.companyName,
+        category: job.categoryName || 'Employer',
+        location: job.location || 'Cambodia',
+        jobCount: 1,
+      });
+    }
+
+    return [...byCompany.values()]
+      .sort((a, b) => b.jobCount - a.jobCount || a.name.localeCompare(b.name))
+      .map((company, index) => ({
+        ...company,
+        featured: index < 3,
+        ...companyColors[index % companyColors.length],
+        logoText: companyInitials(company.name),
+      }));
+  }, [jobsQuery.data?.content]);
+
+  const marqueeCompanies = companies.length
+    ? Array.from({ length: Math.max(8, companies.length) }, (_, index) => companies[index % companies.length])
+    : [];
+  const companyRows = [
+    marqueeCompanies.filter((_, index) => index % 2 === 0),
+    marqueeCompanies.filter((_, index) => index % 2 === 1),
+  ];
+
   return (
     <>
       {/* ═══════════════════════════════════════════ HERO SECTION ═══════════════════════════════════════════ */}
@@ -90,7 +190,7 @@ export default function HeroCompaniesSection() {
           * artwork lane; this one spans the whole section so the hero dissolves
           * into the next section instead of stopping on a hard edge mid-scroll.
           */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-52 bg-[linear-gradient(to_top,#fff_0%,rgba(255,255,255,.97)_14%,rgba(255,255,255,.88)_27%,rgba(255,255,255,.72)_40%,rgba(255,255,255,.52)_54%,rgba(255,255,255,.31)_68%,rgba(255,255,255,.13)_84%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(to_top,#0B0F19_0%,rgba(11,15,25,.97)_14%,rgba(11,15,25,.88)_27%,rgba(11,15,25,.72)_40%,rgba(11,15,25,.52)_54%,rgba(11,15,25,.31)_68%,rgba(11,15,25,.13)_84%,rgba(11,15,25,0)_100%)]" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-52 bg-[linear-gradient(to_top,#fff_0%,rgba(255,255,255,.97)_14%,rgba(255,255,255,.88)_27%,rgba(255,255,255,.72)_40%,rgba(255,255,255,.52)_54%,rgba(255,255,255,.31)_68%,rgba(255,255,255,.13)_84%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(to_top,#181B1C_0%,rgba(24,27,28,.97)_14%,rgba(24,27,28,.88)_27%,rgba(24,27,28,.72)_40%,rgba(24,27,28,.52)_54%,rgba(24,27,28,.31)_68%,rgba(24,27,28,.13)_84%,rgba(24,27,28,0)_100%)]" />
 
         <div className="relative z-10 w-full px-5 py-14 sm:px-8 sm:py-16 lg:px-12 lg:py-20 xl:px-16 2xl:px-24">
           {/*
@@ -165,7 +265,7 @@ export default function HeroCompaniesSection() {
                     body: 'Follow every application from a single dashboard.',
                   },
                 ].map((item) => (
-                  <div key={item.title} className="bg-surface/90 p-4 backdrop-blur-md dark:bg-[#101624]/90">
+                  <div key={item.title} className="bg-surface/90 p-4 backdrop-blur-md dark:bg-[#23272D]/95">
                     <item.icon aria-hidden="true" className="size-[1.05rem] text-brand" />
                     <p className="mt-2.5 text-[13px] font-semibold text-heading">{item.title}</p>
                     <p className="mt-1 text-[11.5px] leading-[1.45] text-body">{item.body}</p>
@@ -210,73 +310,83 @@ export default function HeroCompaniesSection() {
           </p>
         </motion.div>
 
-        <motion.div
-          className="mx-auto mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 "
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-            },
-          }}
-        >
-          {companies.map((company) => (
-            <motion.div
-              key={company.name}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-              }}
-              whileHover={{ y: -6 }}
-              whileTap={{ scale: 0.99 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 24 }}
-              /*
-               * Dark mode is a lit glass panel rather than a flat slate block:
-               * a gradient fill, a hairline top highlight, and a brand-green
-               * hover. The old `slate-900` card sat almost invisibly on the
-               * page background and hovered to an amber shadow that belongs to
-               * the light theme only.
-               */
-              className="
-              dark:bg-slate-800
-              group relative flex cursor-pointer flex-col justify-between rounded-2xl border border-[#FDE68A] bg-white p-5 shadow-[0_14px_38px_rgba(245,158,11,0.10)] transition-[border-color,box-shadow,background-color] duration-300 hover:border-[#F3BE00] hover:shadow-[0_18px_44px_rgba(245,158,11,0.16)] dark:border-white/10 dark:bg-gradient-to-b dark:from-white/[.07] dark:to-white/[.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,.08),0_16px_40px_-12px_rgba(0,0,0,.7)] dark:hover:border-brand/45 dark:hover:from-white/[.10] dark:hover:to-white/[.05] dark:hover:shadow-[inset_0_1px_0_rgba(255,255,255,.12),0_20px_46px_-12px_rgba(0,0,0,.8)]"
-            >
-              <div className="mb-6 flex items-start justify-between gap-2">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${company.bg} ${company.text} text-[11px] font-bold shadow-sm dark:shadow-[0_0_0_1px_rgba(255,255,255,.08)]`}
-                  >
-                    {company.logoText}
-                  </div>
-                  <div>
-                    <p className="text-base font-bold leading-tight text-slate-900 transition-colors group-hover:text-[#0F8A22] dark:text-white dark:group-hover:text-[#7bf0a4]">
-                      {company.category}
-                    </p>
-                    <div className="mt-1 flex items-center gap-1 text-xs text-slate-500 dark:text-white/60">
-                      <MapPinIcon className="h-3.5 w-3.5 text-slate-400 dark:text-white/45" />
-                      <span>{company.location}</span>
+        {jobsQuery.isLoading ? (
+          <div className="mt-10 grid gap-5 py-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="Loading companies">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div key={index} className="h-[90px] animate-pulse rounded-2xl border border-border bg-surface-muted" />
+            ))}
+          </div>
+        ) : jobsQuery.isError ? (
+          <p className="mx-auto mt-10 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-8 text-center text-sm text-rose-700 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-200">
+            Unable to load companies right now.
+          </p>
+        ) : companies.length === 0 ? (
+          <p className="mx-auto mt-10 rounded-2xl border border-border bg-surface-muted px-5 py-8 text-center text-sm text-body">
+            Companies with published jobs will appear here.
+          </p>
+        ) : (
+          <div className="company-marquee mx-auto mt-10 space-y-5 overflow-hidden py-3 [mask-image:linear-gradient(to_right,transparent,black_7%,black_93%,transparent)] dark:[mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
+            {companyRows.map((row, rowIndex) => (
+              <div key={rowIndex} className="company-marquee-row overflow-hidden py-1">
+                <div className={`company-marquee-track flex w-max ${rowIndex === 1 ? 'company-marquee-reverse' : ''}`}>
+                  {[0, 1].map((copyIndex) => (
+                    <div key={copyIndex} aria-hidden={copyIndex === 1} className="flex shrink-0 gap-5 pr-5">
+                      {row.map((company, companyIndex) => (
+                        <CompanyMarqueeCard
+                          key={`${copyIndex}-${company.id}-${companyIndex}`}
+                          company={company}
+                        />
+                      ))}
                     </div>
-                  </div>
+                  ))}
                 </div>
-
-                {company.featured && (
-                  <span className="shrink-0 rounded-full bg-white/75 px-2.5 py-1 text-[10px] font-semibold text-[#FB7185] ring-1 ring-[#FECDD3] backdrop-blur-sm dark:bg-white/[.06] dark:text-[#ffb4bd] dark:ring-white/15">
-                    Featured
-                  </span>
-                )}
               </div>
+            ))}
+          </div>
+        )}
 
-              <button className="w-full rounded-xl bg-[#ECFDF3] py-3 text-xs font-bold text-[#0F8A22] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] ring-1 ring-[#D1FAE5] transition-all duration-300 group-hover:bg-[#0F8A22] group-hover:text-white group-hover:ring-[#0F8A22] dark:bg-brand/15 dark:text-[#7bf0a4] dark:shadow-none dark:ring-brand/30 dark:group-hover:bg-brand dark:group-hover:text-white dark:group-hover:ring-brand">
-                Open Position
-              </button>
-            </motion.div>
-          ))}
-        </motion.div>
+        <style jsx>{`
+          .company-marquee-track {
+            animation: company-marquee 28s linear infinite;
+            will-change: transform;
+          }
+
+          .company-marquee-reverse {
+            animation-direction: reverse;
+          }
+
+          .company-marquee-row:hover .company-marquee-track {
+            animation-play-state: paused;
+          }
+
+          @keyframes company-marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .company-marquee {
+              mask-image: none;
+              overflow-x: auto;
+            }
+
+            .company-marquee-track {
+              animation: none;
+            }
+          }
+        `}</style>
       </section>
 
     </>
   );
+}
+
+function companyInitials(value: string) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase() || 'CO';
 }

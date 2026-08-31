@@ -48,82 +48,92 @@ export default function RobotHeroLight({
           </filter>
         </defs>
 
+        <style>{`
+          @media (prefers-reduced-motion: reduce) {
+            .robot-light-motion {
+              display: none;
+            }
+          }
+        `}</style>
+
         <g opacity="0.96">
           <path
             d="M425 128 C391 166 358 205 335 247 C315 283 304 324 301 364 C298 410 304 449 316 483"
             fill="none"
-            stroke="rgba(255,180,56,0.1)"
-            strokeWidth="10"
+            stroke="rgba(255,180,56,0.16)"
+            strokeWidth="8"
             strokeLinecap="round"
             filter="url(#robot-strip-core)"
           />
-          <path
-            d="M425 128 C391 166 358 205 335 247 C315 283 304 324 301 364 C298 410 304 449 316 483"
-            fill="none"
-            pathLength="1"
-            stroke="rgba(255,176,38,1)"
-            strokeWidth="12.5"
-            strokeLinecap="round"
-            strokeDasharray="0.33 1"
-            filter="url(#robot-strip-glow)"
-          >
-            <animate
-              attributeName="stroke-dashoffset"
-              values="0.34;0;-0.34"
-              dur="1.45s"
-              repeatCount="indefinite"
-              calcMode="spline"
-              keyTimes="0;0.5;1"
-              keySplines="0.42 0 0.58 1;0.42 0 0.58 1"
-            />
-            <animate
-              attributeName="opacity"
-              values="0.18;1;0.18"
-              dur="1.45s"
-              repeatCount="indefinite"
-              calcMode="spline"
-              keyTimes="0;0.48;1"
-              keySplines="0.42 0 0.58 1;0.42 0 0.58 1"
-            />
-          </path>
-          <path
-            d="M425 128 C391 166 358 205 335 247 C315 283 304 324 301 364 C298 410 304 449 316 483"
-            fill="none"
-            pathLength="1"
-            stroke="rgba(255,250,236,1)"
-            strokeWidth="5.8"
-            strokeLinecap="round"
-            strokeDasharray="0.2 1.02"
-            filter="url(#robot-strip-core)"
-          >
-            <animate
-              attributeName="stroke-dashoffset"
-              values="0.26;0;-0.26"
-              dur="1.45s"
-              repeatCount="indefinite"
-              calcMode="spline"
-              keyTimes="0;0.5;1"
-              keySplines="0.42 0 0.58 1;0.42 0 0.58 1"
-            />
-            <animate
-              attributeName="opacity"
-              values="0.14;0.98;0.14"
-              dur="1.45s"
-              repeatCount="indefinite"
-              calcMode="spline"
-              keyTimes="0;0.5;1"
-              keySplines="0.42 0 0.58 1;0.42 0 0.58 1"
-            />
-          </path>
+          <g className="robot-light-motion">
+            <path
+              d="M425 128 C391 166 358 205 335 247 C315 283 304 324 301 364 C298 410 304 449 316 483"
+              fill="none"
+              pathLength="1"
+              stroke="rgba(255,168,24,0.92)"
+              strokeWidth="12.5"
+              strokeLinecap="round"
+              strokeDasharray="0.24 0.76"
+              filter="url(#robot-strip-glow)"
+            >
+              <animate
+                attributeName="stroke-dashoffset"
+                from="1"
+                to="0"
+                dur="2.8s"
+                repeatCount="indefinite"
+                calcMode="linear"
+              />
+            </path>
+            <path
+              d="M425 128 C391 166 358 205 335 247 C315 283 304 324 301 364 C298 410 304 449 316 483"
+              fill="none"
+              pathLength="1"
+              stroke="rgba(255,249,230,0.98)"
+              strokeWidth="5.4"
+              strokeLinecap="round"
+              strokeDasharray="0.12 0.88"
+              filter="url(#robot-strip-core)"
+            >
+              <animate
+                attributeName="stroke-dashoffset"
+                from="1"
+                to="0"
+                dur="2.8s"
+                begin="-0.12s"
+                repeatCount="indefinite"
+                calcMode="linear"
+              />
+            </path>
+            <path
+              d="M425 128 C391 166 358 205 335 247 C315 283 304 324 301 364 C298 410 304 449 316 483"
+              fill="none"
+              pathLength="1"
+              stroke="rgba(255,194,86,0.48)"
+              strokeWidth="7"
+              strokeLinecap="round"
+              strokeDasharray="0.08 0.92"
+            >
+              <animate
+                attributeName="stroke-dashoffset"
+                from="1"
+                to="0"
+                dur="2.8s"
+                begin="-1.4s"
+                repeatCount="indefinite"
+                calcMode="linear"
+              />
+            </path>
+          </g>
         </g>
 
-        <g opacity="0.95">
+        <g className="robot-light-motion" opacity="0.95">
           <circle cx="413" cy="276" r="8" fill="rgba(255,176,70,0.18)" filter="url(#robot-led-halo)">
             <animate
               attributeName="r"
-              values="7.2;10.4;7.2"
-              dur="1.55s"
-              begin="0.3s"
+              values="7.2;9.4;7.2"
+              dur="2.4s"
+              begin="-0.8s"
               repeatCount="indefinite"
               calcMode="spline"
               keyTimes="0;0.5;1"
@@ -131,9 +141,9 @@ export default function RobotHeroLight({
             />
             <animate
               attributeName="opacity"
-              values="0.18;0.42;0.18"
-              dur="1.55s"
-              begin="0.3s"
+              values="0.16;0.36;0.16"
+              dur="2.4s"
+              begin="-0.8s"
               repeatCount="indefinite"
               calcMode="spline"
               keyTimes="0;0.5;1"
@@ -144,8 +154,8 @@ export default function RobotHeroLight({
             <animate
               attributeName="opacity"
               values="0.46;1;0.46"
-              dur="1.55s"
-              begin="0.08s"
+              dur="2.4s"
+              begin="-0.68s"
               repeatCount="indefinite"
               calcMode="spline"
               keyTimes="0;0.5;1"
@@ -153,9 +163,9 @@ export default function RobotHeroLight({
             />
             <animate
               attributeName="r"
-              values="3;4;3"
-              dur="1.55s"
-              begin="0.08s"
+              values="3.1;3.8;3.1"
+              dur="2.4s"
+              begin="-0.68s"
               repeatCount="indefinite"
               calcMode="spline"
               keyTimes="0;0.5;1"
@@ -166,8 +176,8 @@ export default function RobotHeroLight({
             <animate
               attributeName="opacity"
               values="0.32;0.84;0.32"
-              dur="1.55s"
-              begin="0.18s"
+              dur="2.4s"
+              begin="-0.56s"
               repeatCount="indefinite"
               calcMode="spline"
               keyTimes="0;0.5;1"

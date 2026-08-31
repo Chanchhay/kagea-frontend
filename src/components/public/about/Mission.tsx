@@ -72,12 +72,8 @@ export default function MissionSection() {
   return (
     <section
       ref={containerRef}
-      className="relative overflow-hidden py-16 lg:py-28"
+      className="relative overflow-hidden py-10 lg:py-16"
     >
-      {/* Background Soft Glows */}
-      <div className="pointer-events-none absolute -left-20 top-1/3 -z-10 h-80 w-80 rounded-full bg-[#008A1E]/10 blur-3xl" />
-      <div className="pointer-events-none absolute right-0 top-10 -z-10 h-80 w-80 rounded-full bg-[#E8C222]/10 blur-3xl" />
-
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
           {/* Left Side: Headline & Organic Blob Image */}
@@ -88,13 +84,13 @@ export default function MissionSection() {
             className="w-full lg:col-span-6"
           >
             {/* Tagline Badge */}
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#008A1E]/20 bg-[#008A1E]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-[#008A1E]">
-              <Sparkles className="h-3.5 w-3.5 text-[#E8C222]" />
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1fa628]/30 bg-[#1fa628]/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#1fa628]">
+              <Sparkles className="h-3.5 w-3.5 text-[#F3BE00]" />
               Empowering Careers
             </div>
 
             <h2 className="mb-6 text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
-              <span className="text-[#E33434]">Our</span> Mission
+              <span className="text-[#1fa628]">Our</span> <span className="text-[#F3BE00]">Mission</span>
             </h2>
 
             <p className="mb-8 max-w-xl text-base text-slate-600 dark:text-slate-300 sm:text-lg">
@@ -104,9 +100,9 @@ export default function MissionSection() {
             {/* Organic Blob Frame Container */}
             <div className="relative mx-auto aspect-[1.15/1] w-full max-w-[500px] lg:mx-0">
               {/* Outer Decorative Ring */}
-              <div className="absolute -inset-2 rounded-[38px] border-2 border-dashed border-[#008A1E]/20" />
+              <div className="absolute -inset-2 rounded-[38px] border-2 border-dashed border-[#1fa628]/20" />
 
-              <div className="relative h-full w-full overflow-hidden rounded-[32px] border-2 border-slate-200/80 bg-slate-900 dark:border-slate-800">
+              <div className="relative h-full w-full overflow-hidden rounded-[32px] border-2 border-slate-200/80 bg-slate-900 dark:border-slate-800 shadow-2xl">
                 <Image
                   src="/images/about-us/mission.png"
                   alt="Online internship mission"
@@ -117,8 +113,8 @@ export default function MissionSection() {
                 />
 
                 {/* Subtle Image Overlay Card */}
-                <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-2xl border border-white/20 bg-slate-900/80 p-3.5 backdrop-blur-md">
-                  <CheckCircle2 className="h-5 w-5 shrink-0 text-[#008A1E]" />
+                <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-2xl border border-white/20 bg-slate-950/80 p-3.5 backdrop-blur-md">
+                  <CheckCircle2 className="h-5 w-5 shrink-0 text-[#1fa628]" />
                   <p className="text-xs font-medium text-white">
                     Built for next-generation tech talents & recruiters.
                   </p>
@@ -141,8 +137,8 @@ export default function MissionSection() {
                 <motion.div
                   key={feature.title}
                   variants={fadeInUp}
-                  whileHover={{ x: 6 }}
-                  className={`group relative flex w-full items-start gap-5 rounded-3xl border border-slate-200/80 bg-white/70 p-6 backdrop-blur-sm transition-all duration-300 dark:border-slate-800 dark:bg-slate-900/70 ${
+                  whileHover={{ x: 8 }}
+                  className={`group relative flex w-full items-start gap-5 rounded-3xl border border-slate-200/90 bg-white/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-[#1fa628]/50 hover:shadow-lg dark:border-slate-800/90 dark:bg-slate-900/80 dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] ${
                     index === 1
                       ? "lg:ml-4"
                       : index === 2
@@ -161,7 +157,7 @@ export default function MissionSection() {
 
                   {/* Text Content */}
                   <div className="space-y-1">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
                       {feature.title}
                     </h3>
                     <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
