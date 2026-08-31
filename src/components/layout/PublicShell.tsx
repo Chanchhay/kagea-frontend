@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { Camera, Globe2, Mail, MapPin, Menu, Phone, Video } from "lucide-react";
+import { ArrowUpRight, Clock3, MapPin, Menu, Phone } from "lucide-react";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { NavbarAccount } from "@/components/auth/NavbarAccount";
 import { BrandLogo } from "@/components/shared/BrandLogo";
@@ -199,104 +200,92 @@ function useScrolled(threshold = 8) {
 
 export function PublicFooter() {
     return (
-        <footer className="border-t border-border bg-surface">
-            <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.15fr_1fr_.7fr_1fr] lg:px-8">
-                <div>
-                    <Link href="/" className="block w-fit" aria-label="Kagea home">
+        <footer className="relative overflow-hidden bg-white text-slate-700 dark:bg-[#181B1C] dark:text-[#CBD0D5]">
+            <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-8 px-5 py-9 sm:gap-x-10 sm:px-6 sm:py-12 lg:px-8 xl:grid-cols-[1.2fr_1.05fr_.65fr_1fr] xl:gap-x-12 xl:py-14 2xl:gap-x-16">
+                <div className="relative col-span-2 min-w-0 sm:col-span-1 sm:pr-4 xl:col-span-1 xl:pr-0">
+                    <Link href="/" className="relative block w-fit rounded-lg outline-none transition-opacity hover:opacity-85 focus-visible:ring-3 focus-visible:ring-emerald-600/25" aria-label="Kagea home">
                         <BrandLogo height={40} />
                     </Link>
-                    <p className="mt-4 max-w-xs text-sm leading-6 text-body">
+                    <p className="relative mt-4 max-w-sm text-[13px] leading-5.5 text-slate-600 sm:mt-5 sm:text-sm sm:leading-6 dark:text-slate-400">
                         Empowering learners through innovative education and
                         technology. Providing the latest methodology with
                         high-quality training and mentoring.
                     </p>
                 </div>
 
-                <div>
-                    <h2 className="text-base font-semibold text-brand">
-                        Follow us
-                    </h2>
-                    <ul className="mt-4 space-y-3 text-sm text-body">
-                        <li className="flex items-center gap-2">
-                            <Phone className="size-4 text-brand" />
-                            Customer Service: +855-81697501
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <Mail className="size-4 text-brand" />
-                            Working Hours: 08:30 - 18:00
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <MapPin className="mt-0.5 size-4 shrink-0 text-brand" />
-                            No. 24, Street 562, Sangkat Kak I, Khan Toul Kork,
-                            Phnom Penh.
-                        </li>
+                <div className="col-span-2 min-w-0 border-t border-emerald-950/8 pt-6 sm:col-span-1 sm:border-0 sm:pt-0 dark:border-white/8 xl:col-span-1">
+                    <h2 className="text-sm font-bold tracking-wide text-slate-950 dark:text-white">Contact</h2>
+                    <ul className="mt-4 space-y-3.5 sm:mt-5 sm:space-y-4">
+                        <FooterContact icon={Phone} label="Customer Service">+855-81697501</FooterContact>
+                        <FooterContact icon={Clock3} label="Working Hours">08:30 - 18:00</FooterContact>
+                        <FooterContact icon={MapPin} label="Address">No. 24, Street 562, Sangkat Kak I, Khan Toul Kork, Phnom Penh.</FooterContact>
                     </ul>
                 </div>
 
-                <div>
-                    <h2 className="text-base font-semibold text-brand">
-                        Explore
-                    </h2>
+                <div className="col-span-1 min-w-0 border-t border-emerald-950/8 pt-6 sm:pt-7 dark:border-white/8 xl:border-0 xl:pt-0">
+                    <h2 className="text-sm font-bold tracking-wide text-slate-950 dark:text-white">Explore</h2>
                     <nav
-                        className="mt-4 grid gap-3 text-sm text-body"
+                        className="mt-4 grid gap-3 text-[13px] sm:mt-5 sm:gap-3.5 sm:text-sm"
                         aria-label="Footer navigation"
                     >
                         {landingNavigation.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="w-fit hover:text-brand"
+                                className="group flex w-fit items-center gap-1.5 font-medium text-slate-600 transition-colors duration-200 hover:text-brand dark:text-slate-400 dark:hover:text-emerald-400"
                             >
                                 {link.label}
+                                <ArrowUpRight className="size-3.5 -translate-x-1 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100" />
                             </Link>
                         ))}
                     </nav>
                 </div>
 
-                <div>
-                    <h2 className="text-base font-semibold text-brand">
-                        Sponsored and organized by
-                    </h2>
-                    <div className="relative mt-4 h-24 w-52">
-                        <Image
-                            src="/landing-assets/istad-logo-color.png"
-                            alt="ISTAD"
-                            fill
-                            sizes="208px"
-                            loading="eager"
-                            unoptimized
-                            className="object-contain object-left dark:hidden"
-                        />
-                        <Image
-                            src="/landing-assets/istad-logo.png"
-                            alt=""
-                            aria-hidden="true"
-                            fill
-                            sizes="208px"
-                            loading="eager"
-                            unoptimized
-                            className="hidden object-contain object-left dark:block"
-                        />
+                <div className="col-span-1 min-w-0 border-t border-emerald-950/8 pt-6 sm:pt-7 dark:border-white/8 xl:border-0 xl:pt-0">
+                    <h2 className="text-xs font-bold leading-5 tracking-wide text-slate-950 sm:text-sm dark:text-white">Sponsored and organized by</h2>
+                    <div className="relative mt-3 h-12 w-full max-w-40 sm:mt-5 sm:h-16 sm:max-w-56">
+                        <Image src="/landing-assets/istad-logo-color.png" alt="ISTAD" fill sizes="224px" loading="eager" unoptimized className="object-contain object-left dark:hidden" />
+                        <Image src="/landing-assets/istad-logo.png" alt="" aria-hidden="true" fill sizes="224px" loading="eager" unoptimized className="hidden object-contain object-left dark:block" />
                     </div>
-                    <div className="mt-5 flex gap-2">
-                        {[Camera, Globe2, Video].map((Icon, index) => (
+                    <div className="mt-3 grid w-fit grid-cols-2 gap-2 sm:mt-5 sm:flex sm:gap-2.5">
+                        {[
+                            { Icon: FaFacebookF, label: "Facebook" },
+                            { Icon: FaYoutube, label: "YouTube" },
+                            { Icon: FaInstagram, label: "Instagram" },
+                            { Icon: FaLinkedinIn, label: "LinkedIn" },
+                        ].map(({ Icon, label }) => (
                             <span
-                                key={index}
-                                aria-label={
-                                    ["Instagram", "Website", "YouTube"][index]
-                                }
+                                key={label}
+                                aria-label={label}
                                 role="img"
-                                className="flex size-9 items-center justify-center rounded-full border border-border text-brand"
+                                className="flex size-9 items-center justify-center rounded-full border border-emerald-900/10 bg-white text-brand shadow-sm transition-[transform,background-color,border-color] duration-200 hover:scale-105 hover:border-emerald-600/25 hover:bg-emerald-50 sm:size-10 dark:border-[#3E444B] dark:bg-[#23272D] dark:text-emerald-400 dark:hover:border-emerald-400/30 dark:hover:bg-[#2B3036]"
                             >
-                                <Icon className="size-4" />
+                                <Icon className="size-4 sm:size-[18px]" />
                             </span>
                         ))}
                     </div>
                 </div>
             </div>
-            <div className="border-t border-border px-4 py-4 text-center text-xs text-body">
-                © 2026 Kagea | Sponsored and organized by ISTAD
+            <div className="relative border-t border-emerald-950/10 bg-white/45 dark:border-[#3E444B] dark:bg-[#151819]">
+                <div className="mx-auto flex max-w-7xl flex-col items-center gap-1.5 px-4 py-4 text-center text-xs text-slate-500 sm:px-6 md:flex-row md:justify-between md:text-left lg:px-8 dark:text-slate-400">
+                    <p>© 2026 KAGEA. All rights reserved.</p>
+                    <p>Sponsored and organized by <span className="font-semibold text-slate-700 dark:text-slate-200">ISTAD</span></p>
+                </div>
             </div>
         </footer>
+    );
+}
+
+function FooterContact({ icon: Icon, label, children }: { icon: typeof Phone; label: string; children: ReactNode }) {
+    return (
+        <li className="flex items-start gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-emerald-900/10 bg-white text-brand shadow-sm dark:border-[#3E444B] dark:bg-[#23272D] dark:text-emerald-400">
+                <Icon className="size-4" />
+            </span>
+            <span className="min-w-0 pt-0.5 text-sm">
+                <span className="block font-semibold text-slate-900 dark:text-white">{label}</span>
+                <span className="mt-0.5 block max-w-64 leading-5 text-slate-500 dark:text-slate-400">{children}</span>
+            </span>
+        </li>
     );
 }

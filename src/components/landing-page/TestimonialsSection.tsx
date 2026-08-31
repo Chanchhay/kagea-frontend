@@ -131,7 +131,7 @@ export default function TestimonialsSection() {
         <button 
           onClick={prev}
           aria-label="Previous testimonial"
-          className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition hover:scale-105 active:scale-95 text-slate-500 hover:text-slate-900 dark:hover:text-white -ml-4 z-10"
+          className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white dark:bg-[#23272D] dark:border dark:border-[#3E444B] shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition hover:scale-105 active:scale-95 text-slate-500 hover:text-slate-900 dark:hover:text-white -ml-4 z-10"
         >
           <ChevronLeftIcon className="w-6 h-6" />
         </button>
@@ -175,7 +175,7 @@ export default function TestimonialsSection() {
         <button 
           onClick={next}
           aria-label="Next testimonial"
-          className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition hover:scale-105 active:scale-95 text-slate-500 hover:text-slate-900 dark:hover:text-white -mr-4 z-10"
+          className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white dark:bg-[#23272D] dark:border dark:border-[#3E444B] shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition hover:scale-105 active:scale-95 text-slate-500 hover:text-slate-900 dark:hover:text-white -mr-4 z-10"
         >
           <ChevronRightIcon className="w-6 h-6" />
         </button>
