@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Markdown } from "@/components/shared/Markdown";
 import { ApplyJobDialog } from "./ApplyJobDialog";
+import { SaveJobButton } from "./SaveJobButton";
 import { formatDate, formatEnum, formatSalary } from "./PublicJobCard";
 
 type PublicJobDetailsProps = {
@@ -44,12 +45,21 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
               <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-body">
                 <span className="inline-flex items-center gap-1.5">
                   <Building2 aria-hidden="true" className="size-4 text-brand" />
-                  <Link
-                    href={`/companies/${job.companyId}`}
-                    className="hover:text-brand"
-                  >
-                    {job.companyName}
-                  </Link>
+                  {/*
+                    * A masked company has no id, so there is no page to open —
+                    * the name renders as plain text rather than as a link to
+                    * /companies/null.
+                    */}
+                  {job.companyId == null ? (
+                    job.companyName
+                  ) : (
+                    <Link
+                      href={`/companies/${job.companyId}`}
+                      className="hover:text-brand"
+                    >
+                      {job.companyName}
+                    </Link>
+                  )}
                 </span>
                 {job.location ? (
                   <span className="inline-flex items-center gap-1.5">
@@ -72,6 +82,12 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
             <Card>
               <CardContent className="space-y-4 p-5">
                 <ApplyJobDialog jobId={job.id} jobTitle={job.title} />
+                <SaveJobButton
+                  jobId={job.id}
+                  isFavorite={job.isFavorite}
+                  variant="full"
+                  className="w-full"
+                />
                 <dl className="space-y-3 text-sm">
                   <MetaRow label="Published" value={formatDate(job.publishedAt)} />
                   <MetaRow label="Expires" value={formatDate(job.expiredAt)} />

@@ -8,7 +8,6 @@ import type {
   ApiResponseListForwardedApplicationResponse,
   ApiResponseListJobPostResponse,
   ApiResponsePagePublicTalentListItemResponse,
-  ApiResponsePublicResumeDownloadResponse,
   ApiResponsePublicTalentDetailResponse,
   ApiResponseRecruiterProfileResponse,
   ApiResponseSkillResponse,
@@ -23,7 +22,6 @@ import type {
   JobPostRequest,
   JobPostResponse,
   Page,
-  PublicResumeDownloadResponse,
   PublicTalentDetailResponse,
   PublicTalentListItemResponse,
   RecruiterProfileResponse,
@@ -252,15 +250,6 @@ export const recruiterApi = baseApi.injectEndpoints({
         unwrapApiResponse(response),
       providesTags: (_result, _error, id) => [{ type: "Talent", id }],
     }),
-    getTalentResumeDownload: builder.query<
-      PublicResumeDownloadResponse,
-      { slug: string; resumeId: Id }
-    >({
-      query: ({ slug, resumeId }) =>
-        `/recruiter/talent/${encodeURIComponent(slug)}/resumes/${resumeId}/download`,
-      transformResponse: (response: ApiResponsePublicResumeDownloadResponse) =>
-        unwrapApiResponse(response),
-    }),
   }),
 });
 
@@ -288,5 +277,4 @@ export const {
   useGetForwardedApplicationQuery,
   useGetTalentQuery,
   useGetTalentDetailQuery,
-  useLazyGetTalentResumeDownloadQuery,
 } = recruiterApi;

@@ -58,7 +58,7 @@ export function ResumePublishCard({ resume }: { resume: ResumeResponse }) {
               disabled={isLoading}
               aria-pressed={active}
               className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left transition disabled:opacity-60 ${
-                active ? "border-primary bg-chip-soft" : "border-ws-line bg-ws-panel hover:bg-ws-card-hover"
+                active ? "border-chip-soft-fg bg-chip-soft" : "border-ws-line bg-ws-panel hover:bg-ws-card-hover"
               }`}
             >
               <span className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${active ? "bg-primary text-primary-foreground" : "bg-ws-card text-ws-muted"}`}>

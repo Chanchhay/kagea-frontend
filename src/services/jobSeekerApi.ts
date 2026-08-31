@@ -5,7 +5,9 @@ import type {
   ApiResponseAiInterviewResultResponse,
   ApiResponseAiInterviewSessionResponse,
   ApiResponseJobApplicationResponse,
+  ApiResponseFavoriteJobResponse,
   ApiResponseJobSeekerProfileResponse,
+  ApiResponsePageFavoriteJobResponse,
   ApiResponsePublicationResponse,
   ApiResponseListAiInterviewSessionResponse,
   ApiResponseListJobApplicationResponse,
@@ -15,6 +17,7 @@ import type {
   ApiResponsePortfolioProjectResponse,
   ApiResponseResumeResponse,
   ApiResponseVoid,
+  FavoriteJobResponse,
   JobApplicationResponse,
   JobApplicationCreateRequest,
   JobSeekerProfileResponse,
@@ -32,8 +35,9 @@ import type {
   ResumeUpdateRequest,
   VapiCallBindingRequest,
   VoiceTranscriptRequest,
+  Page,
 } from "@/contracts";
-import { baseApi, unwrapApiResponse } from "./baseApi";
+import { baseApi, normalizePage, unwrapApiResponse } from "./baseApi";
 
 export const jobSeekerApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -353,6 +357,82 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         { type: "Interviews", id: sessionId },
       ],
     }),
+    /**
+     * Renders the resume's structured data into a stored PDF.
+     *
+     * Invalidates the resume so `hasFile`, `generatedAt`, and `fileVersion`
+     * refresh — the download button keys off those.
+     */
+    generateResumePdf: builder.mutation<ResumeResponse, string | number>({
+      query: (resumeId) => ({
+        url: `/job-seeker/resumes/${resumeId}/generate`,
+        method: "POST",
+      }),
+      transformResponse: (response: ApiResponseResumeResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, resumeId) => [
+        "Resumes",
+        { type: "Resumes", id: resumeId },
+      ],
+    }),
+    uploadOwnResume: builder.mutation<
+      ResumeResponse,
+      { title: string; file: File }
+    >({
+      query: ({ title, file }) => {
+        const body = new FormData();
+        body.append("file", file);
+
+        return {
+          // Title rides in the query string, not the form: the backend binds it
+          // with @RequestParam so the multipart body carries only the file.
+          url: `/job-seeker/resumes/upload?title=${encodeURIComponent(title)}`,
+          method: "POST",
+          body,
+        };
+      },
+      transformResponse: (response: ApiResponseResumeResponse) =>
+        unwrapApiResponse(response),
+      invalidatesTags: ["Resumes"],
+    }),
+    getFavoriteJobs: builder.query<
+      Page<FavoriteJobResponse>,
+      { page?: number; size?: number } | void
+    >({
+      query: (params) => ({
+        url: "/job-seeker/favorite-jobs",
+        params: params ?? undefined,
+      }),
+      transformResponse: (response: ApiResponsePageFavoriteJobResponse) =>
+        normalizePage(unwrapApiResponse(response)),
+      providesTags: ["FavoriteJobs"],
+    }),
+    saveFavoriteJob: builder.mutation<FavoriteJobResponse, number>({
+      query: (jobId) => ({
+        url: `/job-seeker/favorite-jobs/${jobId}`,
+        method: "POST",
+      }),
+      transformResponse: (response: ApiResponseFavoriteJobResponse) =>
+        unwrapApiResponse(response),
+      // PublicJobs too: isFavorite is part of those responses, so a save that
+      // did not invalidate them would leave a stale outline bookmark behind.
+      invalidatesTags: (_result, _error, jobId) => [
+        "FavoriteJobs",
+        "PublicJobs",
+        { type: "PublicJobs", id: jobId },
+      ],
+    }),
+    removeFavoriteJob: builder.mutation<void, number>({
+      query: (jobId) => ({
+        url: `/job-seeker/favorite-jobs/${jobId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _error, jobId) => [
+        "FavoriteJobs",
+        "PublicJobs",
+        { type: "PublicJobs", id: jobId },
+      ],
+    }),
   }),
 });
 
@@ -390,4 +470,9 @@ export const {
   useSubmitAiInterviewTranscriptMutation,
   useSubmitAiInterviewAnswerMutation,
   useCompleteAiInterviewMutation,
+  useGenerateResumePdfMutation,
+  useUploadOwnResumeMutation,
+  useGetFavoriteJobsQuery,
+  useSaveFavoriteJobMutation,
+  useRemoveFavoriteJobMutation,
 } = jobSeekerApi;

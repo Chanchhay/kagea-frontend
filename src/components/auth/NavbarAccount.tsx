@@ -1,10 +1,17 @@
 "use client";
 
+import { useRef } from "react";
 import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut } from "lucide-react";
 import { KeycloakLoginButton, KeycloakLogoutButton } from "./AuthActions";
-import { cn, getInitials } from "@/lib/utils";
+import { getInitials } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useGetCurrentUserQuery, useGetSessionQuery } from "@/services/authApi";
 
 type NavbarAccountProps = {
@@ -28,17 +35,29 @@ export function NavbarAccount({
   const name =
     currentUser.data?.fullName || session.username || session.email || "Account";
   const role = getRoleLabel(currentUser.data?.roles);
+  const dashboardHref = getDashboardHref(currentUser.data?.roles);
+  const image = resolveFileUrl(currentUser.data?.avatarUrl);
 
   if (mobile) {
     return (
       <div className="grid gap-2 border-t border-border pt-3">
-        <ProfileLink
-          name={name}
-          role={role}
-          image={resolveFileUrl(currentUser.data?.avatarUrl)}
-          mobile
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-surface px-3 py-3">
+          <Avatar name={name} image={image} />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-semibold text-heading">
+              {name}
+            </span>
+            <span className="block truncate text-xs text-body">{role}</span>
+          </span>
+        </div>
+        <Link
+          href={dashboardHref}
           onClick={onNavigate}
-        />
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-body hover:bg-surface-muted"
+        >
+          <LayoutDashboard aria-hidden="true" className="size-4" />
+          Dashboard
+        </Link>
         <KeycloakLogoutButton
           variant="ghost"
           className="w-full justify-start px-3 text-body"
@@ -48,11 +67,7 @@ export function NavbarAccount({
   }
 
   return (
-    <ProfileLink
-      name={name}
-      role={role}
-      image={resolveFileUrl(currentUser.data?.avatarUrl)}
-    />
+    <ProfileMenu name={name} role={role} image={image} dashboardHref={dashboardHref} />
   );
 }
 
@@ -93,50 +108,86 @@ function SignedOutActions({
   );
 }
 
-function ProfileLink({
+function ProfileMenu({
   name,
   role,
   image,
-  mobile = false,
-  onClick,
+  dashboardHref,
 }: {
   name: string;
   role: string;
   image?: string | null;
-  mobile?: boolean;
-  onClick?: () => void;
+  dashboardHref: string;
 }) {
   return (
-    <Link
-      href="/recruiter/dashboard"
-      onClick={onClick}
-      className={cn(
-        "group relative flex items-center gap-2.5 rounded-xl border border-border/70 bg-surface/95 text-left shadow-[0_2px_10px_rgba(15,23,42,0.07)] backdrop-blur transition-all duration-200 hover:border-brand/25 hover:shadow-[0_5px_18px_rgba(15,23,42,0.11)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30",
-        mobile ? "px-3 py-2.5" : "min-w-50 max-w-58 px-2.5 py-2",
-      )}
-      aria-label={`Open ${name}'s recruiter dashboard`}
-    >
-      <span
-        className="relative flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-tint bg-cover bg-center text-xs font-extrabold text-brand ring-1 ring-brand/15 transition-colors duration-200 group-hover:bg-brand group-hover:text-primary-foreground"
-        style={image ? { backgroundImage: `url("${image}")` } : undefined}
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className="group flex max-w-64 items-center gap-3 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-left shadow-sm transition-colors hover:border-brand/40 hover:bg-brand-tint focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
+        aria-label={`Open ${name}'s account menu`}
       >
-        {image ? <span className="sr-only">Profile image</span> : getInitials(name)}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold leading-4 text-heading">
-          {name}
+        <Avatar name={name} image={image} />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold text-heading">
+            {name}
+          </span>
+          <span className="block truncate text-xs text-body">{role}</span>
         </span>
-        <span className="mt-1 flex items-center gap-1.5 truncate text-[11px] font-medium leading-none text-muted-fg">
-          <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-brand" />
-          <span className="truncate">{role}</span>
-        </span>
-      </span>
-      <ChevronRight
-        aria-hidden="true"
-        className="mr-0.5 size-4 shrink-0 text-muted-fg/70 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-brand"
-      />
-    </Link>
+        <ChevronDown
+          aria-hidden="true"
+          className="size-4 shrink-0 text-muted-fg transition-transform group-aria-expanded:rotate-180"
+        />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem render={<Link href={dashboardHref} />}>
+          <LayoutDashboard aria-hidden="true" />
+          Dashboard
+        </DropdownMenuItem>
+        <SignOutMenuItem />
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
+}
+
+function SignOutMenuItem() {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  return (
+    <>
+      <DropdownMenuItem
+        onClick={() => formRef.current?.requestSubmit()}
+        className="text-error focus:bg-error/10 focus:text-error"
+      >
+        <LogOut aria-hidden="true" />
+        Sign out
+      </DropdownMenuItem>
+      {/* Logout is a gateway session POST (see AuthActions.tsx); the menu
+          item can't be a <form>, so it submits this hidden one instead. */}
+      <form ref={formRef} action="/logout" method="post" className="hidden" />
+    </>
+  );
+}
+
+function Avatar({ name, image }: { name: string; image?: string | null }) {
+  return (
+    <span
+      className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-tint bg-cover bg-center text-xs font-bold text-brand ring-1 ring-brand/20"
+      style={image ? { backgroundImage: `url("${image}")` } : undefined}
+    >
+      {image ? <span className="sr-only">Profile image</span> : getInitials(name)}
+    </span>
+  );
+}
+
+function getDashboardHref(roles?: string[]) {
+  const normalizedRoles = roles?.map((role) => role.toUpperCase()) ?? [];
+  if (normalizedRoles.some((role) => role.includes("RECRUITER"))) {
+    return "/recruiter/dashboard";
+  }
+  if (normalizedRoles.some((role) => role.includes("SEEKER"))) {
+    return "/job-seeker/dashboard";
+  }
+
+  return "/";
 }
 
 function getRoleLabel(roles?: string[]) {

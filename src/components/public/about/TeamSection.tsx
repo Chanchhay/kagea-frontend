@@ -798,10 +798,12 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
         {/* 5. Bottom Action Bar */}
         <div className="border-t border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 flex items-center gap-3">
           <Link
-            href="/profile"
+            href={member.social.linkedin || "https://linkedin.com"}
+            target="_blank"
+            rel="noreferrer"
             className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#1fa628] hover:bg-[#1fa628]/90 text-white px-4 py-2.5 text-xs font-bold transition shadow-sm"
           >
-            <span>View Full User Profile</span>
+            <span>View Full Profile</span>
             <ExternalLink className="h-3.5 w-3.5" />
           </Link>
 

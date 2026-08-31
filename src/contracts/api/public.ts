@@ -45,8 +45,18 @@ export type JobPostSkillResponse = {
 
 export type PublicJobResponse = {
   id: number;
-  companyId: number;
+  /**
+   * Null when an administrator has masked the company. The id is withheld along
+   * with the name, so there is nothing to link to and no way to tell that two
+   * confidential postings came from the same employer.
+   */
+  companyId: number | null;
+  /** "Confidential company" when the company is masked. */
   companyName: string;
+  /** Uploaded company logo when included by the public jobs endpoint. */
+  companyLogoUrl?: string;
+  /** Compatibility with APIs that expose the company field without a prefix. */
+  logoUrl?: string;
   categoryId: number;
   categoryName: string;
   title: string;
@@ -61,6 +71,12 @@ export type PublicJobResponse = {
   expiredAt: string;
   sections: JobPostSectionResponse[];
   skills: JobPostSkillResponse[];
+  /**
+   * Whether the signed-in job seeker has saved this job. `null` for anyone
+   * else — anonymous visitors and recruiters — which is why these responses
+   * vary per caller and must not be cached across users.
+   */
+  isFavorite: boolean | null;
 };
 
 export type ApiResponsePagePublicJobResponse = ApiResponse<

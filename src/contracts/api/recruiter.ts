@@ -263,11 +263,6 @@ export type PublicTalentDetailResponse = {
   resumes: PublicResumeResponse[];
 };
 
-export type PublicResumeDownloadResponse = {
-  resumeId: number;
-  downloadUrl: string;
-};
-
 export type ApplicationSummaryResponse = {
   id: number;
   jobId: number;
@@ -330,8 +325,6 @@ export type ApiResponsePagePublicTalentListItemResponse = ApiResponse<
 >;
 export type ApiResponsePublicTalentDetailResponse =
   ApiResponse<PublicTalentDetailResponse>;
-export type ApiResponsePublicResumeDownloadResponse =
-  ApiResponse<PublicResumeDownloadResponse>;
 export type ApiResponseListForwardedApplicationResponse =
   ApiResponse<ForwardedApplicationResponse[]>;
 export type ApiResponseForwardedApplicationResponse =

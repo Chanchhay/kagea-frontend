@@ -45,10 +45,13 @@ function ThemedImage({
   height: number;
 }) {
   const width = Math.round(height * asset.ratio);
-  const shared = "w-auto object-contain object-left";
+  const shared = "absolute inset-0 size-full object-contain object-left";
 
   return (
-    <>
+    <span
+      className={cn("relative inline-block shrink-0", className)}
+      style={{ width, height }}
+    >
       <Image
         src={asset.light}
         alt={alt}
@@ -70,7 +73,7 @@ function ThemedImage({
         className={cn(shared, "hidden dark:block", className)}
         style={{ height, width: "auto" }}
       />
-    </>
+    </span>
   );
 }
 

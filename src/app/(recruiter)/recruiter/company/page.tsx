@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/api-error";
-import { FileText, Pencil, ShieldCheck } from "lucide-react";
+import { Building2, FileText, Pencil, ShieldCheck } from "lucide-react";
+import { resolveFileUrl } from "@/lib/file-url";
 import { PageIntro, PlainCard, StatusPill } from "@/components/shared/ApiCards";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { CompanyForm } from "@/components/recruiter/CompanyForm";
@@ -68,16 +70,32 @@ export default function RecruiterCompanyPage() {
         <div className="grid gap-6">
           <PlainCard>
             <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-3">
-                  <h2 className="text-lg font-semibold text-heading">
-                    {company.name}
-                  </h2>
-                  <StatusPill>{company.verificationStatus}</StatusPill>
+              <div className="flex min-w-0 items-start gap-4">
+                <span className="relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface text-muted-fg shadow-sm">
+                  {resolveFileUrl(company.logoUrl) ? (
+                    <Image
+                      src={resolveFileUrl(company.logoUrl)!}
+                      alt={`${company.name} logo`}
+                      fill
+                      unoptimized
+                      sizes="80px"
+                      className="object-contain p-2"
+                    />
+                  ) : (
+                    <Building2 aria-hidden="true" className="size-8" />
+                  )}
+                </span>
+                <div className="min-w-0 pt-1">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h2 className="text-xl font-semibold text-heading">
+                      {company.name}
+                    </h2>
+                    <StatusPill>{company.verificationStatus}</StatusPill>
+                  </div>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-body">
+                    {company.description || "No description yet."}
+                  </p>
                 </div>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-body">
-                  {company.description || "No description yet."}
-                </p>
               </div>
               <Button
                 type="button"

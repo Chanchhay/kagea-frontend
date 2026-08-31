@@ -6,13 +6,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import {
   ArrowLeft,
-  Bell,
   LogOut,
   Plus,
   Search,
   type LucideIcon,
 } from "lucide-react";
 import { BrandMark } from "@/components/shared/BrandLogo";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import {
   PageHeadingProvider,
@@ -73,13 +73,18 @@ function WorkspaceFrame({ role, title, links, children }: WorkspaceShellProps) {
   const pageTitle = heading?.title ?? activeLink?.label ?? title;
 
   return (
-    <div className="flex min-h-screen gap-3 bg-ws-canvas p-0 text-ws-fg lg:p-3">
+    /*
+     * The frame owns the viewport height and never scrolls itself: the rail
+     * stays exactly one screen tall however long a page gets, and the panel's
+     * <main> is the only scroller, which leaves the top bar pinned above it.
+     */
+    <div className="ws-shell flex h-dvh gap-3 overflow-hidden bg-ws-canvas p-0 text-ws-fg lg:p-3">
       <Rail links={links} pathname={pathname} />
 
-      <div className="ws-panel relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-none lg:ml-20 lg:rounded-[28px]">
+      <div className="ws-panel relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-none lg:rounded-[28px]">
         <TopBar title={pageTitle} role={role} />
 
-        <main className="ws-scroll flex-1 overflow-y-auto px-4 pb-28 pt-2 lg:px-7 lg:pb-8">
+        <main className="ws-scroll min-h-0 flex-1 overflow-y-auto px-4 pb-28 pt-2 lg:px-7 lg:pb-8">
           <div
             key={pathname}
             className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out"
@@ -100,7 +105,7 @@ function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
   return (
     <aside
       aria-label="Workspace navigation"
-      className="ws-panel fixed inset-y-3 left-3 z-40 hidden w-17 flex-col items-center rounded-[28px] py-5 shadow-[var(--shadow-card)] lg:flex"
+      className="ws-panel hidden h-full w-17 shrink-0 flex-col items-center rounded-[28px] py-5 lg:flex"
     >
       <Link
         href="/"
@@ -110,7 +115,12 @@ function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
         <BrandMark height={30} />
       </Link>
 
-      <nav className="mt-8 flex flex-col items-center gap-1.5">
+      {/*
+        * Scrolling is opt-in by viewport height: `overflow-y` also clips the
+        * horizontal axis, which would eat the hover labels, so the rail only
+        * becomes a scroller on screens too short to hold every icon.
+        */}
+      <nav className="ws-scroll mt-8 flex min-h-0 flex-col items-center gap-1.5 [@media(max-height:44rem)]:overflow-y-auto">
         {links.map((link) => {
           const active = isActivePath(pathname, link.href);
           return (
@@ -119,9 +129,9 @@ function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
               href={link.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "group relative flex size-11 items-center justify-center rounded-2xl transition-colors",
+                "group relative flex size-11 items-center justify-center rounded-[18px] transition-colors",
                 active
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-chip-solid text-chip-solid-fg"
                   : "text-ws-faint hover:bg-ws-card hover:text-ws-fg",
               )}
             >
@@ -142,18 +152,14 @@ function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
 
 function SignOutRailButton() {
   return (
-    <form
-      action="/logout"
-      method="post"
-      className="mt-auto border-t border-ws-line pt-3"
-    >
+    <form action="/logout" method="post" className="mt-auto pt-4">
       <button
         type="submit"
         aria-label="Sign out"
-        className="group relative flex size-11 items-center justify-center rounded-2xl bg-error/8 text-error transition-all duration-200 hover:bg-error hover:text-white focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-error/25"
+        className="group relative flex size-11 items-center justify-center rounded-[18px] text-ws-faint transition-colors hover:bg-ws-card hover:text-ws-fg"
       >
         <LogOut aria-hidden="true" className="size-5" />
-        <span className="pointer-events-none absolute left-full z-30 ml-3 hidden whitespace-nowrap rounded-lg bg-ws-card px-3 py-2 text-xs font-semibold text-ws-fg shadow-(--shadow-dropdown) group-hover:block">
+        <span className="pointer-events-none absolute left-full z-30 ml-3 hidden whitespace-nowrap rounded-lg bg-ws-card px-2.5 py-1.5 text-xs font-medium text-ws-fg shadow-(--shadow-dropdown) group-hover:block">
           Sign out
         </span>
       </button>
@@ -167,7 +173,7 @@ function TopBar({ title, role }: { title: string; role: Role }) {
   const actions = quickActions[role];
 
   return (
-    <header className="flex items-center gap-3 px-4 py-4 lg:px-7 lg:py-5">
+    <header className="sticky top-0 z-30 flex shrink-0 items-center gap-3 border-b border-ws-line/60 bg-ws-panel px-4 py-4 lg:px-7 lg:py-5">
       <Link
         href="/"
         aria-label="Back to site"
@@ -196,15 +202,15 @@ function TopBar({ title, role }: { title: string; role: Role }) {
 
         <ThemeToggle className="size-10 rounded-full bg-ws-card text-ws-muted hover:bg-ws-card-hover hover:text-ws-fg" />
 
-        <Link
-          href={actions.alerts}
-          aria-label={role === "recruiter" ? "Forwarded candidates" : "AI interviews"}
-          className="hidden size-10 items-center justify-center rounded-full bg-ws-card text-ws-muted transition-colors hover:bg-ws-card-hover hover:text-ws-fg sm:flex"
-        >
-          <Bell aria-hidden="true" className="size-4.5" />
-        </Link>
+        {/*
+          * Path prefixes this app can route to. The inbox is shared with the
+          * admin console, whose deep links would 404 here, so those render as
+          * plain text instead of links. Every seeker- and recruiter-targeted
+          * notification uses one of these two prefixes.
+          */}
+        <NotificationBell pathPrefixes={["/job-seeker", "/recruiter"]} />
 
-        <Avatar />
+        <Avatar role={role} />
       </div>
     </header>
   );
@@ -237,7 +243,7 @@ function QuickSearch({ href, placeholder }: { href: string; placeholder: string 
   );
 }
 
-function Avatar() {
+function Avatar({ role }: { role: Role }) {
   const { data: session } = useGetSessionQuery();
   const currentUser = useGetCurrentUserQuery(undefined, {
     skip: !session?.authenticated,
@@ -253,9 +259,9 @@ function Avatar() {
 
   return (
     <Link
-      href="/recruiter/dashboard"
-      aria-label={`Open ${name}'s recruiter dashboard`}
-      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/15 bg-cover bg-center text-xs font-bold text-primary ring-2 ring-ws-line"
+      href={`/${role}/profile`}
+      aria-label={`Open ${name}'s profile`}
+      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-chip-solid bg-cover bg-center text-xs font-bold text-chip-solid-fg ring-2 ring-ws-line"
       style={avatar ? { backgroundImage: `url("${avatar}")` } : undefined}
     >
       {avatar ? <span className="sr-only">Profile image</span> : getInitials(name)}
@@ -286,7 +292,7 @@ function MobileDock({ links, pathname }: { links: NavLink[]; pathname: string })
             className={cn(
               "flex size-11 shrink-0 items-center justify-center rounded-full transition-colors",
               active
-                ? "bg-primary text-primary-foreground"
+                ? "bg-chip-solid text-chip-solid-fg"
                 : "text-ws-faint hover:text-ws-fg",
             )}
           >

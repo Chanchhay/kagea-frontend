@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { getApiErrorMessage } from "@/lib/api-error";
 import { useApplyToJobMutation } from "@/services/jobSeekerApi";
 import { KeycloakLoginButton } from "@/components/auth/AuthActions";
 import { StartAiInterviewButton } from "./StartAiInterviewButton";
@@ -33,8 +34,19 @@ export function ApplyJobDialog({ jobId, jobTitle }: ApplyJobDialogProps) {
       }).unwrap();
       toast.success("Application submitted.");
       setOpen(false);
-    } catch {
-      toast.error("Unable to submit the application. Sign in as a job seeker and try again.");
+    } catch (error) {
+      /*
+       * Surface what the API said. The refusal is usually specific — an open
+       * application already exists, or a re-apply cooldown has not elapsed —
+       * and a blanket "sign in and try again" sends the candidate to fix
+       * something that was never wrong.
+       */
+      toast.error(
+        getApiErrorMessage(
+          error,
+          "Unable to submit the application. Sign in as a job seeker and try again.",
+        ),
+      );
     }
   };
 

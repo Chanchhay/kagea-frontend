@@ -3,3 +3,6 @@ export * from "./api/common";
 export * from "./api/job-seeker";
 export * from "./api/public";
 export * from "./api/recruiter";
+export * from "./api/notifications";
+export * from "./api/conversations";
+export * from "./api/finance";

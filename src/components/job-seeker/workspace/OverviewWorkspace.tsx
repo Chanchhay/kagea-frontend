@@ -13,6 +13,7 @@ import {
   MapPin,
   Mail,
   MessageSquare,
+  MoreHorizontal,
   Pencil,
   Phone,
   Plus,
@@ -24,13 +25,15 @@ import {
   FileCard,
   GhostChip,
   IconAction,
+  FolderTabs,
+  NotchedPanel,
   Panel,
-  PanelHeader,
-  PillTabs,
   PipelineTrack,
+  toneFill,
   type Tone,
 } from "@/components/workspace/primitives";
 import { useSetPageHeading } from "@/components/layout/PageHeader";
+import { FileGlyph } from "@/components/workspace/FileGlyph";
 import type {
   AiInterviewSessionResponse,
   JobApplicationResponse,
@@ -77,7 +80,11 @@ export function OverviewWorkspace({
       <PipelineTrack
         segments={[
           { label: "In review", count: stage.review.length, tone: "soft" },
-          { label: "Interviewing", count: stage.interview.length, tone: "solid" },
+          {
+            label: "Interviewing",
+            count: stage.interview.length,
+            tone: "solid",
+          },
           { label: "Offers", count: stage.hired.length, tone: "quiet" },
         ]}
         restLabel={`${stage.closed.length} closed`}
@@ -99,7 +106,11 @@ export function OverviewWorkspace({
           portfolios={portfolios}
         />
 
-        <FilesColumn resumes={resumes} portfolios={portfolios} />
+        <FilesColumn
+          resumes={resumes}
+          portfolios={portfolios}
+          applications={applications}
+        />
       </div>
     </div>
   );
@@ -147,13 +158,13 @@ function Hero({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Chip tone="solid" className="px-4 py-2 text-sm">
-          {hired} won
+        <Chip tone="solid" className="px-5 py-2.5 text-sm">
+          {hired} passed
         </Chip>
-        <Chip tone="alert" className="px-4 py-2 text-sm">
-          {closed} lost
+        <Chip tone="alert" className="px-5 py-2.5 text-sm">
+          {closed} failed
         </Chip>
-        <GhostChip className="px-3 py-2">
+        <GhostChip className="px-4 py-2.5">
           <Flag aria-hidden="true" className="size-3.5" />
           {latest ? formatDate(latest.appliedAt) : "No activity yet"}
         </GhostChip>
@@ -190,21 +201,35 @@ function DetailsNote({
   ];
 
   return (
-    <Panel tone="soft">
-      <PanelHeader
-        title="Details"
-        icon={<CircleUserRound aria-hidden="true" className="size-4" />}
-        action={
-          <IconAction label="Edit profile" href="/job-seeker/profile">
+    <NotchedPanel
+      fill="warm"
+      title="Details"
+      icon={<CircleUserRound aria-hidden="true" className="size-4" />}
+      actions={
+        <>
+          <IconAction
+            label="Edit profile"
+            href="/job-seeker/profile"
+            className="bg-ws-panel text-ws-muted opacity-100 ring-1 ring-ws-line hover:bg-ws-card hover:text-ws-fg"
+          >
             <Pencil aria-hidden="true" className="size-4" />
           </IconAction>
-        }
-      />
-
+          <IconAction
+            label="More profile actions"
+            className="bg-ws-panel text-ws-muted opacity-100 ring-1 ring-ws-line hover:bg-ws-card hover:text-ws-fg"
+          >
+            <MoreHorizontal aria-hidden="true" className="size-4" />
+          </IconAction>
+        </>
+      }
+    >
       <dl className="flex flex-col gap-3">
         {rows.map((row) => (
           <div key={row.label} className="flex items-start gap-2.5">
-            <row.icon aria-hidden="true" className="mt-0.5 size-4 shrink-0 opacity-60" />
+            <row.icon
+              aria-hidden="true"
+              className="mt-0.5 size-4 shrink-0 opacity-60"
+            />
             <div className="min-w-0">
               <dt className="text-[11px] font-medium uppercase tracking-wide opacity-60">
                 {row.label}
@@ -218,13 +243,13 @@ function DetailsNote({
       {profile.publicProfileSlug ? (
         <Link
           href={`/profile?slug=${profile.publicProfileSlug}`}
-          className="mt-5 flex items-center justify-center gap-2 rounded-full bg-ws-fg/10 py-2.5 text-xs font-semibold transition-colors hover:bg-ws-fg/20"
+          className="mt-5 flex items-center justify-center gap-2 rounded-full bg-current/10 py-3 text-xs font-semibold transition-colors hover:bg-current/20"
         >
           <Eye aria-hidden="true" className="size-3.5" />
           View public profile
         </Link>
       ) : null}
-    </Panel>
+    </NotchedPanel>
   );
 }
 
@@ -232,17 +257,28 @@ function ExpectationsNote({ profile }: { profile: JobSeekerProfileResponse }) {
   const currency = profile.expectedSalaryCurrency || "USD";
 
   return (
-    <Panel>
-      <PanelHeader
-        title="Expectations"
-        icon={<Wallet aria-hidden="true" className="size-4" />}
-        action={
-          <IconAction label="Edit expectations" href="/job-seeker/profile">
+    <NotchedPanel
+      fill="cool"
+      title="Expectations"
+      icon={<Wallet aria-hidden="true" className="size-4" />}
+      actions={
+        <>
+          <IconAction
+            label="Edit expectations"
+            href="/job-seeker/profile"
+            className="bg-ws-panel text-ws-muted opacity-100 ring-1 ring-ws-line hover:bg-ws-card hover:text-ws-fg"
+          >
             <Pencil aria-hidden="true" className="size-4" />
           </IconAction>
-        }
-      />
-
+          <IconAction
+            label="More salary actions"
+            className="bg-ws-panel text-ws-muted opacity-100 ring-1 ring-ws-line hover:bg-ws-card hover:text-ws-fg"
+          >
+            <MoreHorizontal aria-hidden="true" className="size-4" />
+          </IconAction>
+        </>
+      }
+    >
       <p className="text-[11px] font-medium uppercase tracking-wide opacity-60">
         Salary range
       </p>
@@ -264,7 +300,7 @@ function ExpectationsNote({ profile }: { profile: JobSeekerProfileResponse }) {
           {humanize(profile.salaryVisibility ?? "PRIVATE")}
         </p>
       </div>
-    </Panel>
+    </NotchedPanel>
   );
 }
 
@@ -294,8 +330,14 @@ function ActivityStream({
   const sections =
     tab === "Applications"
       ? [
-          { heading: "Open", rows: [...stage.review, ...stage.interview].map(applicationRow) },
-          { heading: "Closed", rows: [...stage.hired, ...stage.closed].map(applicationRow) },
+          {
+            heading: "Open",
+            rows: [...stage.review, ...stage.interview].map(applicationRow),
+          },
+          {
+            heading: "Closed",
+            rows: [...stage.hired, ...stage.closed].map(applicationRow),
+          },
         ]
       : tab === "Interviews"
         ? [
@@ -308,56 +350,63 @@ function ActivityStream({
         : [
             {
               heading: "In progress",
-              rows: [...applicationRows, ...interviewRows].filter((row) => !row.done),
+              rows: [...applicationRows, ...interviewRows].filter(
+                (row) => !row.done,
+              ),
             },
             {
               heading: "Done",
-              rows: [...applicationRows, ...interviewRows].filter((row) => row.done),
+              rows: [...applicationRows, ...interviewRows].filter(
+                (row) => row.done,
+              ),
             },
           ];
 
   return (
-    <Panel className="relative flex min-h-104 flex-col p-0">
-      {/* Tabs float on the card edge, the way a folder tab sits on a folder. */}
-      <div className="flex items-center gap-3 p-3">
-        <PillTabs tabs={streamTabs} value={tab} onChange={setTab} />
-        <span className="ml-auto hidden shrink-0 pr-2 text-xs text-ws-faint sm:block">
-          {portfolios.length} portfolios published
-        </span>
-      </div>
+    <div className="flex min-h-104 flex-col">
+      {/* The tabs are cut from the card below them, not floated above it. */}
+      <FolderTabs
+        tabs={streamTabs}
+        value={tab}
+        onChange={setTab}
+        aside={`${portfolios.length} portfolios published`}
+      />
 
-      <div className="ws-scroll flex-1 overflow-y-auto px-3 pb-24">
-        {sections.map((section) =>
-          section.rows.length ? (
-            <div key={section.heading} className="mb-2">
-              <h3 className="px-2 py-3 text-lg font-medium text-ws-fg">
-                {section.heading}
-              </h3>
-              <ul className="flex flex-col gap-2">
-                {section.rows.map((row) => (
-                  <StreamRow key={row.key} row={row} />
-                ))}
-              </ul>
-            </div>
-          ) : null,
-        )}
+      <Panel className="relative flex flex-1 flex-col rounded-tl-[28px] p-0 pt-3">
+        <div className="ws-scroll flex-1 overflow-y-auto px-3 pb-24">
+          {sections.map((section) =>
+            section.rows.length ? (
+              <div key={section.heading} className="mb-2">
+                <h3 className="px-2 py-3 text-lg font-medium text-ws-fg">
+                  {section.heading}
+                </h3>
+                <ul className="flex flex-col gap-2">
+                  {section.rows.map((row) => (
+                    <StreamRow key={row.key} row={row} />
+                  ))}
+                </ul>
+              </div>
+            ) : null,
+          )}
 
-        {sections.every((section) => !section.rows.length) ? (
-          <p className="px-2 py-10 text-center text-sm text-ws-faint">
-            Nothing here yet. Apply to a role and it will show up in this stream.
-          </p>
-        ) : null}
-      </div>
+          {sections.every((section) => !section.rows.length) ? (
+            <p className="px-2 py-10 text-center text-sm text-ws-faint">
+              Nothing here yet. Apply to a role and it will show up in this
+              stream.
+            </p>
+          ) : null}
+        </div>
 
-      {/* The one call to action, floating clear of the list. */}
-      <Link
-        href="/job-seeker/jobs"
-        className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ws-fg px-5 py-3 text-sm font-semibold text-ws-panel shadow-(--shadow-dropdown) transition-transform hover:scale-105"
-      >
-        <Plus aria-hidden="true" className="size-4" />
-        Find a new role
-      </Link>
-    </Panel>
+        {/* The one call to action, floating clear of the list. */}
+        <Link
+          href="/job-seeker/jobs"
+          className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ws-fg px-5 py-3 text-sm font-semibold text-ws-panel shadow-(--shadow-dropdown) transition-transform hover:scale-105"
+        >
+          <Plus aria-hidden="true" className="size-4" />
+          Find a new role
+        </Link>
+      </Panel>
+    </div>
   );
 }
 
@@ -378,15 +427,12 @@ function StreamRow({ row }: { row: Row }) {
     <li>
       <Link
         href={row.href}
-        className="flex items-center gap-3 rounded-[18px] bg-ws-card-hover px-3 py-3 transition-colors hover:bg-ws-panel"
+        className="flex items-center gap-3 rounded-[22px] bg-ws-card-hover px-4 py-3.5 transition-colors hover:bg-ws-panel"
       >
         <span
           className={cn(
-            "flex size-9 shrink-0 items-center justify-center rounded-full",
-            row.iconTone === "solid" && "bg-chip-solid text-chip-solid-fg",
-            row.iconTone === "soft" && "bg-chip-soft text-chip-soft-fg",
-            row.iconTone === "quiet" && "bg-chip-quiet text-chip-quiet-fg",
-            row.iconTone === "alert" && "bg-chip-alert text-chip-alert-fg",
+            "flex size-10 shrink-0 items-center justify-center rounded-full",
+            toneFill[row.iconTone],
           )}
         >
           {row.done ? (
@@ -397,7 +443,9 @@ function StreamRow({ row }: { row: Row }) {
         </span>
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-ws-fg">{row.title}</p>
+          <p className="truncate text-sm font-semibold text-ws-fg">
+            {row.title}
+          </p>
           <p className="truncate text-xs text-ws-faint">{row.meta}</p>
         </div>
 
@@ -412,7 +460,13 @@ function StreamRow({ row }: { row: Row }) {
 function applicationRow(application: JobApplicationResponse): Row {
   const stage = stageOf(application.status);
   const tone: Tone =
-    stage === "hired" ? "solid" : stage === "closed" ? "alert" : stage === "interview" ? "solid" : "soft";
+    stage === "hired"
+      ? "solid"
+      : stage === "closed"
+        ? "alert"
+        : stage === "interview"
+          ? "soft"
+          : "soft";
 
   return {
     key: `application-${application.id}`,
@@ -430,7 +484,11 @@ function applicationRow(application: JobApplicationResponse): Row {
 function interviewRow(session: AiInterviewSessionResponse): Row {
   const done = session.status === "COMPLETED";
   const tone: Tone =
-    session.result === "PASSED" ? "solid" : session.result === "FAILED" ? "alert" : "soft";
+    session.result === "PASSED"
+      ? "solid"
+      : session.result === "FAILED"
+        ? "alert"
+        : "soft";
 
   return {
     key: `interview-${session.id}`,
@@ -452,17 +510,25 @@ function interviewRow(session: AiInterviewSessionResponse): Row {
 function FilesColumn({
   resumes,
   portfolios,
+  applications,
 }: {
   resumes: ResumeResponse[];
   portfolios: PortfolioResponse[];
+  applications: JobApplicationResponse[];
 }) {
+  /* A file a recruiter has already seen is the one worth keeping sharp, so the
+     resumes that went out with an application say so on the card. */
+  const forwarded = new Set(
+    applications.map((application) => application.resumeTitle).filter(Boolean),
+  );
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between px-1">
         <h2 className="text-lg font-medium text-ws-fg">Files</h2>
         <Link
           href="/job-seeker/resumes/new"
-          className="flex size-8 items-center justify-center rounded-full bg-ws-card text-ws-muted transition-colors hover:bg-ws-card-hover hover:text-ws-fg"
+          className="flex size-9 items-center justify-center rounded-full bg-ws-card text-ws-muted transition-colors hover:bg-ws-card-hover hover:text-ws-fg"
           aria-label="New resume"
         >
           <Plus aria-hidden="true" className="size-4" />
@@ -475,8 +541,10 @@ function FilesColumn({
           href={`/job-seeker/resumes/${resume.id}`}
           eyebrow={formatDate(resume.updatedAt)}
           title={resume.title}
-          badge={resume.isDefault ? "Default" : undefined}
+          meta={resume.isDefault ? "Default resume" : undefined}
+          badge={forwarded.has(resume.title) ? "Forwarded" : undefined}
           icon={<FileText aria-hidden="true" className="size-5" />}
+          preview={<FileGlyph kind="resume" />}
         />
       ))}
 
@@ -486,15 +554,21 @@ function FilesColumn({
           href={`/job-seeker/portfolios/${portfolio.id}`}
           eyebrow={`${portfolio.projects?.length ?? 0} projects`}
           title={portfolio.title}
+          meta="Portfolio"
           badge={portfolio.visibility === "PUBLIC" ? "Public" : undefined}
+          badgeTone="soft"
           icon={<FolderKanban aria-hidden="true" className="size-5" />}
+          preview={<FileGlyph kind="portfolio" />}
         />
       ))}
 
       {!resumes.length && !portfolios.length ? (
         <Panel className="text-sm text-ws-faint">
           No resumes or portfolios yet.{" "}
-          <Link href="/job-seeker/resumes/new" className="font-semibold text-ws-fg underline">
+          <Link
+            href="/job-seeker/resumes/new"
+            className="font-semibold text-ws-fg underline"
+          >
             Create your first
           </Link>
         </Panel>

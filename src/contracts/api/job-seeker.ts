@@ -1,5 +1,6 @@
 import type {
   ApiResponse,
+  PagedModel,
   InterviewResult,
   InterviewStatus,
   PublicationVisibility,
@@ -14,6 +15,8 @@ export type ResumeCreateRequest = {
 
 export type ResumeUpdateRequest = Partial<ResumeCreateRequest>;
 
+export type ResumeSourceType = "PLATFORM_TEMPLATE" | "USER_UPLOAD";
+
 export type ResumeResponse = {
   id: number;
   title: string;
@@ -24,7 +27,26 @@ export type ResumeResponse = {
   publishedAt: string;
   createdAt: string;
   updatedAt: string;
+  /** An uploaded resume is stored as supplied and cannot be regenerated. */
+  sourceType: ResumeSourceType;
+  generatedAt: string | null;
+  fileVersion: number;
+  hasFile: boolean;
 };
+
+/** A layout the builder offers. `templateKey` is what goes in resumeData.templateId. */
+export type PublicResumeTemplateResponse = {
+  id: number;
+  templateKey: string | null;
+  name: string;
+  description: string | null;
+  previewImageUrl: string | null;
+  templateSchema: Record<string, unknown>;
+};
+
+export type ApiResponseListResumeTemplate = ApiResponse<
+  PublicResumeTemplateResponse[]
+>;
 
 export type PortfolioProjectRequest = {
   title: string;
@@ -105,6 +127,19 @@ export type JobApplicationStatus =
   | "HIRED"
   | "REJECTED"
   | "WITHDRAWN";
+
+/**
+ * Whether an application is over and no longer occupies the candidate's single
+ * live slot for that job.
+ *
+ * <p>Mirrors `ApplicationStatus.isClosed()` on the backend, which is what
+ * actually decides whether a new application is accepted. A closed application
+ * is history: it should be shown as a past attempt rather than treated as the
+ * one in progress.
+ */
+export function isClosedApplication(status: JobApplicationStatus) {
+  return status === "REJECTED" || status === "WITHDRAWN";
+}
 
 export type JobApplicationResponse = {
   id: number;
@@ -239,3 +274,34 @@ export type ApiResponseAiInterviewResultResponse =
   ApiResponse<AiInterviewResultResponse>;
 export type ApiResponseJobSeekerProfileResponse =
   ApiResponse<JobSeekerProfileResponse>;
+
+/**
+ * One saved job. A save outlives the post it points at, so `status` and
+ * `available` describe a job that may since have closed or expired; the row
+ * stays on the page, greyed out, rather than disappearing.
+ */
+export type FavoriteJobResponse = {
+  id: number;
+  savedAt: string;
+  jobId: number;
+  title: string;
+  /** Null when the company is masked; see PublicJobResponse. */
+  companyId: number | null;
+  companyName: string;
+  location: string | null;
+  jobType: string | null;
+  workMode: string | null;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  experienceLevel: string | null;
+  status: string;
+  publishedAt: string | null;
+  expiredAt: string | null;
+  available: boolean;
+};
+
+export type ApiResponseFavoriteJobResponse = ApiResponse<FavoriteJobResponse>;
+
+export type ApiResponsePageFavoriteJobResponse = ApiResponse<
+  PagedModel<FavoriteJobResponse>
+>;

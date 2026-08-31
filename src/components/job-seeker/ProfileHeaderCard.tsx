@@ -71,13 +71,14 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
   };
 
   return (
-    <Card className="overflow-hidden border border-border shadow-sm">
+    <Card className="overflow-hidden rounded-3xl border border-border shadow-sm">
       <CardContent className="p-0">
-        <div className="bg-gradient-to-br from-brand/15 via-brand/5 to-transparent p-6 sm:p-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+        <div className="relative bg-linear-to-r from-brand/15 via-brand/5 to-transparent p-6 sm:p-8">
+          <span aria-hidden="true" className="absolute -right-16 -top-20 size-64 rounded-full bg-brand/5" />
+          <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
             <div className="relative shrink-0">
               <div
-                className="flex size-20 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-xl font-bold text-brand ring-4 ring-white/50"
+                className="flex size-24 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-2xl font-bold text-brand shadow-md ring-4 ring-white/70 dark:ring-slate-800"
                 style={
                   photoUrl
                     ? { backgroundImage: `url("${resolveFileUrl(photoUrl)}")` }
@@ -116,10 +117,10 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
               </div>
             </div>
 
-            <div className="w-full rounded-2xl bg-surface/80 p-4 sm:w-48">
+            <div className="w-full rounded-2xl border border-white/70 bg-surface/85 p-4 shadow-sm backdrop-blur sm:w-56 dark:border-border">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-heading">Profile strength</span>
-                <span className="text-brand">{completion}%</span>
+                <span className="text-base font-bold text-brand">{completion}%</span>
               </div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-muted">
                 <div

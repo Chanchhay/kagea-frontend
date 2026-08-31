@@ -75,6 +75,10 @@ export default function HeroCompaniesSection() {
     const byCompany = new Map<number, Omit<CompanyCard, 'featured' | 'bg' | 'text' | 'logoText'>>();
 
     for (const job of jobsQuery.data?.content ?? []) {
+      // Confidential postings mask their employer, so they carry no companyId
+      // and can't be grouped into (or linked from) a company card.
+      if (job.companyId === null) continue;
+
       const company = byCompany.get(job.companyId);
       if (company) {
         company.jobCount += 1;
