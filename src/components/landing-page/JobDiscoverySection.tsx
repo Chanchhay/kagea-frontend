@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import {
   motion,
   useInView,
@@ -10,28 +11,65 @@ import {
   useTransform,
 } from 'framer-motion';
 import { PartyPopper } from 'lucide-react';
-import { Globe3D, type GlobeMarker } from '@/components/ui/3d-globe';
 import { NoiseBackground } from '@/components/ui/noise-background';
 import ParticleText from './ParticleText';
 import StrokeText from './StrokeText';
 import { jobCategoryRows } from './data';
 import { CheckIcon, SearchIcon, UploadIcon, UserPlusIcon } from './icons';
 
-const globeMarkers: GlobeMarker[] = [
-  { lat: 40.7128, lng: -74.006, src: 'https://assets.aceternity.com/avatars/1.webp', label: 'New York' },
-  { lat: 51.5074, lng: -0.1278, src: 'https://assets.aceternity.com/avatars/2.webp', label: 'London' },
-  { lat: 35.6762, lng: 139.6503, src: 'https://assets.aceternity.com/avatars/3.webp', label: 'Tokyo' },
-  { lat: -33.8688, lng: 151.2093, src: 'https://assets.aceternity.com/avatars/4.webp', label: 'Sydney' },
-  { lat: 48.8566, lng: 2.3522, src: 'https://assets.aceternity.com/avatars/5.webp', label: 'Paris' },
-  { lat: 28.6139, lng: 77.209, src: 'https://assets.aceternity.com/avatars/6.webp', label: 'New Delhi' },
-  { lat: 55.7558, lng: 37.6173, src: 'https://assets.aceternity.com/avatars/7.webp', label: 'Moscow' },
-  { lat: -22.9068, lng: -43.1729, src: 'https://assets.aceternity.com/avatars/8.webp', label: 'Rio de Janeiro' },
-  { lat: 31.2304, lng: 121.4737, src: 'https://assets.aceternity.com/avatars/9.webp', label: 'Shanghai' },
-  { lat: 25.2048, lng: 55.2708, src: 'https://assets.aceternity.com/avatars/10.webp', label: 'Dubai' },
-  { lat: -34.6037, lng: -58.3816, src: 'https://assets.aceternity.com/avatars/11.webp', label: 'Buenos Aires' },
-  { lat: 1.3521, lng: 103.8198, src: 'https://assets.aceternity.com/avatars/12.webp', label: 'Singapore' },
-  { lat: 37.5665, lng: 126.978, src: 'https://assets.aceternity.com/avatars/13.webp', label: 'Seoul' },
-];
+const cambodiaJobHubs = [
+  { name: 'Battambang', left: '17%', top: '39%', featured: false },
+  { name: 'Siem Reap', left: '39%', top: '29%', featured: true },
+  { name: 'Kampong Cham', left: '65%', top: '54%', featured: false },
+  { name: 'Phnom Penh', left: '52%', top: '64%', featured: true },
+  { name: 'Sihanoukville', left: '30%', top: '78%', featured: true },
+] as const;
+
+function CambodiaJobsMap({ reducedMotion }: { reducedMotion: boolean }) {
+  return (
+    <motion.div
+      initial={reducedMotion ? false : { opacity: 0, y: 24, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.35 }}
+      transition={{ duration: reducedMotion ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="relative mx-auto aspect-square w-full max-w-[560px] overflow-hidden rounded-[2rem] border border-emerald-300/80 bg-[linear-gradient(145deg,#ecfdf3_0%,#dff7e8_55%,#fff8dc_100%)] shadow-[0_30px_70px_-34px_rgba(0,138,30,.42)] dark:border-white/10 dark:bg-[radial-gradient(circle_at_50%_48%,rgba(16,185,129,.15),rgba(20,25,24,.94)_62%)] dark:shadow-[0_28px_70px_-35px_rgba(0,0,0,.8)]"
+    >
+      <div className="absolute -right-16 -top-16 size-56 rounded-full bg-[#F3BE00]/20 blur-3xl dark:bg-[#F3BE00]/10" />
+      <div className="absolute -bottom-16 -left-16 size-64 rounded-full bg-emerald-500/25 blur-3xl dark:bg-emerald-500/10" />
+      <Image
+        src="/landing-assets/cambodia-map.png"
+        alt="Map of Cambodia showing regional job hubs"
+        fill
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        className="object-contain p-3 opacity-95 contrast-[1.12] drop-shadow-[0_18px_28px_rgba(0,100,25,.2)] sm:p-5 dark:opacity-35 dark:contrast-100 dark:drop-shadow-[0_16px_24px_rgba(0,0,0,.45)]"
+      />
+
+      {cambodiaJobHubs.map((hub, index) => (
+        <motion.div
+          key={hub.name}
+          initial={reducedMotion ? false : { opacity: 0, scale: 0.6 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: reducedMotion ? 0 : 0.3 + index * 0.1, type: 'spring', stiffness: 240, damping: 18 }}
+          className={`absolute z-10 -translate-x-1/2 -translate-y-1/2 ${hub.featured ? '' : 'hidden sm:block'}`}
+          style={{ left: hub.left, top: hub.top }}
+        >
+          <span className="relative flex size-4 items-center justify-center rounded-full bg-[#008A1E] ring-4 ring-emerald-50 shadow-[0_0_0_5px_rgba(0,138,30,.14),0_6px_16px_rgba(0,138,30,.32)] dark:ring-[#17201C]">
+            {!reducedMotion && <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-55" />}
+            <span className="relative size-1.5 rounded-full bg-white" />
+          </span>
+          <span className="absolute left-1/2 top-6 -translate-x-1/2 whitespace-nowrap rounded-full border border-emerald-200 bg-emerald-50/95 px-2.5 py-1 text-[10px] font-semibold text-[#075E22] shadow-[0_6px_16px_rgba(0,100,25,.15)] backdrop-blur dark:border-white/10 dark:bg-[#202621]/95 dark:text-emerald-100 sm:text-xs">
+            {hub.name}
+          </span>
+        </motion.div>
+      ))}
+
+      <div className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#008A1E] bg-[#008A1E] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_24px_rgba(0,138,30,.28)] backdrop-blur-md dark:border-white/10 dark:bg-[#202621]/90 dark:text-emerald-300 sm:bottom-6 sm:text-sm">
+        Opportunities across Cambodia
+      </div>
+    </motion.div>
+  );
+}
 
 const workSteps = [
   {
@@ -137,9 +175,9 @@ function TimelineStep({
         damping: 20,
         delay: reducedMotion ? 0 : 0.14,
       }}
-      className={`flex min-h-[84px] items-center gap-4 rounded-2xl border bg-white/80 p-4 shadow-[0_14px_35px_rgba(15,23,42,.08)] backdrop-blur-xl transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-5 dark:bg-[#23272D]/95 dark:shadow-[0_18px_38px_rgba(0,0,0,.3)] ${isLast ? 'border-[#F3BE00]/70 dark:border-[#F3BE00]/45' : 'border-white/80 ring-1 ring-slate-200/80 dark:border-[#3E444B] dark:ring-transparent'}`}
+      className={`flex min-h-[100px] items-center gap-5 rounded-2xl border bg-white/80 p-5 shadow-[0_14px_35px_rgba(15,23,42,.08)] backdrop-blur-xl transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-6 dark:bg-[#23272D]/95 dark:shadow-[0_18px_38px_rgba(0,0,0,.3)] ${isLast ? 'border-[#F3BE00]/70 dark:border-[#F3BE00]/45' : 'border-white/80 ring-1 ring-slate-200/80 dark:border-[#3E444B] dark:ring-transparent'}`}
     >
-      <div className={`flex size-12 shrink-0 items-center justify-center rounded-xl font-mono text-xs font-bold ${isLast ? 'bg-amber-50 text-[#D99F00] dark:bg-amber-400/10 dark:text-amber-300' : 'bg-emerald-50 text-[#008A1E] dark:bg-emerald-400/10 dark:text-emerald-300'}`}>
+      <div className={`flex size-14 shrink-0 items-center justify-center rounded-xl font-mono text-xs font-bold ${isLast ? 'bg-amber-50 text-[#D99F00] dark:bg-amber-400/10 dark:text-amber-300' : 'bg-emerald-50 text-[#008A1E] dark:bg-emerald-400/10 dark:text-emerald-300'}`}>
         {String(index + 1).padStart(2, '0')}
       </div>
       <div className="min-w-0 flex-1">
@@ -189,17 +227,31 @@ function TimelineStep({
 export default function JobDiscoverySection() {
   const [jobCategoriesRow1, jobCategoriesRow2, jobCategoriesRow3] = jobCategoryRows;
   const timelineRef = useRef<HTMLDivElement>(null);
+  const [timelineHeight, setTimelineHeight] = useState(0);
   const prefersReducedMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: timelineRef,
     offset: ['start 72%', 'end 62%'],
   });
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 70,
-    damping: 26,
-    mass: 0.4,
+    stiffness: 105,
+    damping: 30,
+    mass: 0.35,
   });
-  const glowTop = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
+  const glowY = useTransform(smoothProgress, [0, 1], [0, timelineHeight]);
+
+  useLayoutEffect(() => {
+    const timeline = timelineRef.current;
+    if (!timeline) return;
+
+    const updateHeight = () => setTimelineHeight(timeline.getBoundingClientRect().height);
+    updateHeight();
+
+    const resizeObserver = new ResizeObserver(updateHeight);
+    resizeObserver.observe(timeline);
+
+    return () => resizeObserver.disconnect();
+  }, []);
 
   return (
     <>
@@ -254,9 +306,12 @@ export default function JobDiscoverySection() {
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div data-reveal className="mx-auto mb-14 max-w-3xl sm:mb-20">
             <StrokeText
-              text="How Find work"
+              text="How to Find Work"
               strokeColor="#008A1E"
-              fillColor="#0f172a"
+              fillColor="#008A1E"
+              accentText="Work"
+              accentColor="#F3BE00"
+              fadeStrokeOnFill
               strokeWidth={1.6}
               drawDuration={1.35}
               fillDelay={0.12}
@@ -272,19 +327,21 @@ export default function JobDiscoverySection() {
           </div>
 
           <div ref={timelineRef} className="relative">
-            <div className="absolute bottom-6 left-[21px] top-6 w-px bg-slate-200 lg:left-1/2 dark:bg-white/10" />
+            <div className="absolute bottom-6 left-[21px] top-6 w-[2px] bg-slate-200 lg:left-1/2 lg:-translate-x-1/2 dark:bg-white/10" />
             <motion.div
               aria-hidden="true"
-              className="absolute bottom-6 left-[21px] top-6 w-px origin-top bg-linear-to-b from-[#008A1E] via-emerald-400 to-[#F3BE00] shadow-[0_0_10px_rgba(0,146,26,.45)] lg:left-1/2"
+              className="absolute bottom-6 left-[21px] top-6 w-[2px] origin-top bg-linear-to-b from-[#008A1E] via-emerald-400 to-[#F3BE00] shadow-[0_0_10px_rgba(0,146,26,.45)] lg:left-1/2 lg:-translate-x-1/2"
               style={{ scaleY: prefersReducedMotion ? 1 : smoothProgress }}
             />
 
             {!prefersReducedMotion && (
               <motion.div
                 aria-hidden="true"
-                className="pointer-events-none absolute left-[16px] z-20 size-[11px] -translate-y-1/2 rounded-full bg-emerald-300 shadow-[0_0_0_4px_rgba(0,146,26,.12),0_0_18px_7px_rgba(16,185,129,.5)] lg:left-1/2 lg:-translate-x-1/2"
-                style={{ top: glowTop }}
-              />
+                className="pointer-events-none absolute inset-x-0 top-0 z-20 will-change-transform"
+                style={{ y: glowY }}
+              >
+                <span className="absolute left-[16px] block size-[11px] -translate-y-1/2 rounded-full bg-emerald-300 shadow-[0_0_0_4px_rgba(0,146,26,.12),0_0_18px_7px_rgba(16,185,129,.5)] lg:left-1/2 lg:-translate-x-1/2" />
+              </motion.div>
             )}
 
             <div className="space-y-12 sm:space-y-16">
@@ -304,39 +361,28 @@ export default function JobDiscoverySection() {
       {/* COUNTRIES FOR JOB SEEKERS */}
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 sm:py-10">
         <div className="mb-6 text-center lg:text-left">
-          <span className="text-2xl font-extrabold text-[#008A1E]">Countries for Job Seekers</span>
+          <span className="text-2xl font-extrabold text-[#008A1E]">Built for Cambodia&apos;s Talent and Employers</span>
         </div>
 
         <div className="grid items-center gap-12 lg:grid-cols-2">
-          <div className="flex flex-col items-start space-y-6">
-            <h2 data-reveal className="text-3xl font-extrabold leading-tight text-[#008A1E] sm:text-4xl lg:text-5xl">
-              So Many People Are <span className="text-[#F3BE00]">Engaged</span> All Over The World
+          <div className="flex flex-col items-start space-y-7">
+            <h2 data-reveal className="max-w-xl text-[clamp(2.5rem,5vw,4rem)] font-bold leading-[1.06] tracking-[-0.035em] text-[#008A1E]">
+              Connecting Talent With <span className="text-[#F3BE00]">Better Opportunities</span>
             </h2>
 
-            <p data-reveal className="max-w-lg text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 sm:text-sm">
-              A Land Of Opportunity With A Diverse Job Market And A Wide Range Of Industries Offering
-              Countless Career Paths.
+            <p data-reveal className="max-w-xl text-base font-normal leading-7 tracking-normal text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-8">
+              Discover job opportunities, build your professional profile, and practice interviews
+              with AI—all in one platform.
             </p>
 
-            <button data-reveal className="mt-4 rounded-xl bg-[#F3BE00] px-8 py-3.5 text-xs font-extrabold text-[#008A1E] shadow-sm transition hover:bg-[#e2af00] active:scale-[0.98]">
-              Post A Job
+            <button data-reveal className="mt-2 inline-flex min-h-12 items-center justify-center rounded-xl bg-[#F3BE00] px-8 py-3 text-sm font-semibold text-[#006F18] shadow-[0_8px_20px_-10px_rgba(243,190,0,.75)] transition-[transform,background-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[#E8B500] hover:shadow-[0_12px_24px_-10px_rgba(243,190,0,.85)] active:translate-y-0 active:scale-[0.98]">
+              Explore Jobs
             </button>
           </div>
 
-          {/* ---------- Global community ---------- */}
-          <div data-reveal data-parallax="20" className="relative w-full">
-            <Globe3D
-              markers={globeMarkers}
-              className="h-[360px] sm:h-[440px] lg:h-[520px]"
-              config={{
-                atmosphereColor: '#4da6ff',
-                atmosphereIntensity: 20,
-                ambientIntensity: 2,
-                pointLightIntensity: 3.5,
-                bumpScale: 5,
-                autoRotateSpeed: 0.3,
-              }}
-            />
+          {/* ---------- Cambodia job hubs ---------- */}
+          <div className="relative w-full">
+            <CambodiaJobsMap reducedMotion={Boolean(prefersReducedMotion)} />
           </div>
         </div>
       </section>
