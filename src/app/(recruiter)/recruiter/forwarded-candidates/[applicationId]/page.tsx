@@ -74,7 +74,7 @@ export default function ForwardedCandidateDetailPage() {
             <span className="text-xs font-semibold uppercase tracking-wider text-brand">
               Forwarded Candidate Review
             </span>
-            <h1 className="text-3xl font-bold tracking-tight text-heading">
+            <h1 className="text-3xl font-semibold tracking-tight text-heading">
               {candidate.headline || "Candidate Profile"}
             </h1>
           </div>
@@ -186,11 +186,11 @@ export default function ForwardedCandidateDetailPage() {
               </CardTitle>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-500">Overall Score:</span>
-                <span className="rounded-lg bg-emerald-100 px-3 py-1 text-sm font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                <span className="rounded-lg bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                   {feedback.overallScore} / 100
                 </span>
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase ${
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${
                     feedback.result === "PASSED"
                       ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300"
                       : feedback.result === "FAILED"
@@ -280,7 +280,7 @@ export default function ForwardedCandidateDetailPage() {
                           Q{idx + 1}. {q.questionText}
                         </span>
                         {q.answer?.score !== undefined && (
-                          <span className="shrink-0 rounded bg-brand-tint px-2 py-0.5 text-xs font-bold text-brand">
+                          <span className="shrink-0 rounded bg-brand-tint px-2 py-0.5 text-xs font-semibold text-brand">
                             {q.answer.score} / {q.maxScore} pts
                           </span>
                         )}
@@ -370,7 +370,7 @@ function ScoreCard({ label, score }: { label: string; score?: number }) {
   return (
     <div className="rounded-xl border border-border/80 bg-surface-muted/30 p-3.5 text-center">
       <span className="text-xs font-medium text-slate-500">{label}</span>
-      <p className="mt-1 text-lg font-bold text-heading">{displayScore}</p>
+      <p className="mt-1 text-lg font-semibold text-heading">{displayScore}</p>
     </div>
   );
 }

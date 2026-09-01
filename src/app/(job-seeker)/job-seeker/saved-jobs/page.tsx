@@ -125,7 +125,7 @@ function SavedJobRow({ job }: { job: FavoriteJobResponse }) {
             <h2 className="truncate font-semibold text-ws-fg">{job.title}</h2>
           )}
           {job.available ? null : (
-            <span className="rounded-full bg-chip-alert px-2.5 py-1 text-[11px] font-semibold text-chip-alert-fg">
+            <span className="rounded-full bg-chip-alert px-2.5 py-1 text-[18px] font-semibold text-chip-alert-fg">
               No longer accepting applications
             </span>
           )}

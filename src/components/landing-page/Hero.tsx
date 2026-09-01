@@ -55,7 +55,7 @@ export default function Hero() {
 
           <div className="relative z-20 flex min-h-[32rem] flex-col items-center justify-center text-center">
             <div className="max-w-4xl">
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-balance sm:text-5xl md:text-6xl lg:text-7xl">
+          <h1 className="mb-4 text-4xl font-bold tracking-tight text-balance sm:text-5xl md:text-6xl lg:text-7xl">
             Automate repetitive.
             <br />
             <span className="font-serif font-normal italic text-amber-500">

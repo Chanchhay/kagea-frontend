@@ -5,37 +5,6 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Sparkles, Briefcase, Building2, Users, Award, Code2, GraduationCap, Layers } from "lucide-react";
 
-const STATS = [
-  {
-    icon: Briefcase,
-    value: "120K+",
-    label: "Live Jobs",
-    color: "text-[#008A1E]",
-    bg: "bg-[#008A1E]/10",
-  },
-  {
-    icon: Building2,
-    value: "850K+",
-    label: "Companies",
-    color: "text-[#008A1E]",
-    bg: "bg-[#008A1E]/10",
-  },
-  {
-    icon: Users,
-    value: "900K+",
-    label: "Candidates",
-    color: "text-[#008A1E]",
-    bg: "bg-[#008A1E]/10",
-  },
-  {
-    icon: Award,
-    value: "100%",
-    label: "Satisfaction",
-    color: "text-[#E8C222]",
-    bg: "bg-[#E8C222]/15",
-  },
-];
-
 const SKILLS = ["Frontend", "Backend", "UI/UX", "Full-Stack Web"];
 
 export default function WhoWeAreSection() {
@@ -67,41 +36,13 @@ export default function WhoWeAreSection() {
         >
           {/* Section Header */}
           <motion.div variants={fadeInUp} className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#1fa628]">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#1fa628]">
               <Sparkles className="h-4 w-4 text-[#F3BE00]" />
               About Our Team
             </span>
-            <h2 className="text-3xl font-black text-slate-900 dark:text-white sm:text-4xl lg:text-5xl tracking-tight">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl lg:text-5xl tracking-tight">
               Who are we<span className="text-[#F3BE00]">?</span>
             </h2>
-          </motion.div>
-
-          {/* Stats Grid Bar */}
-          <motion.div
-            variants={staggerContainer}
-            className="grid flex-1 grid-cols-2 gap-3.5 sm:grid-cols-4 lg:max-w-2xl"
-          >
-            {STATS.map((stat, idx) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div
-                  key={idx}
-                  variants={fadeInUp}
-                  whileHover={{ y: -4, scale: 1.02 }}
-                  className="group flex flex-col items-center justify-center rounded-2xl border border-slate-200/90 bg-white/80 p-4 text-center backdrop-blur-md transition-all duration-300 hover:border-[#1fa628]/50 hover:shadow-lg dark:border-slate-800/90 dark:bg-slate-900/80 dark:shadow-[0_4px_20px_rgba(0,0,0,0.35)]"
-                >
-                  <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl ${stat.bg} transition-transform group-hover:scale-110`}>
-                    <Icon className={`h-4 w-4 ${stat.color}`} />
-                  </div>
-                  <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-                    {stat.value}
-                  </p>
-                  <p className="mt-0.5 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {stat.label}
-                  </p>
-                </motion.div>
-              );
-            })}
           </motion.div>
         </motion.div>
 
@@ -132,7 +73,7 @@ export default function WhoWeAreSection() {
                   </div>
                   <div>
                     <p className="text-xs font-medium text-slate-300">Project Authors</p>
-                    <p className="text-sm font-black text-white">ISTAD 2nd Year Students</p>
+                    <p className="text-sm font-bold text-white">ISTAD 2nd Year Students</p>
                   </div>
                 </div>
               </div>
@@ -147,12 +88,12 @@ export default function WhoWeAreSection() {
             className="space-y-6 lg:col-span-6"
           >
             <div className="space-y-4 rounded-3xl border border-slate-200/90 bg-white/80 p-6 backdrop-blur-md sm:p-8 dark:border-slate-800/90 dark:bg-slate-900/80 shadow-md">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/30 bg-[#1fa628]/10 px-3 py-1 text-xs font-bold text-[#1fa628]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/30 bg-[#1fa628]/10 px-3 py-1 text-xs font-semibold text-[#1fa628]">
                 <Code2 className="h-3.5 w-3.5" />
                 Software Engineering
               </div>
 
-              <h3 className="text-2xl font-black leading-snug text-slate-900 dark:text-white sm:text-3xl tracking-tight">
+              <h3 className="text-2xl font-bold leading-snug text-slate-900 dark:text-white sm:text-3xl tracking-tight">
                 Passionate developers crafting modern web experiences at{" "}
                 <span className="inline-block border-b-2 border-[#F3BE00] text-[#1fa628]">
                   ISTAD
@@ -165,7 +106,7 @@ export default function WhoWeAreSection() {
 
               {/* Skill Tags */}
               <div className="pt-2">
-                <p className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   <Layers className="h-3.5 w-3.5 text-[#1fa628]" />
                   Core Specializations
                 </p>
@@ -186,4 +127,4 @@ export default function WhoWeAreSection() {
       </div>
     </section>
   );
-}
+}

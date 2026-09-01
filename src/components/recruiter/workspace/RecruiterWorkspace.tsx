@@ -340,11 +340,11 @@ function VerificationNote({
       <div className="mt-4 flex items-center gap-1.5">
         <Chip
           tone={approved ? "solid" : "soft"}
-          className="px-2.5 py-1 text-[11px]"
+          className="px-2.5 py-1 text-[18px]"
         >
           {approved ? "Verified" : "Awaiting review"}
         </Chip>
-        <span className="inline-flex items-center rounded-full bg-ws-panel px-2.5 py-1 text-[11px] font-semibold text-ws-muted">
+        <span className="inline-flex items-center rounded-full bg-ws-panel px-2.5 py-1 text-[18px] font-semibold text-ws-muted">
           {pending.length ? `${pending.length} pending` : "Docs clear"}
         </span>
       </div>
@@ -372,10 +372,10 @@ function NoteRows({
             className="mt-px size-3.5 shrink-0 opacity-45"
           />
           <div className="min-w-0">
-            <dt className="text-[11px] font-medium leading-4 opacity-55">
+            <dt className="text-[18px] font-medium leading-4 opacity-55">
               {row.label}
             </dt>
-            <dd className="truncate text-[13px] font-semibold leading-4">
+            <dd className="truncate text-[18px] font-semibold leading-4">
               {row.value}
             </dd>
           </div>

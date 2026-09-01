@@ -109,7 +109,7 @@ function ThreadRow({
           {thread.title || "Conversation"}
         </span>
         {thread.unreadCount > 0 ? (
-          <span className="rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">
+          <span className="rounded-full bg-primary px-1.5 py-0.5 text-[18px] font-semibold text-primary-foreground">
             {thread.unreadCount}
           </span>
         ) : null}
@@ -123,7 +123,7 @@ function ThreadRow({
         </span>
       ) : null}
       {thread.status !== "OPEN" ? (
-        <span className="mt-1 inline-block rounded-full bg-chip-quiet px-2 py-0.5 text-[10px] font-semibold text-chip-quiet-fg">
+        <span className="mt-1 inline-block rounded-full bg-chip-quiet px-2 py-0.5 text-[18px] font-semibold text-chip-quiet-fg">
           {thread.status.toLowerCase()}
         </span>
       ) : null}
@@ -294,7 +294,7 @@ function Bubble({
           {deleted ? "This message was deleted" : message.content}
         </p>
         <p
-          className={`mt-1 text-[10px] ${
+          className={`mt-1 text-[18px] ${
             message.mine ? "text-primary-foreground/70" : "text-ws-faint"
           }`}
         >

@@ -63,7 +63,7 @@ export default function InvoicesPage() {
                     {formatMoney(invoice.totalAmount, invoice.currency)}
                   </p>
                   {invoice.outstandingAmount > 0 ? (
-                    <p className="text-[11px] text-ws-faint">
+                    <p className="text-[18px] text-ws-faint">
                       {formatMoney(invoice.outstandingAmount, invoice.currency)}{" "}
                       outstanding
                     </p>

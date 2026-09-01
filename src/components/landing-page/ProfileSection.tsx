@@ -307,7 +307,7 @@ function ProfileWheel() {
         const delay = `${0.55 + cwIndex(id) * 0.07}s`;
 
         const text = (
-          <span className="text-[10px] font-extrabold tracking-wide sm:text-[13px]">{label}</span>
+          <span className="text-[18px] font-bold tracking-wide sm:text-[18px]">{label}</span>
         );
         const icon = <Icon className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" />;
 
@@ -413,7 +413,7 @@ export default function CandidateProfileSection() {
           </span>
 
           <h2
-            className="mt-6 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-[2.75rem]"
+            className="mt-6 text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-[2.75rem]"
             style={{ color: YELLOW }}
           >
             Be the candidate employers are looking for
@@ -430,7 +430,7 @@ export default function CandidateProfileSection() {
 
           <Link
             href={profileHref}
-            className="mt-8 inline-flex min-h-12 items-center justify-center rounded-lg px-7 py-3 text-center text-sm font-bold text-white shadow-sm transition hover:brightness-110 active:scale-[0.98]"
+            className="mt-8 inline-flex min-h-12 items-center justify-center rounded-lg px-7 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:brightness-110 active:scale-[0.98]"
             style={{ backgroundColor: DEEP }}
           >
             {profileCta}

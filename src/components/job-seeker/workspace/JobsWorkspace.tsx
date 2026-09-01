@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -222,7 +223,7 @@ function JobListRow({
         {applied ? <Chip tone="solid">Applied</Chip> : null}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] opacity-80">
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[18px] opacity-80">
         {job.location ? (
           <span className="inline-flex items-center gap-1">
             <MapPin aria-hidden="true" className="size-3" />
@@ -297,7 +298,7 @@ function JobDetail({
 
       {job.skills.length ? (
         <Panel>
-          <h3 className="mb-3 text-[15px] font-semibold">Skills</h3>
+          <h3 className="mb-3 text-[18px] font-semibold">Skills</h3>
           <div className="flex flex-wrap gap-2">
             {job.skills.map((skill) => (
               <Chip key={skill.id} tone="quiet">
@@ -315,14 +316,14 @@ function JobDetail({
 
       {job.description ? (
         <Panel>
-          <h3 className="mb-3 text-[15px] font-semibold">About the role</h3>
+          <h3 className="mb-3 text-[18px] font-semibold">About the role</h3>
           <Markdown content={job.description} />
         </Panel>
       ) : null}
 
       {job.sections.map((section) => (
         <Panel key={section.id}>
-          <h3 className="mb-3 text-[15px] font-semibold">{section.title}</h3>
+          <h3 className="mb-3 text-[18px] font-semibold">{section.title}</h3>
           <Markdown content={section.contentMarkdown || section.contentText} />
         </Panel>
       ))}
@@ -380,7 +381,7 @@ function AiInterviewPanel({
       </span>
 
       <div className="min-w-0 flex-1">
-        <h3 className="text-[15px] font-semibold">
+        <h3 className="text-[18px] font-semibold">
           {liveApplication
             ? "Interview for this application"
             : "Practise this interview"}
@@ -486,7 +487,7 @@ function ApplyPanel({
         </div>
       ) : null}
 
-      <h3 className="mb-4 flex items-center gap-2 text-[15px] font-semibold">
+      <h3 className="mb-4 flex items-center gap-2 text-[18px] font-semibold">
         <Briefcase aria-hidden="true" className="size-4" />
         {closedAttempt ? "Apply again" : "Apply"}
       </h3>
@@ -494,19 +495,19 @@ function ApplyPanel({
       <form className="flex flex-col gap-3" onSubmit={submit}>
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ws-muted">
           Resume
-          <select
-            value={resumeId}
-            onChange={(event) => setResumeId(event.target.value)}
-            className="rounded-2xl bg-ws-card-hover px-4 py-3 text-sm text-ws-fg outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <option value="">No resume</option>
-            {resumes.map((resume) => (
-              <option key={resume.id} value={resume.id}>
-                {resume.title}
-                {resume.isDefault ? " (default)" : ""}
-              </option>
-            ))}
-          </select>
+          <Select value={resumeId || null} onValueChange={(value) => setResumeId(value ?? "")}>
+            <SelectTrigger className="w-full border-none bg-ws-card-hover text-ws-fg">
+              <SelectValue placeholder="No resume" />
+            </SelectTrigger>
+            <SelectContent>
+              {resumes.map((resume) => (
+                <SelectItem key={resume.id} value={resume.id}>
+                  {resume.title}
+                  {resume.isDefault ? " (default)" : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </label>
 
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ws-muted">

@@ -28,7 +28,7 @@ export type PortfolioTemplateProps = {
 /** The page every portfolio template renders onto. */
 export function Page({ children, style, className = "" }: { children: ReactNode; style?: CSSProperties; className?: string }) {
   return (
-    <div style={{ width: PAGE_WIDTH, ...style }} className={`flex flex-col text-[15px] leading-relaxed ${className}`}>
+    <div style={{ width: PAGE_WIDTH, ...style }} className={`flex flex-col text-[18px] leading-relaxed ${className}`}>
       {children}
     </div>
   );
@@ -44,7 +44,7 @@ export function Cover({ url, name, size, rounded = "rounded-full", accent }: { u
   return (
     <span
       style={{ width: size, height: size, fontSize: size * 0.34, background: `${accent}1f`, color: accent }}
-      className={`flex shrink-0 items-center justify-center font-bold ${rounded}`}
+      className={`flex shrink-0 items-center justify-center font-semibold ${rounded}`}
     >
       {name.trim().charAt(0).toUpperCase() || "?"}
     </span>
@@ -59,7 +59,7 @@ export function ProjectImage({ url, alt, className = "", accent }: { url: string
       {src ? (
         <Image src={src} alt={alt} fill unoptimized className="object-cover" />
       ) : (
-        <span className="absolute inset-0 flex items-center justify-center text-[13px] font-medium" style={{ color: `${accent}99` }}>
+        <span className="absolute inset-0 flex items-center justify-center text-[18px] font-medium" style={{ color: `${accent}99` }}>
           No cover image
         </span>
       )}
@@ -75,7 +75,7 @@ export function TechTags({ techStack, accent, className = "", muted = false }: {
       {tags.map((tag) => (
         <span
           key={tag}
-          className="rounded-full px-2.5 py-1 text-[12px] font-medium"
+          className="rounded-full px-2.5 py-1 text-[18px] font-medium"
           style={muted ? { background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" } : { background: `${accent}1a`, color: accent }}
         >
           {tag}
@@ -94,7 +94,7 @@ export function EmptyProjects({ accent }: { accent: string }) {
   return (
     <div className="rounded-2xl border-2 border-dashed p-12 text-center" style={{ borderColor: `${accent}33` }}>
       <p className="font-semibold" style={{ color: accent }}>No projects yet</p>
-      <p className="mt-1.5 text-[14px] text-slate-500">Add your first project and it appears here straight away.</p>
+      <p className="mt-1.5 text-[18px] text-slate-500">Add your first project and it appears here straight away.</p>
     </div>
   );
 }

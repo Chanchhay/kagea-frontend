@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
-import { ChevronDown, LayoutDashboard, LogOut } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut, UserRound } from "lucide-react";
 import { KeycloakLoginButton, KeycloakLogoutButton } from "./AuthActions";
 import { getInitials } from "@/lib/utils";
 import {
@@ -36,6 +36,7 @@ export function NavbarAccount({
     currentUser.data?.fullName || session.username || session.email || "Account";
   const role = getRoleLabel(currentUser.data?.roles);
   const dashboardHref = getDashboardHref(currentUser.data?.roles);
+  const workspacePrefix = getWorkspacePrefix(currentUser.data?.roles);
   const image = resolveFileUrl(currentUser.data?.avatarUrl);
 
   if (mobile) {
@@ -67,7 +68,13 @@ export function NavbarAccount({
   }
 
   return (
-    <ProfileMenu name={name} role={role} image={image} dashboardHref={dashboardHref} />
+    <ProfileMenu
+      name={name}
+      role={role}
+      image={image}
+      dashboardHref={dashboardHref}
+      profileHref={workspacePrefix ? `${workspacePrefix}/profile` : null}
+    />
   );
 }
 
@@ -90,7 +97,7 @@ function SignedOutActions({
       <Link
         href="/register"
         onClick={onNavigate}
-        className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] hover:bg-brand-hover"
+        className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground hover:bg-brand-hover"
       >
         Register
       </Link>
@@ -100,7 +107,7 @@ function SignedOutActions({
       <KeycloakLoginButton variant="ghost" className="rounded-full px-5">Login</KeycloakLoginButton>
       <Link
         href="/register"
-        className="inline-flex h-11 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
+        className="inline-flex h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
       >
         Register
       </Link>
@@ -113,21 +120,23 @@ function ProfileMenu({
   role,
   image,
   dashboardHref,
+  profileHref,
 }: {
   name: string;
   role: string;
   image?: string | null;
   dashboardHref: string;
+  profileHref: string | null;
 }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="group flex max-w-64 items-center gap-3 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-left shadow-sm transition-colors hover:border-brand/40 hover:bg-brand-tint focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
+        className="group flex max-w-64 items-center gap-3 rounded-lg px-1 py-1 text-left transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
         aria-label={`Open ${name}'s account menu`}
       >
         <Avatar name={name} image={image} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold text-heading">
+          <span className="block truncate text-sm font-medium text-heading transition-colors group-hover:text-brand">
             {name}
           </span>
           <span className="block truncate text-xs text-body">{role}</span>
@@ -137,12 +146,50 @@ function ProfileMenu({
           className="size-4 shrink-0 text-muted-fg transition-transform group-aria-expanded:rotate-180"
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem render={<Link href={dashboardHref} />}>
-          <LayoutDashboard aria-hidden="true" />
-          Dashboard
-        </DropdownMenuItem>
-        <SignOutMenuItem />
+      <DropdownMenuContent className="w-76 p-0">
+        {/* Identity block: the avatar large enough to read, the role as a chip
+            rather than a second line of grey text. */}
+        <div className="flex items-center gap-3 px-4 pb-4 pt-5">
+          <span
+            className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand-tint bg-cover bg-center font-medium text-brand"
+            style={image ? { backgroundImage: `url("${image}")` } : undefined}
+          >
+            {image ? <span className="sr-only">Profile image</span> : getInitials(name)}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate font-medium text-heading">{name}</span>
+            <span className="mt-1 inline-flex items-center rounded-full bg-surface-muted px-2.5 py-0.5 text-muted-fg">
+              {role}
+            </span>
+          </span>
+        </div>
+
+        <div className="h-px bg-border" />
+
+        <div className="p-2">
+          <DropdownMenuItem
+            render={<Link href={dashboardHref} />}
+            className="text-body focus:bg-surface-muted focus:text-heading"
+          >
+            <LayoutDashboard aria-hidden="true" className="size-5 text-muted-fg" />
+            Dashboard
+          </DropdownMenuItem>
+          {profileHref ? (
+            <DropdownMenuItem
+              render={<Link href={profileHref} />}
+              className="text-body focus:bg-surface-muted focus:text-heading"
+            >
+              <UserRound aria-hidden="true" className="size-5 text-muted-fg" />
+              Your profile
+            </DropdownMenuItem>
+          ) : null}
+        </div>
+
+        <div className="h-px bg-border" />
+
+        <div className="p-2">
+          <SignOutMenuItem />
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -157,7 +204,7 @@ function SignOutMenuItem() {
         onClick={() => formRef.current?.requestSubmit()}
         className="text-error focus:bg-error/10 focus:text-error"
       >
-        <LogOut aria-hidden="true" />
+        <LogOut aria-hidden="true" className="size-5" />
         Sign out
       </DropdownMenuItem>
       {/* Logout is a gateway session POST (see AuthActions.tsx); the menu
@@ -170,12 +217,21 @@ function SignOutMenuItem() {
 function Avatar({ name, image }: { name: string; image?: string | null }) {
   return (
     <span
-      className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-tint bg-cover bg-center text-xs font-bold text-brand ring-1 ring-brand/20"
+      className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-tint bg-cover bg-center text-xs font-semibold text-brand ring-1 ring-brand/20"
       style={image ? { backgroundImage: `url("${image}")` } : undefined}
     >
       {image ? <span className="sr-only">Profile image</span> : getInitials(name)}
     </span>
   );
+}
+
+/** Both role areas expose the same two routes, so the menu derives its links
+ *  from one prefix rather than branching per item. */
+function getWorkspacePrefix(roles?: string[]) {
+  const normalizedRoles = roles?.map((role) => role.toUpperCase()) ?? [];
+  if (normalizedRoles.some((role) => role.includes("RECRUITER"))) return "/recruiter";
+  if (normalizedRoles.some((role) => role.includes("SEEKER"))) return "/job-seeker";
+  return null;
 }
 
 function getDashboardHref(roles?: string[]) {

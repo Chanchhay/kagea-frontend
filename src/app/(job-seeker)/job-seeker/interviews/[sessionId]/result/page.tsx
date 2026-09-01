@@ -31,7 +31,7 @@ export default function InterviewResultPage() {
             <StatusPill>{feedback.result}</StatusPill>
             <p className="text-sm text-body">
               Overall score{" "}
-              <span className="text-lg font-bold text-heading">
+              <span className="text-lg font-semibold text-heading">
                 {feedback.overallScore}
               </span>
             </p>

@@ -231,7 +231,7 @@ function DetailsNote({
               className="mt-0.5 size-4 shrink-0 opacity-60"
             />
             <div className="min-w-0">
-              <dt className="text-[11px] font-medium uppercase tracking-wide opacity-60">
+              <dt className="text-[18px] font-medium uppercase tracking-wide opacity-60">
                 {row.label}
               </dt>
               <dd className="truncate text-sm font-semibold">{row.value}</dd>
@@ -279,7 +279,7 @@ function ExpectationsNote({ profile }: { profile: JobSeekerProfileResponse }) {
         </>
       }
     >
-      <p className="text-[11px] font-medium uppercase tracking-wide opacity-60">
+      <p className="text-[18px] font-medium uppercase tracking-wide opacity-60">
         Salary range
       </p>
       <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">
@@ -293,7 +293,7 @@ function ExpectationsNote({ profile }: { profile: JobSeekerProfileResponse }) {
       </p>
 
       <div className="mt-4 flex flex-col gap-1">
-        <p className="text-[11px] font-medium uppercase tracking-wide opacity-60">
+        <p className="text-[18px] font-medium uppercase tracking-wide opacity-60">
           Shared with
         </p>
         <p className="text-sm font-semibold">

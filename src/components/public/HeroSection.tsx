@@ -20,7 +20,7 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-landing-tint/60 via-surface to-surface pb-20 pt-16 sm:pt-20 lg:pb-24">
       <div className="relative mx-auto max-w-[1240px] px-4 text-center sm:px-6 lg:px-8">
-        <h1 className="mx-auto max-w-[1200px] text-[clamp(4rem,7vw,5rem)] font-bold leading-[.98] tracking-[-0.045em]">
+        <h1 className="mx-auto max-w-[1200px] text-[clamp(4rem,7vw,5rem)] font-semibold leading-[.98] tracking-[-0.045em]">
           <span className="text-brand">Explore new </span>
           <span className="text-warning">job vacancies all over the world</span>
         </h1>

@@ -115,7 +115,7 @@ export function PanelHeader({
   return (
     <header className="mb-4 flex items-center gap-2">
       {icon}
-      <h2 className="text-[15px] font-semibold tracking-tight">{title}</h2>
+      <h2 className="text-[18px] font-semibold tracking-tight">{title}</h2>
       {action ? (
         <div className="ml-auto flex items-center gap-1">{action}</div>
       ) : null}
@@ -149,7 +149,7 @@ export function NotchedPanel({
     <section className={cn("ws-notch flex flex-col", noteVar[fill], className)}>
       <header className="ws-notch__top flex shrink-0 items-center gap-2 px-5">
         {icon}
-        <h2 className="truncate text-[15px] font-semibold tracking-tight">
+        <h2 className="truncate text-[18px] font-semibold tracking-tight">
           {title}
         </h2>
       </header>
@@ -192,7 +192,7 @@ export function FolderTabs<T extends string>({
             onClick={() => onChange(tab)}
             aria-pressed={value === tab}
             className={cn(
-              "shrink-0 px-4 text-[13px] font-semibold transition-colors",
+              "shrink-0 px-4 text-[18px] font-semibold transition-colors",
               value === tab
                 ? "ws-foldertab pb-3 pt-2.5 text-ws-fg"
                 : "rounded-full py-2 text-ws-faint hover:bg-ws-card hover:text-ws-fg",
@@ -235,7 +235,7 @@ export function PipelineTrack({
             key={segment.label}
             style={{ flexGrow: segment.count / total }}
             className={cn(
-              "flex min-w-fit items-center justify-between gap-3 rounded-full py-2.5 pl-5 pr-2.5 text-[13px] font-semibold",
+              "flex min-w-fit items-center justify-between gap-3 rounded-full py-2.5 pl-5 pr-2.5 text-[18px] font-semibold",
               toneFill[segment.tone],
             )}
           >
@@ -248,7 +248,7 @@ export function PipelineTrack({
           </div>
         ))}
 
-      <div className="ws-track-rest flex min-w-fit grow items-center justify-end rounded-full px-5 py-3 text-[13px] font-medium text-ws-faint">
+      <div className="ws-track-rest flex min-w-fit grow items-center justify-end rounded-full px-5 py-3 text-[18px] font-medium text-ws-faint">
         {restLabel}
       </div>
     </div>
@@ -316,7 +316,7 @@ export function PillTabs<T extends string>({
           onClick={() => onChange(tab)}
           aria-pressed={value === tab}
           className={cn(
-            "shrink-0 rounded-full px-4 py-2 text-[13px] font-semibold transition-colors",
+            "shrink-0 rounded-full px-4 py-2 text-[18px] font-semibold transition-colors",
             value === tab
               ? "bg-ws-panel text-ws-fg"
               : "text-ws-faint hover:text-ws-fg",
@@ -369,7 +369,7 @@ export function TimelineRow({
         >
           {done ? <Check aria-hidden="true" className="size-4" /> : icon}
         </span>
-        <span className="mt-1.5 text-[10px] font-medium text-ws-faint">
+        <span className="mt-1.5 text-[18px] font-medium text-ws-faint">
           {date}
         </span>
         {last ? null : (
@@ -459,7 +459,7 @@ export function FileCard({
     >
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-medium text-ws-faint">{eyebrow}</p>
+          <p className="text-[18px] font-medium text-ws-faint">{eyebrow}</p>
           <p className="truncate text-sm font-semibold text-ws-fg">{title}</p>
           {meta ? (
             <p className="truncate text-xs text-ws-muted">{meta}</p>

@@ -51,7 +51,7 @@ export function MetricCard({
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-fg">
         {label}
       </p>
-      <p className="mt-2 text-2xl font-bold text-heading">{value}</p>
+      <p className="mt-2 text-2xl font-semibold text-heading">{value}</p>
       {hint ? <p className="mt-1 text-sm text-body">{hint}</p> : null}
     </div>
   );

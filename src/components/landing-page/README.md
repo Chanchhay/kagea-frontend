@@ -3,7 +3,6 @@
 To copy this landing page into another project, copy:
 
 - `src/components/landing-page/`
-- `public/images/components/company-logo/`
 - `public/images/testimonials/`
 - `public/images/logo.png`
 - `public/images/istad.png`

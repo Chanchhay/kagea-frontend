@@ -19,7 +19,7 @@ export function Sheet({ children, style, className = "" }: { children: ReactNode
   return (
     <div
       style={{ width: A4_WIDTH, minHeight: A4_HEIGHT, ...style }}
-      className={`flex flex-col bg-white text-[13px] leading-relaxed text-slate-700 ${className}`}
+      className={`flex flex-col bg-white text-[18px] leading-relaxed text-slate-700 ${className}`}
     >
       {children}
     </div>
@@ -44,7 +44,7 @@ export function Photo({ url, name, size, className = "", style }: { url: string;
   return (
     <span
       style={{ width: size, height: size, fontSize: size * 0.36, ...style }}
-      className={`flex shrink-0 items-center justify-center bg-slate-100 font-bold text-slate-500 ${className}`}
+      className={`flex shrink-0 items-center justify-center bg-slate-100 font-semibold text-slate-500 ${className}`}
     >
       {name.trim().charAt(0).toUpperCase() || "?"}
     </span>

@@ -42,7 +42,7 @@ export default function AboutHeroSection() {
           <div className="lg:col-span-7">
             {/* Tagline Badge */}
             <motion.div variants={itemVariants} className="inline-block">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/30 bg-[#1fa628]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#1fa628] backdrop-blur-md dark:bg-[#1fa628]/15">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/30 bg-[#1fa628]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#1fa628] backdrop-blur-md dark:bg-[#1fa628]/15">
                 <Sparkles className="h-3.5 w-3.5 text-[#F3BE00]" />
                 Get Best Employee
               </span>
@@ -51,7 +51,7 @@ export default function AboutHeroSection() {
             {/* Main Headline */}
             <motion.h1
               variants={itemVariants}
-              className="mt-6 text-4xl font-black leading-[1.15] text-slate-900 dark:text-white sm:text-5xl lg:text-6xl tracking-tight"
+              className="mt-6 text-4xl font-bold leading-[1.15] text-slate-900 dark:text-white sm:text-5xl lg:text-6xl tracking-tight"
             >
               We find the{" "}
               <span className="relative inline-block text-[#1fa628]">
@@ -67,7 +67,7 @@ export default function AboutHeroSection() {
               variants={itemVariants}
               className="mt-6 max-w-xl text-base text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-relaxed"
             >
-              <span className="font-bold text-[#1fa628]">Find Job</span> is an
+              <span className="font-semibold text-[#1fa628]">Find Job</span> is an
               innovative recruitment platform that connects technology
               enthusiasts with quality opportunities using AI-driven mock interviews
               and real-time skill matching.
@@ -93,7 +93,7 @@ export default function AboutHeroSection() {
               variants={itemVariants}
               className="mt-8 flex flex-wrap items-center gap-4"
             >
-              <button className="group flex items-center gap-2 rounded-xl bg-[#1fa628] px-6 py-3.5 font-bold text-white shadow-lg shadow-[#1fa628]/25 transition-all hover:bg-[#1fa628]/90 hover:shadow-xl hover:shadow-[#1fa628]/30 active:scale-[0.98]">
+              <button className="group flex items-center gap-2 rounded-xl bg-[#1fa628] px-6 py-3.5 font-semibold text-white shadow-lg shadow-[#1fa628]/25 transition-all hover:bg-[#1fa628]/90 hover:shadow-xl hover:shadow-[#1fa628]/30 active:scale-[0.98]">
                 Explore Talent
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </button>
@@ -146,7 +146,7 @@ export default function AboutHeroSection() {
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     Active Seekers
                   </p>
-                  <p className="text-sm font-black text-slate-900 dark:text-white">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
                     10,000+
                   </p>
                 </div>
@@ -166,7 +166,7 @@ export default function AboutHeroSection() {
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     AI Interview Practice
                   </p>
-                  <p className="text-sm font-black text-slate-900 dark:text-white">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
                     Instant Feedback
                   </p>
                 </div>

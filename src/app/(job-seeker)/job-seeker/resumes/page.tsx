@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FilePlus2, FileText, Globe2, Pencil, Star, Trash2 } from "lucide-react";
@@ -49,20 +50,23 @@ export default function ResumesPage() {
 
     <div className="mb-7 flex flex-col gap-4 border-b border-ws-line sm:flex-row sm:items-end sm:justify-between">
       <div className="flex gap-8 overflow-x-auto">{(["ALL", "DEFAULT", "HAS_FILE", "DRAFT"] as Filter[]).map((item) => <button key={item} onClick={() => setFilter(item)} className={`relative px-1 pb-4 text-sm font-semibold transition ${filter === item ? "text-primary after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary" : "text-ws-muted hover:text-ws-fg"}`}>{item === "HAS_FILE" ? "Has file" : item.charAt(0) + item.slice(1).toLowerCase()}</button>)}</div>
-      <label className="mb-3 flex items-center gap-3 text-sm text-ws-muted">Sort by:<select value={newestFirst ? "newest" : "oldest"} onChange={(e) => setNewestFirst(e.target.value === "newest")} className="bg-transparent font-semibold text-ws-fg outline-none"><option value="newest">Newest</option><option value="oldest">Oldest</option></select></label>
+      <label className="mb-3 flex items-center gap-3 text-sm text-ws-muted">Sort by:<Select value={newestFirst ? "newest" : "oldest"} onValueChange={(value) => setNewestFirst(value !== "oldest")}>
+      <SelectTrigger size="sm" aria-label="Sort resumes" className="w-36 font-medium text-ws-fg"><SelectValue /></SelectTrigger>
+      <SelectContent><SelectItem value="newest">Newest</SelectItem><SelectItem value="oldest">Oldest</SelectItem></SelectContent>
+    </Select></label>
     </div>
 
     {visible.length ? <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{visible.map((resume) => <article key={resume.id} className={`group rounded-[22px] border bg-ws-panel p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${resume.isDefault ? "border-primary ring-1 ring-primary/15" : "border-ws-line"}`}>
       {resume.visibility === "PUBLIC" || resume.isDefault ? <div className="mb-4 flex flex-wrap justify-end gap-1.5">
-        {resume.visibility === "PUBLIC" ? <span className="inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground"><Globe2 className="size-3" /> Public</span> : null}
-        {resume.isDefault ? <span className="rounded-lg bg-chip-soft px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-chip-soft-fg">Default</span> : null}
+        {resume.visibility === "PUBLIC" ? <span className="inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1.5 text-[18px] font-semibold uppercase tracking-wide text-primary-foreground"><Globe2 className="size-3" /> Public</span> : null}
+        {resume.isDefault ? <span className="rounded-lg bg-chip-soft px-2.5 py-1.5 text-[18px] font-semibold uppercase tracking-wide text-chip-soft-fg">Default</span> : null}
       </div> : null}
       <Link href={`/job-seeker/resumes/${resume.id}`} className="flex items-center gap-4 rounded-2xl bg-linear-to-r from-chip-soft/70 to-ws-card-hover p-4 transition hover:from-chip-soft hover:to-ws-card">
         <div className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-chip-soft text-chip-soft-fg shadow-sm ring-1 ring-chip-soft dark:border-ws-panel">
           {getResumePhoto(resume) ? <Image src={getResumePhoto(resume)!} alt={`${resume.title} profile`} fill unoptimized sizes="64px" className="object-cover" /> : <FileText className="size-6" />}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary">Resume profile</p>
+          <p className="text-[18px] font-semibold uppercase tracking-[0.14em] text-primary">Resume profile</p>
           <h2 className="mt-1 truncate text-base font-semibold text-ws-fg">{resume.title}</h2>
           <p className="mt-1.5 flex items-center gap-2 text-xs text-ws-muted"><span className={`size-2 rounded-full ${resume.resumeFileUrl || hasContent(resume) ? "bg-primary" : "bg-warning"}`} /> {resume.resumeFileUrl ? "PDF attached" : hasContent(resume) ? "Profile completed" : "Draft"}</p>
         </div>

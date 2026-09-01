@@ -133,11 +133,11 @@ export default function TeamSection() {
           transition={{ duration: 0.4 }}
           className="text-center space-y-2.5"
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#F3BE00]/40 bg-[#F3BE00]/15 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#D9A700] dark:text-[#F3BE00]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#F3BE00]/40 bg-[#F3BE00]/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#D9A700] dark:text-[#F3BE00]">
             <Sparkles className="h-3.5 w-3.5" />
             Leadership & Expertise
           </div>
-          <h2 className="text-3xl font-black text-[#F3BE00] sm:text-4xl lg:text-5xl tracking-tight">
+          <h2 className="text-3xl font-bold text-[#F3BE00] sm:text-4xl lg:text-5xl tracking-tight">
             Meet Our Mentors
           </h2>
           <p className="max-w-md mx-auto text-sm font-medium text-slate-500 dark:text-slate-400">
@@ -173,19 +173,19 @@ export default function TeamSection() {
           transition={{ duration: 0.4 }}
           className="text-center space-y-3"
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/40 bg-[#1fa628]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#1fa628]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/40 bg-[#1fa628]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#1fa628]">
             <Code2 className="h-3.5 w-3.5" />
             DEVELOPMENT TEAM
           </div>
 
-          <h2 className="text-3xl font-black sm:text-4xl lg:text-5xl tracking-tight">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl tracking-tight">
             <span className="text-[#1fa628]">Our</span>{" "}
             <span className="text-[#F3BE00]">Members</span>
           </h2>
 
           <p className="max-w-xl mx-auto text-sm sm:text-base font-medium text-slate-500 dark:text-slate-400">
             The passionate engineers and designers driving{" "}
-            <span className="font-bold text-[#1fa628]">Find Job</span> forward.
+            <span className="font-semibold text-[#1fa628]">Find Job</span> forward.
           </p>
         </motion.div>
 
@@ -341,7 +341,7 @@ function MemberCard({
       }`}
     >
       {/* Top Index Badge */}
-      <div className="absolute right-5 top-5 flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200/80 bg-white text-[11px] font-bold text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400">
+      <div className="absolute right-5 top-5 flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200/80 bg-white text-[18px] font-semibold text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400">
         {formattedIndex}
       </div>
 
@@ -371,19 +371,19 @@ function MemberCard({
       {/* Middle Text Info */}
       <div className="flex flex-col items-center">
         <h3
-          className={`text-base font-extrabold text-slate-900 dark:text-white line-clamp-1 transition-colors ${
+          className={`text-base font-bold text-slate-900 dark:text-white line-clamp-1 transition-colors ${
             isGold ? "group-hover:text-[#F3BE00]" : "group-hover:text-[#1fa628]"
           }`}
         >
           {member.name}
         </h3>
 
-        <p className={`mt-1 text-[11px] font-extrabold uppercase tracking-wider ${roleColor}`}>
+        <p className={`mt-1 text-[18px] font-bold uppercase tracking-wider ${roleColor}`}>
           {member.role}
         </p>
 
         <div
-          className={`mt-2.5 inline-block rounded-full px-4 py-0.5 text-[11px] font-bold ${pillBg}`}
+          className={`mt-2.5 inline-block rounded-full px-4 py-0.5 text-[18px] font-semibold ${pillBg}`}
         >
           {member.badge}
         </div>
@@ -434,7 +434,7 @@ function MemberCard({
 
           {/* Quick Drawer Open Hint (Only for cards with onSelect) */}
           {onSelect && (
-            <div className="flex items-center gap-1 text-[11px] font-bold text-[#1fa628] opacity-80 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 text-[18px] font-semibold text-[#1fa628] opacity-80 group-hover:opacity-100 transition-opacity">
               <span>Profile</span>
               <ArrowRight className="h-3.5 w-3.5 transform transition-transform group-hover:translate-x-0.5" />
             </div>
@@ -518,12 +518,12 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
               </div>
 
               <div className="flex-1 pb-1">
-                <span className="inline-block rounded-full bg-[#1fa628]/20 px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-[#22c55e] border border-[#22c55e]/30 mb-1">
+                <span className="inline-block rounded-full bg-[#1fa628]/20 px-3 py-0.5 text-[18px] font-bold uppercase tracking-wider text-[#22c55e] border border-[#22c55e]/30 mb-1">
                   {member.roleTitle || member.role}
                 </span>
                 <h3
                   id="drawer-title"
-                  className="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight line-clamp-1"
+                  className="text-xl sm:text-2xl font-bold text-white leading-tight tracking-tight line-clamp-1"
                 >
                   {member.name}
                 </h3>
@@ -577,7 +577,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`relative py-3.5 text-xs font-extrabold tracking-wider transition-colors ${
+                    className={`relative py-3.5 text-xs font-bold tracking-wider transition-colors ${
                       isActive
                         ? "text-[#1fa628] dark:text-[#22c55e]"
                         : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
@@ -608,7 +608,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
               >
                 {/* Bio Summary */}
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Biography
                   </h4>
                   <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
@@ -630,7 +630,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
 
                 {/* Education */}
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Education & Background
                   </h4>
                   <div className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/60">
@@ -638,10 +638,10 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                       <GraduationCap className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">
+                      <p className="text-xs font-semibold text-slate-900 dark:text-white">
                         {member.education}
                       </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      <p className="text-[18px] text-slate-500 dark:text-slate-400">
                         Second Year Student • Class of 2026
                       </p>
                     </div>
@@ -651,7 +651,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                 {/* Role Breakdown / Key Responsibilities */}
                 {member.roleBreakdown && member.roleBreakdown.length > 0 && (
                   <div className="space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                       Core Responsibilities
                     </h4>
                     <div className="space-y-2">
@@ -682,7 +682,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                 {member.stackCategories && member.stackCategories.length > 0 ? (
                   member.stackCategories.map((group, idx) => (
                     <div key={idx} className="space-y-2.5">
-                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         <Layers3 className="h-3.5 w-3.5 text-[#1fa628]" />
                         <span>{group.category}</span>
                       </div>
@@ -703,7 +703,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                     {member.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                        className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                       >
                         {skill}
                       </span>
@@ -731,7 +731,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#1fa628]/10 text-[#1fa628]">
                           <Briefcase className="h-3.5 w-3.5" />
                         </div>
-                        <h5 className="text-sm font-bold text-slate-900 dark:text-white">
+                        <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
                           {proj.name}
                         </h5>
                       </div>
@@ -741,7 +741,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                       </p>
 
                       {proj.impact && (
-                        <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                        <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-[18px] font-medium text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
                           <Sparkles className="h-3 w-3 text-[#1fa628]" />
                           <span>Impact: {proj.impact}</span>
                         </div>
@@ -773,10 +773,10 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                           <div className="h-2 w-2 rounded-full bg-[#1fa628]" />
                         </div>
 
-                        <span className="inline-block text-[11px] font-extrabold uppercase tracking-wider text-[#1fa628]">
+                        <span className="inline-block text-[18px] font-bold uppercase tracking-wider text-[#1fa628]">
                           {item.period}
                         </span>
-                        <h5 className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">
+                        <h5 className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
                           {item.title}
                         </h5>
                         <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 mt-1">
@@ -801,7 +801,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
             href={member.social.linkedin || "https://linkedin.com"}
             target="_blank"
             rel="noreferrer"
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#1fa628] hover:bg-[#1fa628]/90 text-white px-4 py-2.5 text-xs font-bold transition shadow-sm"
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#1fa628] hover:bg-[#1fa628]/90 text-white px-4 py-2.5 text-xs font-semibold transition shadow-sm"
           >
             <span>View Full Profile</span>
             <ExternalLink className="h-3.5 w-3.5" />
@@ -810,7 +810,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 transition"
+            className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 transition"
           >
             Close
           </button>

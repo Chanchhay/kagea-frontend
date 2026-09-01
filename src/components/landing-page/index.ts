@@ -7,6 +7,7 @@ export { default as JobDiscoverySection } from './JobDiscoverySection';
 export { default as NewestJobsSection } from './NewestJobsSection';
 export { default as ProfileSection } from './ProfileSection';
 export { default as TestimonialsSection } from './TestimonialsSection';
+export { default as FaqSection } from './FaqSection';
 export { default as TrustedCompaniesSection } from './TrustedCompaniesSection';
 export * from './data';
 export * from './types';

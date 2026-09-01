@@ -96,7 +96,7 @@ export default function TestimonialsSection() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 sm:py-10">
-      <h2 data-reveal className="text-center text-3xl font-extrabold text-[#1A202C] dark:text-white sm:text-4xl">
+      <h2 data-reveal className="text-center text-3xl font-bold text-[#1A202C] dark:text-white sm:text-4xl">
         Clients Testimonial
       </h2>
 
@@ -151,13 +151,13 @@ export default function TestimonialsSection() {
 
             {/* Red Quote badge */}
             <div className="absolute -bottom-3 -right-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#E53E3E] text-white shadow-lg">
-              <span className="text-3xl font-serif font-black leading-none mt-2">&ldquo;</span>
+              <span className="text-3xl font-serif font-bold leading-none mt-2">&ldquo;</span>
             </div>
           </div>
 
           {/* Text Content */}
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left flex-1 min-w-0 py-4">
-            <h3 className="text-3xl font-extrabold text-[#F3BE00]">
+            <h3 className="text-3xl font-bold text-[#F3BE00]">
               {active.name}
             </h3>
             <p className="mt-1.5 text-lg font-medium text-[#E53E3E]">

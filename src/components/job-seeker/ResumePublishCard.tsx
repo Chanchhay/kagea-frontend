@@ -42,7 +42,7 @@ export function ResumePublishCard({ resume }: { resume: ResumeResponse }) {
     <section className="rounded-[22px] bg-ws-card p-5">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold text-ws-fg">Publishing</h2>
-        <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${isPublic ? "bg-chip-soft text-chip-soft-fg" : "bg-chip-quiet text-chip-quiet-fg"}`}>
+        <span className={`rounded-full px-2.5 py-1 text-[18px] font-semibold uppercase tracking-wide ${isPublic ? "bg-chip-soft text-chip-soft-fg" : "bg-chip-quiet text-chip-quiet-fg"}`}>
           {visibility.toLowerCase()}
         </span>
       </div>
