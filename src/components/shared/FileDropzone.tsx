@@ -1,165 +1,145 @@
 "use client";
 
-import Image from "next/image";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type DragEvent,
-  type KeyboardEvent,
-} from "react";
-import { FileUp, X } from "lucide-react";
-import {
-  ACCEPTED_LOGO_EXTENSIONS,
-  ACCEPTED_LOGO_TYPES,
-  MAX_LOGO_SIZE_BYTES,
-  MAX_LOGO_SIZE_MB,
-} from "@/lib/constants";
+import { useRef, useState, type DragEvent } from "react";
+import { FileCheck2, UploadCloud, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { validateFile } from "@/lib/upload-file";
 
 type FileDropzoneProps = {
-  value: File | null;
-  onChange: (file: File | null) => void;
-  error?: string;
+  /** URL of the file already saved on the record, if any. */
+  value?: string;
+  /** The staged file, held by the parent until it saves. */
+  file?: File | null;
+  /**
+   * Called when the user picks a file, or clears the field. Nothing is sent to
+   * the server here — the parent uploads on submit via `uploadFile`.
+   */
+  onFileChange: (file: File | null) => void;
+  /** Called when the user clears an already-saved file. */
+  onClear?: () => void;
+  accept?: string;
+  hint?: string;
+  className?: string;
 };
 
-function formatSize(bytes: number) {
-  return `${(bytes / 1024).toFixed(0)} KB`;
-}
+const DEFAULT_ACCEPT = ".pdf,.png,.jpg,.jpeg,.webp,.svg";
 
-export function FileDropzone({ value, onChange, error }: FileDropzoneProps) {
+/**
+ * Stages a file for upload. Selection is local: the bytes travel only when the
+ * surrounding form is saved, so abandoning an edit leaves no orphaned object in
+ * the bucket.
+ */
+export function FileDropzone({
+  value,
+  file = null,
+  onFileChange,
+  onClear,
+  accept = DEFAULT_ACCEPT,
+  hint = "PDF, PNG, JPG, WebP or SVG up to 5 MB.",
+  className,
+}: FileDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!value) {
-      setPreviewUrl(null);
-      return;
-    }
-    const url = URL.createObjectURL(value);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [value]);
-
-  const accept = (file: File | undefined) => {
-    if (!file) return;
-    if (!(ACCEPTED_LOGO_TYPES as readonly string[]).includes(file.type)) {
-      setLocalError(`Only ${ACCEPTED_LOGO_EXTENSIONS} files are allowed.`);
-      onChange(null);
-      return;
-    }
-    if (file.size > MAX_LOGO_SIZE_BYTES) {
-      setLocalError(`Logo must be ${MAX_LOGO_SIZE_MB}MB or smaller.`);
-      onChange(null);
-      return;
-    }
-    setLocalError(null);
-    onChange(file);
-  };
-
-  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setIsDragging(false);
-    accept(event.dataTransfer.files[0]);
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      inputRef.current?.click();
-    }
+  const select = (picked: File) => {
+    // Checked here so the user is told at pick time, not after pressing save.
+    const problem = validateFile(picked);
+    setError(problem);
+    onFileChange(problem ? null : picked);
+    if (problem && inputRef.current) inputRef.current.value = "";
   };
 
   const clear = () => {
-    setLocalError(null);
-    onChange(null);
+    setError(null);
+    onFileChange(null);
+    onClear?.();
     if (inputRef.current) inputRef.current.value = "";
   };
 
-  const visibleError = error ?? localError;
+  const hasFile = Boolean(file ?? value);
+  const label = file
+    ? file.name
+    : value
+      ? "File saved"
+      : "Drag and drop, or click to browse";
 
   return (
-    <div className="space-y-2">
+    <div className={className}>
       <div
         role="button"
         tabIndex={0}
-        aria-label="Upload company logo"
-        aria-invalid={visibleError ? true : undefined}
+        aria-label="Choose a file"
         onClick={() => inputRef.current?.click()}
-        onKeyDown={handleKeyDown}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
         onDragOver={(event) => {
           event.preventDefault();
           setIsDragging(true);
         }}
         onDragLeave={() => setIsDragging(false)}
-        onDrop={handleDrop}
+        onDrop={(event: DragEvent<HTMLDivElement>) => {
+          event.preventDefault();
+          setIsDragging(false);
+          const dropped = event.dataTransfer.files?.[0];
+          if (dropped) select(dropped);
+        }}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 px-4 py-10 text-center transition-all duration-200",
-          "hover:border-brand/50 hover:bg-slate-50/70",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2",
-          isDragging && "border-brand bg-brand-tint",
-          visibleError && "border-red-300 bg-red-50/50",
+          "flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-4 py-8 text-center transition-colors",
+          isDragging
+            ? "border-brand bg-brand-tint"
+            : "border-border bg-surface-muted/40 hover:border-brand/40",
         )}
       >
-        {value && previewUrl ? (
-          <div className="flex w-full items-center gap-3 px-2">
-            <span className="relative size-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white">
-              <Image
-                src={previewUrl}
-                alt={`${value.name} preview`}
-                fill
-                unoptimized
-                className="object-contain p-1"
-              />
-            </span>
-            <span className="min-w-0 flex-1 text-left">
-              <span className="block truncate text-sm font-semibold text-heading">
-                {value.name}
-              </span>
-              <span className="block text-xs text-slate-500">
-                {formatSize(value.size)}
-              </span>
-            </span>
-            <button
-              type="button"
-              aria-label="Remove logo"
-              onClick={(event) => {
-                event.stopPropagation();
-                clear();
-              }}
-              className="flex size-7 shrink-0 items-center justify-center rounded-full text-slate-400 transition-colors duration-200 hover:bg-slate-100 hover:text-heading focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-            >
-              <X className="size-4" aria-hidden="true" />
-            </button>
-          </div>
-        ) : (
-          <>
-            <span className="mb-3 flex size-11 items-center justify-center rounded-full bg-brand-tint">
-              <FileUp aria-hidden="true" className="size-5 text-brand" />
-            </span>
-            <p className="text-sm font-semibold text-heading">
-              Click to upload or drag and drop
-            </p>
-            <p className="mt-1 text-xs text-slate-400">
-              {ACCEPTED_LOGO_EXTENSIONS} (max. 800x400px)
-            </p>
-          </>
-        )}
+        <span className="flex size-11 items-center justify-center rounded-full bg-surface text-brand shadow-sm">
+          {hasFile ? (
+            <FileCheck2 aria-hidden="true" className="size-5" />
+          ) : (
+            <UploadCloud aria-hidden="true" className="size-5" />
+          )}
+        </span>
+        <p className="mt-3 text-sm font-medium text-heading">{label}</p>
+        <p className="mt-1 text-xs text-body">{hint}</p>
 
         <input
           ref={inputRef}
           type="file"
+          accept={accept}
           className="sr-only"
-          tabIndex={-1}
-          accept={ACCEPTED_LOGO_TYPES.join(",")}
-          onChange={(event) => accept(event.target.files?.[0])}
+          onChange={(event) => {
+            const picked = event.target.files?.[0];
+            if (picked) select(picked);
+          }}
         />
       </div>
 
-      {visibleError ? (
-        <p className="text-xs font-medium text-red-600">{visibleError}</p>
+      {file ? (
+        <p className="mt-2 text-xs text-body">
+          Selected. It uploads when you save.
+        </p>
+      ) : null}
+
+      {hasFile ? (
+        <div className="mt-2 flex justify-end text-xs">
+          <button
+            type="button"
+            onClick={clear}
+            className="inline-flex shrink-0 items-center gap-1 font-medium text-body hover:text-destructive"
+          >
+            <X aria-hidden="true" className="size-3.5" />
+            Remove
+          </button>
+        </div>
+      ) : null}
+
+      {error ? (
+        <p role="alert" className="mt-2 text-sm font-medium text-destructive">
+          {error}
+        </p>
       ) : null}
     </div>
   );

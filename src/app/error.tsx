@@ -21,7 +21,7 @@ export default function Error({
         <AlertTriangle aria-hidden="true" className="size-6 text-red-500" />
       </span>
 
-      <h1 className="mt-5 text-lg font-bold text-heading">
+      <h1 className="mt-5 text-lg font-semibold text-heading">
         Something went wrong
       </h1>
 
