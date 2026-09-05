@@ -123,7 +123,7 @@ export default function TeamSection() {
   const marqueeMembers = [...developmentTeam, ...developmentTeam];
 
   return (
-    <div className="space-y-24 py-8">
+    <div className="space-y-28">
       {/* SECTION 1: MEET OUR MENTORS */}
       <section className="space-y-10">
         <motion.div
@@ -150,7 +150,7 @@ export default function TeamSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start max-w-6xl mx-auto"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-start max-w-7xl mx-auto"
         >
           {mentors.map((mentor, index) => (
             <MemberCard
@@ -196,7 +196,7 @@ export default function TeamSection() {
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-28 bg-gradient-to-l from-white via-white/80 to-transparent dark:from-[#181B1C] dark:via-[#181B1C]/80 dark:to-transparent" />
 
           {/* Arrow Navigation */}
-          <div className="mb-4 flex items-center justify-end px-4 max-w-7xl mx-auto">
+          <div className="mb-4 flex w-full items-center justify-end">
             <div className="flex items-center gap-2">
               <button
                 type="button"

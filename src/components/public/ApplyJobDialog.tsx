@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { useApplyToJobMutation } from "@/services/jobSeekerApi";
 import { KeycloakLoginButton } from "@/components/auth/AuthActions";
-import { StartAiInterviewButton } from "./StartAiInterviewButton";
 
 type ApplyJobDialogProps = {
   jobId: number;
@@ -52,13 +51,6 @@ export function ApplyJobDialog({ jobId, jobTitle }: ApplyJobDialogProps) {
 
   return (
     <>
-      <div className="grid gap-2">
-        <Button type="button" className="font-medium" onClick={() => setOpen(true)}>
-          Apply as job seeker
-        </Button>
-        <StartAiInterviewButton jobId={jobId} />
-        <KeycloakLoginButton className="font-medium" variant="ghost">Sign in to apply</KeycloakLoginButton>
-      </div>
       {open ? (
         <div
           aria-modal="true"

@@ -151,6 +151,16 @@
 }
 
 @layer components {
+  /*
+   * The public landing experience paints on plain white, not the app's pale
+   * blue canvas — `.landing-page` has always done this with a hardcoded
+   * `bg-white`, so the token says it instead and any page joining the class
+   * gets the same ground.
+   */
+  .landing-page {
+    --background: #ffffff;
+  }
+
   /* Neutral charcoal palette used by the public landing experience. */
   .dark .landing-page {
     --background: #181b1c;

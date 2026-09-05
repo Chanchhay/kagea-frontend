@@ -21,8 +21,10 @@ export default function PublicJobDetailPage() {
   if (jobQuery.isLoading || relatedQuery.isLoading) {
     return (
       <PublicShell>
-        <main className="mx-auto max-w-7xl px-4 py-10">
-          <LoadingState rows={5} />
+        <main className="landing-page bg-canvas text-heading transition-colors duration-300 px-4 py-10">
+          <div className="mx-auto max-w-7xl">
+            <LoadingState rows={5} />
+          </div>
         </main>
       </PublicShell>
     );
@@ -31,8 +33,10 @@ export default function PublicJobDetailPage() {
   if (jobQuery.isError || !jobQuery.data || relatedQuery.isError) {
     return (
       <PublicShell>
-        <main className="mx-auto max-w-7xl px-4 py-10">
-          <ErrorState message="Unable to load this job." />
+        <main className="landing-page bg-canvas text-heading transition-colors duration-300 px-4 py-10">
+          <div className="mx-auto max-w-7xl">
+            <ErrorState message="Unable to load this job." />
+          </div>
         </main>
       </PublicShell>
     );
@@ -45,7 +49,7 @@ export default function PublicJobDetailPage() {
 
   return (
     <PublicShell>
-      <main className="pb-12">
+      <main className="landing-page bg-canvas text-heading transition-colors duration-300 pb-12">
         <PublicJobDetails job={job} relatedJobs={relatedJobs} />
       </main>
       <PublicFooter />

@@ -16,9 +16,11 @@ import { isVapiConfigured } from "@/lib/vapi";
 import { resolveFileUrl } from "@/lib/file-url";
 import { useGetCurrentUserQuery } from "@/services/authApi";
 import {
+  useBindAiInterviewVapiCallMutation,
   useCompleteAiInterviewMutation,
   useStartAiInterviewMutation,
   useSubmitAiInterviewAnswerMutation,
+  useSubmitAiInterviewTranscriptMutation,
 } from "@/services/jobSeekerApi";
 
 type AiInterviewRunnerProps = {
@@ -93,6 +95,8 @@ function AnswerForm({
 export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
   const router = useRouter();
   const [start, starting] = useStartAiInterviewMutation();
+  const [bindVapiCall] = useBindAiInterviewVapiCallMutation();
+  const [submitTranscript] = useSubmitAiInterviewTranscriptMutation();
   const [complete, completion] = useCompleteAiInterviewMutation();
   const [mode, setMode] = useState<"voice" | "typing">(
     isVapiConfigured ? "voice" : "typing",
@@ -240,6 +244,12 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
             candidateAvatarUrl={resolveFileUrl(currentUser?.avatarUrl) || undefined}
             jobTitle={session.jobTitle}
             onSwitchToTyping={() => setMode("typing")}
+            bindCall={(callId) =>
+              bindVapiCall({ sessionId: session.id, body: { callId } }).unwrap()
+            }
+            submitTurns={(turns) =>
+              submitTranscript({ sessionId: session.id, body: { turns } }).unwrap()
+            }
           />
         ) : (
           <div className="space-y-3">
