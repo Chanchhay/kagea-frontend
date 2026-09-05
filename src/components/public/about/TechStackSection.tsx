@@ -467,7 +467,7 @@ export const frontendAnimationStack: TechItem[] = [
 
 export default function TechStackSection() {
   return (
-    <section className="space-y-10 py-10 relative overflow-hidden">
+    <section className="relative space-y-12 overflow-hidden">
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}

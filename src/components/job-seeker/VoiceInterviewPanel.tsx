@@ -6,7 +6,10 @@ import type { AiInterviewQuestionResponse } from "@/contracts";
 import { PlainCard } from "@/components/shared/ApiCards";
 import { Button } from "@/components/ui/button";
 import { isVapiConfigured } from "@/lib/vapi";
-import { useVapiInterview } from "@/components/job-seeker/useVapiInterview";
+import {
+  useVapiInterview,
+  type TranscriptTurnInput,
+} from "@/components/job-seeker/useVapiInterview";
 
 type VoiceInterviewPanelProps = {
   sessionId: number;
@@ -16,6 +19,14 @@ type VoiceInterviewPanelProps = {
   candidateAvatarUrl?: string;
   jobTitle: string;
   onSwitchToTyping: () => void;
+  /**
+   * How to reach the backend. Passed down rather than imported so a guest,
+   * who calls different endpoints with a token, sits the same call as a
+   * signed-in candidate.
+   */
+  bindCall: (callId: string) => Promise<unknown>;
+  submitTurns: (turns: TranscriptTurnInput[]) => Promise<unknown>;
+  onScored?: () => void;
 };
 
 function initials(name: string): string {
@@ -34,6 +45,9 @@ export function VoiceInterviewPanel({
   candidateAvatarUrl,
   jobTitle,
   onSwitchToTyping,
+  bindCall,
+  submitTurns,
+  onScored,
 }: VoiceInterviewPanelProps) {
   const {
     status,
@@ -48,7 +62,15 @@ export function VoiceInterviewPanel({
     retrySubmit,
     start,
     stop,
-  } = useVapiInterview({ sessionId, questions, candidateName, jobTitle });
+  } = useVapiInterview({
+    sessionId,
+    questions,
+    candidateName,
+    jobTitle,
+    bindCall,
+    submitTurns,
+    onScored,
+  });
 
   const isLive = status === "live";
 

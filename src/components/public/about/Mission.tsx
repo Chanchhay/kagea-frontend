@@ -72,9 +72,9 @@ export default function MissionSection() {
   return (
     <section
       ref={containerRef}
-      className="relative overflow-hidden py-10 lg:py-16"
+      className="relative"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="w-full">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
           {/* Left Side: Headline & Organic Blob Image */}
           <motion.div
