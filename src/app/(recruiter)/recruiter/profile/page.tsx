@@ -74,7 +74,7 @@ export default function RecruiterProfilePage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-center gap-4">
               <div
-                className="flex size-16 shrink-0 items-center justify-center rounded-full bg-brand-tint bg-cover bg-center text-lg font-bold text-brand"
+                className="flex size-16 shrink-0 items-center justify-center rounded-full bg-brand-tint bg-cover bg-center text-lg font-semibold text-brand"
                 style={
                   avatarUrl
                     ? { backgroundImage: `url("${resolveFileUrl(avatarUrl)}")` }

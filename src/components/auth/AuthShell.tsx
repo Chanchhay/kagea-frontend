@@ -82,19 +82,19 @@ export function AuthShell({
                 <span className="text-brand">AI</span>-powered.
               </span>
             </h2>
-            <p className="mt-5 max-w-[19rem] text-[1rem] leading-7 text-[#375145] dark:text-white/78">
+            <p className="mt-5 max-w-[19rem] text-[1.125rem] leading-7 text-[#375145] dark:text-white/78">
               Create your account and unlock smarter career opportunities.
             </p>
           </div>
 
           <div className="relative z-10 mt-4 w-[19rem] text-[#41584d] dark:text-white/72">
-            <div className="flex items-start gap-2.5 text-[12px] leading-5">
+            <div className="flex items-start gap-2.5 text-[18px] leading-5">
               <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-2xl border border-[#3be172]/20 bg-white/60 text-[#199b43] dark:border-[#3be172]/30 dark:bg-white/5 dark:text-[#5ff08d]">
                 <ShieldCheck aria-hidden="true" className="size-4.5" />
               </span>
               <p>Secure access to public opportunities, personalized career tools, and recruiter workflows.</p>
             </div>
-            <p className="mt-2.5 text-[11px] text-[#64776e] dark:text-white/50">
+            <p className="mt-2.5 text-[18px] text-[#64776e] dark:text-white/50">
               Copyright 2026 Kagea. All rights reserved.
             </p>
           </div>
@@ -102,14 +102,14 @@ export function AuthShell({
 
         <section className="relative min-h-dvh bg-surface text-foreground dark:bg-[#0a1310] lg:h-full lg:min-h-0 lg:overflow-y-auto">
           <div className="mx-auto flex min-h-dvh w-full max-w-[560px] flex-col justify-center px-6 py-8 sm:px-8 lg:min-h-full lg:py-10 xl:px-12">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[.12em] text-brand dark:bg-brand/20 dark:text-[#8df6a8]">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-[18px] font-semibold uppercase tracking-[.12em] text-brand dark:bg-brand/20 dark:text-[#8df6a8]">
               <ShieldCheck aria-hidden="true" className="size-4" />
               Secure access
             </span>
             <h1 className="mt-4 text-[clamp(1.6rem,2vw,2.3rem)] font-semibold tracking-[-0.045em] text-heading">
               {title}
             </h1>
-            <p className="mt-2 text-[13.5px] leading-5 text-body">
+            <p className="mt-2 text-[18px] leading-5 text-body">
               {description}
             </p>
             <div className="mt-6">{children}</div>

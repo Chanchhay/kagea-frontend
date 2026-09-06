@@ -63,8 +63,13 @@ export default function TalentDetailPage() {
       {talent.bio ? (
         <section className="relative overflow-hidden rounded-[22px] border border-ws-line bg-ws-panel p-6 sm:p-7">
           <Quote aria-hidden="true" className="absolute -right-3 -top-3 size-24 text-brand/5" />
+<<<<<<< HEAD
           <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-primary">About this candidate</h2>
           <p className="relative mt-3 max-w-4xl whitespace-pre-wrap text-[15px] leading-7 text-ws-muted">
+=======
+          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">About this candidate</h2>
+          <p className="relative mt-4 max-w-3xl whitespace-pre-wrap text-[18px] leading-7 text-slate-700 dark:text-slate-300">
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
             {talent.bio}
           </p>
         </section>
@@ -115,14 +120,22 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
               className="size-24 shrink-0 rounded-3xl border-4 border-ws-panel bg-ws-card object-cover ring-1 ring-ws-line sm:size-28"
             />
           ) : (
+<<<<<<< HEAD
             <span className="flex size-24 shrink-0 items-center justify-center rounded-3xl border-4 border-ws-panel bg-primary/10 text-3xl font-bold text-primary ring-1 ring-ws-line sm:size-28">
+=======
+            <span className="flex size-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-brand-tint text-3xl font-semibold text-brand shadow-md sm:size-26 dark:border-slate-800">
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
               {initial}
             </span>
           )}
 
           <div className="min-w-0 flex-1">
+<<<<<<< HEAD
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Talent profile</p>
             <h1 className="mt-1 text-2xl font-bold tracking-tight text-ws-fg sm:text-3xl">
+=======
+            <h1 className="text-2xl font-semibold tracking-tight text-heading sm:text-[28px]">
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
               {talent.headline || "Candidate profile"}
             </h1>
             {talent.currentPosition ? (
@@ -169,7 +182,7 @@ function ResumeCard({ resume, slug }: { resume: PublicResumeResponse; slug: stri
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="truncate font-semibold text-heading">{resume.title}</h3>
           {resume.isDefault ? (
-            <span className="shrink-0 rounded-full bg-brand-tint px-2 py-0.5 text-[10px] font-semibold text-brand">Default</span>
+            <span className="shrink-0 rounded-full bg-brand-tint px-2 py-0.5 text-[18px] font-semibold text-brand">Default</span>
           ) : null}
         </div>
         <p className="mt-1 text-xs text-slate-500">{isBuilt ? "Created in Kagea" : "PDF resume"}</p>
@@ -200,7 +213,7 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
     <article className="rounded-[20px] border border-ws-line bg-ws-card p-5 transition hover:border-primary/30">
       <div>
         <div className="min-w-0">
-          <h3 className="truncate text-base font-bold text-heading">{portfolio.title}</h3>
+          <h3 className="truncate text-base font-semibold text-heading">{portfolio.title}</h3>
           <p className="mt-0.5 text-xs text-slate-500">
             {projects.length} {projects.length === 1 ? "project" : "projects"}
           </p>
@@ -278,7 +291,7 @@ function StatTile({ icon: Icon, value, label }: { icon: typeof FileText; value: 
         <Icon className="size-5" />
       </span>
       <div>
-        <p className="text-2xl font-bold leading-none text-heading">{value}</p>
+        <p className="text-2xl font-semibold leading-none text-heading">{value}</p>
         <p className="mt-1.5 text-xs text-slate-500">{label}</p>
       </div>
     </div>

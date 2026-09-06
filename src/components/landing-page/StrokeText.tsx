@@ -13,6 +13,9 @@ type StrokeTextProps = {
   text?: string;
   strokeColor?: string;
   fillColor?: string;
+  accentText?: string;
+  accentColor?: string;
+  fadeStrokeOnFill?: boolean;
   strokeWidth?: number;
   drawDuration?: number;
   fillDelay?: number;
@@ -39,6 +42,9 @@ export default function StrokeText({
   text = 'Draw Attention',
   strokeColor = '#A78BFA',
   fillColor = '#F8FAFC',
+  accentText,
+  accentColor,
+  fadeStrokeOnFill = false,
   strokeWidth = 1.4,
   drawDuration = 1.6,
   fillDelay = 0.2,
@@ -47,7 +53,7 @@ export default function StrokeText({
   trigger = 'mount',
   fillMode = 'wipe',
   fontSize = 128,
-  fontWeight = 800,
+  fontWeight = 700,
   letterSpacing = -4,
   reverse = false,
   className = '',
@@ -60,6 +66,10 @@ export default function StrokeText({
   const rawId = useId();
   const wipeId = `stroke-text-wipe-${rawId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
   const characters = useMemo(() => Array.from(String(text ?? '')), [text]);
+  const accentStart = useMemo(() => {
+    if (!accentText) return -1;
+    return String(text ?? '').toLocaleLowerCase().lastIndexOf(accentText.toLocaleLowerCase());
+  }, [accentText, text]);
   const dash = Math.max((typeof fontSize === 'number' ? fontSize : 128) * 7, 200);
 
   const fontStyle = useMemo(
@@ -131,14 +141,18 @@ export default function StrokeText({
 
     const setStart = () => {
       gsap.killTweensOf(targets);
-      gsap.set(strokes, { strokeDasharray: dash, strokeDashoffset: dash });
+      gsap.set(strokes, { opacity: 1, strokeDasharray: dash, strokeDashoffset: dash });
       gsap.set(fills, { opacity: useWipe ? 1 : 0 });
       if (wipe) gsap.set(wipe, { attr: { width: 0 } });
     };
 
     const setEnd = () => {
       gsap.killTweensOf(targets);
-      gsap.set(strokes, { strokeDasharray: dash, strokeDashoffset: 0 });
+      gsap.set(strokes, {
+        opacity: fillEnabled && fadeStrokeOnFill ? 0 : 1,
+        strokeDasharray: dash,
+        strokeDashoffset: 0,
+      });
       gsap.set(fills, { opacity: fillEnabled ? 1 : 0 });
       if (wipe) gsap.set(wipe, { attr: { width: fillEnabled ? box.width : 0 } });
     };
@@ -170,6 +184,14 @@ export default function StrokeText({
           fills,
           { opacity: 1, duration: fillDuration, ease: 'power2.out', stagger: staggerConfig },
           drawDuration + fillDelay,
+        );
+      }
+
+      if (fillEnabled && fadeStrokeOnFill) {
+        tl.to(
+          strokes,
+          { opacity: 0, duration: 0.3, ease: 'power2.out' },
+          drawDuration + fillDelay + fillDuration - 0.1,
         );
       }
 
@@ -209,7 +231,7 @@ export default function StrokeText({
       timeline?.kill();
       gsap.killTweensOf(targets);
     };
-  }, [box, dash, drawDuration, fillDelay, stagger, ease, trigger, fillMode, reverse]);
+  }, [box, dash, drawDuration, fillDelay, stagger, ease, trigger, fillMode, reverse, fadeStrokeOnFill]);
 
   const viewBox = box
     ? `${box.x} ${box.y} ${box.width} ${box.height}`
@@ -267,7 +289,11 @@ export default function StrokeText({
           clipPath={fillMode === 'wipe' && box ? `url(#${wipeId})` : undefined}
         >
           {characters.map((char, index) => (
-            <tspan data-fill-char key={`f-${index}`}>
+            <tspan
+              data-fill-char
+              key={`f-${index}`}
+              fill={accentColor && accentStart >= 0 && index >= accentStart ? accentColor : fillColor}
+            >
               {char}
             </tspan>
           ))}

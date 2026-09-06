@@ -55,6 +55,7 @@ export const baseApi = createApi({
     "Session",
     "CurrentUser",
     "PublicJobs",
+    "GuestInterview",
     "FavoriteJobs",
     "HiringRecords",
     "Invoices",

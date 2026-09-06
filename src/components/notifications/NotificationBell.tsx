@@ -76,7 +76,11 @@ export function NotificationBell({
       >
         <Bell aria-hidden="true" className="size-4.5" />
         {count > 0 ? (
+<<<<<<< HEAD
           <span className="ws-notification-count absolute -right-0.5 -top-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+=======
+          <span className="absolute -top-0.5 -right-0.5 flex min-w-4.5 items-center justify-center rounded-full bg-primary px-1 text-[18px] font-semibold text-primary-foreground">
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
             {count > 99 ? "99+" : count}
           </span>
         ) : null}
@@ -176,7 +180,7 @@ function NotificationRow({
           {notification.body}
         </span>
       ) : null}
-      <span className="mt-1 block text-[11px] text-ws-faint">
+      <span className="mt-1 block text-[18px] text-ws-faint">
         {formatRelative(notification.createdAt)}
       </span>
     </>

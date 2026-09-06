@@ -344,7 +344,7 @@ function ProfileShowcase() {
               Profile
             </span>
           </div>
-          <h2 className="mt-5 max-w-2xl text-2xl font-extrabold leading-[1.25] text-[#F3C623] sm:text-4xl lg:text-5xl">
+          <h2 className="mt-5 max-w-2xl text-2xl font-bold leading-[1.25] text-[#F3C623] sm:text-4xl lg:text-5xl">
             Be the candidate employers are looking for
           </h2>
           <p className="mt-6 max-w-xl text-base leading-7 text-slate-500 sm:text-lg">
@@ -375,7 +375,7 @@ function ProfileShowcase() {
               trusted opportunities in one place
             </span>
           </div>
-          <h2 className="mt-6 max-w-xl text-3xl font-extrabold leading-[1.25] text-[#F3C623] sm:text-4xl lg:text-5xl">
+          <h2 className="mt-6 max-w-xl text-3xl font-bold leading-[1.25] text-[#F3C623] sm:text-4xl lg:text-5xl">
             Get noticed by leading companies
           </h2>
           <p className="mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
@@ -390,7 +390,7 @@ function ProfileShowcase() {
               "Receive personalized job alerts for 100+ job categories.",
             ].map((item, index) => (
               <li key={item} className="flex items-center gap-3.5">
-                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#16A34A] text-xs font-bold text-white">
+                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#16A34A] text-xs font-semibold text-white">
                   {index + 1}
                 </span>
                 <span className="text-sm font-medium sm:text-base">{item}</span>
@@ -399,7 +399,7 @@ function ProfileShowcase() {
           </ol>
         </div>
         <div className="rounded-2xl bg-[#E8F5E9]/60 p-7 sm:p-10">
-          <p className="text-center text-xs font-bold uppercase tracking-wider text-[#16A34A]">
+          <p className="text-center text-xs font-semibold uppercase tracking-wider text-[#16A34A]">
             Top companies
           </p>
           <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-6 text-center sm:grid-cols-3">
@@ -507,7 +507,7 @@ function ProfileGraphic() {
                 height="22"
               >
                 <div
-                  className={`flex h-full items-center gap-1 text-[10px] font-bold tracking-wider text-[#16A34A] ${
+                  className={`flex h-full items-center gap-1 text-[18px] font-semibold tracking-wider text-[#16A34A] ${
                     isRight ? "justify-start" : "justify-end"
                   }`}
                 >
@@ -584,17 +584,17 @@ function HowItWorks() {
             <article
               key={title}
               className=
-               
-                  
+
+
                    "rounded-xl p-7 text-center"
-              
+
             >
               <span
                 className=
-                  
-                    
+
+
                      "mx-auto flex size-[72px] items-center justify-center rounded-full bg-surface text-brand"
-                
+
               >
                 <Image
                   src={icon}
@@ -684,7 +684,7 @@ function GlobalReach() {
                   className="object-cover"
                 />
               </div>
-              <div className="pointer-events-none absolute left-1/2 top-full mt-3 -translate-x-1/2 rounded-full bg-brand px-3 py-1 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-white opacity-0 shadow-lg transition duration-300 group-hover:opacity-100">
+              <div className="pointer-events-none absolute left-1/2 top-full mt-3 -translate-x-1/2 rounded-full bg-brand px-3 py-1 text-center text-[18px] font-semibold uppercase tracking-[0.18em] text-white opacity-0 shadow-lg transition duration-300 group-hover:opacity-100">
                 {centerMember.role}
               </div>
             </div>
@@ -704,7 +704,7 @@ function GlobalReach() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[18px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
                     {innerTopMember.name}
                   </div>
                 </div>
@@ -721,7 +721,7 @@ function GlobalReach() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[18px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
                     {innerBottomMember.name}
                   </div>
                 </div>
@@ -743,7 +743,7 @@ function GlobalReach() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[18px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
                     {outerMembers[0].name}
                   </div>
                 </div>
@@ -760,7 +760,7 @@ function GlobalReach() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[18px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
                     {outerMembers[1].name}
                   </div>
                 </div>
@@ -777,7 +777,7 @@ function GlobalReach() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[18px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
                     {outerMembers[2].name}
                   </div>
                 </div>
@@ -794,7 +794,7 @@ function GlobalReach() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
+                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-white/95 px-2.5 py-1 text-[18px] font-medium text-brand opacity-0 shadow-md transition duration-300 group-hover:opacity-100">
                     {outerMembers[3].name}
                   </div>
                 </div>
@@ -821,7 +821,7 @@ export function NewestJobs() {
   return (
     <section className="bg-surface py-16 lg:py-20">
       <div className="mx-auto max-w-[1090px] px-4 sm:px-6">
-        <h2 className="text-center text-4xl font-bold text-brand">
+        <h2 className="text-center text-4xl font-semibold text-brand">
           Newest <span className="text-warning">Jobs</span> For You
         </h2>
         <p className="mt-3 text-center text-base text-brand">
@@ -934,7 +934,7 @@ function Testimonial() {
                 className="object-cover object-top"
               />
             </div>
-            <span className="absolute -bottom-3 -right-3 flex size-11 items-center justify-center rounded-full bg-red-500 text-2xl font-bold text-white">
+            <span className="absolute -bottom-3 -right-3 flex size-11 items-center justify-center rounded-full bg-red-500 text-2xl font-semibold text-white">
               ”
             </span>
           </div>

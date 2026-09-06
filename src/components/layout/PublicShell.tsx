@@ -52,12 +52,25 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <header
                 className={cn(
                     "sticky top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300",
+                    /*
+                     * The dark values are pinned to the landing page's neutral
+                     * charcoal rather than `--surface`, whose dark value is a
+                     * green-tinted #171E17 -- against the page's #181B1C that
+                     * read as a tinted bar with a seam under it.
+                     */
                     scrolled
-                        ? "border-b border-border/70 bg-surface/80 shadow-[0_1px_24px_-12px_rgba(0,0,0,.35)] backdrop-blur-xl supports-backdrop-filter:bg-surface/70"
-                        : "border-b border-transparent bg-surface",
+                        ? "border-b border-border/70 bg-surface/80 shadow-[0_1px_24px_-12px_rgba(0,0,0,.35)] backdrop-blur-xl supports-backdrop-filter:bg-surface/70 dark:border-[#3E444B]/70 dark:bg-[#181B1C]/80 dark:supports-backdrop-filter:bg-[#181B1C]/70"
+                        : "border-b border-transparent bg-surface dark:bg-[#181B1C]",
                 )}
             >
-                <div className="mx-auto flex h-16 max-w-352 items-center gap-4 px-4 sm:px-6 lg:h-18 lg:px-8">
+                {/*
+                 * The gutters mirror the landing hero's own padding ladder
+                 * (px-5 / sm:px-8 / lg:px-12 / xl:px-16 / 2xl:px-24), so the
+                 * logo lines up with the copy beneath it instead of hugging the
+                 * window edge. The height stays 64/72px: `scroll-padding-top`
+                 * and the hero's `100svh-78px` are keyed to it.
+                 */}
+                <div className="mx-auto flex h-16 w-full max-w-[120rem] items-center gap-4 px-5 sm:px-8 lg:h-18 lg:px-12 xl:px-16 2xl:px-24">
                     {/*
                      * The two side rails share `flex-1 basis-0` so they always
                      * measure the same width, which pins the nav to the true
@@ -177,7 +190,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
                     </Sheet>
                 </div>
             </header>
-            <main className="overflow-x-hidden">
+            <main className="overflow-x-clip">
                 {children}
             </main>
         </div>
@@ -201,12 +214,12 @@ function useScrolled(threshold = 8) {
 export function PublicFooter() {
     return (
         <footer className="relative overflow-hidden bg-white text-slate-700 dark:bg-[#181B1C] dark:text-[#CBD0D5]">
-            <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-8 px-5 py-9 sm:gap-x-10 sm:px-6 sm:py-12 lg:px-8 xl:grid-cols-[1.2fr_1.05fr_.65fr_1fr] xl:gap-x-12 xl:py-14 2xl:gap-x-16">
+            <div className="relative mx-auto grid w-full max-w-[120rem] grid-cols-2 gap-x-6 gap-y-8 px-5 py-9 sm:gap-x-10 sm:px-8 sm:py-12 lg:px-12 xl:grid-cols-[1.2fr_1.05fr_.65fr_1fr] xl:gap-x-12 xl:px-16 xl:py-14 2xl:gap-x-16 2xl:px-24">
                 <div className="relative col-span-2 min-w-0 sm:col-span-1 sm:pr-4 xl:col-span-1 xl:pr-0">
                     <Link href="/" className="relative block w-fit rounded-lg outline-none transition-opacity hover:opacity-85 focus-visible:ring-3 focus-visible:ring-emerald-600/25" aria-label="Kagea home">
                         <BrandLogo height={40} />
                     </Link>
-                    <p className="relative mt-4 max-w-sm text-[13px] leading-5.5 text-slate-600 sm:mt-5 sm:text-sm sm:leading-6 dark:text-slate-400">
+                    <p className="relative mt-4 max-w-sm text-[18px] leading-5.5 text-slate-600 sm:mt-5 sm:text-sm sm:leading-6 dark:text-slate-400">
                         Empowering learners through innovative education and
                         technology. Providing the latest methodology with
                         high-quality training and mentoring.
@@ -214,7 +227,7 @@ export function PublicFooter() {
                 </div>
 
                 <div className="col-span-2 min-w-0 border-t border-emerald-950/8 pt-6 sm:col-span-1 sm:border-0 sm:pt-0 dark:border-white/8 xl:col-span-1">
-                    <h2 className="text-sm font-bold tracking-wide text-slate-950 dark:text-white">Contact</h2>
+                    <h2 className="text-sm font-semibold tracking-wide text-slate-950 dark:text-white">Contact</h2>
                     <ul className="mt-4 space-y-3.5 sm:mt-5 sm:space-y-4">
                         <FooterContact icon={Phone} label="Customer Service">+855-81697501</FooterContact>
                         <FooterContact icon={Clock3} label="Working Hours">08:30 - 18:00</FooterContact>
@@ -223,9 +236,9 @@ export function PublicFooter() {
                 </div>
 
                 <div className="col-span-1 min-w-0 border-t border-emerald-950/8 pt-6 sm:pt-7 dark:border-white/8 xl:border-0 xl:pt-0">
-                    <h2 className="text-sm font-bold tracking-wide text-slate-950 dark:text-white">Explore</h2>
+                    <h2 className="text-sm font-semibold tracking-wide text-slate-950 dark:text-white">Explore</h2>
                     <nav
-                        className="mt-4 grid gap-3 text-[13px] sm:mt-5 sm:gap-3.5 sm:text-sm"
+                        className="mt-4 grid gap-3 text-[18px] sm:mt-5 sm:gap-3.5 sm:text-sm"
                         aria-label="Footer navigation"
                     >
                         {landingNavigation.map((link) => (
@@ -242,7 +255,7 @@ export function PublicFooter() {
                 </div>
 
                 <div className="col-span-1 min-w-0 border-t border-emerald-950/8 pt-6 sm:pt-7 dark:border-white/8 xl:border-0 xl:pt-0">
-                    <h2 className="text-xs font-bold leading-5 tracking-wide text-slate-950 sm:text-sm dark:text-white">Sponsored and organized by</h2>
+                    <h2 className="text-xs font-semibold leading-5 tracking-wide text-slate-950 sm:text-sm dark:text-white">Sponsored and organized by</h2>
                     <div className="relative mt-3 h-12 w-full max-w-40 sm:mt-5 sm:h-16 sm:max-w-56">
                         <Image src="/landing-assets/istad-logo-color.png" alt="ISTAD" fill sizes="224px" loading="eager" unoptimized className="object-contain object-left dark:hidden" />
                         <Image src="/landing-assets/istad-logo.png" alt="" aria-hidden="true" fill sizes="224px" loading="eager" unoptimized className="hidden object-contain object-left dark:block" />
@@ -267,8 +280,8 @@ export function PublicFooter() {
                 </div>
             </div>
             <div className="relative border-t border-emerald-950/10 bg-white/45 dark:border-[#3E444B] dark:bg-[#151819]">
-                <div className="mx-auto flex max-w-7xl flex-col items-center gap-1.5 px-4 py-4 text-center text-xs text-slate-500 sm:px-6 md:flex-row md:justify-between md:text-left lg:px-8 dark:text-slate-400">
-                    <p>© 2026 KAGEA. All rights reserved.</p>
+                <div className="mx-auto flex w-full max-w-[120rem] flex-col items-center gap-1.5 px-5 py-4 text-center text-xs text-slate-500 sm:px-8 md:flex-row md:justify-between md:text-left lg:px-12 xl:px-16 2xl:px-24 dark:text-slate-400">
+                    <p>© 2026 ការងារ. All rights reserved.</p>
                     <p>Sponsored and organized by <span className="font-semibold text-slate-700 dark:text-slate-200">ISTAD</span></p>
                 </div>
             </div>

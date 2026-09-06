@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { useState } from 'react';
 import type { SVGProps } from 'react';
+import { useGetCurrentUserQuery, useGetSessionQuery } from '@/services/authApi';
 
 /* ------------------------------------------------------------------ */
 /*  Geometry — tweak these constants to nudge the whole diagram        */
@@ -153,32 +155,11 @@ const CIRC = 2 * Math.PI * RING_R; // ring circumference
 const SWEEP = 9;                   // seconds for one full sweep
 
 function ProfileWheel() {
-  const hostRef = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
   const [active, setActive] = useState<string | null>(null);
-
-  useEffect(() => {
-    const el = hostRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.35 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
 
   return (
     <div
-      ref={hostRef}
-      className={`kg-wheel relative aspect-[596/530] w-full max-w-[596px] select-none rounded-[28px] border border-transparent dark:border-slate-800/80 ${
-        inView ? 'is-in' : ''
-      }`}
+      className="kg-wheel relative aspect-[596/530] w-full max-w-[596px] select-none rounded-[28px] border border-transparent dark:border-slate-800/80"
       onMouseLeave={() => setActive(null)}
     >
       <style>{`
@@ -189,46 +170,17 @@ function ProfileWheel() {
         .kg-wheel .kg-core   { transform-box: fill-box; transform-origin: center; }
 
         @media (prefers-reduced-motion: no-preference) {
-          .kg-wheel .kg-ring   { stroke-dashoffset: ${CIRC}; }
-          .kg-wheel .kg-dot    { transform: scale(0); }
-          .kg-wheel .kg-stem   { opacity: 0; }
-          .kg-wheel .kg-label  { opacity: 0; transform: translateY(8px); }
-          .kg-wheel .kg-inner,
-          .kg-wheel .kg-core   { transform: scale(0); }
-          .kg-wheel .kg-sweep  { opacity: 0; }
-
-          .kg-wheel.is-in .kg-ring {
-            animation: kg-draw 1.3s cubic-bezier(.65,0,.35,1) forwards;
+          .kg-wheel .kg-core {
+            animation: kg-breathe 4.5s ease-in-out infinite;
           }
-          .kg-wheel.is-in .kg-inner {
-            animation: kg-pop .7s cubic-bezier(.34,1.4,.64,1) .55s forwards;
+          .kg-wheel .kg-sweep {
+            animation: kg-spin ${SWEEP}s linear infinite;
           }
-          .kg-wheel.is-in .kg-core {
-            animation: kg-pop .7s cubic-bezier(.34,1.6,.64,1) .75s forwards,
-                       kg-breathe 4.5s ease-in-out 1.6s infinite;
-          }
-          .kg-wheel.is-in .kg-dot {
-            animation: kg-pop .5s cubic-bezier(.34,1.6,.64,1) forwards;
-          }
-          .kg-wheel.is-in .kg-stem {
-            animation: kg-in .5s ease-out forwards;
-          }
-          .kg-wheel.is-in .kg-label {
-            animation: kg-in .55s cubic-bezier(.22,1,.36,1) forwards;
-          }
-          .kg-wheel.is-in .kg-sweep {
-            animation: kg-fade .6s ease-out 1.3s forwards,
-                       kg-spin ${SWEEP}s linear 1.3s infinite;
-          }
-          .kg-wheel.is-in .kg-pulse {
-            animation: kg-ping ${SWEEP}s linear 1.3s infinite;
+          .kg-wheel .kg-pulse {
+            animation: kg-ping ${SWEEP}s linear infinite;
           }
         }
 
-        @keyframes kg-draw   { to { stroke-dashoffset: 0; } }
-        @keyframes kg-pop    { to { transform: scale(1); } }
-        @keyframes kg-in     { to { opacity: 1; transform: translateY(0); } }
-        @keyframes kg-fade   { to { opacity: 1; } }
         @keyframes kg-spin   { from { transform: rotate(-90deg); } to { transform: rotate(270deg); } }
         @keyframes kg-breathe{ 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes kg-ping {
@@ -355,7 +307,7 @@ function ProfileWheel() {
         const delay = `${0.55 + cwIndex(id) * 0.07}s`;
 
         const text = (
-          <span className="text-[10px] font-extrabold tracking-wide sm:text-[13px]">{label}</span>
+          <span className="text-[18px] font-bold tracking-wide sm:text-[18px]">{label}</span>
         );
         const icon = <Icon className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" />;
 
@@ -423,6 +375,27 @@ function ProfileWheel() {
 }
 
 export default function CandidateProfileSection() {
+  const sessionQuery = useGetSessionQuery();
+  const currentUserQuery = useGetCurrentUserQuery(undefined, {
+    skip: !sessionQuery.data?.authenticated,
+  });
+  const roles = currentUserQuery.data?.roles.map((role) => role.toUpperCase()) ?? [];
+  const isRecruiter = roles.some((role) => role.includes('RECRUITER'));
+  const profileHref = !sessionQuery.data?.authenticated
+    ? '/register'
+    : !currentUserQuery.data
+      ? '/auth/continue'
+    : isRecruiter
+      ? '/recruiter/dashboard'
+      : '/job-seeker/profile';
+  const profileCta = !sessionQuery.data?.authenticated
+    ? 'Create now'
+    : !currentUserQuery.data
+      ? 'Continue'
+    : isRecruiter
+      ? 'Open recruiter dashboard'
+      : 'Build my profile';
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 sm:py-10">
       <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
@@ -440,7 +413,7 @@ export default function CandidateProfileSection() {
           </span>
 
           <h2
-            className="mt-6 text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-[2.75rem]"
+            className="mt-6 text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-[2.75rem]"
             style={{ color: YELLOW }}
           >
             Be the candidate employers are looking for
@@ -455,13 +428,13 @@ export default function CandidateProfileSection() {
             stand out.
           </p>
 
-          <button
-            type="button"
-            className="mt-8 rounded-lg px-7 py-3 text-sm font-bold text-white shadow-sm transition hover:brightness-110 active:scale-[0.98]"
+          <Link
+            href={profileHref}
+            className="mt-8 inline-flex min-h-12 items-center justify-center rounded-lg px-7 py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:brightness-110 active:scale-[0.98]"
             style={{ backgroundColor: DEEP }}
           >
-            Create now
-          </button>
+            {profileCta}
+          </Link>
         </div>
       </div>
     </section>

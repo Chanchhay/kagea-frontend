@@ -78,7 +78,7 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
           <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
             <div className="relative shrink-0">
               <div
-                className="flex size-24 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-2xl font-bold text-brand shadow-md ring-4 ring-white/70 dark:ring-slate-800"
+                className="flex size-24 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-2xl font-semibold text-brand shadow-md ring-4 ring-white/70 dark:ring-slate-800"
                 style={
                   photoUrl
                     ? { backgroundImage: `url("${resolveFileUrl(photoUrl)}")` }
@@ -100,7 +100,7 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-2xl font-semibold tracking-tight text-heading">{name}</h2>
-                <span className="inline-flex items-center gap-1 rounded-full bg-brand-tint px-2.5 py-1 text-[11px] font-semibold text-brand">
+                <span className="inline-flex items-center gap-1 rounded-full bg-brand-tint px-2.5 py-1 text-[18px] font-semibold text-brand">
                   <BadgeCheck className="size-3" />
                   {humanize(profile.verificationStatus)}
                 </span>
@@ -120,7 +120,7 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
             <div className="w-full rounded-2xl border border-white/70 bg-surface/85 p-4 shadow-sm backdrop-blur sm:w-56 dark:border-border">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-heading">Profile strength</span>
-                <span className="text-base font-bold text-brand">{completion}%</span>
+                <span className="text-base font-semibold text-brand">{completion}%</span>
               </div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-muted">
                 <div
@@ -128,7 +128,7 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
                   style={{ width: `${completion}%` }}
                 />
               </div>
-              <p className="mt-2 text-[11px] text-slate-500">Complete details to stand out.</p>
+              <p className="mt-2 text-[18px] text-slate-500">Complete details to stand out.</p>
             </div>
           </div>
 

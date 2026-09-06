@@ -14,12 +14,18 @@ import { cn } from "@/lib/utils";
  */
 
 const WORDMARK = {
+<<<<<<< HEAD
   light: "/images/brand/logo1-light.png",
   dark: "/images/brand/logo1-dark.png",
   ratio: 1237 / 397,
   sourceWidth: 1672,
   sourceHeight: 941,
   trim: { x: 238, y: 272, width: 1237, height: 397 },
+=======
+  light: "/images/brand/logo-light.png?v=khmer-20260831b",
+  dark: "/images/brand/logo-dark.png?v=khmer-20260831b",
+  ratio: 1345 / 424,
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
 } as const;
 
 const MARK = {
@@ -70,21 +76,39 @@ function ThemedImage({
       <Image
         src={asset.light}
         alt={alt}
+<<<<<<< HEAD
         width={width}
         height={height}
         priority={priority}
         style={imageStyle}
         className={cn(shared, "dark:hidden")}
+=======
+      width={width}
+      height={height}
+      priority={priority}
+      unoptimized
+        className={cn(shared, "dark:hidden", className)}
+        style={{ height, width: "auto" }}
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
       />
       <Image
         src={asset.dark}
         alt=""
         aria-hidden="true"
+<<<<<<< HEAD
         width={width}
         height={height}
         priority={priority}
         style={imageStyle}
         className={cn(shared, "hidden dark:block")}
+=======
+      width={width}
+      height={height}
+      priority={priority}
+      unoptimized
+        className={cn(shared, "hidden dark:block", className)}
+        style={{ height, width: "auto" }}
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
       />
     </span>
   );

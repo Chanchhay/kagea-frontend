@@ -8,7 +8,6 @@ import { motion } from 'framer-motion';
 import { useGetPublicJobsQuery } from '@/services/publicApi';
 import { MapPinIcon } from './icons';
 import RobotHeroLight from './RobotHeroLight';
-import { GlobeBackground } from './shared/GlobeBackground';
 import { TypewriterText } from './shared/TypewriterText';
 import { ScaleReveal } from './shared/ScaleReveal';
 
@@ -40,16 +39,20 @@ function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
         whileHover={{ y: -4 }}
         whileTap={{ scale: 0.99 }}
         transition={{ type: 'spring', stiffness: 320, damping: 24 }}
-        className="group relative flex w-[270px] cursor-pointer items-center justify-between overflow-hidden rounded-2xl border border-[#FDE68A] bg-white p-5 shadow-[0_14px_38px_rgba(245,158,11,0.10)] transition-[border-color,box-shadow,background-color] duration-300 hover:border-[#F3BE00] hover:shadow-[0_18px_44px_rgba(245,158,11,0.16)] sm:w-[310px] dark:border-[#3E444B] dark:bg-[#23272D] dark:shadow-[0_16px_36px_-18px_rgba(0,0,0,.8)] dark:hover:border-[#F3BE00]/60 dark:hover:bg-[#2B3036] dark:hover:shadow-[0_20px_42px_-20px_rgba(0,0,0,.9)]"
+        className="group relative flex w-[270px] cursor-pointer items-center justify-between overflow-hidden rounded-2xl border border-[#FDE68A] bg-white p-5 shadow-[0_4px_16px_rgba(15,23,42,0.06)] transition-[border-color,box-shadow,background-color] duration-300 hover:border-[#F3BE00] hover:shadow-[0_10px_24px_rgba(15,23,42,0.10)] sm:w-[310px] dark:border-[#3E444B] dark:bg-[#22262C] dark:shadow-[0_14px_32px_-18px_rgba(0,0,0,.9)] dark:hover:border-[#F3BE00]/60 dark:hover:bg-[#2B3036] dark:hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,.8)]"
       >
       <div className="flex min-w-0 items-center gap-3">
         <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${company.bg} ${company.text} text-[11px] font-bold shadow-sm dark:shadow-[0_0_0_1px_rgba(255,255,255,.08)]`}
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${company.bg} ${company.text} text-[18px] font-semibold shadow-sm dark:shadow-[0_0_0_1px_rgba(255,255,255,.08)]`}
         >
           {company.logoText}
         </div>
         <div className="min-w-0">
+<<<<<<< HEAD
           <p className="truncate text-base font-semibold leading-tight text-slate-600 transition-colors group-hover:text-[#0F8A22] dark:text-slate-400 dark:group-hover:text-[#7bf0a4]">
+=======
+          <p className="truncate text-base font-semibold leading-tight text-slate-900 transition-colors group-hover:text-[#0F8A22] dark:text-white dark:group-hover:text-[#7bf0a4]">
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
             {company.name}
           </p>
           <div className="mt-1 flex items-center gap-1 text-xs text-slate-500 dark:text-white/60">
@@ -60,7 +63,7 @@ function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
       </div>
 
       {company.featured && (
-        <span className="ml-2 shrink-0 rounded-full bg-white/75 px-2.5 py-1 text-[10px] font-semibold text-[#FB7185] ring-1 ring-[#FECDD3] backdrop-blur-sm dark:bg-white/[.06] dark:text-[#ffb4bd] dark:ring-white/15">
+        <span className="ml-2 shrink-0 rounded-full bg-white/75 px-2.5 py-1 text-[18px] font-semibold text-[#FB7185] ring-1 ring-[#FECDD3] backdrop-blur-sm dark:bg-white/[.06] dark:text-[#ffb4bd] dark:ring-white/15">
           {company.jobCount} {company.jobCount === 1 ? 'role' : 'roles'}
         </span>
       )}
@@ -116,31 +119,7 @@ export default function HeroCompaniesSection() {
     <>
       {/* ═══════════════════════════════════════════ HERO SECTION ═══════════════════════════════════════════ */}
       {/* 78px is the sticky PublicShell header, so the hero fills exactly what is left of the viewport. */}
-      <section className="relative flex min-h-[calc(100svh-78px)] snap-start items-center overflow-hidden">
-
-        {/*
-          * Globe: a square the full width of the viewport, centred on the
-          * section's bottom edge, so `overflow-hidden` clips it to the upper
-          * hemisphere -- a horizon spanning the whole screen rather than a
-          * floating ball.
-          *
-          * scale == the sphere's world radius, and a 45deg camera at z=10 sees
-          * 2 * 10 * tan(22.5deg) ~= 8.28 units across a square viewport, so
-          * scale 3.95 puts the globe (plus its radius+0.2 glow ring) just
-          * inside the container's full width.
-          */}
-        <div className="pointer-events-none absolute bottom-0 left-1/2 z-0 h-[190vw] w-[190vw] -translate-x-1/2 translate-y-1/2 opacity-40 sm:h-[140vw] sm:w-[140vw] lg:h-[100vw] lg:w-[100vw] dark:opacity-25">
-          <GlobeBackground
-            className="h-full w-full"
-            color="#bfd9fb"
-            rotationSpeed={0.00035}
-            enableParallax={false}
-            scale={3.95}
-            latLines={18}
-            lonLines={24}
-            enableDots
-          />
-        </div>
+      <section className="relative flex min-h-[calc(100svh-78px)] snap-start items-stretch overflow-hidden">
 
         {/*
           * Artwork: full-height, bled off the right edge, anchored bottom-right.
@@ -182,9 +161,6 @@ export default function HeroCompaniesSection() {
           {/* <div className="absolute inset-x-0 bottom-0 z-[2] h-40 bg-[linear-gradient(0deg,#fff_0%,rgba(255,255,255,.6)_38%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(0deg,#0B0F19_0%,rgba(11,15,25,.6)_38%,rgba(11,15,25,0)_100%)]" /> */}
         </div>
 
-        {/* Ambient brand glow */}
-        <div className="pointer-events-none absolute right-[8%] top-[12%] z-0 h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(circle,rgba(31,166,40,.14)_0%,rgba(31,166,40,.06)_45%,transparent_72%)] blur-3xl lg:h-[34rem] lg:w-[34rem] dark:bg-[radial-gradient(circle,rgba(39,183,51,.16)_0%,rgba(39,183,51,.06)_45%,transparent_72%)]" />
-
         {/*
           * Full-width bottom fade. The three fades above are scoped to the
           * artwork lane; this one spans the whole section so the hero dissolves
@@ -192,11 +168,12 @@ export default function HeroCompaniesSection() {
           */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-52 bg-[linear-gradient(to_top,#fff_0%,rgba(255,255,255,.97)_14%,rgba(255,255,255,.88)_27%,rgba(255,255,255,.72)_40%,rgba(255,255,255,.52)_54%,rgba(255,255,255,.31)_68%,rgba(255,255,255,.13)_84%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(to_top,#181B1C_0%,rgba(24,27,28,.97)_14%,rgba(24,27,28,.88)_27%,rgba(24,27,28,.72)_40%,rgba(24,27,28,.52)_54%,rgba(24,27,28,.31)_68%,rgba(24,27,28,.13)_84%,rgba(24,27,28,0)_100%)]" />
 
-        <div className="relative z-10 w-full px-5 py-14 sm:px-8 sm:py-16 lg:px-12 lg:py-20 xl:px-16 2xl:px-24">
+        <div className="relative z-10 flex w-full flex-col px-5 py-14 sm:px-8 sm:py-16 lg:px-12 lg:py-20 xl:px-16 2xl:px-24">
           {/*
             * The copy column is capped per breakpoint so it never runs under
             * the artwork lane on the right (48% from lg, 50% from xl).
             */}
+          {/* Copy sits at the top of the hero, with the actions right under it. */}
           <div className="flex w-full flex-col items-start text-left sm:max-w-xl lg:max-w-[28rem] xl:max-w-[34rem] 2xl:max-w-[38rem]">
 
             {/* Badge */}
@@ -204,14 +181,14 @@ export default function HeroCompaniesSection() {
               initial={{ opacity: 0, y: -16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55 }}
-              className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200/60 bg-[#EEF6F0] px-4 py-1.5 text-xs font-bold text-[#008A1E] shadow-xs dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-400"
+              className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200/60 bg-[#EEF6F0] px-4 py-1.5 text-xs font-semibold text-[#008A1E] shadow-xs dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-400"
             >
               <span className="flex h-2 w-2 animate-ping rounded-full bg-emerald-500" />
               <span>⚡ For job seekers &amp; recruiters</span>
             </motion.div>
 
             {/* Headline */}
-            <h1 className="max-w-[12.5ch] whitespace-pre-line font-['Inter',sans-serif] text-[clamp(2.25rem,9vw,2.75rem)] font-black leading-[1] tracking-[-0.055em] sm:max-w-[12ch] sm:text-5xl sm:leading-[0.98] lg:max-w-[11.2ch] lg:text-[52px] xl:text-[64px] 2xl:text-[72px]">
+            <h1 className="max-w-[12.5ch] whitespace-pre-line text-[clamp(2.25rem,9vw,2.75rem)] font-bold leading-[1] tracking-[-0.055em] sm:max-w-[12ch] sm:text-5xl sm:leading-[0.98] lg:max-w-[11.2ch] lg:text-[52px] xl:text-[64px] 2xl:text-[72px]">
               <TypewriterText
                 segments={[
                   { text: 'Find jobs.', className: 'text-[#008A1E]' },
@@ -223,7 +200,7 @@ export default function HeroCompaniesSection() {
             </h1>
 
             {/* Subtext */}
-            <p className="mt-6 max-w-xl font-['Inter',sans-serif] text-base font-medium leading-relaxed text-slate-500 dark:text-slate-300">
+            <p className="mt-6 max-w-xl text-base font-medium leading-relaxed text-slate-500 dark:text-slate-300">
               Browse openings from employers hiring now, build your resume and portfolio, and
               practice interviews generated from the jobs you actually want. Recruiters post
               roles and review candidates from the same place.
@@ -233,46 +210,17 @@ export default function HeroCompaniesSection() {
             <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
               <Link
                 href="/jobs"
-                className="inline-flex h-11 w-full items-center justify-center rounded-full bg-brand px-7 sm:w-auto text-[15px] font-semibold text-white shadow-[0_12px_30px_rgba(36,169,68,.28)] transition-colors hover:bg-brand-hover"
+                className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#008A1E] px-8 text-[18px] font-semibold text-white transition-colors hover:bg-[#007018] sm:w-auto"
               >
                 Find a job
               </Link>
               <Link
                 href="/register"
-                className="inline-flex h-11 w-full items-center justify-center rounded-full border border-border bg-surface/80 px-7 sm:w-auto text-[15px] font-semibold text-heading backdrop-blur-md transition-colors hover:border-brand/40 hover:text-brand dark:bg-white/[.06]"
+                className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-border px-8 text-[18px] font-semibold text-heading transition-colors hover:border-[#008A1E] hover:text-[#008A1E] sm:w-auto dark:hover:border-emerald-400 dark:hover:text-emerald-400"
               >
                 Create an account
               </Link>
             </div>
-
-            {/* What the platform actually does */}
-            <ScaleReveal delay={0.3} className="w-full">
-              <div className="mt-10 grid w-full gap-px overflow-hidden rounded-[24px] border border-border bg-border/60 sm:grid-cols-3">
-                {[
-                  {
-                    icon: Sparkles,
-                    title: 'AI interviews',
-                    body: 'Practice sessions generated from the job you are applying to.',
-                  },
-                  {
-                    icon: FileText,
-                    title: 'Resumes & portfolios',
-                    body: 'Build them once and reuse them across applications.',
-                  },
-                  {
-                    icon: ClipboardList,
-                    title: 'Application tracking',
-                    body: 'Follow every application from a single dashboard.',
-                  },
-                ].map((item) => (
-                  <div key={item.title} className="bg-surface/90 p-4 backdrop-blur-md dark:bg-[#23272D]/95">
-                    <item.icon aria-hidden="true" className="size-[1.05rem] text-brand" />
-                    <p className="mt-2.5 text-[13px] font-semibold text-heading">{item.title}</p>
-                    <p className="mt-1 text-[11.5px] leading-[1.45] text-body">{item.body}</p>
-                  </div>
-                ))}
-              </div>
-            </ScaleReveal>
           </div>
         </div>
       </section>
@@ -298,14 +246,14 @@ export default function HeroCompaniesSection() {
           viewport={{ once: true, margin: '-100px' }}
           className="mx-auto mt-12 flex max-w-2xl flex-col items-center text-center"
         >
-          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[.12em] text-brand dark:bg-brand/20 dark:text-[#8df6a8]">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-[18px] font-semibold uppercase tracking-[.12em] text-brand dark:bg-brand/20 dark:text-[#8df6a8]">
             <span className="flex size-1.5 rounded-full bg-brand" />
             Hiring now
           </span>
           <h2 className="mt-4 text-[clamp(1.9rem,3vw,2.6rem)] font-semibold tracking-[-0.045em] text-heading">
             Top companies
           </h2>
-          <p className="mt-3 text-[15px] leading-7 text-body">
+          <p className="mt-3 text-[18px] leading-7 text-body">
             Employers posting roles on the platform, across Cambodia.
           </p>
         </motion.div>

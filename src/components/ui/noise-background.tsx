@@ -26,7 +26,11 @@ export function NoiseBackground({
   ...props
 }: NoiseBackgroundProps) {
   const colors = gradientColors.length > 0 ? gradientColors : defaultGradientColors;
-  const gradient = `conic-gradient(from 0deg, ${[...colors, colors[0]].join(', ')})`;
+  const gradient = `linear-gradient(110deg, ${[
+    ...colors,
+    ...colors,
+    colors[0],
+  ].join(', ')})`;
   const noiseStyle: NoiseBackgroundStyle = {
     '--noise-gradient': gradient,
     ...style,
@@ -42,14 +46,16 @@ export function NoiseBackground({
       style={noiseStyle}
       {...props}
     >
-      <span className="noise-background-gradient pointer-events-none absolute -inset-[70%] -z-20" />
+      <span className="noise-background-gradient pointer-events-none absolute inset-0 -z-20" />
       <span className="noise-background-grain pointer-events-none absolute inset-0 -z-10 opacity-30 mix-blend-overlay" />
       <div className="relative z-10 h-full w-full">{children}</div>
 
       <style jsx>{`
         .noise-background-gradient {
           background: var(--noise-gradient);
-          animation: noise-gradient-spin 5s linear infinite;
+          background-size: 300% 300%;
+          animation: noise-gradient-flow 3.8s ease-in-out infinite;
+          will-change: background-position;
         }
 
         .noise-background-grain {
@@ -61,8 +67,10 @@ export function NoiseBackground({
           animation: noise-grain-shift .7s steps(2) infinite;
         }
 
-        @keyframes noise-gradient-spin {
-          to { transform: rotate(360deg); }
+        @keyframes noise-gradient-flow {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
 
         @keyframes noise-grain-shift {

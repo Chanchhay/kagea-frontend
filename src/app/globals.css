@@ -6,6 +6,25 @@
 
 @theme inline {
   --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  /* One family everywhere: mono and serif resolve to the same stack, so a
+     stray `font-mono` cannot introduce a second typeface. */
+  --font-mono: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-serif: Inter, ui-sans-serif, system-ui, sans-serif;
+
+  /*
+   * Type scale with an 18px floor.
+   *
+   * `xs`, `sm` and `base` were 12/14/16px and are used ~600 times across the
+   * app; rather than rewrite every call site, the scale itself is redefined so
+   * all three resolve to 18px. Every step from `lg` up is already >= 18px in
+   * Tailwind's default scale and is left alone.
+   */
+  --text-xs: 1.125rem;
+  --text-xs--line-height: 1.6;
+  --text-sm: 1.125rem;
+  --text-sm--line-height: 1.6;
+  --text-base: 1.125rem;
+  --text-base--line-height: 1.6;
 
   /* Brand */
   --color-brand: var(--primary);
@@ -132,6 +151,7 @@
 }
 
 @layer components {
+<<<<<<< HEAD
   /* Public job search uses a roomier scale than the rest of the public site. */
   .jobs-page {
     font-size: 1.25rem;
@@ -240,6 +260,16 @@
 
   .ws-shell :where(h6) {
     font-size: 1.125rem;
+=======
+  /*
+   * The public landing experience paints on plain white, not the app's pale
+   * blue canvas — `.landing-page` has always done this with a hardcoded
+   * `bg-white`, so the token says it instead and any page joining the class
+   * gets the same ground.
+   */
+  .landing-page {
+    --background: #ffffff;
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
   }
 
   /* Neutral charcoal palette used by the public landing experience. */
@@ -280,7 +310,11 @@
   }
 
   .rich-text h1 {
+<<<<<<< HEAD
     font-size: 1.875rem;
+=======
+    font-size: 1.75rem;
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
   }
 
   .rich-text h2 {
@@ -344,7 +378,7 @@
     background: var(--surface-muted);
     border-radius: var(--radius-sm);
     padding: 0.1em 0.35em;
-    font-size: 0.875em;
+    font-size: 1em;
   }
 
   /*

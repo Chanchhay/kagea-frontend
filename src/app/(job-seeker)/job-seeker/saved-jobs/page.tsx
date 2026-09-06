@@ -140,7 +140,16 @@ function SavedJobRow({ job }: { job: FavoriteJobResponse }) {
               {job.title}
             </Link>
           ) : (
+<<<<<<< HEAD
             <h2 className="truncate text-lg font-bold tracking-tight text-ws-fg">{job.title}</h2>
+=======
+            <h2 className="truncate font-semibold text-ws-fg">{job.title}</h2>
+          )}
+          {job.available ? null : (
+            <span className="rounded-full bg-chip-alert px-2.5 py-1 text-[18px] font-semibold text-chip-alert-fg">
+              No longer accepting applications
+            </span>
+>>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
           )}
         </div>
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ws-muted">
