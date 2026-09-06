@@ -36,11 +36,11 @@ export default function TrustedCompaniesSection() {
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 sm:py-10">
       <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
         {/* Left Content */}
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           {/* Badge & Label */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true, margin: '-100px' }}
             data-reveal
@@ -56,12 +56,12 @@ export default function TrustedCompaniesSection() {
 
           {/* Heading */}
           <motion.h2
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6 }}
             viewport={{ once: true, margin: '-100px' }}
             data-reveal
-            className="text-3xl font-extrabold tracking-tight text-[#F3BE00] sm:text-4xl lg:text-5xl leading-tight"
+            className="break-words text-3xl font-extrabold leading-tight tracking-tight text-[#F3BE00] sm:text-4xl lg:text-5xl"
           >
             Get noticed by leading companies
           </motion.h2>
@@ -97,8 +97,8 @@ export default function TrustedCompaniesSection() {
               <motion.div
                 key={idx}
                 variants={{
-                  hidden: { opacity: 0, x: -20 },
-                  visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
+                  hidden: { opacity: 0, y: 12 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
                 }}
                 className="flex items-start gap-3.5"
               >

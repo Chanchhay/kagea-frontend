@@ -43,7 +43,7 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
                 {job.title}
               </h1>
               <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-body">
-                <span className="inline-flex items-center gap-1.5">
+                <span className="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
                   <Building2 aria-hidden="true" className="size-4 text-brand" />
                   {/*
                     * A masked company has no id, so there is no page to open —

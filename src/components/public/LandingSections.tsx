@@ -290,7 +290,7 @@ export function TopCompanies({ companies }: { companies: CompanySummary[] }) {
                     <div className="min-w-0 flex-1">
                       <div className="flex min-w-0 items-center gap-2">
                         {/* Title text hover effect */}
-                        <h3 className="truncate text-lg font-semibold text-heading transition-colors duration-200 group-hover:text-brand">
+                        <h3 className="truncate text-lg font-semibold text-slate-600 transition-colors duration-200 group-hover:text-brand dark:text-slate-400">
                           {company.name}
                         </h3>
                         {company.featured && (

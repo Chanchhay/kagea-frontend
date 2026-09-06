@@ -53,7 +53,9 @@ export default function InterviewsPage() {
               <Link key={interview.id} href={href} className="block">
                 <PlainCard>
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h2 className="font-semibold text-heading">{interview.jobTitle}</h2>
+                    <h2 className="text-[20px] font-medium leading-snug text-heading">
+                      {interview.jobTitle}
+                    </h2>
                     <StatusPill>{interview.status}</StatusPill>
                   </div>
                   <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-body">

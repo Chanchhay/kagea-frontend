@@ -23,7 +23,7 @@ export default function LandingPage() {
             <ProfileSection />
           </ScrollReveal>
 
-          <ScrollReveal delay={0.08} direction="left" className="relative z-10">
+          <ScrollReveal delay={0.08} className="relative z-10">
             <TrustedCompaniesSection />
           </ScrollReveal>
 

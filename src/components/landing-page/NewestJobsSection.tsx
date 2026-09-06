@@ -70,7 +70,7 @@ export default function NewestJobsSection() {
                   </div>
 
                   <div className="mt-2.5">
-                    <p className="flex flex-wrap items-baseline gap-x-1.5 text-xs font-semibold text-slate-900 dark:text-[#F5F5F5]">
+                    <p className="flex flex-wrap items-baseline gap-x-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
                       <span>{job.companyName}</span>
                       <span className="text-[10px] font-normal text-slate-400 dark:text-[#929AA3]">{timeAgo(job.publishedAt)}</span>
                     </p>

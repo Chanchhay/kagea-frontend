@@ -87,7 +87,7 @@ export default function RecruiterCompanyPage() {
                 </span>
                 <div className="min-w-0 pt-1">
                   <div className="flex flex-wrap items-center gap-3">
-                    <h2 className="text-xl font-semibold text-heading">
+                    <h2 className="text-xl font-semibold text-ws-muted">
                       {company.name}
                     </h2>
                     <StatusPill>{company.verificationStatus}</StatusPill>

@@ -120,7 +120,7 @@ export default function WhoWeAreSection() {
                 alt="ISTAD Students Team"
                 width={800}
                 height={600}
-                className="h-80 w-full object-cover transition-transform duration-500 group-hover:scale-105 sm:h-[26rem]"
+                className="h-auto w-full object-contain transition-transform duration-500 sm:h-[26rem] sm:object-cover sm:group-hover:scale-105"
                 priority
               />
 
@@ -186,4 +186,4 @@ export default function WhoWeAreSection() {
       </div>
     </section>
   );
-}
+}

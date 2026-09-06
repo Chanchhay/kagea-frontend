@@ -49,7 +49,7 @@ function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
           {company.logoText}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-base font-bold leading-tight text-slate-900 transition-colors group-hover:text-[#0F8A22] dark:text-white dark:group-hover:text-[#7bf0a4]">
+          <p className="truncate text-base font-semibold leading-tight text-slate-600 transition-colors group-hover:text-[#0F8A22] dark:text-slate-400 dark:group-hover:text-[#7bf0a4]">
             {company.name}
           </p>
           <div className="mt-1 flex items-center gap-1 text-xs text-slate-500 dark:text-white/60">

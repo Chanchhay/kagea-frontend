@@ -71,6 +71,7 @@ function WorkspaceFrame({ role, title, links, children }: WorkspaceShellProps) {
   const heading = usePageHeading();
   const activeLink = links.find((link) => isActivePath(pathname, link.href));
   const pageTitle = heading?.title ?? activeLink?.label ?? title;
+  const pageDescription = heading?.description;
 
   return (
     /*
@@ -82,7 +83,11 @@ function WorkspaceFrame({ role, title, links, children }: WorkspaceShellProps) {
       <Rail links={links} pathname={pathname} />
 
       <div className="ws-panel relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-none lg:rounded-[28px]">
-        <TopBar title={pageTitle} role={role} />
+        <TopBar
+          title={pageTitle}
+          description={pageDescription}
+          role={role}
+        />
 
         <main className="ws-scroll min-h-0 flex-1 overflow-y-auto px-4 pb-28 pt-2 lg:px-7 lg:pb-8">
           <div
@@ -169,7 +174,15 @@ function SignOutRailButton() {
 
 /* -------------------------------------------------------------- top bar --- */
 
-function TopBar({ title, role }: { title: string; role: Role }) {
+function TopBar({
+  title,
+  description,
+  role,
+}: {
+  title: string;
+  description?: string;
+  role: Role;
+}) {
   const actions = quickActions[role];
 
   return (
@@ -182,9 +195,16 @@ function TopBar({ title, role }: { title: string; role: Role }) {
         <ArrowLeft aria-hidden="true" className="size-4.5" />
       </Link>
 
-      <h1 className="min-w-0 truncate text-lg font-semibold tracking-tight lg:text-xl">
-        {title}
-      </h1>
+      <div className="min-w-0">
+        <h1 className="truncate text-xl font-bold tracking-tight lg:text-2xl">
+          {title}
+        </h1>
+        {description ? (
+          <p className="mt-0.5 hidden truncate text-base font-normal text-ws-muted sm:block">
+            {description}
+          </p>
+        ) : null}
+      </div>
 
       <div className="ml-auto flex items-center gap-2">
         <QuickSearch

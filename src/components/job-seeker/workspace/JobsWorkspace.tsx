@@ -53,7 +53,10 @@ export function JobsWorkspace({
   applications,
   initialKeyword = "",
 }: JobsWorkspaceProps) {
-  useSetPageHeading("Find jobs");
+  useSetPageHeading(
+    "Find jobs",
+    "Discover opportunities that match your skills and goals.",
+  );
 
   const [keyword, setKeyword] = useState(initialKeyword);
   const [workMode, setWorkMode] = useState<WorkModeTab>("All");
