@@ -32,7 +32,7 @@ const roles: Array<{
 export function RoleSelector({ value, onChange }: RoleSelectorProps) {
   return (
     <fieldset>
-      <legend className="text-[13px] font-semibold text-heading">
+      <legend className="text-[18px] font-semibold text-heading">
         Account type <span className="text-error">*</span>
       </legend>
       <div className="mt-2 grid gap-2 sm:grid-cols-2">
@@ -67,7 +67,7 @@ export function RoleSelector({ value, onChange }: RoleSelectorProps) {
               <div className="min-w-0 flex-1 pr-5">
                 <p
                   className={cn(
-                    "text-[0.875rem] font-semibold",
+                    "text-[1.125rem] font-semibold",
                     selected ? "text-brand dark:text-[#7bf0a4]" : "text-heading",
                   )}
                 >
@@ -75,7 +75,7 @@ export function RoleSelector({ value, onChange }: RoleSelectorProps) {
                 </p>
                 <p
                   className={cn(
-                    "mt-0.5 text-[11.5px] leading-[1.35]",
+                    "mt-0.5 text-[18px] leading-[1.35]",
                     selected ? "text-body dark:text-white/70" : "text-body",
                   )}
                 >

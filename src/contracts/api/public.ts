@@ -1,4 +1,4 @@
-import type { ApiResponse, Page } from "./common";
+import type { ApiResponse, PagedModel } from "./common";
 
 export type PublicSkillResponse = {
   id: number;
@@ -79,9 +79,46 @@ export type PublicJobResponse = {
   isFavorite: boolean | null;
 };
 
+/** One option a filter group can offer, and how many jobs sit behind it. */
+export type PublicJobFacetValue = {
+  /** Upper-cased, so `full_time` and `FULL_TIME` arrive as one option. */
+  value: string;
+  count: number;
+};
+
+/** A facet option that names a row - a category or a skill. */
+export type PublicJobFacetOption = {
+  id: number;
+  name: string;
+  count: number;
+};
+
+/**
+ * The options the sidebar should offer for the current search.
+ *
+ * Each group is counted with every filter applied except its own, so ticking
+ * one option never empties the group it belongs to. Only values the matching
+ * jobs actually carry are returned.
+ */
+export type PublicJobFacetsResponse = {
+  jobTypes: PublicJobFacetValue[];
+  workModes: PublicJobFacetValue[];
+  experienceLevels: PublicJobFacetValue[];
+  categories: PublicJobFacetOption[];
+  skills: PublicJobFacetOption[];
+  /** Keyed by a number of days: "1", "7", "30". */
+  postedWithin: PublicJobFacetValue[];
+  /** Null when no matching job names a salary. */
+  salaryRange: { min: number; max: number } | null;
+  totalJobs: number;
+};
+
 export type ApiResponsePagePublicJobResponse = ApiResponse<
-  Page<PublicJobResponse>
+  PagedModel<PublicJobResponse>
 >;
+
+export type ApiResponsePublicJobFacetsResponse =
+  ApiResponse<PublicJobFacetsResponse>;
 
 export type ApiResponsePublicJobResponse = ApiResponse<PublicJobResponse>;
 

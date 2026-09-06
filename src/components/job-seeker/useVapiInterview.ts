@@ -11,10 +11,6 @@ import {
   formatQuestionList,
   matchQuestionIndex,
 } from "@/lib/vapi";
-import {
-  useBindAiInterviewVapiCallMutation,
-  useSubmitAiInterviewTranscriptMutation,
-} from "@/services/jobSeekerApi";
 
 export type VoiceStatus = "idle" | "connecting" | "live" | "ending" | "scoring";
 
@@ -32,12 +28,34 @@ type TranscriptMessage = {
   transcriptType?: string;
 };
 
+/**
+ * One turn as the backend wants it. The role stays a union rather than a plain
+ * string so a caller cannot quietly send something the backend will drop.
+ */
+export type TranscriptTurnInput = {
+  role: ConversationTurn["role"];
+  text: string;
+};
+
 type UseVapiInterviewArgs = {
   sessionId: number;
   /** Unanswered questions in display order. */
   questions: AiInterviewQuestionResponse[];
   candidateName: string;
   jobTitle: string;
+  /**
+   * How this caller reaches the backend.
+   *
+   * Injected rather than imported, because the same call runs for a signed-in
+   * candidate and for a guest holding a token, and those hit different
+   * endpoints. Everything else about the call — endpointing, mic handling,
+   * transcript collection — is identical, and duplicating it for the guest
+   * would mean two of them to keep in step.
+   */
+  bindCall: (callId: string) => Promise<unknown>;
+  submitTurns: (turns: TranscriptTurnInput[]) => Promise<unknown>;
+  /** Called once the backend has accepted and scored the transcript. */
+  onScored?: () => void;
 };
 
 /** Mic levels below this are silence, not speech. */
@@ -107,9 +125,10 @@ export function useVapiInterview({
   questions,
   candidateName,
   jobTitle,
+  bindCall,
+  submitTurns,
+  onScored,
 }: UseVapiInterviewArgs) {
-  const [bindVapiCall] = useBindAiInterviewVapiCallMutation();
-  const [submitTranscript] = useSubmitAiInterviewTranscriptMutation();
 
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [assistantSpeaking, setAssistantSpeaking] = useState(false);
@@ -164,12 +183,10 @@ export function useVapiInterview({
     setSubmitFailed(false);
 
     try {
-      await submitTranscript({
-        sessionId,
-        body: {
-          turns: collected.map((turn) => ({ role: turn.role, text: turn.text })),
-        },
-      }).unwrap();
+      await submitTurns(
+        collected.map((turn) => ({ role: turn.role, text: turn.text })),
+      );
+      onScored?.();
     } catch (error) {
       console.error("Submitting the interview transcript failed:", error);
       setSubmitFailed(true);
@@ -177,7 +194,7 @@ export function useVapiInterview({
     } finally {
       setStatus("idle");
     }
-  }, [sessionId, submitTranscript]);
+  }, [onScored, submitTurns]);
 
   // Bound listeners must always call the newest submit, but rebinding them would
   // mean rebuilding the Vapi instance mid-call, so it goes through a ref.
@@ -454,7 +471,7 @@ export function useVapiInterview({
       // transcript itself when the call ends.
       if (call?.id) {
         try {
-          await bindVapiCall({ sessionId, body: { callId: call.id } }).unwrap();
+          await bindCall(call.id);
         } catch (bindError) {
           console.error("Could not bind the Vapi call to the session:", bindError);
         }
@@ -464,7 +481,7 @@ export function useVapiInterview({
       toast.error("Could not start the voice interview. Check your microphone.");
       setStatus("idle");
     }
-  }, [bindVapiCall, candidateName, getVapi, jobTitle, sessionId, status]);
+  }, [bindCall, candidateName, getVapi, jobTitle, sessionId, status]);
 
   const stop = useCallback(async () => {
     const vapi = vapiRef.current;

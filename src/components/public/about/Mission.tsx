@@ -72,9 +72,9 @@ export default function MissionSection() {
   return (
     <section
       ref={containerRef}
-      className="relative overflow-hidden py-10 lg:py-16"
+      className="relative"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="w-full">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
           {/* Left Side: Headline & Organic Blob Image */}
           <motion.div
@@ -84,12 +84,12 @@ export default function MissionSection() {
             className="w-full lg:col-span-6"
           >
             {/* Tagline Badge */}
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1fa628]/30 bg-[#1fa628]/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#1fa628]">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1fa628]/30 bg-[#1fa628]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-[#1fa628]">
               <Sparkles className="h-3.5 w-3.5 text-[#F3BE00]" />
               Empowering Careers
             </div>
 
-            <h2 className="mb-6 text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
+            <h2 className="mb-6 text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
               <span className="text-[#1fa628]">Our</span> <span className="text-[#F3BE00]">Mission</span>
             </h2>
 
@@ -157,7 +157,7 @@ export default function MissionSection() {
 
                   {/* Text Content */}
                   <div className="space-y-1">
-                    <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                       {feature.title}
                     </h3>
                     <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">

@@ -60,7 +60,7 @@ export default function TalentDetailPage() {
         <section className="relative overflow-hidden rounded-2xl border border-border bg-surface p-6 shadow-sm sm:p-8">
           <Quote aria-hidden="true" className="absolute -right-3 -top-3 size-24 text-brand/5" />
           <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">About this candidate</h2>
-          <p className="relative mt-4 max-w-3xl whitespace-pre-wrap text-[15px] leading-7 text-slate-700 dark:text-slate-300">
+          <p className="relative mt-4 max-w-3xl whitespace-pre-wrap text-[18px] leading-7 text-slate-700 dark:text-slate-300">
             {talent.bio}
           </p>
         </section>
@@ -114,13 +114,13 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
               className="size-24 shrink-0 rounded-full border-4 border-white bg-surface object-cover shadow-md sm:size-26 dark:border-slate-800"
             />
           ) : (
-            <span className="flex size-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-brand-tint text-3xl font-bold text-brand shadow-md sm:size-26 dark:border-slate-800">
+            <span className="flex size-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-brand-tint text-3xl font-semibold text-brand shadow-md sm:size-26 dark:border-slate-800">
               {initial}
             </span>
           )}
 
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-[28px]">
+            <h1 className="text-2xl font-semibold tracking-tight text-heading sm:text-[28px]">
               {talent.headline || "Candidate profile"}
             </h1>
             {talent.currentPosition ? (
@@ -167,7 +167,7 @@ function ResumeCard({ resume, slug }: { resume: PublicResumeResponse; slug: stri
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="truncate font-semibold text-heading">{resume.title}</h3>
           {resume.isDefault ? (
-            <span className="shrink-0 rounded-full bg-brand-tint px-2 py-0.5 text-[10px] font-semibold text-brand">Default</span>
+            <span className="shrink-0 rounded-full bg-brand-tint px-2 py-0.5 text-[18px] font-semibold text-brand">Default</span>
           ) : null}
         </div>
         <p className="mt-1 text-xs text-slate-500">{isBuilt ? "Created in Kagea" : "PDF resume"}</p>
@@ -198,7 +198,7 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
     <div className="space-y-3">
       <div>
         <div className="min-w-0">
-          <h3 className="truncate text-base font-bold text-heading">{portfolio.title}</h3>
+          <h3 className="truncate text-base font-semibold text-heading">{portfolio.title}</h3>
           <p className="mt-0.5 text-xs text-slate-500">
             {projects.length} {projects.length === 1 ? "project" : "projects"}
           </p>
@@ -276,7 +276,7 @@ function StatTile({ icon: Icon, value, label }: { icon: typeof FileText; value: 
         <Icon className="size-5" />
       </span>
       <div>
-        <p className="text-2xl font-bold leading-none text-heading">{value}</p>
+        <p className="text-2xl font-semibold leading-none text-heading">{value}</p>
         <p className="mt-1.5 text-xs text-slate-500">{label}</p>
       </div>
     </div>

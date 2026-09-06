@@ -7,7 +7,6 @@ import { useReducedMotion } from 'framer-motion';
 
 interface ScrollRevealProps {
   children: ReactNode;
-  delay?: number;
   direction?: 'up' | 'down' | 'left' | 'right';
   duration?: number;
   className?: string;
@@ -17,7 +16,6 @@ interface ScrollRevealProps {
 
 export function ScrollReveal({
   children,
-  delay = 0,
   direction = 'up',
   duration = 0.75,
   className = '',
@@ -93,7 +91,6 @@ export function ScrollReveal({
         y: 0,
         opacity: 1,
         duration,
-        delay,
         ease: 'power3.out',
         clearProps: 'willChange',
       });
@@ -106,15 +103,14 @@ export function ScrollReveal({
             opacity: 1,
             filter: 'blur(0px)',
             duration: 0.8,
-            stagger: 0.12,
             ease: 'power3.out',
             clearProps: 'willChange,filter',
           },
-          '-=0.45',
+          0,
         );
       }
 
-      staggerGroups.forEach((group, index) => {
+      staggerGroups.forEach((group) => {
         const groupChildren = Array.from(group.children) as HTMLElement[];
         if (groupChildren.length > 0) {
           timeline.to(
@@ -124,11 +120,10 @@ export function ScrollReveal({
               opacity: 1,
               scale: 1,
               duration: 0.75,
-              stagger: 0.1,
               ease: 'power3.out',
               clearProps: 'willChange',
             },
-            index === 0 ? '-=0.5' : '-=0.62',
+            0,
           );
         }
       });
@@ -153,7 +148,7 @@ export function ScrollReveal({
     }, element);
 
     return () => ctx.revert();
-  }, [amount, delay, duration, initialState, prefersReducedMotion]);
+  }, [amount, duration, initialState, prefersReducedMotion]);
 
   return (
     <div ref={containerRef} className={className}>

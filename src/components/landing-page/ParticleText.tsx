@@ -77,7 +77,7 @@ export default function ParticleText({
   idleDrift = 0.7,
   trigger = 'mount',
   fontSize = 'clamp(3rem, 12vw, 8rem)',
-  fontWeight = 800,
+  fontWeight = 700,
   fontFamily = 'inherit',
   glow = true,
   className = '',

@@ -53,7 +53,7 @@ export default function StrokeText({
   trigger = 'mount',
   fillMode = 'wipe',
   fontSize = 128,
-  fontWeight = 800,
+  fontWeight = 700,
   letterSpacing = -4,
   reverse = false,
   className = '',

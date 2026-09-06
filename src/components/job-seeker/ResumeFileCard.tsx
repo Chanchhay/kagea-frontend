@@ -64,7 +64,7 @@ export function ResumeFileCard({ resume }: { resume: ResumeResponse }) {
     <section className="rounded-[22px] bg-ws-card p-5">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold text-ws-fg">Document</h2>
-        <span className="rounded-full bg-chip-quiet px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-chip-quiet-fg">
+        <span className="rounded-full bg-chip-quiet px-2.5 py-1 text-[18px] font-semibold uppercase tracking-wide text-chip-quiet-fg">
           {uploaded ? "uploaded" : "generated"}
         </span>
       </div>

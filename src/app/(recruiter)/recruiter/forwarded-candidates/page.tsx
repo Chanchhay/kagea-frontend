@@ -153,7 +153,7 @@ export default function ForwardedCandidatesPage() {
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0 flex-1 space-y-2.5">
                       <div className="flex flex-wrap items-center gap-2.5">
-                        <h3 className="text-lg font-bold tracking-tight text-heading group-hover:text-brand">
+                        <h3 className="text-lg font-semibold tracking-tight text-heading group-hover:text-brand">
                           {item.candidate.headline || "Candidate Profile"}
                         </h3>
                         <StatusPill>{item.application.status}</StatusPill>

@@ -1,59 +1,96 @@
 'use client';
 
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useGetPublicJobsQuery } from '@/services/publicApi';
+
+/**
+ * How many jobs are actually published right now.
+ *
+ * `getPublicJobs` is not run through `normalizePage`, and the backend serialises
+ * pages VIA_DTO -- the total lives under `page.totalElements`, not beside
+ * `content` as the generated contract claims. Both spellings are read here, and
+ * the count is simply not shown when neither arrives, so the banner never
+ * invents a number.
+ */
+function usePublishedJobCount() {
+  const { data } = useGetPublicJobsQuery({ size: 1 });
+  if (!data) return null;
+
+  const flat = (data as { totalElements?: number }).totalElements;
+  const nested = (data as { page?: { totalElements?: number } }).page?.totalElements;
+  const total = flat ?? nested;
+
+  return typeof total === 'number' ? total : null;
+}
 
 export default function CtaBannerSection() {
+  const jobCount = usePublishedJobCount();
+
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 sm:py-10">
-      <div
+    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 sm:py-14">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true, margin: '-100px' }}
         data-reveal
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#008A1E] via-[#00921A] to-[#006837] p-8 text-white shadow-xl sm:p-12 md:p-16"
+        className="rounded-[28px] bg-[#008A1E] px-6 py-14 text-white sm:rounded-[36px] sm:px-10 sm:py-20 lg:px-14 dark:bg-[#0B6F1C]"
       >
-        <div
-          data-parallax="28"
-          className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-[#F3BE00]/20 blur-3xl"
-        />
-        <div
-          data-parallax="20"
-          className="pointer-events-none absolute -left-20 -bottom-20 h-80 w-80 rounded-full bg-emerald-400/20 blur-3xl"
-        />
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F3BE00]" />
+              <span className="text-sm font-medium text-white/80">Get started</span>
+            </div>
 
-        <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center space-y-6 text-center">
-          <span
-            data-reveal
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold text-amber-300 backdrop-blur-md"
-          >
-            Take the Next Step in Your Career
-          </span>
+            <h2 className="mt-6 max-w-2xl text-3xl font-medium leading-[1.15] tracking-tight sm:text-4xl lg:text-[2.75rem]">
+              Ready to find your next role in{' '}
+              <span className="text-[#F3BE00]">Cambodia</span>?
+            </h2>
 
-          <h2 data-reveal className="text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
-            Ready to Find Your <span className="text-[#F3BE00]">Dream Job</span> Today?
-          </h2>
+            <p className="mt-6 max-w-xl text-sm leading-7 text-white/80 sm:text-base">
+              Create a profile once, apply to any opening in a few clicks, and practise
+              the interview with AI before you meet the hiring team.
+            </p>
+          </div>
 
-          <p
-            data-reveal
-            className="max-w-2xl text-sm font-normal leading-relaxed text-white/90 sm:text-base"
-          >
-            Join over 1.2 million professionals connecting with top employers worldwide.
-            Create your profile, discover tailored recommendations, and land your next role.
-          </p>
-
-          <div data-stagger className="flex flex-wrap justify-center gap-4 pt-4">
+          <div className="flex flex-col gap-4 lg:items-end">
             <Link
-              href="/find-job"
-              className="rounded-xl bg-[#F3BE00] px-8 py-3.5 text-sm font-bold text-slate-900 shadow-lg transition hover:bg-[#e2af00] active:scale-[0.98]"
+              href="/register"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#F3BE00] px-8 text-sm font-semibold text-[#00450F] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[#E8B500] active:translate-y-0 active:scale-[0.98]"
             >
-              Explore 1.2M+ Vacancies
+              Create your account
+              <ArrowUpRight className="size-4" />
             </Link>
+
             <Link
-              href="/post-job"
-              className="rounded-xl border border-white/30 bg-white/15 px-8 py-3.5 text-sm font-bold text-white shadow-md backdrop-blur-md transition hover:bg-white/25 active:scale-[0.98]"
+              href="/jobs"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/25 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:border-white hover:bg-white hover:text-[#008A1E]"
             >
-              Post a Job as Employer
+              {jobCount === null ? 'Browse jobs' : `Browse ${jobCount.toLocaleString()} open jobs`}
             </Link>
           </div>
         </div>
-      </div>
+
+        {/* Hairline footer: who each door is for, so employers are not left guessing. */}
+        <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-white/15 pt-6 text-sm text-white/70 sm:mt-20">
+          <span>Hiring instead?</span>
+          <Link
+            href="/register"
+            className="font-medium text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
+          >
+            Register as an employer
+          </Link>
+          <Link
+            href="/companies"
+            className="font-medium text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
+          >
+            See who is already hiring
+          </Link>
+        </div>
+      </motion.div>
     </section>
   );
 }

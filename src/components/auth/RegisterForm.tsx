@@ -185,7 +185,7 @@ export function RegisterForm() {
         <Button
           type="submit"
           size="lg"
-          className="mt-1 h-11 w-full rounded-full bg-brand text-[15px] font-semibold text-white shadow-[0_12px_30px_rgba(36,169,68,.28)] transition-colors hover:bg-brand-hover dark:shadow-[0_12px_30px_rgba(36,169,68,.18)]"
+          className="mt-1 h-11 w-full rounded-full bg-brand text-[18px] font-semibold text-white shadow-[0_12px_30px_rgba(36,169,68,.28)] transition-colors hover:bg-brand-hover dark:shadow-[0_12px_30px_rgba(36,169,68,.18)]"
           disabled={registration.isLoading}
         >
           <Sparkles aria-hidden="true" className="size-4" />

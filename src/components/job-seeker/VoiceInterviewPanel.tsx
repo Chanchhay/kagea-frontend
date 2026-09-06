@@ -6,7 +6,10 @@ import type { AiInterviewQuestionResponse } from "@/contracts";
 import { PlainCard } from "@/components/shared/ApiCards";
 import { Button } from "@/components/ui/button";
 import { isVapiConfigured } from "@/lib/vapi";
-import { useVapiInterview } from "@/components/job-seeker/useVapiInterview";
+import {
+  useVapiInterview,
+  type TranscriptTurnInput,
+} from "@/components/job-seeker/useVapiInterview";
 
 type VoiceInterviewPanelProps = {
   sessionId: number;
@@ -16,6 +19,14 @@ type VoiceInterviewPanelProps = {
   candidateAvatarUrl?: string;
   jobTitle: string;
   onSwitchToTyping: () => void;
+  /**
+   * How to reach the backend. Passed down rather than imported so a guest,
+   * who calls different endpoints with a token, sits the same call as a
+   * signed-in candidate.
+   */
+  bindCall: (callId: string) => Promise<unknown>;
+  submitTurns: (turns: TranscriptTurnInput[]) => Promise<unknown>;
+  onScored?: () => void;
 };
 
 function initials(name: string): string {
@@ -34,6 +45,9 @@ export function VoiceInterviewPanel({
   candidateAvatarUrl,
   jobTitle,
   onSwitchToTyping,
+  bindCall,
+  submitTurns,
+  onScored,
 }: VoiceInterviewPanelProps) {
   const {
     status,
@@ -48,7 +62,15 @@ export function VoiceInterviewPanel({
     retrySubmit,
     start,
     stop,
-  } = useVapiInterview({ sessionId, questions, candidateName, jobTitle });
+  } = useVapiInterview({
+    sessionId,
+    questions,
+    candidateName,
+    jobTitle,
+    bindCall,
+    submitTurns,
+    onScored,
+  });
 
   const isLive = status === "live";
 
@@ -105,7 +127,7 @@ export function VoiceInterviewPanel({
         <PlainCard>
           <div className="flex flex-col items-center gap-3 py-6 text-center">
             <span
-              className="grid size-24 place-items-center rounded-full bg-primary/15 bg-cover bg-center text-lg font-bold text-primary"
+              className="grid size-24 place-items-center rounded-full bg-primary/15 bg-cover bg-center text-lg font-semibold text-primary"
               style={
                 candidateAvatarUrl
                   ? { backgroundImage: `url("${candidateAvatarUrl}")` }
@@ -218,7 +240,7 @@ export function VoiceInterviewPanel({
             <ul className="mt-4 space-y-3">
               {turns.map((turn) => (
                 <li key={turn.id}>
-                  <p className="text-[0.7rem] font-semibold uppercase tracking-wide text-muted-fg">
+                  <p className="text-[1.125rem] font-semibold uppercase tracking-wide text-muted-fg">
                     {turn.role === "interviewer" ? "Interviewer" : "You"}
                   </p>
                   <p className="mt-0.5 text-sm leading-6 text-body">{turn.text}</p>

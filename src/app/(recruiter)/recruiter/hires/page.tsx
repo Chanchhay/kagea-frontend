@@ -86,7 +86,7 @@ function HireRow({ hire }: { hire: HiringRecordResponse }) {
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="truncate font-semibold text-ws-fg">{hire.jobTitle}</h2>
           <span
-            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${status.className}`}
+            className={`rounded-full px-2.5 py-1 text-[18px] font-semibold ${status.className}`}
           >
             {status.label}
           </span>
@@ -114,12 +114,12 @@ function HireRow({ hire }: { hire: HiringRecordResponse }) {
                 hire.commission.currency,
               )}
             </p>
-            <p className="text-[11px] text-ws-faint">
+            <p className="text-[18px] text-ws-faint">
               {hire.commission.commissionRate}% commission
             </p>
           </>
         ) : (
-          <p className="text-[11px] text-ws-faint">Awaiting review</p>
+          <p className="text-[18px] text-ws-faint">Awaiting review</p>
         )}
       </div>
     </div>

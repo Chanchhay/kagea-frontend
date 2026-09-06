@@ -7,7 +7,7 @@
  * a white/black field would read as a borderless gap at a glance.
  */
 export const authFieldClass =
-  "h-11 w-full rounded-2xl border border-black/10 bg-surface-muted/70 text-[14px] text-heading shadow-none transition-colors"
+  "h-11 w-full rounded-2xl border border-black/10 bg-surface-muted/70 text-[18px] text-heading shadow-none transition-colors"
   + " placeholder:text-muted-fg hover:border-black/16"
   + " focus-visible:border-brand focus-visible:ring-[3px] focus-visible:ring-brand/25"
   + " aria-invalid:border-error aria-invalid:ring-[3px] aria-invalid:ring-error/20"
@@ -18,4 +18,4 @@ export const authFieldClass =
 export const authFieldIconClass =
   "pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-fg dark:text-white/45";
 
-export const authLabelClass = "text-[13px] font-semibold text-heading";
+export const authLabelClass = "text-[18px] font-semibold text-heading";

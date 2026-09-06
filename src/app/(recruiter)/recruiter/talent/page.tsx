@@ -166,7 +166,7 @@ export default function TalentDiscoveryPage() {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="space-y-2 min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-lg font-bold tracking-tight text-heading group-hover:text-brand">
+                      <h3 className="text-lg font-semibold tracking-tight text-heading group-hover:text-brand">
                         {talent.headline || "Published Candidate"}
                       </h3>
                       {talent.availabilityStatus && (

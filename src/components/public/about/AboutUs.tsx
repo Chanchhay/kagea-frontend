@@ -7,23 +7,15 @@ import TechStackSection from "./TechStackSection";
 
 export default function AboutUsPage() {
     return (
-        <div className="landing-page relative w-full overflow-hidden bg-white text-slate-900 transition-colors duration-300 dark:bg-[#181B1C] dark:text-[#F5F5F5]">
-            {/* Ambient Aurora Glow Spheres */}
+        <div className="landing-page relative w-full overflow-hidden bg-canvas text-body transition-colors duration-300">
+            {/* Single soft ambient wash -- keeps the page calm instead of busy */}
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[38rem] w-[54rem] -translate-x-1/2 rounded-full bg-gradient-to-tr from-[#1fa628]/15 via-emerald-500/10 to-[#F3BE00]/10 blur-[130px] dark:from-[#1fa628]/20 dark:via-emerald-500/12 dark:to-[#F3BE00]/8"
-            />
-            <div
-                aria-hidden="true"
-                className="pointer-events-none absolute top-1/3 -left-48 -z-10 h-[32rem] w-[32rem] rounded-full bg-[#1fa628]/10 blur-[140px] dark:bg-[#1fa628]/15"
-            />
-            <div
-                aria-hidden="true"
-                className="pointer-events-none absolute top-2/3 -right-48 -z-10 h-[34rem] w-[34rem] rounded-full bg-[#F3BE00]/10 blur-[150px] dark:bg-[#1fa628]/15"
+                className="pointer-events-none absolute -top-64 left-1/2 -z-10 h-[42rem] w-[70rem] -translate-x-1/2 rounded-full bg-[#1fa628]/8 blur-[160px] dark:bg-[#1fa628]/12"
             />
 
-            {/* Main Content Sections */}
-            <div className="relative mx-auto max-w-7xl space-y-28 px-4 py-12 sm:px-6 lg:px-8">
+            {/* Main Content Sections -- full page width, matching the header gutters */}
+            <div className="relative mx-auto w-full max-w-[120rem] space-y-32 px-5 pt-24 pb-24 sm:px-8 lg:px-12 lg:pt-32 xl:px-16 2xl:px-24">
                 {/* SECTION 1: Hero Header with Globe + Stats */}
                 <AboutHeroSection />
 

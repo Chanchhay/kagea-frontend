@@ -261,7 +261,7 @@ function Avatar({ role }: { role: Role }) {
     <Link
       href={`/${role}/profile`}
       aria-label={`Open ${name}'s profile`}
-      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-chip-solid bg-cover bg-center text-xs font-bold text-chip-solid-fg ring-2 ring-ws-line"
+      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-chip-solid bg-cover bg-center text-xs font-semibold text-chip-solid-fg ring-2 ring-ws-line"
       style={avatar ? { backgroundImage: `url("${avatar}")` } : undefined}
     >
       {avatar ? <span className="sr-only">Profile image</span> : getInitials(name)}

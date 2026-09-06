@@ -12,17 +12,17 @@ export function ElegantTemplate({ data, fallbackName }: ResumeTemplateProps) {
   const contacts = [...contactLines(data), ...data.links.map((link) => link.url).filter(Boolean)];
 
   return (
-    <Sheet className="px-16 py-14 font-serif text-[12.5px]">
+    <Sheet className="px-16 py-14 font-serif text-[18px]">
       <header className="flex flex-col items-center border-b pb-7 text-center" style={{ borderColor: `${accent}66` }}>
         {data.profilePhotoUrl ? <Photo url={data.profilePhotoUrl} name={name} size={84} className="mb-4 rounded-full" /> : null}
         <h1 className="text-[32px] font-normal tracking-[0.06em] text-slate-950">{name}</h1>
         {data.professionalTitle ? (
-          <p className="mt-2 text-[13px] uppercase tracking-[0.28em]" style={{ color: accent }}>
+          <p className="mt-2 text-[18px] uppercase tracking-[0.28em]" style={{ color: accent }}>
             {data.professionalTitle}
           </p>
         ) : null}
         {contacts.length ? (
-          <p className="mt-4 max-w-[520px] text-[11px] leading-5 text-slate-500">{contacts.join("  ·  ")}</p>
+          <p className="mt-4 max-w-[520px] text-[18px] leading-5 text-slate-500">{contacts.join("  ·  ")}</p>
         ) : null}
       </header>
 
@@ -38,11 +38,11 @@ export function ElegantTemplate({ data, fallbackName }: ResumeTemplateProps) {
             {data.experience.map((entry) => (
               <div key={entry.id}>
                 <div className="flex items-baseline justify-between gap-4">
-                  <p className="text-[14px] text-slate-900">{entry.role}</p>
-                  <p className="shrink-0 text-[11px] italic text-slate-500">{formatDateRange(entry.start, entry.end, entry.current)}</p>
+                  <p className="text-[18px] text-slate-900">{entry.role}</p>
+                  <p className="shrink-0 text-[18px] italic text-slate-500">{formatDateRange(entry.start, entry.end, entry.current)}</p>
                 </div>
                 {entry.company || entry.location ? (
-                  <p className="text-[11.5px] uppercase tracking-[0.14em] text-slate-500">
+                  <p className="text-[18px] uppercase tracking-[0.14em] text-slate-500">
                     {[entry.company, entry.location].filter(Boolean).join(" — ")}
                   </p>
                 ) : null}
@@ -59,11 +59,11 @@ export function ElegantTemplate({ data, fallbackName }: ResumeTemplateProps) {
             {data.education.map((entry) => (
               <div key={entry.id} className="flex items-baseline justify-between gap-4">
                 <div>
-                  <p className="text-[14px] text-slate-900">{entry.degree}</p>
-                  {entry.school ? <p className="text-[11.5px] uppercase tracking-[0.14em] text-slate-500">{entry.school}</p> : null}
+                  <p className="text-[18px] text-slate-900">{entry.degree}</p>
+                  {entry.school ? <p className="text-[18px] uppercase tracking-[0.14em] text-slate-500">{entry.school}</p> : null}
                   <Description text={entry.description} className="mt-1 leading-6 text-slate-600" />
                 </div>
-                {entry.year ? <p className="shrink-0 text-[11px] italic text-slate-500">{entry.year}</p> : null}
+                {entry.year ? <p className="shrink-0 text-[18px] italic text-slate-500">{entry.year}</p> : null}
               </div>
             ))}
           </div>
@@ -88,8 +88,8 @@ export function ElegantTemplate({ data, fallbackName }: ResumeTemplateProps) {
           <div className="space-y-4">
             {data.projects.map((project) => (
               <div key={project.id}>
-                <p className="text-[14px] text-slate-900">{project.name}</p>
-                {project.url ? <p className="break-all text-[11px] italic text-slate-500">{project.url}</p> : null}
+                <p className="text-[18px] text-slate-900">{project.name}</p>
+                {project.url ? <p className="break-all text-[18px] italic text-slate-500">{project.url}</p> : null}
                 <Description text={project.description} className="mt-1 leading-6 text-slate-600" />
               </div>
             ))}
@@ -103,7 +103,7 @@ export function ElegantTemplate({ data, fallbackName }: ResumeTemplateProps) {
 function Section({ title, accent, children }: { title: string; accent: string; children: ReactNode }) {
   return (
     <section className="py-6">
-      <h2 className="mb-4 text-center text-[12px] uppercase tracking-[0.32em] text-slate-800">
+      <h2 className="mb-4 text-center text-[18px] uppercase tracking-[0.32em] text-slate-800">
         {title}
         <span className="mx-auto mt-2 block h-px w-16" style={{ background: accent }} />
       </h2>
