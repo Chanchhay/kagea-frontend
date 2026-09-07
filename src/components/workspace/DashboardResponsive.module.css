@@ -21,10 +21,6 @@
     flex-wrap: wrap;
   }
 
-  .notes :global(.ws-notch) {
-    container-type: inline-size;
-  }
-
   .notes dd {
     white-space: normal;
     overflow-wrap: anywhere;
@@ -79,31 +75,35 @@
   .shell > nav {
     bottom: max(0.75rem, env(safe-area-inset-bottom));
   }
+}
 
-  @container (width < 21rem) {
-    /* On narrow cards, put actions on their own row instead of cutting titles. */
-    .notes :global(.ws-notch__top) {
-      width: 100%;
-      border-radius: var(--panel-r) var(--panel-r) 0 0;
-    }
+.notes :global(.ws-notch) {
+  container-type: inline-size;
+}
 
-    .notes :global(.ws-notch__joint) {
-      display: none;
-    }
+@container (width < 21rem) {
+  /* On narrow cards, put actions on their own row instead of cutting titles. */
+  .notes :global(.ws-notch__top) {
+    width: 100%;
+    border-radius: var(--panel-r) var(--panel-r) 0 0;
+  }
 
-    .notes :global(.ws-notch__actions) {
-      position: static;
-      order: 1;
-      height: auto;
-      justify-content: flex-end;
-      padding: 0 1.25rem 0.75rem;
-      background: var(--panel-fill);
-    }
+  .notes :global(.ws-notch__joint) {
+    display: none;
+  }
 
-    .notes :global(.ws-notch__body) {
-      order: 2;
-      border-top-right-radius: 0;
-    }
+  .notes :global(.ws-notch__actions) {
+    position: static;
+    order: 1;
+    height: auto;
+    justify-content: flex-end;
+    padding: 0 1.25rem 0.75rem;
+    background: var(--panel-fill);
+  }
+
+  .notes :global(.ws-notch__body) {
+    order: 2;
+    border-top-right-radius: 0;
   }
 }
 

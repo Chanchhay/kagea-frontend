@@ -71,7 +71,7 @@ export function OverviewWorkspace({
   const stage = groupByStage(applications);
 
   return (
-    <div className={cn("flex flex-col gap-5", responsive.dashboard)}>
+    <div className={cn("flex flex-col gap-3", responsive.dashboard)}>
       <Hero
         name={name}
         profile={profile}
@@ -97,8 +97,8 @@ export function OverviewWorkspace({
        * Three columns that stack, not a grid of equal metric tiles: identity on
        * the left, the working stream in the middle, documents on the right.
        */}
-      <div className={cn("grid gap-5 xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)_minmax(0,19rem)]", responsive.columns)}>
-        <div className={cn("flex flex-col gap-5", responsive.notes)}>
+      <div className={cn("grid gap-3 xl:grid-cols-[minmax(0,21.5rem)_minmax(0,1fr)_minmax(0,20rem)]", responsive.columns)}>
+        <div className={cn("flex flex-col gap-3", responsive.notes)}>
           <DetailsNote name={name} user={user} profile={profile} />
           <ExpectationsNote profile={profile} />
         </div>
@@ -230,13 +230,13 @@ function DetailsNote({
           <div key={row.label} className="flex items-start gap-2.5">
             <row.icon
               aria-hidden="true"
-              className="mt-0.5 size-4 shrink-0 opacity-60"
+              className="mt-0.5 size-4 shrink-0 opacity-55"
             />
-            <div className="min-w-0">
-              <dt className="text-[18px] font-medium uppercase tracking-wide opacity-60">
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <dt className="text-xs font-medium opacity-60">
                 {tx(row.label)}
               </dt>
-              <dd className="truncate text-sm font-semibold">{row.value}</dd>
+              <dd className="break-words text-sm font-semibold leading-5">{row.value}</dd>
             </div>
           </div>
         ))}
@@ -245,7 +245,7 @@ function DetailsNote({
       {profile.publicProfileSlug ? (
         <Link
           href={`/profile?slug=${profile.publicProfileSlug}`}
-          className="mt-5 flex items-center justify-center gap-2 rounded-full bg-current/10 py-3 text-xs font-semibold transition-colors hover:bg-current/20"
+          className="mt-5 flex items-center justify-center gap-2 rounded-full bg-current/10 py-2.5 text-xs font-semibold transition-colors hover:bg-current/20"
         >
           <Eye aria-hidden="true" className="size-3.5" />
           {tx("View public profile")}</Link>
@@ -281,9 +281,9 @@ function ExpectationsNote({ profile }: { profile: JobSeekerProfileResponse }) {
         </>
       }
     >
-      <p className="text-[18px] font-medium uppercase tracking-wide opacity-60">
+      <p className="text-xs font-medium opacity-60">
         {tx("Salary range")}</p>
-      <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">
+      <p className="mt-1 text-xl font-semibold tracking-tight tabular-nums">
         {profile.expectedSalaryMin ? `${money(profile.expectedSalaryMin, currency)}${
               profile.expectedSalaryMax
                 ? ` – ${money(profile.expectedSalaryMax, currency)}`
@@ -291,8 +291,8 @@ function ExpectationsNote({ profile }: { profile: JobSeekerProfileResponse }) {
             }` : tx("Not set")}
       </p>
 
-      <div className="mt-4 flex flex-col gap-1">
-        <p className="text-[18px] font-medium uppercase tracking-wide opacity-60">
+      <div className="mt-4 flex flex-col gap-0.5">
+        <p className="text-xs font-medium opacity-60">
           {tx("Shared with")}</p>
         <p className="text-sm font-semibold">
           {tx(humanize(profile.salaryVisibility ?? "PRIVATE"))}

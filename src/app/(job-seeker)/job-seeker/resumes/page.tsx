@@ -84,10 +84,9 @@ export default function ResumesPage() {
   return (
     <div className="mx-auto w-full min-w-0 max-w-7xl space-y-7">
       <header className="relative overflow-hidden rounded-3xl border border-ws-line bg-ws-panel p-4 sm:p-8">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-28 size-80 rounded-full bg-primary/5" />
         <div className="relative flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex min-w-0 items-start gap-4">
-            <div className="hidden size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary sm:flex">
+            <div className="hidden size-14 shrink-0 items-center justify-center rounded-2xl border border-ws-line bg-ws-card text-primary sm:flex">
               <FileText aria-hidden="true" className="size-7" />
             </div>
             <div>
@@ -130,16 +129,16 @@ export default function ResumesPage() {
               const attached = hasFile(resume);
               const populated = hasContent(resume);
               return (
-                <article key={resume.id} className={`group flex min-w-0 flex-col overflow-hidden rounded-2xl border bg-ws-panel shadow-sm transition-shadow hover:shadow-md ${resume.isDefault ? "border-primary/50 ring-1 ring-primary/10" : "border-primary/20"}`}>
-                  <div className="flex min-h-16 flex-wrap items-center justify-between gap-2 border-b border-primary/15 bg-linear-to-r from-primary/15 to-primary/5 px-5 py-3">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
-                      {resume.visibility === "PUBLIC" ? <Globe2 aria-hidden="true" className="size-3.5" /> : <LockKeyhole aria-hidden="true" className="size-3.5" />}
+                <article key={resume.id} className={`group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-ws-line bg-ws-panel shadow-xs transition duration-200 hover:border-ws-muted/40 hover:shadow-md ${resume.isDefault ? "ring-1 ring-primary/40 border-primary/40" : ""}`}>
+                  <div className="flex min-h-14 flex-wrap items-center justify-between gap-2 border-b border-ws-line bg-ws-card/50 px-5 py-3">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-ws-fg">
+                      {resume.visibility === "PUBLIC" ? <Globe2 aria-hidden="true" className="size-3.5 text-primary" /> : <LockKeyhole aria-hidden="true" className="size-3.5 text-ws-muted" />}
                       {tx(resume.visibility === "PUBLIC" ? "Public" : "Private")}
                     </span>
                     {resume.isDefault ? <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground"><Star aria-hidden="true" className="size-3 fill-current" />{tx("Default")}</span> : null}
                   </div>
                   <Link href={`/job-seeker/resumes/${resume.id}`} className={`flex min-w-0 flex-1 items-start gap-3 p-4 sm:gap-4 sm:p-6 ${focusRing}`}>
-                    <div className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-primary/20 bg-primary/10 text-primary">
+                    <div className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-ws-line bg-ws-card text-ws-fg">
                       {photo ? <Image src={photo} alt="" fill unoptimized sizes="56px" className="object-cover" /> : <FileText aria-hidden="true" className="size-6" />}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -156,14 +155,14 @@ export default function ResumesPage() {
                     <CalendarDays aria-hidden="true" className="size-3.5 shrink-0" />
                     <span>{tx("Updated")} <time dateTime={resume.updatedAt}>{formatDate(resume.updatedAt)}</time></span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 border-t border-primary/10 bg-primary/5 p-3 sm:flex-nowrap sm:p-4">
-                    <Link href={`/job-seeker/resumes/${resume.id}`} aria-label={tx("Edit {0}", { 0: resume.title })} className={`inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-white px-2 py-2 text-center [overflow-wrap:anywhere] sm:px-3 text-sm font-semibold text-primary shadow-sm transition hover:border-primary/50 hover:bg-primary/5 dark:bg-ws-panel dark:hover:bg-primary/10 ${focusRing}`}>
+                  <div className="flex flex-wrap items-center gap-2 border-t border-ws-line bg-ws-panel p-3 sm:flex-nowrap sm:p-4">
+                    <Link href={`/job-seeker/resumes/${resume.id}`} aria-label={tx("Edit {0}", { 0: resume.title })} className={`inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-ws-line bg-ws-card px-2 py-2 text-center [overflow-wrap:anywhere] sm:px-3 text-sm font-semibold text-ws-fg shadow-xs transition hover:bg-ws-card-hover hover:border-ws-muted/30 ${focusRing}`}>
                       <Pencil aria-hidden="true" className="size-4 shrink-0" /><span className="min-w-0">{tx("Edit document")}</span>
                     </Link>
-                    <button type="button" onClick={() => void makeDefault(resume)} disabled={resume.isDefault || defaultState.isLoading} title={tx(resume.isDefault ? "Default resume" : "Make {0} default", { 0: resume.title })} aria-label={tx(resume.isDefault ? "Default resume" : "Make {0} default", { 0: resume.title })} className={`flex size-11 shrink-0 items-center justify-center rounded-xl border transition disabled:cursor-default ${focusRing} ${resume.isDefault ? "border-primary/25 bg-primary/15 text-primary" : "border-ws-line text-ws-muted hover:border-primary hover:text-primary disabled:opacity-50"}`}>
+                    <button type="button" onClick={() => void makeDefault(resume)} disabled={resume.isDefault || defaultState.isLoading} title={tx(resume.isDefault ? "Default resume" : "Make {0} default", { 0: resume.title })} aria-label={tx(resume.isDefault ? "Default resume" : "Make {0} default", { 0: resume.title })} className={`flex size-11 shrink-0 items-center justify-center rounded-xl border transition disabled:cursor-default ${focusRing} ${resume.isDefault ? "border-primary bg-primary text-primary-foreground" : "border-ws-line bg-ws-card text-ws-muted hover:border-ws-muted/40 hover:text-ws-fg disabled:opacity-50"}`}>
                       <Star aria-hidden="true" className={`size-4 ${resume.isDefault ? "fill-current" : ""}`} />
                     </button>
-                    <button type="button" onClick={() => void remove(resume)} disabled={deleteState.isLoading} title={tx("Delete {0}", { 0: resume.title })} aria-label={tx("Delete {0}", { 0: resume.title })} className={`flex size-11 shrink-0 items-center justify-center rounded-xl border border-ws-line text-ws-muted transition hover:border-destructive/30 hover:bg-destructive/5 hover:text-destructive disabled:opacity-50 ${focusRing}`}>
+                    <button type="button" onClick={() => void remove(resume)} disabled={deleteState.isLoading} title={tx("Delete {0}", { 0: resume.title })} aria-label={tx("Delete {0}", { 0: resume.title })} className={`flex size-11 shrink-0 items-center justify-center rounded-xl border border-ws-line bg-ws-card text-ws-muted transition hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive disabled:opacity-50 ${focusRing}`}>
                       <Trash2 aria-hidden="true" className="size-4" />
                     </button>
                   </div>

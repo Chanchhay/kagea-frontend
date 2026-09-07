@@ -41,11 +41,10 @@ export default function SavedJobsPage() {
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-7xl space-y-6">
-      <header className="relative overflow-hidden rounded-3xl border border-primary/15 bg-ws-panel p-5 sm:p-8">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-24 size-80 rounded-full bg-primary/5" />
+      <header className="relative overflow-hidden rounded-3xl border border-ws-line bg-ws-panel p-5 sm:p-8">
         <div className="relative flex min-w-0 flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-start gap-4">
-            <span className="hidden size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary sm:flex"><Bookmark aria-hidden="true" className="size-6" /></span>
+            <span className="hidden size-14 shrink-0 items-center justify-center rounded-2xl border border-ws-line bg-ws-card text-primary sm:flex"><Bookmark aria-hidden="true" className="size-6" /></span>
             <div className="min-w-0">
               <h1 className="text-2xl font-bold tracking-tight text-ws-fg sm:text-3xl">{tx("Saved jobs")}</h1>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-ws-muted">{tx("Roles you bookmarked while browsing. Closed and expired posts stay here until you remove them.")}</p>
@@ -102,7 +101,7 @@ export default function SavedJobsPage() {
           ) : null}
         </section>
       ) : (
-        <div className="rounded-3xl border border-dashed border-primary/25 bg-primary/5 px-6 py-16 text-center">
+        <div className="rounded-3xl border border-dashed border-ws-line bg-ws-card/40 px-6 py-16 text-center">
           <BookmarkX className="mx-auto size-10 text-ws-faint" />
           <h2 className="mt-4 font-semibold text-ws-fg">{tx("No saved jobs yet")}</h2>
           <p className="mt-2 text-sm text-ws-muted">
@@ -131,8 +130,8 @@ function SavedJobRow({ job }: { job: FavoriteJobResponse }) {
   }
 
   return (
-    <article className={`group flex min-w-0 flex-col overflow-hidden rounded-2xl border bg-ws-panel shadow-sm transition-shadow hover:shadow-md ${job.available ? "border-primary/20" : "border-ws-line"}`}>
-      <div className={`flex min-h-14 flex-wrap items-center justify-between gap-3 border-b px-4 py-3 sm:px-5 ${job.available ? "border-primary/15 bg-linear-to-r from-primary/15 to-primary/5" : "border-ws-line bg-ws-card"}`}>
+    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-ws-line bg-ws-panel shadow-xs transition duration-200 hover:border-ws-muted/40 hover:shadow-md">
+      <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-ws-line bg-ws-card/50 px-4 py-3 sm:px-5">
         <span className={`inline-flex items-center gap-2 text-xs font-semibold ${job.available ? "text-primary" : "text-ws-muted"}`}>
           <span aria-hidden="true" className={`size-1.5 shrink-0 rounded-full ${job.available ? "bg-primary" : "bg-ws-faint"}`} />
           {tx(job.available ? "Accepting applications" : "Closed")}
@@ -142,7 +141,7 @@ function SavedJobRow({ job }: { job: FavoriteJobResponse }) {
 
       <div className="flex-1 p-4 sm:p-6">
         <div className="flex min-w-0 items-start gap-3 sm:gap-4">
-          <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-primary/10 text-primary"><BriefcaseBusiness className="size-6" /></span>
+          <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-ws-line bg-ws-card text-ws-fg"><BriefcaseBusiness className="size-6" /></span>
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-bold leading-snug tracking-tight text-ws-fg [overflow-wrap:anywhere]">
               {job.available ? <Link href={`/jobs/${job.jobId}`} className={`rounded-sm transition hover:text-primary ${focusRing}`}>{job.title}</Link> : job.title}
@@ -162,20 +161,20 @@ function SavedJobRow({ job }: { job: FavoriteJobResponse }) {
         {!job.available ? <p className="mt-4 text-xs leading-relaxed text-ws-muted">{tx("No longer accepting applications")}</p> : null}
       </div>
 
-      <div className="flex min-w-0 flex-col gap-4 border-t border-primary/10 bg-primary/5 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
+      <div className="flex min-w-0 flex-col gap-4 border-t border-ws-line bg-ws-panel p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-xs text-ws-muted"><Banknote aria-hidden="true" className="size-4 shrink-0" />{tx("Salary")}</p>
           <p className="mt-1 text-base font-bold text-ws-fg [overflow-wrap:anywhere]">{tx(formatSalary(job.salaryMin, job.salaryMax))}</p>
         </div>
-        {job.available ? <Link href={`/jobs/${job.jobId}`} className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-white px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:border-primary/50 hover:bg-primary/5 dark:bg-ws-panel ${focusRing}`}>{tx("View job")}<ArrowUpRight aria-hidden="true" className="size-4 shrink-0" /></Link> : null}
+        {job.available ? <Link href={`/jobs/${job.jobId}`} className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-ws-line bg-ws-card px-4 py-2 text-sm font-semibold text-ws-fg shadow-xs transition hover:bg-ws-card-hover hover:border-ws-muted/30 ${focusRing}`}>{tx("View job")}<ArrowUpRight aria-hidden="true" className="size-4 shrink-0" /></Link> : null}
       </div>
     </article>
   );
 }
 
 function SummaryValue({ value, label, icon: Icon, accent = false }: { value: number; label: string; icon: typeof Bookmark; accent?: boolean }) {
-  const tx = useWorkspaceTranslation(); return <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-primary/15 bg-ws-panel px-4 py-3"><span className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${accent ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"}`}><Icon className="size-4" /></span><div><p className="font-bold leading-none text-ws-fg">{value}</p><p className="mt-1 text-[11px] text-ws-muted">{tx(label)}</p></div></div>; }
-function JobChip({ children }: { children: React.ReactNode }) { return <span className="max-w-full rounded-lg border border-primary/10 bg-primary/5 px-2.5 py-1.5 text-xs font-medium text-ws-muted [overflow-wrap:anywhere]">{children}</span>; }
+  const tx = useWorkspaceTranslation(); return <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-ws-line bg-ws-panel px-4 py-3"><span className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${accent ? "bg-primary text-primary-foreground" : "border border-ws-line bg-ws-card text-ws-fg"}`}><Icon className="size-4" /></span><div><p className="font-bold leading-none text-ws-fg">{value}</p><p className="mt-1 text-[11px] text-ws-muted">{tx(label)}</p></div></div>; }
+function JobChip({ children }: { children: React.ReactNode }) { return <span className="max-w-full rounded-lg border border-ws-line bg-ws-card px-2.5 py-1.5 text-xs font-medium text-ws-muted [overflow-wrap:anywhere]">{children}</span>; }
 function formatEnum(value: string) { return value.toLowerCase().replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
 function formatSalary(min: number | null, max: number | null) { const number = new Intl.NumberFormat("en", { maximumFractionDigits: 0 }); if (min && max) return `$${number.format(min)} – $${number.format(max)}`; if (min) return `From $${number.format(min)}`; if (max) return `Up to $${number.format(max)}`; return "Negotiable"; }
 

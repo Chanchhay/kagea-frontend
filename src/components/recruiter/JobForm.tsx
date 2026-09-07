@@ -2,11 +2,21 @@
 import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 
 
-import { useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
-import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  BriefcaseBusiness,
+  CalendarDays,
+  FileText,
+  Layers3,
+  Plus,
+  WalletCards,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 import type {
   JobDocumentParseResponse,
@@ -52,6 +62,46 @@ import {
 } from "@/services/recruiterApi";
 
 const REQUIREMENTS_SECTION = "REQUIREMENT_RESPONSIBILITY";
+const LOCAL_DRAFT_VERSION = 1;
+
+type LocalJobDraft = {
+  version: typeof LOCAL_DRAFT_VERSION;
+  savedAt: string;
+  values: JobFormValues;
+};
+
+function FormSection({
+  icon,
+  title,
+  description,
+  children,
+  className = "",
+}: {
+  icon: ReactNode;
+  title: string;
+  description?: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={`rounded-2xl border border-ws-line bg-ws-panel p-5 shadow-xs ${className}`}>
+      <div className="mb-5 flex items-start gap-3">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
+          {icon}
+        </span>
+        <div className="min-w-0">
+          <h2 className="font-semibold text-ws-fg">{title}</h2>
+          {description ? (
+            <p className="mt-1 text-sm leading-6 text-ws-muted">
+              {description}
+            </p>
+          ) : null}
+        </div>
+      </div>
+      {children}
+    </section>
+  );
+}
 
 function toFormValues(job?: JobPostResponse): JobFormValues {
   const sections = [...(job?.sections ?? [])].sort(
@@ -109,22 +159,68 @@ function toDateTime(value: string) {
   return Number.isNaN(endOfDay.getTime()) ? undefined : endOfDay.toISOString();
 }
 
+function getLocalDraftKey(job?: JobPostResponse) {
+  return `recruiter-job-form:${job ? `edit:${job.id}` : "new"}`;
+}
+
+function readLocalDraft(key: string, fallback: JobFormValues) {
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return null;
+
+    const draft = JSON.parse(raw) as Partial<LocalJobDraft>;
+    if (draft.version !== LOCAL_DRAFT_VERSION || !draft.values) {
+      removeLocalDraft(key);
+      return null;
+    }
+
+    return { ...fallback, ...draft.values };
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalDraft(key: string, values: JobFormValues) {
+  try {
+    const draft: LocalJobDraft = {
+      version: LOCAL_DRAFT_VERSION,
+      savedAt: new Date().toISOString(),
+      values,
+    };
+
+    window.localStorage.setItem(key, JSON.stringify(draft));
+  } catch {
+    // Local autosave is best-effort; server saves remain authoritative.
+  }
+}
+
+function removeLocalDraft(key: string) {
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // Ignore environments where storage is unavailable.
+  }
+}
+
 export function JobForm({ job }: { job?: JobPostResponse }) {
   const tx = useWorkspaceTranslation();
   const router = useRouter();
+  const localDraftKey = useMemo(() => getLocalDraftKey(job), [job]);
+  const initialValues = useMemo(() => toFormValues(job), [job]);
   const categories = useGetPublicJobCategoriesQuery();
   const [createJobDraft, creation] = useCreateJobDraftMutation();
   const [updateJob, update] = useUpdateJobMutation();
   const [publishJob, publication] = usePublishJobMutation();
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobSchema),
-    values: toFormValues(job),
+    values: initialValues,
   });
   const extraSections = useFieldArray({
     control: form.control,
     name: "extraSections",
   });
   const skills = useWatch({ control: form.control, name: "skills" });
+  const watchedValues = useWatch({ control: form.control });
   const publicSkills = useGetPublicSkillsQuery();
   const [createSkill, skillCreation] = useCreateSkillMutation();
   const [skillDraft, setSkillDraft] = useState("");
@@ -132,6 +228,34 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
   const [lastImport, setLastImport] = useState<JobDocumentParseResponse | null>(
     null,
   );
+  const [localDraftReady, setLocalDraftReady] = useState(false);
+  const [localDraftRestored, setLocalDraftRestored] = useState(false);
+  const [lastLocalSaveAt, setLastLocalSaveAt] = useState<Date | null>(null);
+
+  useEffect(() => {
+    const saved = readLocalDraft(localDraftKey, initialValues);
+    if (saved) {
+      form.reset(saved);
+    }
+
+    const readyTimer = setTimeout(() => {
+      if (saved) setLocalDraftRestored(true);
+      setLocalDraftReady(true);
+    }, 0);
+
+    return () => clearTimeout(readyTimer);
+  }, [form, initialValues, localDraftKey]);
+
+  useEffect(() => {
+    if (!localDraftReady || !form.formState.isDirty) return;
+
+    const saveTimer = setTimeout(() => {
+      writeLocalDraft(localDraftKey, form.getValues());
+      setLastLocalSaveAt(new Date());
+    }, 400);
+
+    return () => clearTimeout(saveTimer);
+  }, [form, form.formState.isDirty, localDraftKey, localDraftReady, watchedValues]);
 
   /**
    * Attaches a skill by name, creating it when the shared list is missing it.
@@ -256,7 +380,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
         contentMarkdown: section.contentMarkdown,
       }));
 
-    form.reset({
+    const nextValues = {
       ...current,
       title: parsed.title ?? current.title,
       description: description ?? current.description,
@@ -277,7 +401,11 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
         parsedExtras.length > 0 ? parsedExtras : current.extraSections,
       skills: parsed.skills.length > 0 ? parsed.skills : current.skills,
       sourceFileUrl: parsed.sourceFileUrl,
-    });
+    };
+
+    form.reset(nextValues);
+    writeLocalDraft(localDraftKey, nextValues);
+    setLastLocalSaveAt(new Date());
 
     setLastImport(parsed);
   };
@@ -311,6 +439,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
       toast.success(job ? tx("Job updated.") : tx("Draft saved."));
     }
 
+    removeLocalDraft(localDraftKey);
     router.push(`/recruiter/jobs/${saved.id}`);
   };
 
@@ -324,211 +453,252 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
   return (
     <Form {...form}>
       <form
-        className="space-y-6"
+        className="mx-auto max-w-6xl space-y-5 pb-6"
         onSubmit={form.handleSubmit((values) => submit(values, false))}
       >
         <JobDocumentImport onParsed={applyParsed} disabled={isSaving} />
 
         {lastImport ? <JobImportSummary parsed={lastImport} /> : null}
 
-        <div className="grid gap-5 md:grid-cols-2">
-          <TextField
-            control={form.control}
-            name="title"
-            label={tx("Job title")}
-            placeholder={tx("e.g. Senior Full Stack Engineer")}
-          />
-          <SelectField
-            control={form.control}
-            name="categoryId"
-            label={tx("Category / department")}
-            options={categoryOptions}
-          />
-          <TextField
-            control={form.control}
-            name="location"
-            label={tx("Location")}
-            placeholder={tx("Remote / Phnom Penh, Cambodia")}
-          />
-          <SelectField
-            control={form.control}
-            name="workMode"
-            label={tx("Work mode")}
-            options={withNotSpecified(workModeOptions)}
-          />
-          <TextField
-            control={form.control}
-            name="salaryMin"
-            label={tx("Salary min")}
-            type="number"
-            placeholder="80000"
-          />
-          <TextField
-            control={form.control}
-            name="salaryMax"
-            label={tx("Salary max")}
-            type="number"
-            placeholder="120000"
-          />
-          <SelectField
-            control={form.control}
-            name="experienceLevel"
-            label={tx("Experience level")}
-            options={withNotSpecified(experienceLevelOptions)}
-          />
-          <SelectField
-            control={form.control}
-            name="jobType"
-            label={tx("Job type")}
-            options={withNotSpecified(jobTypeOptions)}
-          />
-          <TextField
-            control={form.control}
-            name="expiredAt"
-            label={tx("Expires on")}
-            type="date"
-          />
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
+          <FormSection
+            icon={<BriefcaseBusiness aria-hidden="true" className="size-5" />}
+            title={tx("Role basics")}
+            description={tx("The core details candidates scan first.")}
+          >
+            <div className="grid gap-5 md:grid-cols-2">
+              <TextField
+                control={form.control}
+                name="title"
+                label={tx("Job title")}
+                placeholder={tx("e.g. Senior Full Stack Engineer")}
+              />
+              <SelectField
+                control={form.control}
+                name="categoryId"
+                label={tx("Category / department")}
+                options={categoryOptions}
+              />
+              <TextField
+                control={form.control}
+                name="location"
+                label={tx("Location")}
+                placeholder={tx("Remote / Phnom Penh, Cambodia")}
+              />
+              <SelectField
+                control={form.control}
+                name="workMode"
+                label={tx("Work mode")}
+                options={withNotSpecified(workModeOptions)}
+              />
+              <SelectField
+                control={form.control}
+                name="experienceLevel"
+                label={tx("Experience level")}
+                options={withNotSpecified(experienceLevelOptions)}
+              />
+              <SelectField
+                control={form.control}
+                name="jobType"
+                label={tx("Job type")}
+                options={withNotSpecified(jobTypeOptions)}
+              />
+            </div>
+          </FormSection>
+
+          <div className="space-y-5">
+            <FormSection
+              icon={<WalletCards aria-hidden="true" className="size-5" />}
+              title={tx("Compensation")}
+              description={tx("Optional, but useful for qualified candidates.")}
+            >
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-1">
+                <TextField
+                  control={form.control}
+                  name="salaryMin"
+                  label={tx("Salary min")}
+                  type="number"
+                  placeholder="80000"
+                />
+                <TextField
+                  control={form.control}
+                  name="salaryMax"
+                  label={tx("Salary max")}
+                  type="number"
+                  placeholder="120000"
+                />
+              </div>
+            </FormSection>
+
+            <FormSection
+              icon={<CalendarDays aria-hidden="true" className="size-5" />}
+              title={tx("Timeline")}
+              description={tx("Set when this role should stop accepting applications.")}
+            >
+              <TextField
+                control={form.control}
+                name="expiredAt"
+                label={tx("Expires on")}
+                type="date"
+              />
+            </FormSection>
+          </div>
         </div>
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{tx("Job description")}</FormLabel>
-              <FormControl>
-                <RichTextEditor
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder={tx("Write the core responsibilities and mission of this role…")}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="requirements"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{tx("Requirements & responsibilities")}</FormLabel>
-              <FormControl>
-                <RichTextEditor
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder={tx("List the specific technical requirements, years of experience, and day-to-day duties…")}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/*
-          Free-form sections: the recruiter writes the heading, and the order
-          here is the order job seekers read. Empty ones are dropped on save,
-          so an unused block costs nothing.
-        */}
-        {extraSections.fields.map((section, index) => (
-          <div
-            key={section.id}
-            className="space-y-3 rounded-xl border border-border p-4"
-          >
-            <div className="flex items-start gap-2">
-              <FormField
-                control={form.control}
-                name={`extraSections.${index}.title`}
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel className="sr-only">
-                      {tx("Section ")}{index + 1} {tx(" heading")}</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={tx("Section heading, e.g. Benefits, Our stack, How we hire")}
-                        className="h-10 font-medium"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex shrink-0 items-center gap-1 pt-1">
-                <button
-                  type="button"
-                  aria-label={tx("Move section up")}
-                  disabled={index === 0}
-                  onClick={() => extraSections.move(index, index - 1)}
-                  className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-heading disabled:pointer-events-none disabled:opacity-40"
-                >
-                  <ArrowUp aria-hidden="true" className="size-4" />
-                </button>
-                <button
-                  type="button"
-                  aria-label={tx("Move section down")}
-                  disabled={index === extraSections.fields.length - 1}
-                  onClick={() => extraSections.move(index, index + 1)}
-                  className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-heading disabled:pointer-events-none disabled:opacity-40"
-                >
-                  <ArrowDown aria-hidden="true" className="size-4" />
-                </button>
-                <button
-                  type="button"
-                  aria-label={tx("Remove section")}
-                  onClick={() => extraSections.remove(index)}
-                  className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-destructive"
-                >
-                  <X aria-hidden="true" className="size-4" />
-                </button>
-              </div>
-            </div>
-
+        <FormSection
+          icon={<FileText aria-hidden="true" className="size-5" />}
+          title={tx("Job content")}
+          description={tx("Write the public description, requirements, and any extra sections candidates should read.")}
+        >
+          <div className="space-y-6">
             <FormField
               control={form.control}
-              name={`extraSections.${index}.contentMarkdown`}
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="sr-only">
-                    {tx("Section ")}{index + 1} {tx(" content")}</FormLabel>
+                  <FormLabel>{tx("Job description")}</FormLabel>
                   <FormControl>
                     <RichTextEditor
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder={tx("Write this section…")}
+                      placeholder={tx("Write the core responsibilities and mission of this role…")}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="requirements"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{tx("Requirements & responsibilities")}</FormLabel>
+                  <FormControl>
+                    <RichTextEditor
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder={tx("List the specific technical requirements, years of experience, and day-to-day duties…")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/*
+              Free-form sections: the recruiter writes the heading, and the order
+              here is the order job seekers read. Empty ones are dropped on save.
+            */}
+            {extraSections.fields.map((section, index) => (
+              <div
+                key={section.id}
+                className="space-y-3 rounded-xl border border-ws-line bg-ws-card/50 p-4"
+              >
+                <div className="flex items-start gap-2">
+                  <FormField
+                    control={form.control}
+                    name={`extraSections.${index}.title`}
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel className="sr-only">
+                          {tx("Section ")}
+                          {index + 1}
+                          {tx(" heading")}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder={tx("Section heading, e.g. Benefits, Our stack, How we hire")}
+                            className="h-10 font-medium"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex shrink-0 items-center gap-1 pt-1">
+                    <button
+                      type="button"
+                      aria-label={tx("Move section up")}
+                      disabled={index === 0}
+                      onClick={() => extraSections.move(index, index - 1)}
+                      className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-heading disabled:pointer-events-none disabled:opacity-40"
+                    >
+                      <ArrowUp aria-hidden="true" className="size-4" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={tx("Move section down")}
+                      disabled={index === extraSections.fields.length - 1}
+                      onClick={() => extraSections.move(index, index + 1)}
+                      className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-heading disabled:pointer-events-none disabled:opacity-40"
+                    >
+                      <ArrowDown aria-hidden="true" className="size-4" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={tx("Remove section")}
+                      onClick={() => extraSections.remove(index)}
+                      className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-destructive"
+                    >
+                      <X aria-hidden="true" className="size-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name={`extraSections.${index}.contentMarkdown`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="sr-only">
+                        {tx("Section ")}
+                        {index + 1}
+                        {tx(" content")}
+                      </FormLabel>
+                      <FormControl>
+                        <RichTextEditor
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder={tx("Write this section…")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            ))}
+
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+                onClick={() =>
+                  extraSections.append({ title: "", contentMarkdown: "" })
+                }
+              >
+                <Plus aria-hidden="true" className="size-3.5" />
+                {tx("Add a section")}
+              </Button>
+              <span className="text-xs text-body">
+                {tx("Anything else worth saying — benefits, your stack, the hiring process.")}
+              </span>
+            </div>
           </div>
-        ))}
+        </FormSection>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="rounded-full"
-            onClick={() =>
-              extraSections.append({ title: "", contentMarkdown: "" })
-            }
-          >
-            <Plus aria-hidden="true" className="size-3.5" />
-            {tx("Add a section")}</Button>
-          <span className="text-xs text-body">
-            {tx("Anything else worth saying — benefits, your stack, the hiring process.")}</span>
-        </div>
-
-        <div>
-          <p className="text-sm font-medium text-heading">{tx("Skills")}</p>
-          <p className="mt-1 text-xs text-body">
-            {tx("Everything your PDF asked for is already here. Type a skill and press Enter to add another — anything we don't have yet joins the shared list for everyone.")}</p>
-
+        <FormSection
+          icon={<Layers3 aria-hidden="true" className="size-5" />}
+          title={tx("Skills")}
+          description={tx("Add the tools, languages, and capabilities candidates should have.")}
+        >
           {skills.length > 0 ? (
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               {skills.map((skill, index) => (
                 <span
                   key={skill.skillId}
@@ -589,17 +759,24 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
               {skillCreation.isLoading ? tx("Adding…") : tx("Add skill")}
             </Button>
           </div>
+        </FormSection>
 
-        </div>
-
-        <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border pt-6">
+        <div className="sticky bottom-0 z-20 flex flex-wrap items-center justify-end gap-3 rounded-2xl border border-ws-line bg-ws-panel/95 p-3 shadow-[var(--shadow-dropdown)] backdrop-blur">
+          <span className="mr-auto text-xs font-medium text-ws-muted">
+            {localDraftRestored
+              ? tx("Recovered a local draft")
+              : lastLocalSaveAt
+                ? tx("Saved locally")
+                : tx("Autosaves locally")}
+          </span>
           <Button
             type="button"
             variant="ghost"
             className="h-11 rounded-lg px-6"
             onClick={() => router.back()}
           >
-            {tx("Cancel")}</Button>
+            {tx("Cancel")}
+          </Button>
           <Button
             type="submit"
             variant="outline"

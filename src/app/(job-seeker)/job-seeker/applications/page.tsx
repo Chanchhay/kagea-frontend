@@ -37,11 +37,10 @@ export default function ApplicationsPage() {
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-7xl space-y-6">
-      <header className="relative overflow-hidden rounded-3xl border border-primary/15 bg-ws-panel p-5 sm:p-8">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-24 size-80 rounded-full bg-primary/5" />
+      <header className="relative overflow-hidden rounded-3xl border border-ws-line bg-ws-panel p-5 sm:p-8">
         <div className="relative flex min-w-0 flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-start gap-4">
-            <span className="hidden size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary sm:flex"><Send aria-hidden="true" className="size-6" /></span>
+            <span className="hidden size-14 shrink-0 items-center justify-center rounded-2xl border border-ws-line bg-ws-card text-primary sm:flex"><Send aria-hidden="true" className="size-6" /></span>
             <div className="min-w-0">
               <h1 className="text-2xl font-bold tracking-tight text-ws-fg sm:text-3xl">{tx("My applications")}</h1>
               <p className="mt-2 text-sm leading-relaxed text-ws-muted">{tx("Follow every opportunity from submission to final decision.")}</p>
@@ -83,13 +82,13 @@ export default function ApplicationsPage() {
               const status = statusInfo(application.status);
               const appliedAt = application.appliedAt || application.createdAt;
               return (
-                <article key={application.id} className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-primary/20 bg-ws-panel shadow-sm transition-shadow hover:shadow-md">
-                  <div className="flex min-h-16 flex-wrap items-center gap-2 border-b border-primary/15 bg-linear-to-r from-primary/15 to-primary/5 px-4 py-3 sm:px-5">
+                <article key={application.id} className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-ws-line bg-ws-panel shadow-xs transition duration-200 hover:border-ws-muted/40 hover:shadow-md">
+                  <div className="flex min-h-14 flex-wrap items-center justify-between gap-2 border-b border-ws-line bg-ws-card/50 px-4 py-3 sm:px-5">
                     <span className={`inline-flex max-w-full items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${status.className}`}><span aria-hidden="true" className={`size-1.5 shrink-0 rounded-full ${status.accent}`} /><span className="min-w-0 [overflow-wrap:anywhere]">{tx(status.label)}</span></span>
                   </div>
                   <div className="flex-1 p-4 sm:p-5">
                     <div className="flex min-w-0 items-center gap-3">
-                      <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-primary/10 text-primary"><BriefcaseBusiness aria-hidden="true" className="size-5" /></span>
+                      <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-ws-line bg-ws-card text-ws-fg"><BriefcaseBusiness aria-hidden="true" className="size-5" /></span>
                       <h3 className="min-w-0 text-lg font-semibold leading-snug tracking-tight text-ws-fg [overflow-wrap:anywhere]"><Link href={`/job-seeker/applications/${application.id}`} className={`rounded-sm transition hover:text-primary ${focusRing}`}>{application.jobTitle}</Link></h3>
                     </div>
                     <div className="mt-5 space-y-3 text-xs text-ws-muted">
@@ -97,8 +96,8 @@ export default function ApplicationsPage() {
                       <p className="flex min-w-0 items-start gap-2"><FileSearch aria-hidden="true" className="size-4 shrink-0" /><span className="min-w-0 [overflow-wrap:anywhere]">{application.resumeTitle || tx("Resume attached")}</span></p>
                     </div>
                   </div>
-                  <div className="border-t border-primary/10 bg-primary/5 p-4">
-                    <Link href={`/job-seeker/applications/${application.id}`} className={`flex min-h-11 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-white px-3 py-2 text-center text-sm font-semibold text-primary shadow-sm transition hover:border-primary/50 hover:bg-primary/5 dark:bg-ws-panel ${focusRing}`}>
+                  <div className="border-t border-ws-line bg-ws-panel p-4">
+                    <Link href={`/job-seeker/applications/${application.id}`} className={`flex min-h-11 items-center justify-center gap-2 rounded-xl border border-ws-line bg-ws-card px-3 py-2 text-center text-sm font-semibold text-ws-fg shadow-xs transition hover:bg-ws-card-hover hover:border-ws-muted/30 ${focusRing}`}>
                       {tx("View application")}<ArrowUpRight aria-hidden="true" className="size-4 shrink-0" />
                     </Link>
                   </div>
@@ -107,11 +106,11 @@ export default function ApplicationsPage() {
             })}
           </div>
         ) : (
-          <div className="rounded-3xl border border-dashed border-primary/25 bg-primary/5 px-5 py-16 text-center">
-            <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary"><XCircle aria-hidden="true" className="size-8" /></span>
+          <div className="rounded-3xl border border-dashed border-ws-line bg-ws-card/40 px-5 py-16 text-center">
+            <span className="mx-auto flex size-16 items-center justify-center rounded-2xl border border-ws-line bg-ws-card text-ws-muted"><XCircle aria-hidden="true" className="size-8" /></span>
             <h2 className="mt-5 text-lg font-semibold text-ws-fg">{tx("No applications found")}</h2>
             <p className="mt-2 text-sm leading-relaxed text-ws-muted">{tx("Try another filter or explore new opportunities.")}</p>
-            {search || filter !== "ALL" ? <button type="button" onClick={() => { setSearch(""); setFilter("ALL"); }} className={`mt-5 rounded-xl border border-primary/20 bg-ws-panel px-5 py-3 text-sm font-semibold text-primary ${focusRing}`}>{tx("Clear filters")}</button> : <Link href="/job-seeker/jobs" className={`mt-5 inline-flex min-h-11 items-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-brand-hover ${focusRing}`}>{tx("Browse jobs")}</Link>}
+            {search || filter !== "ALL" ? <button type="button" onClick={() => { setSearch(""); setFilter("ALL"); }} className={`mt-5 rounded-xl border border-ws-line bg-ws-card px-5 py-3 text-sm font-semibold text-ws-fg hover:bg-ws-card-hover ${focusRing}`}>{tx("Clear filters")}</button> : <Link href="/job-seeker/jobs" className={`mt-5 inline-flex min-h-11 items-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-brand-hover ${focusRing}`}>{tx("Browse jobs")}</Link>}
           </div>
         )}
       </section>
@@ -121,8 +120,8 @@ export default function ApplicationsPage() {
 
 function Metric({ icon: Icon, label, value, accent = false }: { icon: typeof Send; label: string; value: string | number; accent?: boolean }) {
   return (
-    <div className={`flex min-w-0 items-center gap-4 rounded-2xl border p-4 sm:p-5 ${accent ? "border-primary/25 bg-primary/5" : "border-ws-line bg-ws-panel"}`}>
-      <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${accent ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"}`}><Icon aria-hidden="true" className="size-5" /></span>
+    <div className="flex min-w-0 items-center gap-4 rounded-2xl border border-ws-line bg-ws-panel p-4 sm:p-5">
+      <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${accent ? "bg-primary text-primary-foreground" : "border border-ws-line bg-ws-card text-ws-fg"}`}><Icon aria-hidden="true" className="size-5" /></span>
       <div className="min-w-0"><p className="text-2xl font-bold tabular-nums text-ws-fg">{value}</p><p className="mt-1 text-xs leading-relaxed text-ws-muted">{label}</p></div>
     </div>
   );

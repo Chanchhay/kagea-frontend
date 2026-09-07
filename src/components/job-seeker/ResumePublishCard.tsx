@@ -13,7 +13,6 @@ import { useGetJobSeekerProfileQuery, useUpdateResumePublicationMutation } from 
 const OPTIONS: { value: PublicationVisibility; label: string; icon: typeof Globe2; description: string }[] = [
   { value: "PUBLIC", label: "Public", icon: Globe2, description: "Recruiters browsing talent can open this resume." },
   { value: "PRIVATE", label: "Private", icon: Lock, description: "Only shared with companies you apply to." },
-  { value: "HIDDEN", label: "Hidden", icon: EyeOff, description: "Kept out of every recruiter view." },
 ];
 
 /**
@@ -45,7 +44,7 @@ export function ResumePublishCard({ resume }: { resume: ResumeResponse }) {
     <section className="rounded-[22px] bg-ws-card p-5">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold text-ws-fg">{tx("Publishing")}</h2>
-        <span className={`rounded-full px-2.5 py-1 text-[18px] font-semibold uppercase tracking-wide ${isPublic ? "bg-chip-soft text-chip-soft-fg" : "bg-chip-quiet text-chip-quiet-fg"}`}>
+        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wider ${isPublic ? "bg-chip-soft text-chip-soft-fg" : "bg-chip-quiet text-chip-quiet-fg"}`}>
           {visibility.toLowerCase()}
         </span>
       </div>

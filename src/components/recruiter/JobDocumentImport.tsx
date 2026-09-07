@@ -72,82 +72,87 @@ export function JobDocumentImport({
   };
 
   return (
-    <div className="rounded-xl border border-border bg-surface-muted/40 p-5">
-      <div className="flex items-start gap-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface text-brand shadow-sm">
+    <section className="rounded-2xl border border-ws-line bg-ws-panel p-5 shadow-xs">
+      <div className="grid gap-5 lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-stretch">
+        <div className="flex items-start gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
           <Sparkles aria-hidden="true" className="size-4" />
         </span>
-        <div>
-          <h2 className="text-sm font-semibold text-heading">
-            {tx("Start from a PDF")}</h2>
-          <p className="mt-1 text-xs text-body">
-            {tx("Upload the job description you already have and we'll fill in the form below. Check every field before you publish.")}</p>
+          <div>
+            <h2 className="font-semibold text-ws-fg">{tx("Start from a PDF")}</h2>
+            <p className="mt-1 text-sm leading-6 text-ws-muted">
+              {tx("Upload the job description you already have and we'll fill in the form below. Check every field before you publish.")}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div
-        role="button"
-        tabIndex={isBusy ? -1 : 0}
-        aria-label={tx("Choose a PDF job description")}
-        aria-busy={parsing.isLoading}
-        onClick={() => {
-          if (!isBusy) inputRef.current?.click();
-        }}
-        onKeyDown={(event) => {
-          if (isBusy) return;
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            inputRef.current?.click();
-          }
-        }}
-        onDragOver={(event) => {
-          event.preventDefault();
-          if (!isBusy) setIsDragging(true);
-        }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={(event: DragEvent<HTMLDivElement>) => {
-          event.preventDefault();
-          setIsDragging(false);
-          if (isBusy) return;
-          const dropped = event.dataTransfer.files?.[0];
-          if (dropped) void parse(dropped);
-        }}
-        className={cn(
-          "mt-4 flex flex-col items-center justify-center rounded-xl border border-dashed px-4 py-6 text-center transition-colors",
-          isBusy
-            ? "cursor-not-allowed border-border opacity-70"
-            : "cursor-pointer",
-          isDragging
-            ? "border-brand bg-brand-tint"
-            : "border-border bg-surface hover:border-brand/40",
-        )}
-      >
-        <span className="flex size-10 items-center justify-center rounded-full bg-surface-muted text-brand">
-          {parsing.isLoading ? (
-            <Loader2 aria-hidden="true" className="size-5 animate-spin" />
-          ) : fileName ? (
-            <FileText aria-hidden="true" className="size-5" />
-          ) : (
-            <UploadCloud aria-hidden="true" className="size-5" />
-          )}
-        </span>
-        <p className="mt-3 text-sm font-medium text-heading">
-          {parsing.isLoading ? tx("Reading your job description…") : (fileName ?? "Drag and drop a PDF, or click to browse")}
-        </p>
-        <p className="mt-1 text-xs text-body">
-          {tx("PDF up to 5 MB. Scanned or image-only documents can't be read.")}</p>
-
-        <input
-          ref={inputRef}
-          type="file"
-          accept="application/pdf,.pdf"
-          className="sr-only"
-          disabled={isBusy}
-          onChange={(event) => {
-            const picked = event.target.files?.[0];
-            if (picked) void parse(picked);
+        <div
+          role="button"
+          tabIndex={isBusy ? -1 : 0}
+          aria-label={tx("Choose a PDF job description")}
+          aria-busy={parsing.isLoading}
+          onClick={() => {
+            if (!isBusy) inputRef.current?.click();
           }}
-        />
+          onKeyDown={(event) => {
+            if (isBusy) return;
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              inputRef.current?.click();
+            }
+          }}
+          onDragOver={(event) => {
+            event.preventDefault();
+            if (!isBusy) setIsDragging(true);
+          }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={(event: DragEvent<HTMLDivElement>) => {
+            event.preventDefault();
+            setIsDragging(false);
+            if (isBusy) return;
+            const dropped = event.dataTransfer.files?.[0];
+            if (dropped) void parse(dropped);
+          }}
+          className={cn(
+            "flex min-h-32 flex-col items-center justify-center rounded-xl border border-dashed px-4 py-5 text-center transition-colors",
+            isBusy
+              ? "cursor-not-allowed border-ws-line opacity-70"
+              : "cursor-pointer",
+            isDragging
+              ? "border-primary bg-primary/10"
+              : "border-ws-line bg-ws-card hover:border-primary/40",
+          )}
+        >
+          <span className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+            {parsing.isLoading ? (
+              <Loader2 aria-hidden="true" className="size-5 animate-spin" />
+            ) : fileName ? (
+              <FileText aria-hidden="true" className="size-5" />
+            ) : (
+              <UploadCloud aria-hidden="true" className="size-5" />
+            )}
+          </span>
+          <p className="mt-3 text-sm font-medium text-ws-fg">
+            {parsing.isLoading
+              ? tx("Reading your job description…")
+              : (fileName ?? tx("Drag and drop a PDF, or click to browse"))}
+          </p>
+          <p className="mt-1 text-xs text-ws-muted">
+            {tx("PDF up to 5 MB. Scanned or image-only documents can't be read.")}
+          </p>
+
+          <input
+            ref={inputRef}
+            type="file"
+            accept="application/pdf,.pdf"
+            className="sr-only"
+            disabled={isBusy}
+            onChange={(event) => {
+              const picked = event.target.files?.[0];
+              if (picked) void parse(picked);
+            }}
+          />
+        </div>
       </div>
 
       {parsed ? (
@@ -160,6 +165,6 @@ export function JobDocumentImport({
           {error}
         </p>
       ) : null}
-    </div>
+    </section>
   );
 }

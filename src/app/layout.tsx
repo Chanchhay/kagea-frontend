@@ -2,48 +2,55 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { StoreProvider } from "@/store/StoreProvider";
-import { organizationSchema } from "@/lib/schema";
+import { localBusinessSchema, organizationSchema, websiteSchema } from "@/lib/schema";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { inter, notoSansKhmer } from "./fonts";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+const previewImage = {
+    url: "/images/seo/find-job-preview.png",
+    width: 1200,
+    height: 630,
+    alt: "Find Job Cambodia career platform preview",
+};
 
 export const metadata: Metadata = {
     metadataBase: new URL(siteUrl),
     applicationName: "Find Job",
     title: {
-        default: "Find Job | Discover Your Next Career Opportunity",
+        default: "Find Job Cambodia | Jobs, Profiles, and AI Interview Practice",
         template: "%s | Find Job",
     },
     description:
-        "Discover jobs, build your professional profile, and prepare for interviews with Find Job.",
-    keywords: ["jobs", "job search", "careers", "recruitment", "AI interview", "Find Job", "Cambodia"],
+        "Find jobs in Cambodia, build your professional profile, and practice interviews with AI-powered tools on Find Job.",
+    keywords: ["jobs in Cambodia", "job search Cambodia", "careers", "recruitment", "AI interview", "Find Job", "Phnom Penh jobs"],
     authors: [{ name: "Find Job" }],
     creator: "Find Job",
     publisher: "Find Job",
+    category: "Recruitment",
     formatDetection: {
         email: false,
         address: false,
         telephone: false,
     },
     alternates: {
-        canonical: siteUrl,
+        canonical: "/",
     },
     openGraph: {
         type: "website",
         locale: "en_US",
         siteName: "Find Job",
-        title: "Find Job | Discover Your Next Career Opportunity",
-        description: "Discover jobs, build your professional profile, and prepare for interviews with Find Job.",
-        url: siteUrl,
-        images: [{ url: "/images/seo/find-job-og.png", width: 1200, height: 630, alt: "Find Job career platform" }],
+        title: "Find Job Cambodia | Jobs, Profiles, and AI Interview Practice",
+        description: "Find jobs in Cambodia, build your professional profile, and practice interviews with AI-powered tools.",
+        url: "/",
+        images: [previewImage],
     },
     twitter: {
         card: "summary_large_image",
-        title: "Find Job | Discover Your Next Career Opportunity",
-        description: "Discover jobs, build your professional profile, and prepare for interviews with Find Job.",
-        images: ["/images/hero-ai-robot-v3.webp"],
+        title: "Find Job Cambodia | Jobs, Profiles, and AI Interview Practice",
+        description: "Find jobs in Cambodia, build your professional profile, and practice interviews with AI-powered tools.",
+        images: [previewImage.url],
     },
     robots: {
         index: true,
@@ -67,7 +74,7 @@ export default function RootLayout({
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(organizationSchema),
+                        __html: JSON.stringify([organizationSchema, websiteSchema, localBusinessSchema]),
                     }}
                 />
             </head>

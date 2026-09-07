@@ -80,8 +80,8 @@ export function ProfileForm({ profile }: ProfileFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="min-w-0 space-y-6 [&_[data-slot=form-item]]:min-w-0 [&_[data-slot=select-trigger]]:max-w-full">
         {/* Professional Summary & Overview */}
-        <Card className="min-w-0 overflow-hidden rounded-3xl border border-primary/20 bg-ws-panel py-0 gap-0 shadow-sm ring-0">
-          <CardHeader className="border-b border-primary/15 bg-linear-to-r from-primary/10 to-primary/5 px-4 py-5 sm:px-6">
+        <Card className="min-w-0 overflow-hidden rounded-3xl border border-ws-line bg-ws-panel py-0 gap-0 shadow-xs ring-0">
+          <CardHeader className="border-b border-ws-line bg-ws-card/50 px-4 py-5 sm:px-6">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-ws-fg">
               <User className="size-5 text-brand" />
               {tx("General Profile Details")}</CardTitle>
@@ -136,8 +136,8 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         </Card>
 
         {/* Salary Expectations & Visibility */}
-        <Card className="min-w-0 overflow-hidden rounded-3xl border border-primary/20 bg-ws-panel py-0 gap-0 shadow-sm ring-0">
-          <CardHeader className="border-b border-primary/15 bg-linear-to-r from-primary/10 to-primary/5 px-4 py-5 sm:px-6">
+        <Card className="min-w-0 overflow-hidden rounded-3xl border border-ws-line bg-ws-panel py-0 gap-0 shadow-xs ring-0">
+          <CardHeader className="border-b border-ws-line bg-ws-card/50 px-4 py-5 sm:px-6">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-ws-fg">
               <DollarSign className="size-5 text-brand" />
               {tx("Salary Expectations & Privacy")}</CardTitle>
@@ -187,7 +187,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         </Card>
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-3 rounded-2xl border border-primary/15 bg-primary/5 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+        <div className="flex flex-col gap-3 rounded-2xl border border-ws-line bg-ws-card/40 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
           <Button
             type="button"
             variant="outline"

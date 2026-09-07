@@ -73,6 +73,18 @@ export const conversationsApi = baseApi.injectEndpoints({
         "Conversations",
       ],
     }),
+    closeConversation: builder.mutation<ConversationResponse, string>({
+      query: (conversationId) => ({
+        url: `/moderator/conversations/${conversationId}/close`,
+        method: "POST",
+      }),
+      transformResponse: (response: ApiResponseConversation) =>
+        unwrapApiResponse(response),
+      invalidatesTags: (_result, _error, conversationId) => [
+        { type: "Conversations", id: conversationId },
+        "Conversations",
+      ],
+    }),
     deleteMessage: builder.mutation<
       void,
       { conversationId: string; messageId: string }
@@ -96,4 +108,5 @@ export const {
   useSendMessageMutation,
   useMarkConversationReadMutation,
   useDeleteMessageMutation,
+  useCloseConversationMutation,
 } = conversationsApi;

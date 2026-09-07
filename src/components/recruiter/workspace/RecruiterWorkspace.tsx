@@ -74,7 +74,7 @@ export function RecruiterWorkspace({
   const retired = byStatus("CLOSED", "EXPIRED", "REJECTED");
 
   return (
-    <div className={cn("flex flex-col gap-5", responsive.dashboard)}>
+    <div className={cn("flex flex-col gap-3", responsive.dashboard)}>
       <Hero
         company={company}
         candidates={candidates}
@@ -101,8 +101,8 @@ export function RecruiterWorkspace({
       {/* The notch spends ~5.75rem of the left column on the cut, so that column
           is wider than a plain card would need — otherwise the title strip ends
           up shorter than the title it carries. */}
-      <div className={cn("grid gap-5 xl:grid-cols-[minmax(0,18.5rem)_minmax(0,1fr)_minmax(0,19rem)]", responsive.columns)}>
-        <div className={cn("flex flex-col gap-5", responsive.notes)}>
+      <div className={cn("grid gap-3 xl:grid-cols-[minmax(0,21.5rem)_minmax(0,1fr)_minmax(0,20rem)]", responsive.columns)}>
+        <div className={cn("flex flex-col gap-3", responsive.notes)}>
           <CompanyNote company={company} user={user} />
           <VerificationNote company={company} documents={documents} />
         </div>
@@ -259,7 +259,7 @@ function CompanyNote({
        * from the workspace tones — an ink-on-ink tint disappears against the
        * yellow, which is why these carry their own fill.
        */}
-      <div className="mt-4 flex items-center gap-1.5">
+      <div className="mt-3 flex items-center gap-1.5">
         {shortcuts.map((shortcut) => (
           <Link
             key={shortcut.label}
@@ -340,14 +340,14 @@ function VerificationNote({
       />
 
       {/* Mirrors the yellow card's disc row, so the pair share a rhythm. */}
-      <div className="mt-4 flex items-center gap-1.5">
+      <div className="mt-3 flex items-center gap-1.5">
         <Chip
           tone={approved ? "solid" : "soft"}
-          className="px-2.5 py-1 text-[18px]"
+          className="px-2.5 py-1 text-xs"
         >
           {approved ? tx("Verified") : tx("Awaiting review")}
         </Chip>
-        <span className="inline-flex items-center rounded-full bg-ws-panel px-2.5 py-1 text-[18px] font-semibold text-ws-muted">
+        <span className="inline-flex items-center rounded-full bg-ws-panel px-2.5 py-1 text-xs font-semibold text-ws-muted">
           {pending.length ? `${pending.length} pending` : tx("Docs clear")}
         </span>
       </div>
@@ -368,18 +368,18 @@ function NoteRows({
 }) {
   const tx = useWorkspaceTranslation();
   return (
-    <dl className="flex flex-col gap-4">
+    <dl className="flex flex-col gap-3">
       {rows.map((row) => (
         <div key={row.label} className="flex items-start gap-2.5">
           <row.icon
             aria-hidden="true"
-            className="mt-1 size-3.5 shrink-0 opacity-45"
+            className="mt-0.5 size-3.5 shrink-0 opacity-45"
           />
-          <div className="flex min-w-0 flex-col gap-1">
-            <dt className="text-[18px] font-medium leading-6 opacity-55">
+          <div className="min-w-0 flex-1">
+            <dt className="text-xs font-medium leading-4 opacity-55">
               {tx(row.label)}
             </dt>
-            <dd className="text-[18px] font-semibold leading-6 [overflow-wrap:anywhere]">
+            <dd className="mt-0.5 text-sm font-semibold leading-5 [overflow-wrap:anywhere]">
               {row.value}
             </dd>
           </div>

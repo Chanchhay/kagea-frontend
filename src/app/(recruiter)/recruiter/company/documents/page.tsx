@@ -51,8 +51,8 @@ export default function CompanyDocumentsPage() {
         title={tx("Company documents")}
         description={tx("Supporting documents a moderator reviews when verifying your company.")}
       />
-      <section className="overflow-hidden rounded-[28px] border border-ws-line bg-ws-panel shadow-[0_18px_60px_-42px_rgba(15,23,42,.45)]">
-        <div className="flex flex-col gap-5 border-b border-ws-line bg-linear-to-r from-primary/8 via-transparent to-transparent px-5 py-6 sm:px-7 lg:flex-row lg:items-center lg:justify-between">
+      <section className="overflow-hidden rounded-[28px] border border-ws-line bg-ws-panel shadow-xs">
+        <div className="flex flex-col gap-5 border-b border-ws-line bg-ws-card/50 px-5 py-6 sm:px-7 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-4">
             <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground"><ShieldCheck className="size-5" /></span>
             <div>
@@ -61,7 +61,7 @@ export default function CompanyDocumentsPage() {
               <p className="mt-1 max-w-2xl text-sm leading-6 text-ws-muted">{tx("Upload official records for ")}{company.data.name}{tx(". Clear documents help moderators review your company faster.")}</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 rounded-2xl border border-primary/15 bg-primary/8 px-4 py-3">
+          <div className="flex items-center gap-3 rounded-2xl border border-ws-line bg-ws-card px-4 py-3">
             <FileCheck2 className="size-5 text-primary" />
             <div><p className="text-lg font-bold leading-none text-ws-fg">{companyDocuments.length}</p><p className="mt-1 text-xs text-ws-muted">{tx("Documents uploaded")}</p></div>
           </div>
