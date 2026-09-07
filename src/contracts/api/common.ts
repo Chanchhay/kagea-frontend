@@ -68,6 +68,14 @@ export type InterviewStatus =
 
 export type InterviewResult = "PASSED" | "FAILED" | "NEEDS_REVIEW";
 
+/**
+ * Where a company stands with the moderators. Mirrors the backend enum.
+ *
+ * `SUSPENDED` is part of that enum and so can come back from the API, but
+ * nothing in the platform sets it: there is no suspend endpoint, and no
+ * screen that offers the action. It is handled wherever a status is rendered
+ * and is deliberately not offered as a filter.
+ */
 export type CompanyVerificationStatus =
   | "PENDING_VERIFICATION"
   | "APPROVED"

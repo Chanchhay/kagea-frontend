@@ -15,7 +15,7 @@ export default function MessageThreadPage() {
       />
       <MessagesWorkspace
         basePath="/job-seeker/messages"
-        conversationId={Number(conversationId)}
+        conversationId={conversationId}
       />
     </div>
   );

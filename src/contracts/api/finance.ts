@@ -27,9 +27,9 @@ export type InvoiceStatus =
   | "CANCELLED";
 
 export type CommissionRecordResponse = {
-  id: number;
-  hiringRecordId: number;
-  companyId: number;
+  id: string;
+  hiringRecordId: string;
+  companyId: string;
   companyName: string;
   /** Frozen when the hire was confirmed; later rate changes never restate it. */
   commissionRate: number;
@@ -39,18 +39,18 @@ export type CommissionRecordResponse = {
   paidAt: string | null;
   status: PaymentStatus;
   note: string | null;
-  invoiceId: number | null;
+  invoiceId: string | null;
   invoiceNo: string | null;
 };
 
 export type HiringRecordResponse = {
-  id: number;
-  applicationId: number;
-  jobPostId: number;
+  id: string;
+  applicationId: string;
+  jobPostId: string;
   jobTitle: string;
-  companyId: number;
+  companyId: string;
   companyName: string;
-  jobSeekerProfileId: number;
+  jobSeekerProfileId: string;
   /** Headline — this platform does not carry real names. */
   candidateLabel: string | null;
   hiredAt: string;
@@ -75,8 +75,8 @@ export type HireReviewRequest = {
 };
 
 export type InvoiceItemResponse = {
-  id: number;
-  commissionRecordId: number | null;
+  id: string;
+  commissionRecordId: string | null;
   description: string;
   quantity: number;
   unitAmount: number;
@@ -84,7 +84,7 @@ export type InvoiceItemResponse = {
 };
 
 export type InvoicePaymentResponse = {
-  id: number;
+  id: string;
   amount: number;
   currency: string;
   paymentMethod: string | null;
@@ -95,9 +95,9 @@ export type InvoicePaymentResponse = {
 };
 
 export type InvoiceResponse = {
-  id: number;
+  id: string;
   invoiceNo: string;
-  companyId: number;
+  companyId: string;
   companyName: string;
   subtotalAmount: number;
   taxAmount: number;
@@ -116,8 +116,8 @@ export type InvoiceResponse = {
 };
 
 export type CreateInvoiceRequest = {
-  companyId: number;
-  commissionRecordIds: number[];
+  companyId: string;
+  commissionRecordIds: string[];
   taxAmount?: number;
   dueAt?: string;
   note?: string;

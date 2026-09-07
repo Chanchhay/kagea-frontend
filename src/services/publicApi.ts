@@ -18,8 +18,8 @@ import { baseApi, normalizePage, unwrapApiResponse } from "./baseApi";
 export type PublicJobsQuery = {
   keyword?: string;
   location?: string;
-  categoryId?: number | number[];
-  skillIds?: number[];
+  categoryId?: string | string[];
+  skillIds?: string[];
   workMode?: string | string[];
   jobType?: string | string[];
   experienceLevel?: string | string[];

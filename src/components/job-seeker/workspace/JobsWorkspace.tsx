@@ -58,7 +58,7 @@ export function JobsWorkspace({
 
   const [keyword, setKeyword] = useState(initialKeyword);
   const [workMode, setWorkMode] = useState<WorkModeTab>("All");
-  const [selectedId, setSelectedId] = useState<number | null>(
+  const [selectedId, setSelectedId] = useState<string | null>(
     jobs[0]?.id ?? null,
   );
 
@@ -97,7 +97,7 @@ export function JobsWorkspace({
    * attempt. A re-application would not have shown up at all.
    */
   const applicationByJob = useMemo(() => {
-    const byJob = new Map<number, JobApplicationResponse>();
+    const byJob = new Map<string, JobApplicationResponse>();
 
     for (const item of applications) {
       const existing = byJob.get(item.jobId);
@@ -456,7 +456,7 @@ function ApplyPanel({
       await apply({
         jobId: job.id,
         body: {
-          resumeId: resumeId ? Number(resumeId) : undefined,
+          resumeId: resumeId || undefined,
           coverLetter: coverLetter.trim() || undefined,
         },
       }).unwrap();

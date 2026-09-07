@@ -15,7 +15,7 @@ import { useGetGuestInterviewAvailabilityQuery } from "@/services/guestInterview
  * The brand green arrives as the tint token and the primary button, not as a
  * full-bleed fill — a solid green panel shouts over the neutral cards around it.
  */
-export function PracticeInterviewLink({ jobId }: { jobId: number }) {
+export function PracticeInterviewLink({ jobId }: { jobId: string }) {
   const { data } = useGetGuestInterviewAvailabilityQuery();
 
   if (!data?.enabled || !data.canStart) return null;

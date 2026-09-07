@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { GuestInterview } from "@/components/public/GuestInterview";
 import { useGetPublicJobQuery } from "@/services/publicApi";
+import { isUuid } from "@/lib/uuid";
 
 /**
  * Practising against one published job without an account.
@@ -15,12 +16,12 @@ import { useGetPublicJobQuery } from "@/services/publicApi";
  */
 export default function PracticeInterviewPage() {
   const { jobId } = useParams<{ jobId: string }>();
-  const id = Number(jobId);
+  const id = jobId;
   const { data: job, isLoading } = useGetPublicJobQuery(id, {
-    skip: !Number.isFinite(id),
+    skip: !isUuid(id),
   });
 
-  if (!Number.isFinite(id)) {
+  if (!isUuid(id)) {
     return <p className="p-6 text-sm text-body">That job link is not valid.</p>;
   }
 

@@ -39,7 +39,7 @@ export function JobStatusActions({ job }: { job: JobPostResponse }) {
 
   const run = async (
     action: "publish" | "pause" | "resume" | "close",
-    trigger: (id: number) => { unwrap: () => Promise<JobPostResponse> },
+    trigger: (id: string) => { unwrap: () => Promise<JobPostResponse> },
     message: string,
   ) => {
     try {

@@ -44,7 +44,7 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
           </h1>
 
           <div className="flex items-center gap-3">
-            <CompanyLogo job={job} />
+            <CompanyLogo job={job} size={52} />
             <div className="flex min-w-0 flex-col gap-1">
               {/*
                * A masked company has no id, so there is no page to open — the

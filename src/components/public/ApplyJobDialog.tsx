@@ -11,7 +11,7 @@ import { useApplyToJobMutation } from "@/services/jobSeekerApi";
 import { KeycloakLoginButton } from "@/components/auth/AuthActions";
 
 type ApplyJobDialogProps = {
-  jobId: number;
+  jobId: string;
   jobTitle: string;
 };
 
@@ -27,7 +27,7 @@ export function ApplyJobDialog({ jobId, jobTitle }: ApplyJobDialogProps) {
       await apply({
         jobId,
         body: {
-          resumeId: resumeId ? Number(resumeId) : undefined,
+          resumeId: resumeId || undefined,
           coverLetter: coverLetter || undefined,
         },
       }).unwrap();

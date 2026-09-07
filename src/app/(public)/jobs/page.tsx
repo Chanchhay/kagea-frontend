@@ -55,10 +55,10 @@ export default function PublicJobsPage() {
   const [minimumSalary, setMinimumSalary] = useState(0);
   const [jobTypes, setJobTypes] = useState<Set<string>>(() => new Set());
   const [workModes, setWorkModes] = useState<Set<string>>(() => new Set());
-  const [categoryIds, setCategoryIds] = useState<Set<number>>(() => new Set());
-  const [skillIds, setSkillIds] = useState<Set<number>>(() => new Set());
+  const [categoryIds, setCategoryIds] = useState<Set<string>>(() => new Set());
+  const [skillIds, setSkillIds] = useState<Set<string>>(() => new Set());
   const [postedWithinDays, setPostedWithinDays] = useState<number | null>(null);
-  const [savedJobs, setSavedJobs] = useState<Set<number>>(() => new Set());
+  const [savedJobs, setSavedJobs] = useState<Set<string>>(() => new Set());
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
   const [page, setPage] = useState(0);
   const [allSkillsShown, setAllSkillsShown] = useState(false);

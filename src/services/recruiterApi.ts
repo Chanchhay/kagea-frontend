@@ -79,7 +79,7 @@ export const recruiterApi = baseApi.injectEndpoints({
         unwrapApiResponse(response),
       invalidatesTags: ["RecruiterCompany", "CompanyDocuments"],
     }),
-    getCompanyDocuments: builder.query<CompanyDocumentResponse[], number>({
+    getCompanyDocuments: builder.query<CompanyDocumentResponse[], string>({
       query: (companyId) => `/recruiter/companies/${companyId}/documents`,
       transformResponse: (response: ApiResponseListCompanyDocumentResponse) =>
         unwrapApiResponse(response),
