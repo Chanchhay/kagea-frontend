@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,6 +21,7 @@ export function RecruiterProfileForm({
 }: {
   profile?: RecruiterProfileResponse;
 }) {
+  const tx = useWorkspaceTranslation();
   const [updateRecruiterProfile, update] = useUpdateRecruiterProfileMutation();
   const form = useForm<RecruiterProfileFormValues>({
     resolver: zodResolver(recruiterProfileSchema),
@@ -34,9 +37,9 @@ export function RecruiterProfileForm({
         position: values.position || undefined,
         linkedinUrl: values.linkedinUrl || undefined,
       }).unwrap();
-      toast.success("Profile updated.");
+      toast.success(tx("Profile updated."));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Unable to update the profile."));
+      toast.error(getApiErrorMessage(error, tx("Unable to update the profile.")));
     }
   };
 
@@ -47,13 +50,13 @@ export function RecruiterProfileForm({
           <TextField
             control={form.control}
             name="position"
-            label="Position"
-            placeholder="Head of Talent"
+            label={tx("Position")}
+            placeholder={tx("Head of Talent")}
           />
           <TextField
             control={form.control}
             name="linkedinUrl"
-            label="LinkedIn URL"
+            label={tx("LinkedIn URL")}
             placeholder="https://linkedin.com/in/…"
           />
         </div>
@@ -63,7 +66,7 @@ export function RecruiterProfileForm({
             className="h-11 rounded-lg px-8"
             disabled={update.isLoading}
           >
-            {update.isLoading ? "Saving…" : "Save changes"}
+            {update.isLoading ? tx("Saving…") : tx("Save changes")}
           </Button>
         </div>
       </form>

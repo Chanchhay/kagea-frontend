@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useParams } from "next/navigation";
 import { MetricCard, PageIntro, PlainCard, StatusPill } from "@/components/shared/ApiCards";
@@ -7,13 +9,14 @@ import { LoadingState } from "@/components/shared/LoadingState";
 import { useGetAiInterviewResultQuery } from "@/services/jobSeekerApi";
 
 export default function InterviewResultPage() {
+  const tx = useWorkspaceTranslation();
   const { sessionId } = useParams<{ sessionId: string }>();
   const resultQuery = useGetAiInterviewResultQuery(sessionId);
   if (resultQuery.isLoading) return <LoadingState rows={4} />;
   if (resultQuery.isError || !resultQuery.data)
     return (
       <ErrorState
-        message="Unable to load this interview result."
+        message={tx("Unable to load this interview result.")}
         onRetry={() => resultQuery.refetch()}
       />
     );
@@ -22,15 +25,15 @@ export default function InterviewResultPage() {
   return (
     <>
       <PageIntro
-        title={`${session.jobTitle} result`}
-        description="How the AI scored your answers, and what to work on next."
+        title={tx("{0} result", { 0: session.jobTitle })}
+        description={tx("How the AI scored your answers, and what to work on next.")}
       />
       <div className="space-y-4">
         <PlainCard>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <StatusPill>{feedback.result}</StatusPill>
             <p className="text-sm text-body">
-              Overall score{" "}
+              {tx("Overall score")}{" "}
               <span className="text-lg font-semibold text-heading">
                 {feedback.overallScore}
               </span>
@@ -42,10 +45,10 @@ export default function InterviewResultPage() {
         </PlainCard>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <MetricCard label="Technical" value={feedback.technicalScore} />
-          <MetricCard label="Communication" value={feedback.communicationScore} />
-          <MetricCard label="Problem solving" value={feedback.problemSolvingScore} />
-          <MetricCard label="Confidence" value={feedback.confidenceScore} />
+          <MetricCard label={tx("Technical")} value={feedback.technicalScore} />
+          <MetricCard label={tx("Communication")} value={feedback.communicationScore} />
+          <MetricCard label={tx("Problem solving")} value={feedback.problemSolvingScore} />
+          <MetricCard label={tx("Confidence")} value={feedback.confidenceScore} />
         </div>
 
         {feedback.strengths || feedback.weaknesses ? (
@@ -53,16 +56,14 @@ export default function InterviewResultPage() {
             {feedback.strengths ? (
               <PlainCard>
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-fg">
-                  Strengths
-                </h2>
+                  {tx("Strengths")}</h2>
                 <p className="mt-2 text-sm leading-6 text-body">{feedback.strengths}</p>
               </PlainCard>
             ) : null}
             {feedback.weaknesses ? (
               <PlainCard>
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-fg">
-                  To improve
-                </h2>
+                  {tx("To improve")}</h2>
                 <p className="mt-2 text-sm leading-6 text-body">{feedback.weaknesses}</p>
               </PlainCard>
             ) : null}
@@ -71,8 +72,7 @@ export default function InterviewResultPage() {
 
         <PlainCard>
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-fg">
-            Answers
-          </h2>
+            {tx("Answers")}</h2>
           <ul className="mt-3 space-y-4">
             {[...(session.questions ?? [])]
               .sort((a, b) => a.displayOrder - b.displayOrder)
@@ -106,8 +106,7 @@ export default function InterviewResultPage() {
                   {question.answer?.modelAnswer ? (
                     <div className="mt-2 rounded-lg border border-brand/25 bg-brand-tint p-3">
                       <h3 className="text-xs font-semibold uppercase tracking-wide text-brand">
-                        A strong answer
-                      </h3>
+                        {tx("A strong answer")}</h3>
                       <p className="mt-1.5 text-sm leading-6 text-body">
                         {question.answer.modelAnswer}
                       </p>

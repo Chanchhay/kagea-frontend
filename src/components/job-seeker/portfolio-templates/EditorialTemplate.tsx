@@ -1,3 +1,5 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import { Code2 as Github, ExternalLink } from "lucide-react";
 import { Cover, EmptyProjects, Page, ProjectImage, TechTags, displayUrl, type PortfolioTemplateProps } from "./shared";
 
@@ -6,6 +8,7 @@ import { Cover, EmptyProjects, Page, ProjectImage, TechTags, displayUrl, type Po
  * sides, so a small number of strong projects carries the page.
  */
 export function EditorialTemplate({ title, summary, publicUrl, projects, theme }: PortfolioTemplateProps) {
+  const tx = useWorkspaceTranslation();
   const accent = theme.accent;
 
   return (
@@ -33,14 +36,14 @@ export function EditorialTemplate({ title, summary, publicUrl, projects, theme }
           <div className="space-y-14">
             {projects.map((project, index) => (
               <article key={project.id} className={`flex items-center gap-10 ${index % 2 ? "flex-row-reverse" : ""}`}>
-                <ProjectImage url={project.imageUrl} alt={project.title} accent={accent} className="h-60 w-[420px] shrink-0 rounded-sm" />
+                <ProjectImage url={project.imageUrl} alt={tx(project.title)} accent={accent} className="h-60 w-[420px] shrink-0 rounded-sm" />
                 <div className="min-w-0 flex-1">
                   <span className="text-[18px] font-semibold tracking-[0.24em]" style={{ color: accent }}>
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <h3 className="mt-2 font-serif text-[28px] leading-tight text-slate-950">{project.title}</h3>
                   {project.description ? (
-                    <p className="mt-3 line-clamp-5 whitespace-pre-line text-[18px] leading-7 text-slate-600">{project.description}</p>
+                    <p className="mt-3 line-clamp-5 whitespace-pre-line text-[18px] leading-7 text-slate-600">{tx(project.description)}</p>
                   ) : null}
                   <TechTags techStack={project.techStack} accent={accent} className="mt-4" />
                   {project.projectUrl || project.githubUrl ? (
@@ -52,8 +55,7 @@ export function EditorialTemplate({ title, summary, publicUrl, projects, theme }
                       ) : null}
                       {project.githubUrl ? (
                         <span className="inline-flex items-center gap-1.5 text-slate-500">
-                          <Github className="size-4" /> Source
-                        </span>
+                          <Github className="size-4" /> {tx(" Source")}</span>
                       ) : null}
                     </div>
                   ) : null}

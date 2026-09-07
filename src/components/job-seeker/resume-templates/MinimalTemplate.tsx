@@ -1,3 +1,5 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import type { ReactNode } from "react";
 import { formatDateRange } from "@/lib/resume-data";
 import { Description, Sheet, contactLines, type ResumeTemplateProps } from "./shared";
@@ -7,6 +9,7 @@ import { Description, Sheet, contactLines, type ResumeTemplateProps } from "./sh
  * reliably. Accent is used only for the section rules.
  */
 export function MinimalTemplate({ data, fallbackName }: ResumeTemplateProps) {
+  const tx = useWorkspaceTranslation();
   const name = data.fullName.trim() || fallbackName;
   const accent = data.accent;
   const contacts = [...contactLines(data), ...data.links.map((link) => link.url).filter(Boolean)];
@@ -29,13 +32,13 @@ export function MinimalTemplate({ data, fallbackName }: ResumeTemplateProps) {
       </header>
 
       {data.summary ? (
-        <Section title="Summary" accent={accent}>
+        <Section title={tx("Summary")} accent={accent}>
           <p className="whitespace-pre-line text-slate-600">{data.summary}</p>
         </Section>
       ) : null}
 
       {data.experience.length ? (
-        <Section title="Experience" accent={accent}>
+        <Section title={tx("Experience")} accent={accent}>
           <div className="space-y-5">
             {data.experience.map((entry) => (
               <div key={entry.id}>
@@ -55,7 +58,7 @@ export function MinimalTemplate({ data, fallbackName }: ResumeTemplateProps) {
       ) : null}
 
       {data.education.length ? (
-        <Section title="Education" accent={accent}>
+        <Section title={tx("Education")} accent={accent}>
           <div className="space-y-3">
             {data.education.map((entry) => (
               <div key={entry.id} className="flex items-baseline justify-between gap-4">
@@ -72,13 +75,13 @@ export function MinimalTemplate({ data, fallbackName }: ResumeTemplateProps) {
       ) : null}
 
       {data.skills.length ? (
-        <Section title="Skills" accent={accent}>
+        <Section title={tx("Skills")} accent={accent}>
           <p className="text-slate-600">{data.skills.join(" · ")}</p>
         </Section>
       ) : null}
 
       {data.projects.length ? (
-        <Section title="Projects" accent={accent}>
+        <Section title={tx("Projects")} accent={accent}>
           <div className="space-y-3">
             {data.projects.map((project) => (
               <div key={project.id}>

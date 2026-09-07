@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -11,22 +13,22 @@ import { Button } from "@/components/ui/button";
 import { useGetResumeQuery } from "@/services/jobSeekerApi";
 
 export default function ViewResumePage() {
+  const tx = useWorkspaceTranslation();
   const { resumeId } = useParams<{ resumeId: string }>();
   const resumeQuery = useGetResumeQuery(resumeId);
 
   if (resumeQuery.isLoading) return <LoadingState rows={5} />;
-  if (resumeQuery.isError || !resumeQuery.data) return <ErrorState message="Unable to load this resume." />;
+  if (resumeQuery.isError || !resumeQuery.data) return <ErrorState message={tx("Unable to load this resume.")} />;
   const resume = resumeQuery.data;
 
   return (
     <div className="mx-auto max-w-4xl">
       <div className="print:hidden">
-        <PageIntro title={`Preview: ${resume.title}`} description="Review your resume before using it in an application." />
+        <PageIntro title={tx("Preview: {0}", { 0: resume.title })} description={tx("Review your resume before using it in an application.")} />
         <div className="mb-5 flex items-center justify-between gap-3">
           <Link href={`/job-seeker/resumes/${resume.id}`} className="inline-flex items-center gap-2 text-sm font-medium text-ws-muted hover:text-ws-fg">
-            <ArrowLeft className="size-4" /> Back to resume
-          </Link>
-          <Button onClick={() => window.print()} className="rounded-xl"><Printer /> Print or save PDF</Button>
+            <ArrowLeft className="size-4" /> {tx(" Back to resume")}</Link>
+          <Button onClick={() => window.print()} className="rounded-xl"><Printer /> {tx(" Print or save PDF")}</Button>
         </div>
       </div>
 

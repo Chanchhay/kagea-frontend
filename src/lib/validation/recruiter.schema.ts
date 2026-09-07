@@ -24,7 +24,10 @@ export type CompanyFormValues = z.infer<typeof companySchema>;
 
 export const companyDocumentSchema = z.object({
   documentType: z.string().trim().min(2, "Document type is required."),
-  documentUrl: z.url("Enter a valid document URL."),
+  // A newly selected file has no URL until submit uploads it. Keep the empty
+  // value valid here; CompanyDocumentForm separately requires either a staged
+  // file or an existing URL before saving.
+  documentUrl: optionalUrl("Enter a valid document URL."),
 });
 
 export type CompanyDocumentFormValues = z.infer<typeof companyDocumentSchema>;

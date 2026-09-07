@@ -3,8 +3,10 @@
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import { Sparkles, ArrowRight, Bot, Users, CheckCircle2 } from "lucide-react";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 export default function AboutHeroSection() {
+  const { t } = useLocale();
   // Stagger variants for content reveal
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -44,7 +46,7 @@ export default function AboutHeroSection() {
             <motion.div variants={itemVariants} className="inline-block">
               <span className="inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/[0.07] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-brand">
                 <Sparkles className="h-3.5 w-3.5 text-[#F3BE00]" />
-                Get Best Employee
+                {t("about.hero.badge")}
               </span>
             </motion.div>
 
@@ -53,13 +55,13 @@ export default function AboutHeroSection() {
               variants={itemVariants}
               className="mt-6 text-4xl font-bold leading-[1.12] tracking-tight text-heading sm:text-5xl lg:text-6xl"
             >
-              We find the{" "}
+              {t("about.hero.headlinePrefix")}{" "}
               <span className="relative inline-block text-brand">
-                best
-                {/* Yellow Highlight Bar behind "best" */}
+                {t("about.hero.headlineHighlight")}
+                {/* Yellow Highlight Bar behind the highlighted phrase */}
                 <span className="absolute bottom-1 left-0 -z-10 h-3 w-full bg-[#F3BE00]/40 rounded-sm sm:h-4" />
               </span>{" "}
-              asset for your team
+              {t("about.hero.headlineSuffix")}
             </motion.h1>
 
             {/* Subheading / Description */}
@@ -67,10 +69,8 @@ export default function AboutHeroSection() {
               variants={itemVariants}
               className="mt-6 max-w-xl text-base leading-relaxed text-body sm:text-lg"
             >
-              <span className="font-semibold text-brand">Find Job</span> is an
-              innovative recruitment platform that connects technology
-              enthusiasts with quality opportunities using AI-driven mock interviews
-              and real-time skill matching.
+              <span className="font-semibold text-brand">Find Job</span>{" "}
+              {t("about.hero.subheadingBody")}
             </motion.p>
 
             {/* Feature Pills */}
@@ -80,11 +80,11 @@ export default function AboutHeroSection() {
             >
               <div className="flex items-center gap-2 rounded-xl border border-border bg-surface px-3.5 py-2">
                 <CheckCircle2 className="h-4 w-4 text-[#1fa628]" />
-                Top Tech Talent
+                {t("about.hero.pillTopTalent")}
               </div>
               <div className="flex items-center gap-2 rounded-xl border border-border bg-surface px-3.5 py-2">
                 <Bot className="h-4 w-4 text-[#F3BE00]" />
-                AI Mock Interviewer
+                {t("about.hero.pillAiInterviewer")}
               </div>
             </motion.div>
 
@@ -94,11 +94,11 @@ export default function AboutHeroSection() {
               className="mt-8 flex flex-wrap items-center gap-4"
             >
               <button className="group flex items-center gap-2 rounded-xl bg-brand px-6 py-3.5 font-semibold text-white transition-colors hover:bg-brand-hover active:scale-[0.98]">
-                Explore Talent
+                {t("about.hero.ctaExploreTalent")}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </button>
               <button className="rounded-xl border border-border bg-surface px-6 py-3.5 font-semibold text-heading transition-colors hover:bg-surface-muted">
-                Learn More
+                {t("about.hero.ctaLearnMore")}
               </button>
             </motion.div>
           </div>
@@ -144,7 +144,7 @@ export default function AboutHeroSection() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-fg">
-                    Active Seekers
+                    {t("about.hero.activeSeekers")}
                   </p>
                   <p className="text-sm font-semibold text-heading">
                     10,000+
@@ -164,10 +164,10 @@ export default function AboutHeroSection() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-fg">
-                    AI Interview Practice
+                    {t("about.hero.aiInterviewPractice")}
                   </p>
                   <p className="text-sm font-semibold text-heading">
-                    Instant Feedback
+                    {t("about.hero.instantFeedback")}
                   </p>
                 </div>
               </motion.div>

@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { ClipboardList, FileText, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useGetPublicJobsQuery } from '@/services/publicApi';
+import { useLocale } from '@/i18n/LocaleProvider';
 import { MapPinIcon } from './icons';
 import RobotHeroLight from './RobotHeroLight';
 import { TypewriterText } from './shared/TypewriterText';
@@ -36,8 +37,10 @@ const companyColors = [
 ] as const;
 
 function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
+  const { t } = useLocale();
+
   return (
-    <Link href={`/companies/${company.id}`} className="block shrink-0" aria-label={`View ${company.name}`}>
+    <Link href={`/companies/${company.id}`} className="block shrink-0" aria-label={`${t('landing.topCompanies.view')} ${company.name}`}>
       <motion.div
         whileHover={{ y: -4 }}
         whileTap={{ scale: 0.99 }}
@@ -51,7 +54,7 @@ function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
           {company.logoText}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-base font-semibold leading-tight text-slate-900 transition-colors group-hover:text-[#0F8A22] dark:text-white dark:group-hover:text-[#7bf0a4]">
+          <p className="truncate text-base font-semibold leading-tight text-slate-600 transition-colors group-hover:text-[#0F8A22] dark:text-slate-400 dark:group-hover:text-[#7bf0a4]">
             {company.name}
           </p>
           <div className="mt-1 flex items-center gap-1 text-xs text-slate-500 dark:text-white/60">
@@ -63,7 +66,7 @@ function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
 
       {company.featured && (
         <span className="ml-2 shrink-0 rounded-full bg-white/75 px-2.5 py-1 text-[18px] font-semibold text-[#FB7185] ring-1 ring-[#FECDD3] backdrop-blur-sm dark:bg-white/[.06] dark:text-[#ffb4bd] dark:ring-white/15">
-          {company.jobCount} {company.jobCount === 1 ? 'role' : 'roles'}
+          {company.jobCount} {t(company.jobCount === 1 ? 'landing.topCompanies.role' : 'landing.topCompanies.roles')}
         </span>
       )}
       </motion.div>
@@ -72,6 +75,7 @@ function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
 }
 
 export default function HeroCompaniesSection() {
+  const { t } = useLocale();
   const jobsQuery = useGetPublicJobsQuery({ size: 100, sort: 'publishedAt,desc' });
   const companies = useMemo<CompanyCard[]>(() => {
     const byCompany = new Map<string, Omit<CompanyCard, 'featured' | 'bg' | 'text' | 'logoText'>>();
@@ -90,8 +94,8 @@ export default function HeroCompaniesSection() {
       byCompany.set(job.companyId, {
         id: job.companyId,
         name: job.companyName,
-        category: job.categoryName || 'Employer',
-        location: job.location || 'Cambodia',
+        category: job.categoryName || t('landing.topCompanies.defaultCategory'),
+        location: job.location || t('landing.topCompanies.defaultLocation'),
         jobCount: 1,
       });
     }
@@ -104,7 +108,7 @@ export default function HeroCompaniesSection() {
         ...companyColors[index % companyColors.length],
         logoText: companyInitials(company.name),
       }));
-  }, [jobsQuery.data?.content]);
+  }, [jobsQuery.data?.content, t]);
 
   const marqueeCompanies = companies.length
     ? Array.from({ length: Math.max(8, companies.length) }, (_, index) => companies[index % companies.length])
@@ -183,16 +187,16 @@ export default function HeroCompaniesSection() {
               className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200/60 bg-[#EEF6F0] px-4 py-1.5 text-xs font-semibold text-[#008A1E] shadow-xs dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-400"
             >
               <span className="flex h-2 w-2 animate-ping rounded-full bg-emerald-500" />
-              <span>⚡ For job seekers &amp; recruiters</span>
+              <span>{t('landing.hero.badge')}</span>
             </motion.div>
 
             {/* Headline */}
             <h1 className="max-w-[12.5ch] whitespace-pre-line text-[clamp(2.25rem,9vw,2.75rem)] font-bold leading-[1] tracking-[-0.055em] sm:max-w-[12ch] sm:text-5xl sm:leading-[0.98] lg:max-w-[11.2ch] lg:text-[52px] xl:text-[64px] 2xl:text-[72px]">
               <TypewriterText
                 segments={[
-                  { text: 'Find jobs.', className: 'text-[#008A1E]' },
-                  { text: '\nPractice with AI.', className: 'text-[#F3BE00]' },
-                  { text: '\nGet hired.', className: 'text-[#F3BE00]' },
+                  { text: t('landing.hero.titleFindJobs'), className: 'text-[#008A1E]' },
+                  { text: `\n${t('landing.hero.titlePracticeAi')}`, className: 'text-[#F3BE00]' },
+                  { text: `\n${t('landing.hero.titleGetHired')}`, className: 'text-[#F3BE00]' },
                 ]}
                 speed={50}
               />
@@ -200,9 +204,7 @@ export default function HeroCompaniesSection() {
 
             {/* Subtext */}
             <p className="mt-6 max-w-xl text-base font-medium leading-relaxed text-slate-500 dark:text-slate-300">
-              Browse openings from employers hiring now, build your resume and portfolio, and
-              practice interviews generated from the jobs you actually want. Recruiters post
-              roles and review candidates from the same place.
+              {t('landing.hero.subtext')}
             </p>
 
             {/* Actions */}
@@ -211,13 +213,13 @@ export default function HeroCompaniesSection() {
                 href="/jobs"
                 className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#008A1E] px-8 text-[18px] font-semibold text-white transition-colors hover:bg-[#007018] sm:w-auto"
               >
-                Find a job
+                {t('landing.hero.findJobCta')}
               </Link>
               <Link
                 href="/register"
                 className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-border px-8 text-[18px] font-semibold text-heading transition-colors hover:border-[#008A1E] hover:text-[#008A1E] sm:w-auto dark:hover:border-emerald-400 dark:hover:text-emerald-400"
               >
-                Create an account
+                {t('landing.hero.createAccountCta')}
               </Link>
             </div>
           </div>
@@ -247,29 +249,29 @@ export default function HeroCompaniesSection() {
         >
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-[18px] font-semibold uppercase tracking-[.12em] text-brand dark:bg-brand/20 dark:text-[#8df6a8]">
             <span className="flex size-1.5 rounded-full bg-brand" />
-            Hiring now
+            {t('landing.topCompanies.badge')}
           </span>
           <h2 className="mt-4 text-[clamp(1.9rem,3vw,2.6rem)] font-semibold tracking-[-0.045em] text-heading">
-            Top companies
+            {t('landing.topCompanies.title')}
           </h2>
           <p className="mt-3 text-[18px] leading-7 text-body">
-            Employers posting roles on the platform, across Cambodia.
+            {t('landing.topCompanies.subtitle')}
           </p>
         </motion.div>
 
         {jobsQuery.isLoading ? (
-          <div className="mt-10 grid gap-5 py-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="Loading companies">
+          <div className="mt-10 grid gap-5 py-3 sm:grid-cols-2 lg:grid-cols-4" aria-label={t('landing.topCompanies.loading')}>
             {Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="h-[90px] animate-pulse rounded-2xl border border-border bg-surface-muted" />
             ))}
           </div>
         ) : jobsQuery.isError ? (
           <p className="mx-auto mt-10 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-8 text-center text-sm text-rose-700 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-200">
-            Unable to load companies right now.
+            {t('landing.topCompanies.error')}
           </p>
         ) : companies.length === 0 ? (
           <p className="mx-auto mt-10 rounded-2xl border border-border bg-surface-muted px-5 py-8 text-center text-sm text-body">
-            Companies with published jobs will appear here.
+            {t('landing.topCompanies.empty')}
           </p>
         ) : (
           <div className="company-marquee mx-auto mt-10 space-y-5 overflow-hidden py-3 [mask-image:linear-gradient(to_right,transparent,black_7%,black_93%,transparent)] dark:[mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">

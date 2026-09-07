@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -10,6 +12,7 @@ import { PageIntro } from "@/components/shared/ApiCards";
 import { useCreateResumeMutation } from "@/services/jobSeekerApi";
 
 export default function NewResumePage() {
+  const tx = useWorkspaceTranslation();
   const router = useRouter();
   const [mode, setMode] = useState<"upload" | "builder">("upload");
   const [createResume, createState] = useCreateResumeMutation();
@@ -17,44 +20,43 @@ export default function NewResumePage() {
   async function create(body: { title: string; resumeFileUrl?: string; resumeData?: Record<string, unknown> }) {
     try {
       const resume = await createResume(body).unwrap();
-      toast.success("Resume added");
+      toast.success(tx("Resume added"));
       router.push(`/job-seeker/resumes/${resume.id}`);
     } catch {
-      toast.error("Could not add your resume. Please try again.");
+      toast.error(tx("Could not add your resume. Please try again."));
     }
   }
 
   return (
     <div className={mode === "builder" ? "mx-auto max-w-7xl" : "mx-auto max-w-5xl"}>
       <PageIntro
-        title="Add a resume"
-        description="Upload a polished PDF, or build one from a template with a live preview."
+        title={tx("Add a resume")}
+        description={tx("Upload a polished PDF, or build one from a template with a live preview.")}
       />
 
       <button onClick={() => router.back()} className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-ws-muted hover:text-ws-fg">
-        <ArrowLeft aria-hidden="true" className="size-4" /> Back to resumes
-      </button>
+        <ArrowLeft aria-hidden="true" className="size-4" /> {tx(" Back to resumes")}</button>
 
       <div className="mb-5 grid gap-3 sm:grid-cols-2">
         <ChoiceCard
           active={mode === "upload"}
           icon={FileUp}
-          title="Upload a resume"
-          description="Use a PDF resume you already have."
+          title={tx("Upload a resume")}
+          description={tx("Use a PDF resume you already have.")}
           onClick={() => setMode("upload")}
         />
         <ChoiceCard
           active={mode === "builder"}
           icon={PencilLine}
-          title="Create a resume"
-          description="Choose a template and fill in a guided form."
+          title={tx("Create a resume")}
+          description={tx("Choose a template and fill in a guided form.")}
           onClick={() => setMode("builder")}
         />
       </div>
 
       {mode === "builder" ? (
         <ResumeBuilder
-          submitLabel="Add resume"
+          submitLabel={tx("Add resume")}
           isSubmitting={createState.isLoading}
           onCancel={() => router.back()}
           onSubmit={({ title, resumeData }) => create({ title, resumeData })}
@@ -65,20 +67,20 @@ export default function NewResumePage() {
             <span className="flex size-12 items-center justify-center rounded-2xl bg-white/15">
               <FileUp className="size-6" />
             </span>
-            <h2 className="mt-7 text-2xl font-semibold tracking-tight">Upload your finished resume.</h2>
-            <p className="mt-3 text-sm leading-6 text-white/75">Add a ready-to-send PDF and use it in job applications.</p>
+            <h2 className="mt-7 text-2xl font-semibold tracking-tight">{tx("Upload your finished resume.")}</h2>
+            <p className="mt-3 text-sm leading-6 text-white/75">{tx("Add a ready-to-send PDF and use it in job applications.")}</p>
             <div className="mt-8 flex items-start gap-3 rounded-2xl bg-black/10 p-4 text-sm text-white/85">
               <ShieldCheck className="mt-0.5 size-4 shrink-0" />
-              <p>PDF files are private by default and only attached when you choose them.</p>
+              <p>{tx("PDF files are private by default and only attached when you choose them.")}</p>
             </div>
             <div className="mt-4 flex items-start gap-3 rounded-2xl bg-black/10 p-4 text-sm text-white/85">
               <FileText className="mt-0.5 size-4 shrink-0" />
-              <p>No PDF yet? Switch to “Create a resume” and build one from a template.</p>
+              <p>{tx("No PDF yet? Switch to “Create a resume” and build one from a template.")}</p>
             </div>
           </aside>
           <div className="bg-ws-panel p-6 lg:p-9">
             <ResumeForm
-              submitLabel="Add resume"
+              submitLabel={tx("Add resume")}
               isSubmitting={createState.isLoading}
               onCancel={() => router.back()}
               onSubmit={({ title, resumeFileUrl }) => create({ title, resumeFileUrl })}
@@ -91,10 +93,11 @@ export default function NewResumePage() {
 }
 
 function ChoiceCard({ active, icon: Icon, title, description, onClick }: { active: boolean; icon: typeof FileUp; title: string; description: string; onClick: () => void }) {
+  const tx = useWorkspaceTranslation();
   return (
     <button type="button" onClick={onClick} aria-pressed={active} className={`flex items-center gap-4 rounded-2xl border p-4 text-left transition-all ${active ? "border-chip-soft-fg bg-chip-soft ring-2 ring-chip-soft" : "border-ws-line bg-ws-card hover:bg-ws-card-hover"}`}>
       <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${active ? "bg-primary text-primary-foreground" : "bg-ws-panel text-ws-muted"}`}><Icon className="size-5" /></span>
-      <span className="min-w-0"><span className="block font-semibold text-ws-fg">{title}</span><span className="mt-0.5 block text-xs leading-5 text-ws-muted">{description}</span></span>
+      <span className="min-w-0"><span className="block font-semibold text-ws-fg">{title}</span><span className="mt-0.5 block text-xs leading-5 text-ws-muted">{tx(description)}</span></span>
       {active ? <Check className="ml-auto size-5 shrink-0 text-primary" /> : null}
     </button>
   );
