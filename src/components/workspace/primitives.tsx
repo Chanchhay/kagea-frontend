@@ -117,9 +117,9 @@ export function PanelHeader({
   action?: ReactNode;
 }) {
   return (
-    <header className="mb-4 flex items-center gap-2">
+    <header className="mb-3 flex items-center gap-2">
       {icon}
-      <h2 className="text-[18px] font-semibold tracking-tight">{title}</h2>
+      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
       {action ? (
         <div className="ml-auto flex items-center gap-1">{action}</div>
       ) : null}
@@ -151,16 +151,16 @@ export function NotchedPanel({
 }) {
   return (
     <section className={cn("ws-notch flex flex-col", noteVar[fill], className)}>
-      <header className="ws-notch__top flex shrink-0 items-center gap-2 px-5">
+      <header className="ws-notch__top flex shrink-0 items-center gap-2 px-4">
         {icon}
-        <h2 className="truncate text-[18px] font-semibold tracking-tight">
+        <h2 className="whitespace-nowrap text-base font-semibold tracking-tight">
           {title}
         </h2>
       </header>
 
       <span aria-hidden="true" className="ws-notch__joint" />
 
-      <div className="ws-notch__body flex-1 px-5 pb-4 pt-2">{children}</div>
+      <div className="ws-notch__body flex-1 px-4 pb-4 pt-2.5">{children}</div>
 
       {actions ? <div className="ws-notch__actions">{actions}</div> : null}
     </section>
@@ -196,7 +196,7 @@ export function FolderTabs<T extends string>({
             onClick={() => onChange(tab)}
             aria-pressed={value === tab}
             className={cn(
-              "shrink-0 px-4 text-[18px] font-semibold transition-colors",
+              "shrink-0 px-3.5 text-sm font-semibold transition-colors",
               value === tab
                 ? "ws-foldertab pb-3 pt-2.5 text-ws-fg"
                 : "rounded-full py-2 text-ws-faint hover:bg-ws-card hover:text-ws-fg",
@@ -240,20 +240,16 @@ export function PipelineTrack({
             key={segment.label}
             style={{ flexGrow: segment.count / total }}
             className={cn(
-              "flex min-w-fit items-center justify-between gap-3 rounded-full py-2.5 pl-5 pr-2.5 text-[18px] font-semibold",
+              "flex min-w-fit items-center justify-between gap-3 rounded-full px-4 py-2 text-sm font-semibold",
               toneFill[segment.tone],
             )}
           >
             <span className="truncate">{tx(segment.label)}</span>
-            {/* The count rides in a disc at the end of the capsule, the way the
-                reference caps each filled segment, rather than as loose text. */}
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-current/15 text-xs tabular-nums">
-              {segment.count}
-            </span>
+            <span className="tabular-nums opacity-70">{segment.count}</span>
           </div>
         ))}
 
-      <div className="ws-track-rest flex min-w-fit grow items-center justify-end rounded-full px-5 py-3 text-[18px] font-medium text-ws-faint">
+      <div className="ws-track-rest flex min-w-fit grow items-center justify-end rounded-full px-4 py-2 text-sm font-medium text-ws-faint">
         {restLabel}
       </div>
     </div>
@@ -296,7 +292,7 @@ export function IconAction({
   );
 }
 
-/** Pill tab strip — the workspace's substitute for a bordered tab bar. */
+/** Pill tab strip — the console's substitute for a bordered tab bar. */
 export function PillTabs<T extends string>({
   tabs,
   value,
@@ -311,7 +307,7 @@ export function PillTabs<T extends string>({
   return (
     <div
       className={cn(
-        "ws-scroll flex items-center gap-1.5 overflow-x-auto",
+        "ws-scroll flex items-center gap-1 overflow-x-auto",
         className,
       )}
     >
@@ -322,7 +318,7 @@ export function PillTabs<T extends string>({
           onClick={() => onChange(tab)}
           aria-pressed={value === tab}
           className={cn(
-            "shrink-0 rounded-full px-4 py-2 text-[18px] font-semibold transition-colors",
+            "shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
             value === tab
               ? "bg-ws-panel text-ws-fg"
               : "text-ws-faint hover:text-ws-fg",
@@ -375,7 +371,7 @@ export function TimelineRow({
         >
           {done ? <Check aria-hidden="true" className="size-4" /> : icon}
         </span>
-        <span className="mt-1.5 text-[18px] font-medium text-ws-faint">
+        <span className="mt-1.5 text-xs font-medium text-ws-faint">
           {date}
         </span>
         {last ? null : (
@@ -466,7 +462,7 @@ export function FileCard({
     >
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-[18px] font-medium text-ws-faint">{eyebrow}</p>
+          <p className="text-xs font-medium text-ws-faint">{eyebrow}</p>
           <p className="truncate text-sm font-semibold text-ws-fg">{title}</p>
           {meta ? (
             <p className="truncate text-xs text-ws-muted">{meta}</p>

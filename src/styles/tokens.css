@@ -1,65 +1,65 @@
 :root {
-  --background: #f4f5f7;
-  --surface: #ffffff;
-  --surface-muted: #f1f2f4;
-  --border: #e4e5e8;
-  --text-primary: #18191c;
-  --text-secondary: #5e6670;
-  --text-muted: #9199a3;
-  --primary: #1fa628;
-  --primary-hover: #0c8b00;
-  --primary-tint: #eaf4ea;
-  --landing-tint: #eef8ed;
-  --primary-foreground: #ffffff;
-  --success: #0ba02c;
-  --warning: #f3c623;
-  --error: #e05151;
-  --info: #5e6670;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --shadow-card: 0 12px 24px rgba(17, 24, 28, 0.08);
-  --shadow-dropdown: 0 18px 40px rgba(24, 25, 28, 0.14);
+    --background: #f4f5f7;
+    --surface: #ffffff;
+    --surface-muted: #f1f2f4;
+    --border: #e4e5e8;
+    --text-primary: #18191c;
+    --text-secondary: #5e6670;
+    --text-muted: #9199a3;
+    --primary: #1fa628;
+    --primary-hover: #0c8b00;
+    --primary-tint: #f1f3f5;
+    --landing-tint: #f8f9fa;
+    --primary-foreground: #ffffff;
+    --success: #0ba02c;
+    --warning: #f3c623;
+    --error: #e05151;
+    --info: #5e6670;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --shadow-card: 0 12px 24px rgba(17, 24, 28, 0.08);
+    --shadow-dropdown: 0 18px 40px rgba(24, 25, 28, 0.14);
 
-  /*
+    /*
    * Workspace surface. A rail and a single rounded panel float on the canvas;
    * inside the panel everything is a soft card, never a bordered table row.
    */
-  --ws-canvas: #e8e8ea;
-  --ws-panel: #ffffff;
-  --ws-card: #f5f5f6;
-  --ws-card-hover: #ececee;
-  --ws-line: #e5e5e8;
-  --ws-fg: #18191c;
-  --ws-muted: #6e6e74;
-  --ws-faint: #a6a6ad;
+    --ws-canvas: #e8e8ea;
+    --ws-panel: #ffffff;
+    --ws-card: #f5f5f6;
+    --ws-card-hover: #ececee;
+    --ws-line: #e5e5e8;
+    --ws-fg: #18191c;
+    --ws-muted: #6e6e74;
+    --ws-faint: #a6a6ad;
 
-  /*
+    /*
    * Chips and note cards are flat, fully opaque fills — never a tint of the
    * brand green over the surface, and never a gradient. Each tone is its own
    * hue so a row reads at a glance: green ships, yellow waits, lilac informs,
    * coral closes. Foregrounds are dark ink so the same fills work in both
    * themes without dropping their opacity.
    */
-  --chip-solid: var(--primary);
-  --chip-solid-fg: var(--primary-foreground);
-  --chip-soft: var(--surface-muted);
-  --chip-soft-fg: var(--text-primary);
-  --chip-quiet: #e2e4e8;
-  --chip-quiet-fg: var(--text-secondary);
-  --chip-alert: var(--error);
-  --chip-alert-fg: #ffffff;
+    --chip-solid: var(--primary);
+    --chip-solid-fg: var(--primary-foreground);
+    --chip-soft: var(--surface-muted);
+    --chip-soft-fg: var(--text-primary);
+    --chip-quiet: #e2e4e8;
+    --chip-quiet-fg: var(--text-secondary);
+    --chip-alert: var(--error);
+    --chip-alert-fg: #ffffff;
 
-  /*
+    /*
    * Note-card fills. The big blocks in the layout are deliberately NOT brand
    * colours — the green would shout at that size, and it earns more attention
    * on a chip than on a panel. These two flat hues carry the cards; primary and
    * secondary stay small.
    */
-  --note-warm: #f4e26b;
-  --note-warm-fg: #18191c;
-  --note-cool: #cbbcf6;
-  --note-cool-fg: #18191c;
+    --note-warm: #f4e26b;
+    --note-warm-fg: #18191c;
+    --note-cool: #cbbcf6;
+    --note-cool-fg: #18191c;
 }
 
 /*
@@ -69,47 +69,47 @@
  * prefers-color-scheme block would only be a second copy free to drift.
  */
 .dark {
-  --background: #101610;
-  --surface: #171e17;
-  --surface-muted: #202920;
-  --border: #334033;
-  --text-primary: #f4f7f4;
-  --text-secondary: #c4cdc4;
-  --text-muted: #8f9a8f;
-  --primary: #27b733;
-  --primary-hover: #3bc846;
-  --primary-tint: #17361a;
-  --landing-tint: #17361a;
-  --primary-foreground: #ffffff;
-  --success: #35c84a;
-  --warning: #f3c623;
-  --error: #ff7777;
-  --info: #c4cdc4;
-  --shadow-card: 0 12px 24px rgba(0, 0, 0, 0.22);
-  --shadow-dropdown: 0 18px 40px rgba(0, 0, 0, 0.38);
+    --background: #090a0c;
+    --surface: #121316;
+    --surface-muted: #181a1e;
+    --border: #23252a;
+    --text-primary: #f4f4f6;
+    --text-secondary: #c2c4cc;
+    --text-muted: #858790;
+    --primary: #27b733;
+    --primary-hover: #3bc846;
+    --primary-tint: #181a1e;
+    --landing-tint: #121316;
+    --primary-foreground: #ffffff;
+    --success: #35c84a;
+    --warning: #f3c623;
+    --error: #ef4444;
+    --info: #c2c4cc;
+    --shadow-card: 0 12px 24px rgba(0, 0, 0, 0.22);
+    --shadow-dropdown: 0 18px 40px rgba(0, 0, 0, 0.38);
 
-  --ws-canvas: #080809;
-  --ws-panel: #131314;
-  --ws-card: #1c1c1e;
-  --ws-card-hover: #242427;
-  --ws-line: #2b2b2e;
-  --ws-fg: #f4f4f5;
-  --ws-muted: #9b9ba1;
-  --ws-faint: #6e6e75;
+    --ws-canvas: #090a0c;
+    --ws-panel: #111215;
+    --ws-card: #17181c;
+    --ws-card-hover: #202127;
+    --ws-line: #24252a;
+    --ws-fg: #f4f4f6;
+    --ws-muted: #94959e;
+    --ws-faint: #63646c;
 
-  /* The fills stay identical in the dark theme — they are the light in it. */
-  --chip-solid: var(--primary);
-  --chip-solid-fg: var(--primary-foreground);
-  --chip-soft: var(--surface-muted);
-  --chip-soft-fg: var(--text-primary);
-  --chip-quiet: #2a2a2e;
-  --chip-quiet-fg: #b6b6bd;
-  --chip-alert: var(--error);
-  --chip-alert-fg: #3a0d0d;
+    /* The fills stay identical in the dark theme — they are the light in it. */
+    --chip-solid: var(--primary);
+    --chip-solid-fg: var(--primary-foreground);
+    --chip-soft: var(--surface-muted);
+    --chip-soft-fg: var(--text-primary);
+    --chip-quiet: #2a2a2e;
+    --chip-quiet-fg: #b6b6bd;
+    --chip-alert: var(--error);
+    --chip-alert-fg: #3a0d0d;
 
-  /* The note fills stay put across themes — they are the light in the dark one. */
-  --note-warm: #f6e670;
-  --note-warm-fg: #18191c;
-  --note-cool: #cdbef7;
-  --note-cool-fg: #18191c;
+    /* The note fills stay put across themes — they are the light in the dark one. */
+    --note-warm: #f6e670;
+    --note-warm-fg: #18191c;
+    --note-cool: #cdbef7;
+    --note-cool-fg: #18191c;
 }

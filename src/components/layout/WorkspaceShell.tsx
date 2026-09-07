@@ -10,6 +10,8 @@ import { useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
   Search,
   type LucideIcon,
 } from "lucide-react";
@@ -73,6 +75,7 @@ function WorkspaceFrame({ role, title, links, children }: WorkspaceShellProps) {
   const tx = useWorkspaceTranslation();
   const pathname = usePathname();
   const heading = usePageHeading();
+  const [expanded, setExpanded] = useState(false);
   const activeLink = links.find((link) => isActivePath(pathname, link.href));
   const pageTitle = heading?.title ?? tx(activeLink?.label ?? title);
   const pageDescription = heading?.description;
@@ -84,7 +87,12 @@ function WorkspaceFrame({ role, title, links, children }: WorkspaceShellProps) {
      * <main> is the only scroller, which leaves the top bar pinned above it.
      */
     <div className={cn("ws-shell flex h-dvh gap-3 overflow-hidden bg-ws-canvas p-0 text-ws-fg lg:p-3", pathname === `/${role}/dashboard` && responsive.shell)}>
-      <Rail links={links} pathname={pathname} />
+      <Rail
+        links={links}
+        pathname={pathname}
+        expanded={expanded}
+        onToggle={() => setExpanded((current) => !current)}
+      />
 
       <div className="ws-panel relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-none lg:rounded-[28px]">
         <TopBar
@@ -110,70 +118,146 @@ function WorkspaceFrame({ role, title, links, children }: WorkspaceShellProps) {
 
 /* ---------------------------------------------------------------- rail --- */
 
-function Rail({ links, pathname }: { links: NavLink[]; pathname: string }) {
+function Rail({
+  links,
+  pathname,
+  expanded,
+  onToggle,
+}: {
+  links: NavLink[];
+  pathname: string;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
   const tx = useWorkspaceTranslation();
+
   return (
     <aside
       aria-label={tx("Workspace navigation")}
-      className="ws-panel hidden h-full w-17 shrink-0 flex-col items-center rounded-[28px] py-5 lg:flex"
+      className={cn(
+        "ws-panel hidden h-full shrink-0 flex-col rounded-[28px] py-5 transition-[width] duration-200 ease-out lg:flex",
+        expanded ? "w-56 items-start px-3" : "w-17 items-center",
+      )}
     >
-      <Link
-        href="/"
-        aria-label={tx("Kagea home")}
-        className="flex size-10 items-center justify-center transition-transform hover:scale-105"
+      <div
+        className={cn(
+          "flex w-full items-center",
+          expanded ? "justify-between px-2" : "justify-center",
+        )}
       >
-        <BrandMark height={30} />
-      </Link>
+        <Link
+          href="/"
+          aria-label={tx("Find Job home")}
+          className="flex size-10 shrink-0 items-center justify-center transition-transform hover:scale-105"
+        >
+          <BrandMark height={30} />
+        </Link>
 
-      {/*
-        * Scrolling is opt-in by viewport height: `overflow-y` also clips the
-        * horizontal axis, which would eat the hover labels, so the rail only
-        * becomes a scroller on screens too short to hold every icon.
-        */}
-      <nav className="ws-scroll mt-8 flex min-h-0 flex-col items-center gap-1.5 [@media(max-height:44rem)]:overflow-y-auto">
-        {links.map((link) => {
-          const active = isActivePath(pathname, link.href);
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "group relative flex size-11 items-center justify-center rounded-[18px] transition-colors",
-                active
-                  ? "bg-chip-solid text-chip-solid-fg"
-                  : "text-ws-faint hover:bg-ws-card hover:text-ws-fg",
-              )}
-            >
-              <link.icon aria-hidden="true" className="size-5" />
-              {/* Label only on hover: the rail stays an icon strip, not a menu. */}
-              <span className="pointer-events-none absolute left-full z-30 ml-3 hidden whitespace-nowrap rounded-lg bg-ws-card px-2.5 py-1.5 text-xs font-medium text-ws-fg shadow-(--shadow-dropdown) group-hover:block">
-                {tx(link.label)}
-              </span>
-            </Link>
-          );
-        })}
+        {expanded ? (
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-label={tx("Collapse sidebar")}
+            className="group relative flex size-8 items-center justify-center rounded-lg text-ws-muted transition-colors hover:bg-ws-card hover:text-ws-fg"
+          >
+            <PanelLeftClose aria-hidden="true" className="size-4.5" />
+          </button>
+        ) : null}
+      </div>
+
+      {!expanded ? (
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-label={tx("Expand sidebar")}
+          className="group relative mt-3 flex size-8 items-center justify-center rounded-lg text-ws-muted transition-colors hover:bg-ws-card hover:text-ws-fg"
+        >
+          <PanelLeftOpen aria-hidden="true" className="size-4.5" />
+          <Tooltip>{tx("Expand the sidebar")}</Tooltip>
+        </button>
+      ) : null}
+
+      <nav
+        className={cn(
+          "ws-scroll mt-5 flex min-h-0 flex-col gap-0.5 [@media(max-height:48rem)]:overflow-y-auto",
+          expanded ? "w-full" : "items-center",
+        )}
+      >
+        {links.map((link) => (
+          <RailLink
+            key={link.href}
+            link={link}
+            pathname={pathname}
+            expanded={expanded}
+          />
+        ))}
       </nav>
 
-      <SignOutRailButton />
+      <form
+        action="/logout"
+        method="post"
+        className={cn("mt-auto pt-3", expanded && "w-full")}
+      >
+        <button
+          type="submit"
+          aria-label={tx("Sign out")}
+          className={cn(
+            "group relative flex h-10 items-center rounded-xl text-ws-faint transition-colors hover:bg-ws-card hover:text-ws-fg",
+            expanded ? "w-full gap-3 px-3" : "w-10 justify-center",
+          )}
+        >
+          <LogOut aria-hidden="true" className="size-5 shrink-0" />
+          {expanded ? (
+            <span className="truncate text-sm font-medium">{tx("Sign out")}</span>
+          ) : (
+            <Tooltip>{tx("Sign out")}</Tooltip>
+          )}
+        </button>
+      </form>
     </aside>
   );
 }
 
-function SignOutRailButton() {
+function RailLink({
+  link,
+  pathname,
+  expanded,
+}: {
+  link: NavLink;
+  pathname: string;
+  expanded: boolean;
+}) {
   const tx = useWorkspaceTranslation();
+  const active = isActivePath(pathname, link.href);
+
   return (
-    <form action="/logout" method="post" className="mt-auto pt-4">
-      <button
-        type="submit"
-        aria-label={tx("Sign out")}
-        className="group relative flex size-11 items-center justify-center rounded-[18px] text-ws-faint transition-colors hover:bg-ws-card hover:text-ws-fg"
-      >
-        <LogOut aria-hidden="true" className="size-5" />
-        <span className="pointer-events-none absolute left-full z-30 ml-3 hidden whitespace-nowrap rounded-lg bg-ws-card px-2.5 py-1.5 text-xs font-medium text-ws-fg shadow-(--shadow-dropdown) group-hover:block">
-          {tx("Sign out")}</span>
-      </button>
-    </form>
+    <Link
+      href={link.href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "group relative flex h-10 items-center rounded-xl transition-colors",
+        expanded ? "w-full gap-3 px-3" : "w-10 justify-center",
+        active
+          ? "bg-chip-solid text-chip-solid-fg"
+          : "text-ws-faint hover:bg-ws-card hover:text-ws-fg",
+      )}
+    >
+      <link.icon aria-hidden="true" className="size-5 shrink-0" />
+      {expanded ? (
+        <span className="truncate text-sm font-medium">{tx(link.label)}</span>
+      ) : (
+        <Tooltip>{tx(link.label)}</Tooltip>
+      )}
+    </Link>
+  );
+}
+
+/** Label shown on hover, so the rail stays an icon strip rather than a menu. */
+function Tooltip({ children }: { children: ReactNode }) {
+  return (
+    <span className="pointer-events-none absolute left-full z-30 ml-3 hidden whitespace-nowrap rounded-lg bg-ws-card px-2.5 py-1.5 text-xs font-medium text-ws-fg shadow-(--shadow-dropdown) group-hover:block">
+      {children}
+    </span>
   );
 }
 
@@ -192,7 +276,7 @@ function TopBar({
   const actions = quickActions[role];
 
   return (
-    <header className="sticky top-0 z-30 grid shrink-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 border-b border-ws-line/60 bg-ws-panel px-4 py-4 sm:flex lg:px-7 lg:py-5">
+    <header className="sticky top-0 z-30 flex shrink-0 items-center gap-3 border-b border-ws-line/60 bg-ws-panel px-4 py-3 lg:px-7 lg:py-3.5">
       <Link
         href="/"
         aria-label={tx("Back to site")}
@@ -202,23 +286,23 @@ function TopBar({
       </Link>
 
       <div className="min-w-0">
-        <h1 className="truncate text-xl font-bold tracking-tight lg:text-2xl">
+        <h1 className="truncate text-xl font-bold tracking-tight text-ws-fg sm:text-2xl">
           {title}
         </h1>
         {description ? (
-          <p className="mt-0.5 hidden truncate text-base font-normal text-ws-muted sm:block">
+          <p className="mt-0.5 hidden truncate text-xs font-normal text-ws-muted sm:block">
             {tx(description)}
           </p>
         ) : null}
       </div>
 
-      <div className="col-span-2 ml-auto flex w-full shrink-0 items-center justify-end gap-2 sm:w-auto">
+      <div className="ml-auto flex items-center gap-2">
         <Link
           href="/"
-          aria-label={tx("Kagea home")}
-          className="mr-auto flex size-10 shrink-0 items-center justify-center transition-transform hover:scale-105 sm:mr-0 lg:hidden"
+          aria-label={tx("Find Job home")}
+          className="mr-auto flex size-9 shrink-0 items-center justify-center transition-transform hover:scale-105 sm:mr-0 lg:hidden"
         >
-          <BrandMark height={26} />
+          <BrandMark height={24} />
         </Link>
 
         <QuickSearch
@@ -226,16 +310,10 @@ function TopBar({
           placeholder={tx(role === "recruiter" ? "Search talent" : "Search jobs")}
         />
 
-        <LanguageToggle className="h-10 shrink-0 border-ws-line text-ws-fg" />
+        <LanguageToggle className="h-9 shrink-0 border-ws-line text-xs text-ws-fg" />
 
-        <ThemeToggle className="size-10 rounded-full bg-ws-card text-ws-muted hover:bg-ws-card-hover hover:text-ws-fg" />
+        <ThemeToggle className="size-9 rounded-full bg-ws-card text-ws-muted hover:bg-ws-card-hover hover:text-ws-fg" />
 
-        {/*
-          * Path prefixes this app can route to. The inbox is shared with the
-          * admin console, whose deep links would 404 here, so those render as
-          * plain text instead of links. Every seeker- and recruiter-targeted
-          * notification uses one of these two prefixes.
-          */}
         <NotificationBell pathPrefixes={["/job-seeker", "/recruiter"]} />
 
         <Avatar role={role} />
@@ -291,7 +369,7 @@ function Avatar({ role }: { role: Role }) {
     <Link
       href={`/${role}/profile`}
       aria-label={tx("Open {0}'s profile", { 0: name })}
-      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-chip-solid bg-cover bg-center text-xs font-semibold text-chip-solid-fg ring-2 ring-ws-line"
+      className="flex size-9 shrink-0 items-center justify-center rounded-full bg-chip-solid bg-cover bg-center text-xs font-bold text-chip-solid-fg ring-2 ring-ws-line"
       style={avatar ? { backgroundImage: `url("${avatar}")` } : undefined}
     >
       {avatar ? <span className="sr-only">{tx("Profile image")}</span> : getInitials(name)}

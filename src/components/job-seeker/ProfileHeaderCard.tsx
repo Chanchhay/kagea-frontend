@@ -74,14 +74,13 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
   };
 
   return (
-    <Card className="min-w-0 overflow-hidden rounded-3xl border border-primary/20 bg-ws-panel py-0 gap-0 shadow-sm ring-0">
+    <Card className="min-w-0 overflow-hidden rounded-2xl border border-ws-line bg-ws-panel py-0 gap-0 shadow-xs ring-0">
       <CardContent className="p-0">
-        <div className="relative bg-linear-to-r from-primary/15 via-primary/5 to-ws-panel p-5 sm:p-8">
-          <span aria-hidden="true" className="absolute -right-16 -top-20 size-64 rounded-full bg-brand/5" />
-          <div className="relative flex min-w-0 flex-col items-start gap-6 md:flex-row md:flex-wrap md:items-center xl:flex-nowrap">
+        <div className="relative bg-ws-panel p-4 sm:p-6">
+          <div className="relative flex min-w-0 flex-col items-start gap-5 md:flex-row md:flex-wrap md:items-center xl:flex-nowrap">
             <div className="relative w-fit shrink-0">
               <div
-                className="flex size-24 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-2xl font-semibold text-brand shadow-md ring-4 ring-white/70 dark:ring-slate-800"
+                className="flex size-20 sm:size-22 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-xl sm:text-2xl font-semibold text-primary shadow-md ring-4 ring-white/70 dark:ring-slate-800"
                 style={
                   photoUrl
                     ? { backgroundImage: `url("${resolveFileUrl(photoUrl)}")` }
@@ -94,21 +93,23 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
                 type="button"
                 onClick={() => setIsEditorOpen(true)}
                 aria-label={tx("Change profile photo")}
-                className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full bg-brand text-white shadow-md ring-2 ring-surface hover:bg-brand/90"
+                className="absolute -bottom-1 -right-1 flex size-7 sm:size-8 items-center justify-center rounded-full bg-primary text-white shadow-md ring-2 ring-surface hover:bg-primary-hover"
               >
-                <Camera className="size-4" />
+                <Camera className="size-3.5 sm:size-4" />
               </button>
             </div>
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-2xl font-semibold tracking-tight text-ws-fg [overflow-wrap:anywhere]">{name}</h2>
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-brand">
+                <span className={`inline-flex items-center gap-1 rounded-full border border-ws-line bg-ws-card px-2.5 py-1 text-xs font-semibold ${
+                  profile.verificationStatus === "APPROVED" ? "text-primary" : "text-amber-500"
+                }`}>
                   <BadgeCheck className="size-3" />
                   {tx(humanize(profile.verificationStatus))}
                 </span>
               </div>
-              <p className="mt-2 font-medium text-primary [overflow-wrap:anywhere]">
+              <p className="mt-2 font-normal text-ws-muted [overflow-wrap:anywhere]">
                 {profile.headline || tx("Add your professional headline")}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -120,14 +121,14 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
               </div>
             </div>
 
-            <div className="w-full min-w-0 rounded-2xl border border-primary/15 bg-ws-panel p-4 shadow-sm md:w-56 md:shrink-0">
+            <div className="w-full min-w-0 rounded-2xl border border-ws-line bg-ws-card p-4 shadow-xs md:w-56 md:shrink-0">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-ws-fg">{tx("Profile strength")}</span>
-                <span className="text-base font-semibold text-brand">{completion}%</span>
+                <span className="text-base font-semibold text-primary">{completion}%</span>
               </div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-muted">
                 <div
-                  className="h-full rounded-full bg-brand transition-all"
+                  className="h-full rounded-full bg-primary transition-all"
                   style={{ width: `${completion}%` }}
                 />
               </div>

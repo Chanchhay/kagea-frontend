@@ -14,21 +14,6 @@
   --font-mono: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
 
-  /*
-   * Type scale with an 18px floor.
-   *
-   * `xs`, `sm` and `base` were 12/14/16px and are used ~600 times across the
-   * app; rather than rewrite every call site, the scale itself is redefined so
-   * all three resolve to 18px. Every step from `lg` up is already >= 18px in
-   * Tailwind's default scale and is left alone.
-   */
-  --text-xs: 1.125rem;
-  --text-xs--line-height: 1.6;
-  --text-sm: 1.125rem;
-  --text-sm--line-height: 1.6;
-  --text-base: 1.125rem;
-  --text-base--line-height: 1.6;
-
   /* Brand */
   --color-brand: var(--primary);
   --color-brand-hover: var(--primary-hover);
@@ -154,115 +139,8 @@
 }
 
 @layer components {
-  /* Public job search uses a roomier scale than the rest of the public site. */
-  .jobs-page {
-    font-size: 1.25rem;
-  }
 
-  .jobs-page .text-xs {
-    font-size: 1rem;
-  }
 
-  .jobs-page .text-sm {
-    font-size: 1.125rem;
-  }
-
-  .jobs-page .text-lg {
-    font-size: 1.375rem;
-  }
-
-  .jobs-page .text-xl {
-    font-size: 1.5rem;
-  }
-
-  .jobs-page .text-2xl {
-    font-size: 1.75rem;
-  }
-
-  .jobs-page [class*="text-[10px]"] {
-    font-size: 0.875rem;
-  }
-
-  .jobs-page [class*="text-[11px]"] {
-    font-size: 0.9375rem;
-  }
-
-  .jobs-page [class*="text-[15px]"] {
-    font-size: 1.1875rem;
-  }
-
-  @media (min-width: 40rem) {
-    .jobs-page .sm\:text-sm {
-      font-size: 1.125rem;
-    }
-
-    .jobs-page .sm\:text-2xl {
-      font-size: 1.75rem;
-    }
-  }
-
-  /*
-   * One readable type scale for both authenticated workspaces. Dashboard
-   * screens historically mixed one-off 10–15px utilities, which made dense
-   * cards and metadata difficult to read. Keep 16px as the minimum and let
-   * semantic heading levels provide the hierarchy.
-   */
-  .ws-shell {
-    font-size: 1rem;
-  }
-
-  .ws-shell [class*="text-xs"],
-  .ws-shell [class*="text-sm"],
-  .ws-shell [class*="text-base"],
-  .ws-shell [class*="text-[0.7rem]"],
-  .ws-shell [class*="text-[10px]"],
-  .ws-shell [class*="text-[11px]"],
-  .ws-shell [class*="text-[11.5px]"],
-  .ws-shell [class*="text-[12px]"],
-  .ws-shell [class*="text-[12.5px]"],
-  .ws-shell [class*="text-[13px]"],
-  .ws-shell [class*="text-[14px]"],
-  .ws-shell [class*="text-[14.5px]"],
-  .ws-shell [class*="text-[15px]"] {
-    font-size: 1rem !important;
-  }
-
-  /* Keep emphasis readable without using visually heavy bold weights. */
-  .ws-shell [class*="font-bold"],
-  .ws-shell [class*="font-extrabold"],
-  .ws-shell [class*="font-black"] {
-    font-weight: 600 !important;
-  }
-
-  /* Status counters must stay compact even though workspace copy starts at 16px. */
-  .ws-shell .ws-notification-count {
-    font-size: 0.625rem !important;
-    line-height: 1 !important;
-  }
-
-  .ws-shell :where(h1) {
-    font-size: 2.125rem;
-  }
-
-  .ws-shell :where(h2) {
-    font-size: 1.875rem;
-  }
-
-  .ws-shell :where(h3) {
-    font-size: 1.625rem;
-  }
-
-  .ws-shell :where(h4) {
-    font-size: 1.375rem;
-  }
-
-  .ws-shell :where(h5) {
-    font-size: 1.25rem;
-  }
-
-  .ws-shell :where(h6) {
-    font-size: 1.125rem;
-  }
 
   /*
    * The public landing experience paints on plain white, not the app's pale
@@ -293,8 +171,8 @@
    */
   .rich-text {
     color: var(--text-secondary);
-    font-size: 1.125rem;
-    line-height: 1.75;
+    font-size: 0.875rem;
+    line-height: 1.65;
     /* Long URLs and unbroken strings wrap instead of widening the card. */
     overflow-wrap: break-word;
   }
@@ -627,6 +505,18 @@
   .ws-scroll {
     scrollbar-width: thin;
     scrollbar-color: var(--ws-line) transparent;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="skeleton"]::after {
+    animation: none !important;
   }
 }
 

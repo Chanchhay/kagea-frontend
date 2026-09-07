@@ -224,10 +224,10 @@ export function VoiceInterviewPanel({
               <span className="ml-1 hidden font-normal normal-case group-open:inline">
                 {tx("— hide")}</span>
             </summary>
-            <ul className="mt-4 space-y-3">
+            <ul className="mt-4 space-y-4">
               {turns.map((turn) => (
                 <li key={turn.id}>
-                  <p className="text-[1.125rem] font-semibold uppercase tracking-wide text-muted-fg">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-fg">
                     {turn.role === "interviewer" ? tx("Interviewer") : tx("You")}
                   </p>
                   <p className="mt-0.5 text-sm leading-6 text-body">{turn.text}</p>

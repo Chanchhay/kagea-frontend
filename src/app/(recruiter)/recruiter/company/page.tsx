@@ -88,10 +88,10 @@ export default function RecruiterCompanyPage() {
         </div>
       ) : (
         <div className="grid gap-6">
-          <div className="overflow-hidden rounded-3xl border border-primary/20 bg-ws-panel shadow-sm">
-            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-ws-line bg-linear-to-r from-primary/10 to-transparent p-5 sm:p-6">
+          <div className="overflow-hidden rounded-3xl border border-ws-line bg-ws-panel shadow-xs">
+            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-ws-line bg-ws-card/50 p-5 sm:p-6">
               <div className="flex min-w-0 items-start gap-4">
-                <span className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-primary/15 bg-ws-card text-ws-muted shadow-sm sm:size-20">
+                <span className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-ws-line bg-ws-card text-ws-muted shadow-xs sm:size-20">
                   {resolveFileUrl(company.logoUrl) ? (
                     <Image
                       src={resolveFileUrl(company.logoUrl)!}
@@ -123,7 +123,7 @@ export default function RecruiterCompanyPage() {
               <Button
                 type="button"
                 variant="outline"
-                className={`h-11 shrink-0 rounded-xl border-primary/20 px-5 ${focusRing}`}
+                className={`h-11 shrink-0 rounded-xl border-ws-line px-5 ${focusRing}`}
                 onClick={() => setIsEditing(true)}
               >
                 <Pencil aria-hidden="true" className="size-4" />
@@ -140,10 +140,10 @@ export default function RecruiterCompanyPage() {
             </dl>
           </div>
 
-          <div className="rounded-3xl border border-primary/20 bg-ws-panel p-5 shadow-sm sm:p-6">
+          <div className="rounded-3xl border border-ws-line bg-ws-panel p-5 shadow-xs sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex min-w-0 items-start gap-3">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-ws-line bg-ws-card text-primary">
                   <ShieldCheck aria-hidden="true" className="size-5" />
                 </span>
                 <div className="min-w-0">
@@ -160,7 +160,7 @@ export default function RecruiterCompanyPage() {
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/recruiter/company/documents"
-                  className={`inline-flex h-11 items-center gap-2 rounded-xl border border-primary/20 bg-white px-5 text-sm font-semibold text-primary shadow-sm transition hover:border-primary/50 hover:bg-primary/5 dark:bg-ws-panel ${focusRing}`}
+                  className={`inline-flex h-11 items-center gap-2 rounded-xl border border-ws-line bg-ws-card px-5 text-sm font-semibold text-ws-fg shadow-xs transition hover:bg-ws-card-hover ${focusRing}`}
                 >
                   <FileText aria-hidden="true" className="size-4" />
                   {tx("Documents")}</Link>
@@ -183,10 +183,9 @@ export default function RecruiterCompanyPage() {
 
 function CompanyHeader({ title, description }: { title: string; description: string }) {
   return (
-    <header className="relative overflow-hidden rounded-3xl border border-primary/15 bg-ws-panel p-5 sm:p-8">
-      <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-24 size-80 rounded-full bg-primary/5" />
+    <header className="relative overflow-hidden rounded-3xl border border-ws-line bg-ws-panel p-5 sm:p-8">
       <div className="relative flex min-w-0 items-start gap-4">
-        <span className="hidden size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary sm:flex"><Building2 aria-hidden="true" className="size-6" /></span>
+        <span className="hidden size-14 shrink-0 items-center justify-center rounded-2xl border border-ws-line bg-ws-card text-primary sm:flex"><Building2 aria-hidden="true" className="size-6" /></span>
         <div className="min-w-0">
           <h1 className="text-2xl font-bold tracking-tight text-ws-fg sm:text-3xl">{title}</h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-ws-muted">{description}</p>

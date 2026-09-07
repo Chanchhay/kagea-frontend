@@ -182,13 +182,13 @@ export default function ForwardedCandidateDetailPage() {
                 {tx("AI Interview Screening Results")}</CardTitle>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-500">{tx("Overall Score:")}</span>
-                <span className="rounded-lg bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                <span className="rounded-lg bg-ws-card px-3 py-1 text-sm font-semibold text-primary border border-ws-line">
                   {feedback.overallScore} / 100
                 </span>
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${
                     feedback.result === "PASSED"
-                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300"
+                      ? "bg-ws-card text-primary border border-ws-line"
                       : feedback.result === "FAILED"
                         ? "bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300"
                         : "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300"
@@ -234,11 +234,11 @@ export default function ForwardedCandidateDetailPage() {
             {/* Strengths & Weaknesses */}
             <div className="grid gap-4 md:grid-cols-2">
               {feedback.strengths && (
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
-                  <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 mb-1.5">
-                    <CheckCircle2 className="size-4" />
+                <div className="rounded-xl border border-ws-line bg-ws-card/50 p-4">
+                  <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-ws-fg mb-1.5">
+                    <CheckCircle2 className="size-4 text-primary" />
                     {tx("Key Strengths")}</h4>
-                  <p className="text-xs leading-relaxed text-emerald-950 dark:text-emerald-200 whitespace-pre-wrap">
+                  <p className="text-xs leading-relaxed text-ws-muted whitespace-pre-wrap">
                     {feedback.strengths}
                   </p>
                 </div>
