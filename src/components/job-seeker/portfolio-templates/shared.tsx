@@ -1,3 +1,5 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import Image from "next/image";
 import type { CSSProperties, ReactNode } from "react";
 import { resolveFileUrl } from "@/lib/file-url";
@@ -35,10 +37,11 @@ export function Page({ children, style, className = "" }: { children: ReactNode;
 }
 
 export function Cover({ url, name, size, rounded = "rounded-full", accent }: { url: string; name: string; size: number; rounded?: string; accent: string }) {
+  const tx = useWorkspaceTranslation();
   const src = resolveFileUrl(url);
   if (src) {
     return (
-      <Image src={src} alt={`${name} portrait`} width={size} height={size} unoptimized style={{ width: size, height: size }} className={`shrink-0 object-cover ${rounded}`} />
+      <Image src={src} alt={tx("{0} portrait", { 0: name })} width={size} height={size} unoptimized style={{ width: size, height: size }} className={`shrink-0 object-cover ${rounded}`} />
     );
   }
   return (
@@ -53,15 +56,15 @@ export function Cover({ url, name, size, rounded = "rounded-full", accent }: { u
 
 /** A project's cover image, or a neutral placeholder keeping the same box. */
 export function ProjectImage({ url, alt, className = "", accent }: { url: string; alt: string; className?: string; accent: string }) {
+  const tx = useWorkspaceTranslation();
   const src = resolveFileUrl(url);
   return (
     <div className={`relative overflow-hidden ${className}`} style={src ? undefined : { background: `${accent}14` }}>
       {src ? (
-        <Image src={src} alt={alt} fill unoptimized className="object-cover" />
+        <Image src={src} alt={tx(alt)} fill unoptimized className="object-cover" />
       ) : (
         <span className="absolute inset-0 flex items-center justify-center text-[18px] font-medium" style={{ color: `${accent}99` }}>
-          No cover image
-        </span>
+          {tx("No cover image")}</span>
       )}
     </div>
   );
@@ -91,10 +94,11 @@ export function displayUrl(url: string): string {
 }
 
 export function EmptyProjects({ accent }: { accent: string }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div className="rounded-2xl border-2 border-dashed p-12 text-center" style={{ borderColor: `${accent}33` }}>
-      <p className="font-semibold" style={{ color: accent }}>No projects yet</p>
-      <p className="mt-1.5 text-[18px] text-slate-500">Add your first project and it appears here straight away.</p>
+      <p className="font-semibold" style={{ color: accent }}>{tx("No projects yet")}</p>
+      <p className="mt-1.5 text-[18px] text-slate-500">{tx("Add your first project and it appears here straight away.")}</p>
     </div>
   );
 }

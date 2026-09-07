@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import type { Control, FieldPath, FieldValues } from "react-hook-form";
 import {
@@ -35,22 +37,23 @@ export function TextField<T extends FieldValues>({
   description,
   type = "text",
 }: FieldProps<T> & { type?: string }) {
+  const tx = useWorkspaceTranslation();
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>{tx(label)}</FormLabel>
           <FormControl>
             <Input
               type={type}
-              placeholder={placeholder}
+              placeholder={tx(placeholder)}
               className="h-11 rounded-xl"
               {...field}
             />
           </FormControl>
-          {description ? <FormDescription>{description}</FormDescription> : null}
+          {description ? <FormDescription>{tx(description)}</FormDescription> : null}
           <FormMessage />
         </FormItem>
       )}
@@ -66,22 +69,23 @@ export function TextAreaField<T extends FieldValues>({
   description,
   rows = 5,
 }: FieldProps<T> & { rows?: number }) {
+  const tx = useWorkspaceTranslation();
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>{tx(label)}</FormLabel>
           <FormControl>
             <Textarea
               rows={rows}
-              placeholder={placeholder}
+              placeholder={tx(placeholder)}
               className="rounded-xl"
               {...field}
             />
           </FormControl>
-          {description ? <FormDescription>{description}</FormDescription> : null}
+          {description ? <FormDescription>{tx(description)}</FormDescription> : null}
           <FormMessage />
         </FormItem>
       )}
@@ -98,18 +102,19 @@ export function SelectField<T extends FieldValues>({
   description,
   options,
 }: FieldProps<T> & { options: { value: string; label: string }[] }) {
+  const tx = useWorkspaceTranslation();
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>{tx(label)}</FormLabel>
           <Select value={field.value} onValueChange={field.onChange}>
             <FormControl>
               <SelectTrigger className="h-11 w-full rounded-xl">
-                <SelectValue placeholder={placeholder}>
-                  {options.find((option) => option.value === field.value)?.label}
+                <SelectValue placeholder={tx(placeholder)}>
+                  {tx(options.find((option) => option.value === field.value)?.label)}
                 </SelectValue>
               </SelectTrigger>
             </FormControl>
@@ -121,12 +126,12 @@ export function SelectField<T extends FieldValues>({
             >
               {options.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+                  {tx(option.label)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {description ? <FormDescription>{description}</FormDescription> : null}
+          {description ? <FormDescription>{tx(description)}</FormDescription> : null}
           <FormMessage />
         </FormItem>
       )}

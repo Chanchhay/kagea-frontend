@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { Check } from "lucide-react";
 import { ACCENT_PRESETS, RESUME_TEMPLATES, type ResumeTemplate } from "@/components/job-seeker/resume-templates";
@@ -19,6 +21,7 @@ export function TemplatePicker({
   onTemplateChange: (templateId: string) => void;
   onAccentChange: (accent: string) => void;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -42,22 +45,22 @@ export function TemplatePicker({
                   </span>
                 ) : null}
               </div>
-              <p className="mt-2.5 text-sm font-semibold text-ws-fg">{template.name}</p>
-              <p className="mt-0.5 text-[18px] leading-4 text-ws-muted">{template.description}</p>
+              <p className="mt-2.5 text-sm font-semibold text-ws-fg">{tx(template.name)}</p>
+              <p className="mt-0.5 text-[18px] leading-4 text-ws-muted">{tx(template.description)}</p>
             </button>
           );
         })}
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
-        <span className="text-sm font-medium text-ws-fg">Accent color</span>
+        <span className="text-sm font-medium text-ws-fg">{tx("Accent color")}</span>
         <div className="flex flex-wrap gap-2">
           {ACCENT_PRESETS.map((preset) => (
             <button
               key={preset.value}
               type="button"
               onClick={() => onAccentChange(preset.value)}
-              aria-label={preset.label}
+              aria-label={tx(preset.label)}
               aria-pressed={accent === preset.value}
               className={`size-8 rounded-full transition ${accent === preset.value ? "ring-2 ring-primary ring-offset-2 ring-offset-ws-panel" : "hover:scale-110"}`}
               style={{ background: preset.value }}

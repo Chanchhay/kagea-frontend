@@ -13,9 +13,9 @@ export interface JourneyMilestone {
 export interface TeamMember {
   id: string;
   name: string;
-  role: string;
+
   roleTitle: string;
-  badge: "LEAD" | "MEMBER" | "MENTOR";
+  badge: "LEADER" | "MEMBER" | "MENTOR" | "SUB-LEADER";
   avatar: string;
   bio: string;
   quote: string;
@@ -39,7 +39,7 @@ export const mentors: TeamMember[] = [
   {
     id: "M1",
     name: "Mr. Kit Tara",
-    role: "MENTOR",
+  
     roleTitle: "SOLUTION ARCHITECT & ADVISOR",
     badge: "MENTOR",
     avatar: "/images/avatar/dara.jpg",
@@ -84,7 +84,7 @@ export const mentors: TeamMember[] = [
   {
     id: "M2",
     name: "Miss. Mom Raksmey",
-    role: "MENTOR",
+ 
     roleTitle: "TECHNICAL ADVISOR & MENTOR",
     badge: "MENTOR",
     avatar: "/images/avatar/raksmey.jpg",
@@ -129,7 +129,7 @@ export const mentors: TeamMember[] = [
   {
     id: "M3",
     name: "Mr. Chan Chhaya",
-    role: "MENTOR",
+  
     roleTitle: "BACKEND SPECIALIST & MENTOR",
     badge: "MENTOR",
     avatar: "/images/avatar/chhayya.jpg",
@@ -174,7 +174,7 @@ export const mentors: TeamMember[] = [
   {
     id: "M4",
     name: "Miss. Eung Lyzhia",
-    role: "MENTOR",
+  
     roleTitle: "PRODUCT & QUALITY MENTOR",
     badge: "MENTOR",
     avatar: "/images/avatar/lyzhia.jpg",
@@ -222,9 +222,9 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "01",
     name: "Srey ChanChhay",
-    role: "LEADER",
+  
     roleTitle: "LEAD FULL-STACK ENGINEER",
-    badge: "LEAD",
+    badge: "LEADER",
     avatar: "/images/avatar/chanchhay.jpg",
     bio: "Lead Full-Stack Engineer spearheading project architecture, technical vision, and AI integration for Find Job. Specializes in building distributed systems, Next.js architecture, and orchestrating cross-functional engineering deliverables.",
     quote: "Engineering is about turning complex challenges into clean, intuitive, and impactful digital experiences.",
@@ -280,9 +280,9 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "02",
     name: "Khan Kanhchana",
-    role: "SUB LEADER",
+    
     roleTitle: "FRONTEND ARCHITECT & SUB LEADER",
-    badge: "LEAD",
+    badge: "SUB-LEADER",
     avatar: "/images/avatar/kanhchana.jpg",
     bio: "Frontend Specialist & Sub Leader focusing on UI/UX excellence, state management, and modern component systems. Committed to crafting highly responsive, visually stunning web experiences with Framer Motion.",
     quote: "Design and code must converge effortlessly to evoke delight, clarity, and trust in every user interaction.",
@@ -337,9 +337,9 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "03",
     name: "Lut Lina",
-    role: "MEMBER",
+  
     roleTitle: "FULL-STACK SOFTWARE ENGINEER",
-    badge: "LEAD",
+    badge: "MEMBER",
     avatar: "/images/avatar/lina.jpg",
     bio: "Full-Stack Developer crafting responsive client-side interfaces and seamless data synchronization layers. Specializes in job seeker profile management, document upload workflows, and form validation with Zod.",
     quote: "Clean, well-structured forms and precise data validation make all the difference in user conversion.",
@@ -394,7 +394,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "04",
     name: "Heang BunLong",
-    role: "MEMBER",
+
     roleTitle: "FULL-STACK SOFTWARE ENGINEER",
     badge: "MEMBER",
     avatar: "/images/avatar/bunlong.jpg",
@@ -451,7 +451,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "05",
     name: "Man Tolfary",
-    role: "MEMBER",
+
     roleTitle: "FRONTEND SOFTWARE ENGINEER",
     badge: "MEMBER",
     avatar: "/images/avatar/fary.jpg",
@@ -508,7 +508,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "06",
     name: "Sithon Somrach",
-    role: "MEMBER",
+
     roleTitle: "UI/UX & FRONTEND ENGINEER",
     badge: "MEMBER",
     avatar: "/images/avatar/samrach.jpg",
@@ -565,7 +565,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "07",
     name: "Pech PhakLey",
-    role: "MEMBER",
+
     roleTitle: "FRONTEND SOFTWARE ENGINEER",
     badge: "MEMBER",
     avatar: "/images/avatar/phakley.jpg",

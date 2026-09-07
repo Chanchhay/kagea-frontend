@@ -21,7 +21,7 @@ export function PublicCompanySummary({ companyId, jobs }: PublicCompanySummaryPr
         <span className="flex size-12 items-center justify-center rounded-lg bg-brand-tint text-brand">
           <Building2 aria-hidden="true" className="size-6" />
         </span>
-        <h1 className="mt-4 text-3xl font-semibold text-heading">{companyName}</h1>
+        <h1 className="mt-4 text-3xl font-semibold text-slate-600 dark:text-slate-400">{companyName}</h1>
         <p className="mt-3 max-w-3xl leading-7 text-body">
           There is no dedicated public company detail endpoint. This page only
           shows the company ID, company name, and jobs exposed through public job

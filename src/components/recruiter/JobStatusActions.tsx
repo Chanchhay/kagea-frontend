@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/api-error";
@@ -26,6 +28,7 @@ const allowedFrom: Record<"publish" | "pause" | "resume" | "close", JobPostStatu
   };
 
 export function JobStatusActions({ job }: { job: JobPostResponse }) {
+  const tx = useWorkspaceTranslation();
   const [publishJob, publishing] = usePublishJobMutation();
   const [pauseJob, pausing] = usePauseJobMutation();
   const [resumeJob, resuming] = useResumeJobMutation();
@@ -91,7 +94,7 @@ export function JobStatusActions({ job }: { job: JobPostResponse }) {
           onClick={action.run}
         >
           <action.icon aria-hidden="true" className="size-4" />
-          {action.label}
+          {tx(action.label)}
         </Button>
       ))}
     </div>

@@ -3,44 +3,14 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
+import { useLocale } from '@/i18n/LocaleProvider';
 
 type Faq = {
   question: string;
   answer: string;
 };
 
-const faqs: Faq[] = [
-  {
-    question: 'Do I need an account to look at jobs?',
-    answer:
-      'No. Every published job is public — browse the listings, open a posting and read the full description without signing in. You only need an account to apply, save a job, or get alerts.',
-  },
-  {
-    question: 'How does applying work?',
-    answer:
-      'Build your profile once and attach your CV. From then on, applying to a posting takes a few clicks, and every application you send stays in your dashboard with its current status.',
-  },
-  {
-    question: 'What is the AI interview practice?',
-    answer:
-      'A rehearsal round. Start a practice interview against a real posting, answer the kind of questions that role attracts, and review how you did before you sit in front of the hiring team.',
-  },
-  {
-    question: 'Can I build a CV here?',
-    answer:
-      'Yes. Pick one of the resume templates, fill it with the details already on your profile, and use the result for applications on and off the platform.',
-  },
-  {
-    question: 'How do employers use the platform?',
-    answer:
-      'Companies register, publish their openings, and review applications as they arrive — shortlisting candidates and messaging them directly, without the thread getting lost in an inbox.',
-  },
-  {
-    question: 'Are the companies real?',
-    answer:
-      'Company accounts go through a verification step before their postings go live, and a posting always names the employer unless it is explicitly marked confidential.',
-  },
-];
+const faqKeys = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6'] as const;
 
 function FaqRow({ faq, index }: { faq: Faq; index: number }) {
   const [open, setOpen] = useState(false);
@@ -93,6 +63,12 @@ function FaqRow({ faq, index }: { faq: Faq; index: number }) {
 }
 
 export default function FaqSection() {
+  const { t } = useLocale();
+  const faqs: Faq[] = faqKeys.map((key) => ({
+    question: t(`faq.${key}`),
+    answer: t(`faq.a${key.slice(1)}`),
+  }));
+
   return (
     /*
      * Laid out straight on the page rather than inside a card: the landing
@@ -114,12 +90,12 @@ export default function FaqSection() {
             <div className="flex items-center gap-2.5">
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-900 dark:bg-white" />
               <span className="text-sm font-medium text-slate-900 dark:text-white">
-                Questions
+                {t('landing.questions')}
               </span>
             </div>
 
             <h2 className="mt-6 text-3xl font-medium leading-[1.15] tracking-tight text-slate-900 sm:text-4xl dark:text-white">
-              Everything you might ask before you start.
+              {t('landing.faqTitle')}
             </h2>
           </div>
 
