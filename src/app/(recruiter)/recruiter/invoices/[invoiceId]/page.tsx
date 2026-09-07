@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -18,12 +20,13 @@ import { useGetMyInvoiceQuery } from "@/services/financeApi";
 import { isUuid } from "@/lib/uuid";
 
 export default function InvoiceDetailPage() {
+  const tx = useWorkspaceTranslation();
   const { invoiceId } = useParams<{ invoiceId: string }>();
   const query = useGetMyInvoiceQuery(invoiceId, { skip: !isUuid(invoiceId) });
 
   if (query.isLoading) return <LoadingState rows={6} />;
   if (query.isError || !query.data) {
-    return <ErrorState message="Unable to load this invoice." />;
+    return <ErrorState message={tx("Unable to load this invoice.")} />;
   }
 
   const invoice = query.data;
@@ -34,27 +37,24 @@ export default function InvoiceDetailPage() {
         href="/recruiter/invoices"
         className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-ws-muted transition-colors hover:text-ws-fg"
       >
-        <ArrowLeft className="size-4" /> All invoices
-      </Link>
+        <ArrowLeft className="size-4" /> {tx(" All invoices")}</Link>
 
       <section className="relative mb-5 overflow-hidden rounded-[24px] bg-ws-card p-6 sm:p-8">
         <div className="absolute inset-y-0 left-0 w-1.5 bg-brand" />
         <div className="flex flex-col gap-7 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-ws-muted">
-              <FileText className="size-4 text-brand" /> Invoice detail
-            </div>
+              <FileText className="size-4 text-brand" /> {tx(" Invoice detail")}</div>
             <h1 className="text-2xl font-semibold tracking-tight text-ws-fg sm:text-3xl">
               {invoice.invoiceNo}
             </h1>
             <p className="mt-2 max-w-md text-sm leading-6 text-ws-muted">
-              Placement commissions billed to your company.
-            </p>
+              {tx("Placement commissions billed to your company.")}</p>
           </div>
           <div className="flex items-center gap-3 sm:text-right">
             <InvoiceStatusChip status={invoice.status} />
             <div>
-              <p className="text-xs text-ws-muted">Invoice total</p>
+              <p className="text-xs text-ws-muted">{tx("Invoice total")}</p>
               <p className="mt-1 text-2xl font-semibold tracking-tight text-ws-fg">
                 {formatMoney(invoice.totalAmount, invoice.currency)}
               </p>
@@ -64,12 +64,12 @@ export default function InvoiceDetailPage() {
         <div className="mt-8 grid gap-3 border-t border-ws-line pt-5 sm:grid-cols-2">
           <Meta
             icon={<CalendarDays className="size-4" />}
-            label="Issued"
+            label={tx("Issued")}
             value={formatDate(invoice.issuedAt)}
           />
           <Meta
             icon={<CalendarDays className="size-4" />}
-            label="Due date"
+            label={tx("Due date")}
             value={formatDate(invoice.dueAt)}
           />
         </div>
@@ -77,16 +77,16 @@ export default function InvoiceDetailPage() {
 
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
         <Summary
-          label="Subtotal"
+          label={tx("Subtotal")}
           value={formatMoney(invoice.subtotalAmount, invoice.currency)}
         />
         <Summary
-          label="Paid to date"
+          label={tx("Paid to date")}
           value={formatMoney(invoice.paidAmount, invoice.currency)}
           icon={<CheckCircle2 className="size-4" />}
         />
         <Summary
-          label="Outstanding"
+          label={tx("Outstanding")}
           value={formatMoney(invoice.outstandingAmount, invoice.currency)}
           accent
           icon={<CircleDollarSign className="size-4" />}
@@ -97,12 +97,9 @@ export default function InvoiceDetailPage() {
         <div className="mb-5 flex items-center justify-between gap-4">
           <div>
             <h2 className="text-base font-semibold text-ws-fg">
-              Invoice lines
-            </h2>
+              {tx("Invoice lines")}</h2>
             <p className="mt-1 text-xs text-ws-muted">
-              {invoice.items.length} placement
-              {invoice.items.length === 1 ? "" : "s"} included
-            </p>
+              {invoice.items.length} {tx(" placement")}{invoice.items.length === 1 ? "" : tx("s")} {tx(" included")}</p>
           </div>
           <ReceiptText className="size-5 text-ws-faint" />
         </div>
@@ -113,7 +110,7 @@ export default function InvoiceDetailPage() {
               className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0"
             >
               <span className="min-w-0 flex-1 truncate text-sm text-ws-fg">
-                {item.description}
+                {tx(item.description)}
               </span>
               <span className="text-sm font-semibold text-ws-fg">
                 {formatMoney(item.totalAmount, invoice.currency)}
@@ -124,15 +121,15 @@ export default function InvoiceDetailPage() {
 
         <dl className="mt-6 space-y-2 border-t border-ws-line pt-5 text-sm">
           <Row
-            label="Subtotal"
+            label={tx("Subtotal")}
             value={formatMoney(invoice.subtotalAmount, invoice.currency)}
           />
           <Row
-            label="Tax"
+            label={tx("Tax")}
             value={formatMoney(invoice.taxAmount, invoice.currency)}
           />
           <Row
-            label="Total"
+            label={tx("Total")}
             value={formatMoney(invoice.totalAmount, invoice.currency)}
             strong
           />
@@ -148,11 +145,9 @@ export default function InvoiceDetailPage() {
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <h2 className="text-base font-semibold text-ws-fg">
-                Payment history
-              </h2>
+                {tx("Payment history")}</h2>
               <p className="mt-1 text-xs text-ws-muted">
-                Recorded payments for this invoice
-              </p>
+                {tx("Recorded payments for this invoice")}</p>
             </div>
             <CheckCircle2 className="size-5 text-brand" />
           </div>
@@ -167,10 +162,8 @@ export default function InvoiceDetailPage() {
                     {formatDate(payment.paidAt)}
                   </span>
                   <span className="mt-1 block truncate text-xs text-ws-muted">
-                    {payment.paymentMethod ?? "Payment recorded"}
-                    {payment.transactionReference
-                      ? ` · ${payment.transactionReference}`
-                      : ""}
+                    {payment.paymentMethod ?? tx("Payment recorded")}
+                    {payment.transactionReference ? ` · ${payment.transactionReference}` : ""}
                   </span>
                 </span>
                 <span className="shrink-0 font-semibold text-ws-fg">
@@ -194,13 +187,14 @@ function Meta({
   label: string;
   value: string;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div className="flex items-center gap-3">
       <span className="flex size-8 items-center justify-center rounded-lg bg-ws-panel text-ws-muted">
         {icon}
       </span>
       <div>
-        <p className="text-xs text-ws-muted">{label}</p>
+        <p className="text-xs text-ws-muted">{tx(label)}</p>
         <p className="mt-0.5 text-sm font-medium text-ws-fg">{value}</p>
       </div>
     </div>
@@ -218,13 +212,14 @@ function Summary({
   accent?: boolean;
   icon?: React.ReactNode;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div
       className={`rounded-[20px] bg-ws-card p-4 ${accent ? "ring-1 ring-brand/30" : ""}`}
     >
       <div className="flex items-center gap-2 text-xs text-ws-muted">
         {icon}
-        {label}
+        {tx(label)}
       </div>
       <p
         className={`mt-2 text-lg font-semibold ${accent ? "text-brand" : "text-ws-fg"}`}
@@ -244,9 +239,10 @@ function Row({
   value: string;
   strong?: boolean;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div className="flex justify-between">
-      <dt className="text-ws-muted">{label}</dt>
+      <dt className="text-ws-muted">{tx(label)}</dt>
       <dd className={strong ? "font-semibold text-ws-fg" : "text-ws-fg"}>
         {value}
       </dd>

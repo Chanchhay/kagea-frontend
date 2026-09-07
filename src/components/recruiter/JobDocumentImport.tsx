@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useRef, useState, type DragEvent } from "react";
 import { FileText, Loader2, Sparkles, UploadCloud } from "lucide-react";
@@ -34,6 +36,7 @@ export function JobDocumentImport({
   onParsed,
   disabled,
 }: JobDocumentImportProps) {
+  const tx = useWorkspaceTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,7 +66,7 @@ export function JobDocumentImport({
     } catch (cause) {
       setFileName(null);
       setError(
-        getApiErrorMessage(cause, "That job description could not be read."),
+        getApiErrorMessage(cause, tx("That job description could not be read.")),
       );
     }
   };
@@ -76,19 +79,16 @@ export function JobDocumentImport({
         </span>
         <div>
           <h2 className="text-sm font-semibold text-heading">
-            Start from a PDF
-          </h2>
+            {tx("Start from a PDF")}</h2>
           <p className="mt-1 text-xs text-body">
-            Upload the job description you already have and we&apos;ll fill in
-            the form below. Check every field before you publish.
-          </p>
+            {tx("Upload the job description you already have and we'll fill in the form below. Check every field before you publish.")}</p>
         </div>
       </div>
 
       <div
         role="button"
         tabIndex={isBusy ? -1 : 0}
-        aria-label="Choose a PDF job description"
+        aria-label={tx("Choose a PDF job description")}
         aria-busy={parsing.isLoading}
         onClick={() => {
           if (!isBusy) inputRef.current?.click();
@@ -132,13 +132,10 @@ export function JobDocumentImport({
           )}
         </span>
         <p className="mt-3 text-sm font-medium text-heading">
-          {parsing.isLoading
-            ? "Reading your job description…"
-            : (fileName ?? "Drag and drop a PDF, or click to browse")}
+          {parsing.isLoading ? tx("Reading your job description…") : (fileName ?? "Drag and drop a PDF, or click to browse")}
         </p>
         <p className="mt-1 text-xs text-body">
-          PDF up to 5 MB. Scanned or image-only documents can&apos;t be read.
-        </p>
+          {tx("PDF up to 5 MB. Scanned or image-only documents can't be read.")}</p>
 
         <input
           ref={inputRef}
@@ -155,8 +152,7 @@ export function JobDocumentImport({
 
       {parsed ? (
         <p className="mt-3 text-xs font-medium text-heading">
-          Filled in the fields we could read. Review them before publishing.
-        </p>
+          {tx("Filled in the fields we could read. Review them before publishing.")}</p>
       ) : null}
 
       {error ? (

@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useRef, useState, type DragEvent } from "react";
 import { FileCheck2, UploadCloud, X } from "lucide-react";
@@ -38,6 +40,7 @@ export function FileDropzone({
   hint = "PDF, PNG, JPG, WebP or SVG up to 5 MB.",
   className,
 }: FileDropzoneProps) {
+  const tx = useWorkspaceTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +72,7 @@ export function FileDropzone({
       <div
         role="button"
         tabIndex={0}
-        aria-label="Choose a file"
+        aria-label={tx("Choose a file")}
         onClick={() => inputRef.current?.click()}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
@@ -102,8 +105,8 @@ export function FileDropzone({
             <UploadCloud aria-hidden="true" className="size-5" />
           )}
         </span>
-        <p className="mt-3 text-sm font-medium text-heading">{label}</p>
-        <p className="mt-1 text-xs text-body">{hint}</p>
+        <p className="mt-3 text-sm font-medium text-heading">{tx(label)}</p>
+        <p className="mt-1 text-xs text-body">{tx(hint)}</p>
 
         <input
           ref={inputRef}
@@ -119,8 +122,7 @@ export function FileDropzone({
 
       {file ? (
         <p className="mt-2 text-xs text-body">
-          Selected. It uploads when you save.
-        </p>
+          {tx("Selected. It uploads when you save.")}</p>
       ) : null}
 
       {hasFile ? (
@@ -131,8 +133,7 @@ export function FileDropzone({
             className="inline-flex shrink-0 items-center gap-1 font-medium text-body hover:text-destructive"
           >
             <X aria-hidden="true" className="size-3.5" />
-            Remove
-          </button>
+            {tx("Remove")}</button>
         </div>
       ) : null}
 

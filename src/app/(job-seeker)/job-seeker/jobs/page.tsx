@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -21,6 +23,7 @@ export default function JobSeekerJobsPage() {
 }
 
 function JobsExplorer() {
+  const tx = useWorkspaceTranslation();
   const searchParams = useSearchParams();
   const jobsQuery = useGetPublicJobsQuery({ page: 0, size: 100 });
   const resumesQuery = useGetResumesQuery();
@@ -30,7 +33,7 @@ function JobsExplorer() {
 
   if (queries.some((query) => query.isLoading)) return <LoadingState rows={6} />;
   if (jobsQuery.isError || !jobsQuery.data) {
-    return <ErrorState message="Unable to load published jobs." />;
+    return <ErrorState message={tx("Unable to load published jobs.")} />;
   }
 
   return (

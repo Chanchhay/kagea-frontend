@@ -4,8 +4,10 @@ import Link from "next/link";
 import { ArrowUpRight, Bookmark, MapPin } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useGetPublicJobCategoriesQuery, useGetPublicJobsQuery } from "@/services/publicApi";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 export default function NewestJobsSection() {
+  const { t } = useLocale();
   const jobsQuery = useGetPublicJobsQuery({ size: 100, sort: "publishedAt,desc" });
   const categoriesQuery = useGetPublicJobCategoriesQuery();
   const [categoryId, setCategoryId] = useState<string | null>(null);
@@ -21,13 +23,13 @@ export default function NewestJobsSection() {
   return (
     <section className="mx-auto my-8 max-w-7xl px-4 py-12 sm:px-8 lg:px-10">
       <div className="text-center">
-        <h2 data-reveal className="text-3xl font-bold sm:text-4xl"><span className="text-[#008A1E]">Newest </span><span className="text-[#F3BE00]">Jobs</span><span className="text-[#008A1E]"> For You</span></h2>
-        <p data-reveal className="mt-2 text-sm font-medium text-slate-600 dark:text-[#CBD0D5]">Fresh opportunities published by verified recruiters.</p>
+        <h2 data-reveal className="text-3xl font-bold sm:text-4xl"><span className="text-[#008A1E]">{t("landing.newestJobs.headingPrefix")} </span><span className="text-[#F3BE00]">{t("landing.newestJobs.headingHighlight")}</span><span className="text-[#008A1E]"> {t("landing.newestJobs.headingSuffix")}</span></h2>
+        <p data-reveal className="mt-2 text-sm font-medium text-slate-600 dark:text-[#CBD0D5]">{t("landing.newestJobs.subtitle")}</p>
       </div>
 
       <div data-reveal className="mt-8 overflow-x-auto no-scrollbar">
         <div className="flex min-w-max justify-center gap-7 px-2 sm:gap-10">
-          <Tab active={categoryId === null} onClick={() => setCategoryId(null)}>All</Tab>
+          <Tab active={categoryId === null} onClick={() => setCategoryId(null)}>{t("landing.newestJobs.allTab")}</Tab>
           {(categoriesQuery.data ?? []).map((category) => <Tab key={category.id} active={categoryId === category.id} onClick={() => setCategoryId(category.id)}>{category.name}</Tab>)}
         </div>
       </div>
@@ -35,9 +37,9 @@ export default function NewestJobsSection() {
       {jobsQuery.isLoading || categoriesQuery.isLoading ? (
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }).map((_, index) => <div key={index} className={`h-80 animate-pulse rounded-2xl border border-slate-200 bg-white dark:border-[#3E444B] dark:bg-[#22262C] ${cardVisibility(index)}`} />)}</div>
       ) : jobsQuery.isError || categoriesQuery.isError ? (
-        <Message title="Unable to load jobs" description="Please refresh the page and try again." />
+        <Message title={t("landing.newestJobs.errorTitle")} description={t("landing.newestJobs.errorDescription")} />
       ) : jobs.length === 0 ? (
-        <Message title="No published jobs" description="There are no jobs in this category yet." />
+        <Message title={t("landing.newestJobs.emptyTitle")} description={t("landing.newestJobs.emptyDescription")} />
       ) : (
         <div data-stagger className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {jobs.slice(0, 6).map((job, index) => {
@@ -53,13 +55,13 @@ export default function NewestJobsSection() {
                     </span>
                     <div className="min-w-0">
                       <p className="truncate font-medium text-slate-900 dark:text-[#F5F5F5]">{job.companyName}</p>
-                      <p className="mt-0.5 truncate text-slate-500 dark:text-[#929AA3]">{timeAgo(job.publishedAt)}</p>
+                      <p className="mt-0.5 truncate text-slate-500 dark:text-[#929AA3]">{timeAgo(job.publishedAt, t)}</p>
                     </div>
                   </div>
 
                   <button
                     type="button"
-                    aria-label={`${saved ? "Remove" : "Save"} ${job.title}`}
+                    aria-label={`${saved ? t("common.remove") : t("common.save")} ${job.title}`}
                     aria-pressed={saved}
                     onClick={() => setSavedJobIds((current) => toggleSaved(current, job.id))}
                     className={`inline-flex size-9 shrink-0 items-center justify-center rounded-full transition-colors ${
@@ -79,24 +81,24 @@ export default function NewestJobsSection() {
 
                 <p className="mt-3 flex items-center gap-2 text-slate-500 dark:text-[#929AA3]">
                   <MapPin className="size-4 shrink-0" />
-                  <span className="truncate">{job.location || "Location not specified"}</span>
+                  <span className="truncate">{job.location || t("landing.newestJobs.locationUnknown")}</span>
                 </p>
 
                 <div className="mt-5 mb-8 flex flex-wrap gap-2">
-                  <Chip>{formatLabel(job.jobType || "Job")}</Chip>
-                  <Chip>{formatLabel(job.workMode || "Flexible")}</Chip>
+                  <Chip>{jobTypeLabel(job.jobType, t)}</Chip>
+                  <Chip>{workModeLabel(job.workMode, t)}</Chip>
                 </div>
 
                 {/* `mt-auto` pins the footer to the bottom edge, so the Apply
                     buttons line up across the row however the titles wrap. */}
                 <div className="mt-auto flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 dark:border-[#3E444B]">
-                  <p className="min-w-0 truncate font-medium text-slate-950 dark:text-[#F5F5F5]">{salary(job.salaryMin, job.salaryMax)}</p>
+                  <p className="min-w-0 truncate font-medium text-slate-950 dark:text-[#F5F5F5]">{salary(job.salaryMin, job.salaryMax, t)}</p>
                   <Link
                     href={`/jobs/${job.id}`}
-                    aria-label={`Apply for ${job.title}`}
+                    aria-label={`${t("landing.newestJobs.applyFor")} ${job.title}`}
                     className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#008A1E] px-5 font-medium text-white transition-colors hover:bg-[#007018]"
                   >
-                    Apply now
+                    {t("jobs.apply")}
                     <ArrowUpRight className="size-4" />
                   </Link>
                 </div>
@@ -107,7 +109,7 @@ export default function NewestJobsSection() {
         </div>
       )}
 
-      {jobs.length > 0 && <div className="mt-8 text-center"><Link href="/jobs" className="inline-flex h-12 items-center rounded-xl border border-[#008A1E]/30 px-6 font-medium text-[#008A1E] transition-colors hover:border-[#008A1E] hover:bg-[#008A1E] hover:text-white dark:border-emerald-400/30 dark:text-emerald-400 dark:hover:border-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white">View all jobs <ArrowUpRight className="ml-2 size-4" /></Link></div>}
+      {jobs.length > 0 && <div className="mt-8 text-center"><Link href="/jobs" className="inline-flex h-12 items-center rounded-xl border border-[#008A1E]/30 px-6 font-medium text-[#008A1E] transition-colors hover:border-[#008A1E] hover:bg-[#008A1E] hover:text-white dark:border-emerald-400/30 dark:text-emerald-400 dark:hover:border-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white">{t("landing.newestJobs.viewAllJobs")} <ArrowUpRight className="ml-2 size-4" /></Link></div>}
     </section>
   );
 }
@@ -117,7 +119,11 @@ function Chip({ children }: { children: React.ReactNode }) { return <span classN
 function cardVisibility(index: number) { if (index < 2) return ""; if (index < 4) return "hidden sm:flex"; return "hidden lg:flex"; }
 function Message({ title, description }: { title: string; description: string }) { return <div className="mt-10 rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center dark:border-[#3E444B] dark:bg-[#22262C]"><h3 className="font-semibold text-slate-900 dark:text-[#F5F5F5]">{title}</h3><p className="mt-2 text-sm text-slate-500 dark:text-[#929AA3]">{description}</p></div>; }
 function formatLabel(value: string) { return value.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase()); }
-function salary(min?: number, max?: number) { if (!min && !max) return "Salary negotiable"; const money = (value: number) => `$${new Intl.NumberFormat().format(value)}`; return min && max ? `${money(min)} – ${money(max)}` : min ? `From ${money(min)}` : `Up to ${money(max!)}`; }
+const jobTypeKeys: Record<string, string> = { FULL_TIME: "jobs.fullTime", PART_TIME: "jobs.partTime", CONTRACT: "jobs.contract", INTERNSHIP: "jobs.internship" };
+const workModeKeys: Record<string, string> = { REMOTE: "jobs.remote", HYBRID: "jobs.hybrid", ON_SITE: "jobs.onSite", ONSITE: "jobs.onSite" };
+function jobTypeLabel(value: string | undefined, t: (key: string) => string) { if (!value) return t("jobs.job"); const key = jobTypeKeys[value.toUpperCase()]; return key ? t(key) : formatLabel(value); }
+function workModeLabel(value: string | undefined, t: (key: string) => string) { if (!value) return t("jobs.flexible"); const key = workModeKeys[value.toUpperCase()]; return key ? t(key) : formatLabel(value); }
+function salary(min: number | undefined, max: number | undefined, t: (key: string) => string) { if (!min && !max) return t("landing.newestJobs.salaryNegotiable"); const money = (value: number) => `$${new Intl.NumberFormat().format(value)}`; return min && max ? `${money(min)} – ${money(max)}` : min ? `${t("landing.newestJobs.salaryFrom")} ${money(min)}` : `${t("landing.newestJobs.salaryUpTo")} ${money(max!)}`; }
 function companyInitials(value: string) { return value.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join("").toUpperCase() || "CO"; }
 function toggleSaved(current: Set<string>, jobId: string) { const next = new Set(current); if (next.has(jobId)) next.delete(jobId); else next.add(jobId); return next; }
 function timeAgo(value: string) { const time = Date.parse(value); if (Number.isNaN(time)) return "Recently"; const days = Math.max(0, Math.floor((Date.now() - time) / 86_400_000)); if (days === 0) return "Today"; if (days === 1) return "1 day ago"; if (days < 30) return `${days} days ago`; const months = Math.floor(days / 30); return `${months} ${months === 1 ? "month" : "months"} ago`; }

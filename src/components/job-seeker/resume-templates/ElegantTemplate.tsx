@@ -1,3 +1,5 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import type { ReactNode } from "react";
 import { formatDateRange } from "@/lib/resume-data";
 import { Description, Photo, Sheet, contactLines, type ResumeTemplateProps } from "./shared";
@@ -7,6 +9,7 @@ import { Description, Photo, Sheet, contactLines, type ResumeTemplateProps } fro
  * rather than a dashboard. Photo is optional and shown small above the name.
  */
 export function ElegantTemplate({ data, fallbackName }: ResumeTemplateProps) {
+  const tx = useWorkspaceTranslation();
   const name = data.fullName.trim() || fallbackName;
   const accent = data.accent;
   const contacts = [...contactLines(data), ...data.links.map((link) => link.url).filter(Boolean)];
@@ -33,7 +36,7 @@ export function ElegantTemplate({ data, fallbackName }: ResumeTemplateProps) {
       ) : null}
 
       {data.experience.length ? (
-        <Section title="Experience" accent={accent}>
+        <Section title={tx("Experience")} accent={accent}>
           <div className="space-y-5">
             {data.experience.map((entry) => (
               <div key={entry.id}>
@@ -54,7 +57,7 @@ export function ElegantTemplate({ data, fallbackName }: ResumeTemplateProps) {
       ) : null}
 
       {data.education.length ? (
-        <Section title="Education" accent={accent}>
+        <Section title={tx("Education")} accent={accent}>
           <div className="space-y-4">
             {data.education.map((entry) => (
               <div key={entry.id} className="flex items-baseline justify-between gap-4">
@@ -71,7 +74,7 @@ export function ElegantTemplate({ data, fallbackName }: ResumeTemplateProps) {
       ) : null}
 
       {data.skills.length ? (
-        <Section title="Skills" accent={accent}>
+        <Section title={tx("Skills")} accent={accent}>
           <ul className="grid grid-cols-2 gap-x-8 gap-y-1.5 text-slate-600">
             {data.skills.map((skill) => (
               <li key={skill} className="flex gap-2">
@@ -84,7 +87,7 @@ export function ElegantTemplate({ data, fallbackName }: ResumeTemplateProps) {
       ) : null}
 
       {data.projects.length ? (
-        <Section title="Projects" accent={accent}>
+        <Section title={tx("Projects")} accent={accent}>
           <div className="space-y-4">
             {data.projects.map((project) => (
               <div key={project.id}>

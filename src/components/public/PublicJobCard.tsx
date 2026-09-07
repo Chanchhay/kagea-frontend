@@ -60,7 +60,7 @@ export function PublicJobCard({ job, compact = false, className }: PublicJobCard
               {job.title}
             </Link>
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-body">
-              <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
                 <BriefcaseBusiness aria-hidden="true" className="size-4 text-brand" />
                 {job.companyName || "Company not specified"}
               </span>

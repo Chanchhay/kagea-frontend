@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useEffect } from "react";
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
@@ -34,6 +36,7 @@ export function RichTextEditor({
   placeholder,
   className,
 }: RichTextEditorProps) {
+  const tx = useWorkspaceTranslation();
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -93,7 +96,7 @@ export function RichTextEditor({
 
   const setLink = () => {
     const previous = editor.getAttributes("link").href as string | undefined;
-    const href = window.prompt("Link URL", previous ?? "https://");
+    const href = window.prompt(tx("Link URL"), previous ?? "https://");
 
     if (href === null) return;
     if (href === "") {
@@ -118,19 +121,19 @@ export function RichTextEditor({
     >
       <div className="flex flex-wrap items-center gap-0.5 border-b border-border bg-surface-muted/60 px-2 py-1.5">
         <ToolbarButton
-          label="Bold"
+          label={tx("Bold")}
           icon={Bold}
           active={state?.isBold}
           onClick={() => editor.chain().focus().toggleBold().run()}
         />
         <ToolbarButton
-          label="Italic"
+          label={tx("Italic")}
           icon={Italic}
           active={state?.isItalic}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         />
         <ToolbarButton
-          label="Strikethrough"
+          label={tx("Strikethrough")}
           icon={Strikethrough}
           active={state?.isStrike}
           onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -139,7 +142,7 @@ export function RichTextEditor({
         <Divider />
 
         <ToolbarButton
-          label="Heading"
+          label={tx("Heading")}
           icon={Heading2}
           active={state?.isHeading}
           onClick={() =>
@@ -147,19 +150,19 @@ export function RichTextEditor({
           }
         />
         <ToolbarButton
-          label="Bulleted list"
+          label={tx("Bulleted list")}
           icon={List}
           active={state?.isBulletList}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
         />
         <ToolbarButton
-          label="Numbered list"
+          label={tx("Numbered list")}
           icon={ListOrdered}
           active={state?.isOrderedList}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
         />
         <ToolbarButton
-          label="Quote"
+          label={tx("Quote")}
           icon={Quote}
           active={state?.isQuote}
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
@@ -168,14 +171,14 @@ export function RichTextEditor({
         <Divider />
 
         <ToolbarButton
-          label={state?.isLink ? "Edit link" : "Add link"}
+          label={tx(state?.isLink ? "Edit link" : "Add link")}
           icon={Link2}
           active={state?.isLink}
           onClick={setLink}
         />
         {state?.isLink ? (
           <ToolbarButton
-            label="Remove link"
+            label={tx("Remove link")}
             icon={Unlink}
             onClick={() =>
               editor.chain().focus().extendMarkRange("link").unsetLink().run()
@@ -185,13 +188,13 @@ export function RichTextEditor({
 
         <div className="ml-auto flex items-center gap-0.5">
           <ToolbarButton
-            label="Undo"
+            label={tx("Undo")}
             icon={Undo2}
             disabled={!state?.canUndo}
             onClick={() => editor.chain().focus().undo().run()}
           />
           <ToolbarButton
-            label="Redo"
+            label={tx("Redo")}
             icon={Redo2}
             disabled={!state?.canRedo}
             onClick={() => editor.chain().focus().redo().run()}
@@ -221,11 +224,12 @@ function ToolbarButton({
   disabled?: boolean;
   onClick: () => void;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <button
       type="button"
-      title={label}
-      aria-label={label}
+      title={tx(label)}
+      aria-label={tx(label)}
       aria-pressed={active}
       disabled={disabled}
       onClick={onClick}

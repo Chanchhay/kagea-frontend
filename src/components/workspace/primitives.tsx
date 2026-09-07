@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
 import { Check, Mic, Pin } from "lucide-react";
@@ -43,6 +45,7 @@ export function Chip({
   className?: string;
   children: ReactNode;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <span
       className={cn(
@@ -51,7 +54,7 @@ export function Chip({
         className,
       )}
     >
-      {children}
+      {tx(children)}
     </span>
   );
 }
@@ -64,6 +67,7 @@ export function GhostChip({
   className?: string;
   children: ReactNode;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <span
       className={cn(
@@ -71,7 +75,7 @@ export function GhostChip({
         className,
       )}
     >
-      {children}
+      {tx(children)}
     </span>
   );
 }
@@ -223,6 +227,7 @@ export function PipelineTrack({
   segments: { label: string; count: number; tone: Tone }[];
   restLabel: string;
 }) {
+  const tx = useWorkspaceTranslation();
   const filled = segments.reduce((sum, segment) => sum + segment.count, 0);
   const total = Math.max(filled, 1);
 
@@ -239,7 +244,7 @@ export function PipelineTrack({
               toneFill[segment.tone],
             )}
           >
-            <span className="truncate">{segment.label}</span>
+            <span className="truncate">{tx(segment.label)}</span>
             {/* The count rides in a disc at the end of the capsule, the way the
                 reference caps each filled segment, rather than as loose text. */}
             <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-current/15 text-xs tabular-nums">
@@ -269,20 +274,21 @@ export function IconAction({
   className?: string;
   children: ReactNode;
 }) {
+  const tx = useWorkspaceTranslation();
   const classes = cn(
     "flex size-9 items-center justify-center rounded-full opacity-60 transition-all hover:bg-current/10 hover:opacity-100",
     className,
   );
 
   return href ? (
-    <Link href={href} aria-label={label} className={classes}>
+    <Link href={href} aria-label={tx(label)} className={classes}>
       {children}
     </Link>
   ) : (
     <button
       type="button"
       onClick={onClick}
-      aria-label={label}
+      aria-label={tx(label)}
       className={classes}
     >
       {children}
@@ -450,6 +456,7 @@ export function FileCard({
   /** The document itself, cropped to the thumbnail; falls back to ruled paper. */
   preview?: ReactNode;
 }) {
+  const tx = useWorkspaceTranslation();
   const Surface = href ? Link : "div";
 
   return (
@@ -467,7 +474,7 @@ export function FileCard({
         </div>
         {badge ? (
           <Chip tone={badgeTone} className="shrink-0">
-            {badge}
+            {tx(badge)}
           </Chip>
         ) : null}
         <Pin
@@ -495,10 +502,11 @@ export function FileCard({
 
 /** The composer that closes a stream — visual only until notes are wired up. */
 export function NoteBar({ placeholder }: { placeholder: string }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div className="flex items-center gap-2.5 rounded-full bg-ws-card-hover px-4 py-3 text-sm text-ws-faint">
       <Mic aria-hidden="true" className="size-4 shrink-0" />
-      <span className="truncate">{placeholder}</span>
+      <span className="truncate">{tx(placeholder)}</span>
     </div>
   );
 }

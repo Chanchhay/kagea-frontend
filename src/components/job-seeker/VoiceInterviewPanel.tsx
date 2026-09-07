@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useMemo } from "react";
 import { AlertTriangle, Bot, Loader2, PhoneOff } from "lucide-react";
@@ -49,6 +51,7 @@ export function VoiceInterviewPanel({
   submitTurns,
   onScored,
 }: VoiceInterviewPanelProps) {
+  const tx = useWorkspaceTranslation();
   const {
     status,
     assistantSpeaking,
@@ -89,15 +92,11 @@ export function VoiceInterviewPanel({
         <div className="flex flex-col items-center gap-3 py-6 text-center">
           <AlertTriangle aria-hidden="true" className="size-8 text-brand" />
           <h2 className="text-lg font-semibold text-heading">
-            Voice interview unavailable
-          </h2>
+            {tx("Voice interview unavailable")}</h2>
           <p className="max-w-md text-sm leading-6 text-body">
-            NEXT_PUBLIC_VAPI_PUBLIC_KEY and NEXT_PUBLIC_VAPI_ASSISTANT_ID are not
-            set for this build. Answer by typing instead.
-          </p>
+            {tx("NEXT_PUBLIC_VAPI_PUBLIC_KEY and NEXT_PUBLIC_VAPI_ASSISTANT_ID are not set for this build. Answer by typing instead.")}</p>
           <Button type="button" variant="outline" onClick={onSwitchToTyping}>
-            Type my answers
-          </Button>
+            {tx("Type my answers")}</Button>
         </div>
       </PlainCard>
     );
@@ -119,7 +118,7 @@ export function VoiceInterviewPanel({
               ) : null}
               <Bot aria-hidden="true" className="relative size-10 text-primary" />
             </span>
-            <h3 className="text-sm font-semibold text-heading">AI Interviewer</h3>
+            <h3 className="text-sm font-semibold text-heading">{tx("AI Interviewer")}</h3>
             <p className="text-xs text-muted-fg">{jobTitle}</p>
           </div>
         </PlainCard>
@@ -143,7 +142,7 @@ export function VoiceInterviewPanel({
                 aria-valuenow={Math.round(Math.min(micLevel, 1) * 100)}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                aria-label="Microphone input level"
+                aria-label={tx("Microphone input level")}
                 className="h-1 w-24 overflow-hidden rounded-full bg-surface-muted"
               >
                 <span
@@ -154,7 +153,7 @@ export function VoiceInterviewPanel({
                 />
               </div>
             ) : (
-              <p className="text-xs text-muted-fg">Candidate</p>
+              <p className="text-xs text-muted-fg">{tx("Candidate")}</p>
             )}
           </div>
         </PlainCard>
@@ -168,7 +167,7 @@ export function VoiceInterviewPanel({
             aria-live="polite"
             className="animate-in fade-in text-center text-base leading-7 text-heading duration-500"
           >
-            {caption}
+            {tx(caption)}
           </p>
         </PlainCard>
       ) : null}
@@ -182,8 +181,7 @@ export function VoiceInterviewPanel({
             disabled={status === "ending"}
           >
             <PhoneOff aria-hidden="true" className="size-4" />
-            End interview
-          </Button>
+            {tx("End interview")}</Button>
         ) : (
           <Button
             type="button"
@@ -193,13 +191,11 @@ export function VoiceInterviewPanel({
             {status === "connecting" ? (
               <>
                 <Loader2 aria-hidden="true" className="size-4 animate-spin" />
-                Connecting…
-              </>
+                {tx("Connecting…")}</>
             ) : status === "scoring" ? (
               <>
                 <Loader2 aria-hidden="true" className="size-4 animate-spin" />
-                Scoring your interview…
-              </>
+                {tx("Scoring your interview…")}</>
             ) : (
               "Start voice interview"
             )}
@@ -207,13 +203,7 @@ export function VoiceInterviewPanel({
         )}
 
         <p aria-live="polite" className="text-xs leading-5 text-muted-fg">
-          {status === "scoring"
-            ? "Reading back the transcript and scoring your answers."
-            : isLive
-              ? micMuted
-                ? "Microphone muted while the interviewer speaks"
-                : "Your turn — take as long as you need"
-              : `${questions.length} question${questions.length === 1 ? "" : "s"} left. Allow microphone access when prompted.`}
+          {status === "scoring" ? tx("Reading back the transcript and scoring your answers.") : isLive ? micMuted ? tx("Microphone muted while the interviewer speaks") : tx("Your turn — take as long as you need") : `${questions.length} question${questions.length === 1 ? "" : "s"} left. Allow microphone access when prompted.`}
         </p>
 
         <button
@@ -221,27 +211,24 @@ export function VoiceInterviewPanel({
           className="text-xs font-medium text-muted-fg underline underline-offset-4"
           onClick={onSwitchToTyping}
         >
-          Type my answers instead
-        </button>
+          {tx("Type my answers instead")}</button>
       </div>
 
       {turns.length > 0 ? (
         <PlainCard>
           <details className="group">
             <summary className="cursor-pointer list-none text-xs font-semibold uppercase tracking-wide text-muted-fg marker:content-none">
-              Full transcript ({turns.length})
+              {tx("Full transcript (")}{turns.length})
               <span className="ml-1 font-normal normal-case group-open:hidden">
-                — show
-              </span>
+                {tx("— show")}</span>
               <span className="ml-1 hidden font-normal normal-case group-open:inline">
-                — hide
-              </span>
+                {tx("— hide")}</span>
             </summary>
             <ul className="mt-4 space-y-3">
               {turns.map((turn) => (
                 <li key={turn.id}>
                   <p className="text-[1.125rem] font-semibold uppercase tracking-wide text-muted-fg">
-                    {turn.role === "interviewer" ? "Interviewer" : "You"}
+                    {turn.role === "interviewer" ? tx("Interviewer") : tx("You")}
                   </p>
                   <p className="mt-0.5 text-sm leading-6 text-body">{turn.text}</p>
                 </li>
@@ -257,14 +244,9 @@ export function VoiceInterviewPanel({
             <AlertTriangle aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-brand" />
             <div>
               <h3 className="text-sm font-semibold text-heading">
-                We can&apos;t hear your microphone
-              </h3>
+                {tx("We can't hear your microphone")}</h3>
               <p className="mt-1 text-sm leading-6 text-body">
-                The interviewer is waiting but no audio is reaching it. Check
-                that the right input device is selected and unmuted at the
-                operating-system level, or switch to typing so you don&apos;t
-                lose the session.
-              </p>
+                {tx("The interviewer is waiting but no audio is reaching it. Check that the right input device is selected and unmuted at the operating-system level, or switch to typing so you don't lose the session.")}</p>
               <Button
                 type="button"
                 variant="outline"
@@ -272,8 +254,7 @@ export function VoiceInterviewPanel({
                 className="mt-2"
                 onClick={onSwitchToTyping}
               >
-                Type my answers instead
-              </Button>
+                {tx("Type my answers instead")}</Button>
             </div>
           </div>
         </PlainCard>
@@ -285,13 +266,9 @@ export function VoiceInterviewPanel({
             <AlertTriangle aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-brand" />
             <div>
               <h3 className="text-sm font-semibold text-heading">
-                Your interview was not submitted
-              </h3>
+                {tx("Your interview was not submitted")}</h3>
               <p className="mt-1 text-sm leading-6 text-body">
-                The transcript is still held in this tab, so retrying will send
-                it. Leaving the page loses it — though if the interviewer hung up
-                on its own, Vapi may already have reported the call.
-              </p>
+                {tx("The transcript is still held in this tab, so retrying will send it. Leaving the page loses it — though if the interviewer hung up on its own, Vapi may already have reported the call.")}</p>
               <Button
                 type="button"
                 variant="outline"
@@ -299,8 +276,7 @@ export function VoiceInterviewPanel({
                 className="mt-2"
                 onClick={() => void retrySubmit()}
               >
-                Retry submitting
-              </Button>
+                {tx("Retry submitting")}</Button>
             </div>
           </div>
         </PlainCard>

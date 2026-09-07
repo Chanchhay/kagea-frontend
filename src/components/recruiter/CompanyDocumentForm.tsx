@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -39,6 +41,7 @@ const defaultValues: CompanyDocumentFormValues = {
 };
 
 export function CompanyDocumentForm({ companyId }: { companyId: string }) {
+  const tx = useWorkspaceTranslation();
   const [addCompanyDocument, addition] = useAddCompanyDocumentMutation();
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -49,7 +52,7 @@ export function CompanyDocumentForm({ companyId }: { companyId: string }) {
 
   const onSubmit = async (values: CompanyDocumentFormValues) => {
     if (!documentFile && !values.documentUrl) {
-      toast.error("Choose a document file first.");
+      toast.error(tx("Choose a document file first."));
       return;
     }
 
@@ -66,11 +69,11 @@ export function CompanyDocumentForm({ companyId }: { companyId: string }) {
         body: { ...values, documentUrl },
       }).unwrap();
 
-      toast.success("Document added.");
+      toast.success(tx("Document added."));
       form.reset(defaultValues);
       setDocumentFile(null);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Unable to add the document."));
+      toast.error(getApiErrorMessage(error, tx("Unable to add the document.")));
     } finally {
       setIsUploading(false);
     }
@@ -82,7 +85,7 @@ export function CompanyDocumentForm({ companyId }: { companyId: string }) {
         <SelectField
           control={form.control}
           name="documentType"
-          label="Document type"
+          label={tx("Document type")}
           options={documentTypeOptions}
         />
 
@@ -91,13 +94,17 @@ export function CompanyDocumentForm({ companyId }: { companyId: string }) {
           name="documentUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Document file</FormLabel>
+              <FormLabel>{tx("Document file")}</FormLabel>
               <FormControl>
                 <FileDropzone
                   value={field.value}
                   file={documentFile}
-                  onFileChange={setDocumentFile}
+                  onFileChange={(file) => {
+                    setDocumentFile(file);
+                    if (file) form.clearErrors("documentUrl");
+                  }}
                   onClear={() => field.onChange("")}
+                  className="[&_[role=button]]:min-h-52 [&_[role=button]]:bg-ws-panel"
                 />
               </FormControl>
               <FormMessage />
@@ -105,14 +112,14 @@ export function CompanyDocumentForm({ companyId }: { companyId: string }) {
           )}
         />
 
-        <div className="flex justify-end">
+        <div className="flex justify-end border-t border-ws-line pt-5">
           <Button
             type="submit"
-            className="h-11 rounded-lg px-6"
+            className="h-11 rounded-xl px-6 shadow-none"
             disabled={addition.isLoading || isUploading}
           >
             <Plus aria-hidden="true" className="size-4" />
-            {isUploading ? "Uploading…" : addition.isLoading ? "Adding…" : "Add document"}
+            {isUploading ? tx("Uploading…") : addition.isLoading ? tx("Adding…") : tx("Add document")}
           </Button>
         </div>
       </form>

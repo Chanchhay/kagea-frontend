@@ -1,3 +1,5 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import { Mail, MapPin, Phone } from "lucide-react";
 import type { ReactNode } from "react";
 import { formatDateRange } from "@/lib/resume-data";
@@ -8,6 +10,7 @@ import { Description, Photo, Sheet, type ResumeTemplateProps } from "./shared";
  * a narrow left column, profile and experience on the right.
  */
 export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
+  const tx = useWorkspaceTranslation();
   const name = data.fullName.trim() || fallbackName;
   const accent = data.accent;
 
@@ -27,7 +30,7 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
 
       <div className="grid flex-1 grid-cols-[0.68fr_1.32fr] gap-9 pt-8">
         <aside className="space-y-7 border-r border-slate-200 pr-8">
-          <Section title="Contact" accent={accent}>
+          <Section title={tx("Contact")} accent={accent}>
             <div className="space-y-2.5 text-[18px]">
               <ContactRow icon={Mail} text={data.email} accent={accent} />
               <ContactRow icon={Phone} text={data.phone} accent={accent} />
@@ -36,11 +39,11 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
           </Section>
 
           {data.links.length ? (
-            <Section title="Links" accent={accent}>
+            <Section title={tx("Links")} accent={accent}>
               <ul className="space-y-1.5 text-[18px]">
                 {data.links.map((link) => (
                   <li key={link.id} className="break-all">
-                    <span className="font-medium text-slate-700">{link.label || "Link"}</span>
+                    <span className="font-medium text-slate-700">{link.label || tx("Link")}</span>
                     <span className="block text-slate-500">{link.url}</span>
                   </li>
                 ))}
@@ -49,7 +52,7 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
           ) : null}
 
           {data.skills.length ? (
-            <Section title="Skills" accent={accent}>
+            <Section title={tx("Skills")} accent={accent}>
               <ul className="space-y-1.5 text-[18px]">
                 {data.skills.map((skill) => (
                   <li key={skill} className="flex gap-2">
@@ -62,7 +65,7 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
           ) : null}
 
           {data.education.length ? (
-            <Section title="Education" accent={accent}>
+            <Section title={tx("Education")} accent={accent}>
               <div className="space-y-4 text-[18px]">
                 {data.education.map((entry) => (
                   <div key={entry.id}>
@@ -79,13 +82,13 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
 
         <main className="space-y-7">
           {data.summary ? (
-            <Section title="Profile" accent={accent}>
+            <Section title={tx("Profile")} accent={accent}>
               <p className="whitespace-pre-line text-slate-600">{data.summary}</p>
             </Section>
           ) : null}
 
           {data.experience.length ? (
-            <Section title="Experience" accent={accent}>
+            <Section title={tx("Experience")} accent={accent}>
               <div className="space-y-5">
                 {data.experience.map((entry) => (
                   <div key={entry.id}>
@@ -106,7 +109,7 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
           ) : null}
 
           {data.projects.length ? (
-            <Section title="Projects" accent={accent}>
+            <Section title={tx("Projects")} accent={accent}>
               <div className="space-y-4">
                 {data.projects.map((project) => (
                   <div key={project.id}>

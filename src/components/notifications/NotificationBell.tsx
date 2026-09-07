@@ -1,7 +1,9 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Bell, CheckCheck, Trash2 } from "lucide-react";
 import type { NotificationResponse } from "@/contracts";
 import { useLiveUpdates } from "@/hooks/useLiveUpdates";
@@ -13,6 +15,7 @@ import {
   useMarkNotificationReadMutation,
 } from "@/services/notificationsApi";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 /**
  * The header bell and its dropdown.
@@ -29,8 +32,35 @@ export function NotificationBell({
   pathPrefixes: string[];
   className?: string;
 }) {
+  const tx = useWorkspaceTranslation();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+
+    const positionPanel = () => {
+      const panel = panelRef.current;
+      const anchor = containerRef.current;
+      if (!panel || !anchor) return;
+
+      if (window.innerWidth >= 640) {
+        panel.style.left = "";
+        panel.style.right = "";
+        return;
+      }
+
+      const bounds = anchor.getBoundingClientRect();
+      const left = Math.max(12, Math.min(bounds.right - panel.offsetWidth, document.documentElement.clientWidth - panel.offsetWidth - 12));
+      panel.style.left = `${left - bounds.left}px`;
+      panel.style.right = "auto";
+    };
+
+    positionPanel();
+    window.addEventListener("resize", positionPanel);
+    return () => window.removeEventListener("resize", positionPanel);
+  }, [open]);
 
   useLiveUpdates(true);
 
@@ -67,7 +97,7 @@ export function NotificationBell({
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        aria-label={count > 0 ? `Notifications, ${count} unread` : "Notifications"}
+        aria-label={count > 0 ? tx("Notifications, {0} unread", { 0: count }) : tx("Notifications")}
         aria-expanded={open}
         className={cn(
           "relative flex size-10 items-center justify-center rounded-full bg-ws-card text-ws-muted transition-colors hover:bg-ws-card-hover hover:text-ws-fg",
@@ -76,18 +106,17 @@ export function NotificationBell({
       >
         <Bell aria-hidden="true" className="size-4.5" />
         {count > 0 ? (
-          <span className="absolute -top-0.5 -right-0.5 flex min-w-4.5 items-center justify-center rounded-full bg-primary px-1 text-[18px] font-semibold text-primary-foreground">
+          <span className="ws-notification-count absolute -right-0.5 -top-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
             {count > 99 ? "99+" : count}
           </span>
         ) : null}
       </button>
 
       {open ? (
-        <div className="absolute right-0 z-50 mt-2 w-88 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl bg-ws-panel shadow-[var(--shadow-dropdown)]">
-          <div className="flex items-center justify-between px-4 py-3">
+        <div ref={panelRef} className="absolute right-0 z-50 mt-2 w-88 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl bg-ws-panel shadow-[var(--shadow-dropdown)]">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
             <span className="text-sm font-semibold text-ws-fg">
-              Notifications
-            </span>
+              {tx("Notifications")}</span>
             {count > 0 ? (
               <button
                 type="button"
@@ -95,25 +124,20 @@ export function NotificationBell({
                 disabled={markAllState.isLoading}
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-ws-muted transition-colors hover:text-ws-fg disabled:opacity-50"
               >
-                <CheckCheck aria-hidden="true" className="size-3.5" /> Mark all
-                read
-              </button>
+                <CheckCheck aria-hidden="true" className="size-3.5" /> {tx(" Mark all read")}</button>
             ) : null}
           </div>
 
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-[min(24rem,60dvh)] overflow-y-auto overscroll-contain sm:max-h-96">
             {list.isLoading ? (
               <p className="px-4 py-8 text-center text-sm text-ws-faint">
-                Loading…
-              </p>
+                {tx("Loading…")}</p>
             ) : list.isError ? (
               <p className="px-4 py-8 text-center text-sm text-ws-faint">
-                Unable to load notifications.
-              </p>
+                {tx("Unable to load notifications.")}</p>
             ) : notifications.length === 0 ? (
               <p className="px-4 py-8 text-center text-sm text-ws-faint">
-                Nothing yet.
-              </p>
+                {tx("Nothing yet.")}</p>
             ) : (
               <ul>
                 {notifications.map((notification) => (
@@ -142,6 +166,8 @@ function NotificationRow({
   pathPrefixes: string[];
   onNavigate: () => void;
 }) {
+  const tx = useWorkspaceTranslation();
+  const { locale } = useLocale();
   const [markRead] = useMarkNotificationReadMutation();
   const [remove, removeState] = useDeleteNotificationMutation();
 
@@ -162,7 +188,7 @@ function NotificationRow({
         ) : null}
         <span
           className={cn(
-            "truncate text-sm",
+            "min-w-0 text-sm max-sm:whitespace-normal max-sm:leading-6 max-sm:[overflow-wrap:anywhere] sm:truncate",
             notification.read
               ? "text-ws-muted"
               : "font-semibold text-ws-fg",
@@ -172,12 +198,12 @@ function NotificationRow({
         </span>
       </span>
       {notification.body ? (
-        <span className="mt-1 block text-xs leading-5 text-ws-muted">
+        <span className="mt-1 block text-xs leading-5 text-ws-muted max-sm:leading-6 max-sm:[overflow-wrap:anywhere]">
           {notification.body}
         </span>
       ) : null}
-      <span className="mt-1 block text-[18px] text-ws-faint">
-        {formatRelative(notification.createdAt)}
+      <span className="mt-1 block text-xs text-ws-faint sm:text-[18px]">
+        {formatRelative(notification.createdAt, locale)}
       </span>
     </>
   );
@@ -211,8 +237,8 @@ function NotificationRow({
         type="button"
         onClick={() => void remove(notification.id)}
         disabled={removeState.isLoading}
-        aria-label={`Dismiss: ${notification.title}`}
-        className="mt-3 flex size-7 shrink-0 items-center justify-center rounded-lg text-ws-faint opacity-0 transition hover:text-ws-fg focus-visible:opacity-100 group-hover/row:opacity-100 disabled:opacity-30"
+        aria-label={tx("Dismiss: {0}", { 0: notification.title })}
+        className="mt-3 flex size-7 shrink-0 items-center justify-center rounded-lg text-ws-faint opacity-0 transition hover:text-ws-fg focus-visible:opacity-100 group-hover/row:opacity-100 disabled:opacity-30 max-sm:size-11 max-sm:opacity-100"
       >
         <Trash2 aria-hidden="true" className="size-3.5" />
       </button>
@@ -220,23 +246,23 @@ function NotificationRow({
   );
 }
 
-function formatRelative(value: string) {
+function formatRelative(value: string, locale: "en" | "km") {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
 
   const seconds = Math.round((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return "just now";
+  if (seconds < 60) return locale === "km" ? "មុននេះបន្តិច" : "just now";
 
   const minutes = Math.round(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return locale === "km" ? `${minutes} នាទីមុន` : `${minutes}m ago`;
 
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return locale === "km" ? `${hours} ម៉ោងមុន` : `${hours}h ago`;
 
   const days = Math.round(hours / 24);
-  if (days < 7) return `${days}d ago`;
+  if (days < 7) return locale === "km" ? `${days} ថ្ងៃមុន` : `${days}d ago`;
 
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(locale === "km" ? "km-KH" : "en", {
     month: "short",
     day: "numeric",
   }).format(date);

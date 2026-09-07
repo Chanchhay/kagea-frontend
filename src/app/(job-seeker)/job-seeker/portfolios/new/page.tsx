@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -10,6 +12,7 @@ import { PageIntro } from "@/components/shared/ApiCards";
 import { useCreatePortfolioMutation } from "@/services/jobSeekerApi";
 
 export default function NewPortfolioPage() {
+  const tx = useWorkspaceTranslation();
   const router = useRouter();
   const [createPortfolio, state] = useCreatePortfolioMutation();
   const syncProjects = usePortfolioProjectSync();
@@ -17,13 +20,12 @@ export default function NewPortfolioPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <PageIntro title="Create portfolio" description="Pick a template, add your projects, and watch the page build itself." />
+      <PageIntro title={tx("Create portfolio")} description={tx("Pick a template, add your projects, and watch the page build itself.")} />
       <button onClick={() => router.back()} className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-ws-muted hover:text-ws-fg">
-        <ArrowLeft className="size-4" /> Back to portfolios
-      </button>
+        <ArrowLeft className="size-4" /> {tx(" Back to portfolios")}</button>
 
       <PortfolioBuilder
-        submitLabel="Create portfolio"
+        submitLabel={tx("Create portfolio")}
         isSubmitting={state.isLoading || isSavingProjects}
         onCancel={() => router.back()}
         onSubmit={async ({ title, summary, publicUrl, portfolioData, projects, removedProjectIds }) => {
@@ -34,10 +36,10 @@ export default function NewPortfolioPage() {
               setIsSavingProjects(true);
               await syncProjects(portfolio.id, { projects, removedProjectIds });
             }
-            toast.success("Portfolio created");
+            toast.success(tx("Portfolio created"));
             router.push(`/job-seeker/portfolios/${portfolio.id}`);
           } catch {
-            toast.error("Could not create portfolio.");
+            toast.error(tx("Could not create portfolio."));
           } finally {
             setIsSavingProjects(false);
           }

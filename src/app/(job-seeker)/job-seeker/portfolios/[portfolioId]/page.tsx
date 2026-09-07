@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -23,6 +25,7 @@ import {
 } from "@/services/jobSeekerApi";
 
 export default function PortfolioDetailPage() {
+  const tx = useWorkspaceTranslation();
   const { portfolioId } = useParams<{ portfolioId: string }>();
   const router = useRouter();
   const query = useGetPortfolioQuery(portfolioId);
@@ -34,7 +37,7 @@ export default function PortfolioDetailPage() {
   const [deletePortfolio, deleteState] = useDeletePortfolioMutation();
 
   if (query.isLoading) return <LoadingState rows={5} />;
-  if (query.isError || !query.data) return <ErrorState message="Unable to load this portfolio." />;
+  if (query.isError || !query.data) return <ErrorState message={tx("Unable to load this portfolio.")} />;
   const portfolio = query.data;
   const projects = [...(portfolio.projects ?? [])].sort((a, b) => a.displayOrder - b.displayOrder);
   const theme = normalizePortfolioTheme(portfolio.portfolioData);
@@ -44,32 +47,31 @@ export default function PortfolioDetailPage() {
     if (!window.confirm(`Delete “${portfolio.title}” and all its projects?`)) return;
     try {
       await deletePortfolio(portfolioId).unwrap();
-      toast.success("Portfolio deleted");
+      toast.success(tx("Portfolio deleted"));
       router.replace("/job-seeker/portfolios");
-    } catch { toast.error("Could not delete portfolio."); }
+    } catch { toast.error(tx("Could not delete portfolio.")); }
   }
 
   async function setVisibility(visibility: PublicationVisibility) {
     try {
       await updatePublication({ portfolioId, body: { visibility } }).unwrap();
-      toast.success(visibility === "PUBLIC" ? "Portfolio is now visible to recruiters" : "Portfolio is private again");
-    } catch { toast.error("Could not change visibility."); }
+      toast.success(visibility === "PUBLIC" ? tx("Portfolio is now visible to recruiters") : tx("Portfolio is private again"));
+    } catch { toast.error(tx("Could not change visibility.")); }
   }
 
   if (isEditing) {
     return (
       <div className="mx-auto max-w-7xl">
-        <PageIntro title={portfolio.title} description="Edit your portfolio and watch the page update as you type." />
+        <PageIntro title={portfolio.title} description={tx("Edit your portfolio and watch the page update as you type.")} />
         <button onClick={() => setIsEditing(false)} className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-ws-muted hover:text-ws-fg">
-          <ArrowLeft className="size-4" /> Back to portfolio
-        </button>
+          <ArrowLeft className="size-4" /> {tx(" Back to portfolio")}</button>
         <PortfolioBuilder
           initialTitle={portfolio.title}
           initialSummary={portfolio.summary ?? ""}
           initialPublicUrl={portfolio.publicUrl ?? ""}
           initialTheme={portfolio.portfolioData}
           initialProjects={projects}
-          submitLabel="Save changes"
+          submitLabel={tx("Save changes")}
           isSubmitting={updateState.isLoading || isSavingProjects}
           onCancel={() => setIsEditing(false)}
           onSubmit={async ({ title, summary, publicUrl, portfolioData, projects: drafts, removedProjectIds }) => {
@@ -77,10 +79,10 @@ export default function PortfolioDetailPage() {
               await updatePortfolio({ portfolioId, body: { title, summary, publicUrl, portfolioData } }).unwrap();
               setIsSavingProjects(true);
               await syncProjects(portfolioId, { projects: drafts, removedProjectIds });
-              toast.success("Portfolio updated");
+              toast.success(tx("Portfolio updated"));
               setIsEditing(false);
             } catch {
-              toast.error("Could not save your changes.");
+              toast.error(tx("Could not save your changes."));
             } finally {
               setIsSavingProjects(false);
             }
@@ -92,10 +94,9 @@ export default function PortfolioDetailPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <PageIntro title={portfolio.title} description={portfolio.summary || "Review and manage this portfolio."} />
+      <PageIntro title={portfolio.title} description={portfolio.summary || tx("Review and manage this portfolio.")} />
       <Link href="/job-seeker/portfolios" className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-ws-muted hover:text-ws-fg">
-        <ArrowLeft className="size-4" /> All portfolios
-      </Link>
+        <ArrowLeft className="size-4" /> {tx(" All portfolios")}</Link>
 
       <div className="grid gap-5 lg:grid-cols-[1.45fr_0.75fr]">
         <section className="overflow-hidden rounded-[24px] bg-ws-card">
@@ -111,30 +112,28 @@ export default function PortfolioDetailPage() {
           <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div className="min-w-0">
               <h2 className="truncate text-lg font-semibold text-ws-fg">{portfolio.title}</h2>
-              <p className="mt-1 text-sm text-ws-muted">{getPortfolioTemplate(theme.templateId).name} template · {projects.length} {projects.length === 1 ? "project" : "projects"}</p>
+              <p className="mt-1 text-sm text-ws-muted">{getPortfolioTemplate(theme.templateId).name} {tx(" template · ")}{projects.length} {projects.length === 1 ? tx("project") : tx("projects")}</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="secondary" onClick={() => setIsEditing(true)} className="rounded-xl"><Pencil /> Edit</Button>
-              <Button render={<Link href={`/job-seeker/portfolios/${portfolio.id}/view`} />} className="rounded-xl"><Eye /> Full view</Button>
+              <Button variant="secondary" onClick={() => setIsEditing(true)} className="rounded-xl"><Pencil /> {tx(" Edit")}</Button>
+              <Button render={<Link href={`/job-seeker/portfolios/${portfolio.id}/view`} />} className="rounded-xl"><Eye /> {tx(" Full view")}</Button>
             </div>
           </div>
         </section>
 
         <aside className="space-y-5">
           <section className="rounded-[22px] bg-ws-card p-5">
-            <h2 className="text-sm font-semibold text-ws-fg">Visibility</h2>
+            <h2 className="text-sm font-semibold text-ws-fg">{tx("Visibility")}</h2>
             <p className="mt-2 text-xs leading-5 text-ws-muted">
-              {isPublic
-                ? "Recruiters browsing talent can see this portfolio on your public profile."
-                : "Only you can see this portfolio. Make it public to show it to recruiters."}
+              {isPublic ? tx("Recruiters browsing talent can see this portfolio on your public profile.") : tx("Only you can see this portfolio. Make it public to show it to recruiters.")}
             </p>
             <div className="mt-4 flex items-center gap-3">
               <span className={`flex size-9 items-center justify-center rounded-xl ${isPublic ? "bg-chip-soft text-chip-soft-fg" : "bg-ws-panel text-ws-muted"}`}>
                 {isPublic ? <Globe2 className="size-4" /> : <Lock className="size-4" />}
               </span>
               <div>
-                <p className="text-xs text-ws-muted">Current status</p>
-                <p className="mt-0.5 text-sm font-medium capitalize text-ws-fg">{portfolio.visibility?.toLowerCase() ?? "private"}</p>
+                <p className="text-xs text-ws-muted">{tx("Current status")}</p>
+                <p className="mt-0.5 text-sm font-medium capitalize text-ws-fg">{portfolio.visibility?.toLowerCase() ?? tx("private")}</p>
               </div>
             </div>
             <Button
@@ -144,20 +143,20 @@ export default function PortfolioDetailPage() {
               className="mt-5 w-full rounded-xl"
             >
               {publicationState.isLoading ? <Loader2 className="animate-spin" /> : isPublic ? <Lock /> : <Globe2 />}
-              {isPublic ? "Make private" : "Make public"}
+              {isPublic ? tx("Make private") : tx("Make public")}
             </Button>
           </section>
 
           <section className="rounded-[22px] bg-ws-card p-5">
-            <h2 className="text-sm font-semibold text-ws-fg">Details</h2>
+            <h2 className="text-sm font-semibold text-ws-fg">{tx("Details")}</h2>
             <div className="mt-5 space-y-4">
-              <InfoRow icon={Layers3} label="Projects" value={`${projects.length}`} />
-              <InfoRow icon={CalendarDays} label="Last updated" value={formatDate(portfolio.updatedAt)} />
+              <InfoRow icon={Layers3} label={tx("Projects")} value={`${projects.length}`} />
+              <InfoRow icon={CalendarDays} label={tx("Last updated")} value={formatDate(portfolio.updatedAt)} />
               {portfolio.publicUrl ? (
                 <a href={portfolio.publicUrl} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-primary">
                   <span className="flex size-9 items-center justify-center rounded-xl bg-chip-soft text-chip-soft-fg"><ExternalLink className="size-4" /></span>
                   <div className="min-w-0">
-                    <p className="text-xs text-ws-muted">Website</p>
+                    <p className="text-xs text-ws-muted">{tx("Website")}</p>
                     <p className="mt-0.5 truncate text-sm font-medium">{portfolio.publicUrl}</p>
                   </div>
                 </a>
@@ -166,11 +165,10 @@ export default function PortfolioDetailPage() {
           </section>
 
           <section className="rounded-[22px] bg-ws-card p-5">
-            <h2 className="text-sm font-semibold text-ws-fg">Portfolio actions</h2>
-            <p className="mt-2 text-xs leading-5 text-ws-muted">Deleting removes this portfolio and every project inside it.</p>
+            <h2 className="text-sm font-semibold text-ws-fg">{tx("Portfolio actions")}</h2>
+            <p className="mt-2 text-xs leading-5 text-ws-muted">{tx("Deleting removes this portfolio and every project inside it.")}</p>
             <Button variant="destructive" onClick={removePortfolio} disabled={deleteState.isLoading} className="mt-5 w-full rounded-xl">
-              {deleteState.isLoading ? <Loader2 className="animate-spin" /> : <Trash2 />} Delete portfolio
-            </Button>
+              {deleteState.isLoading ? <Loader2 className="animate-spin" /> : <Trash2 />} {tx(" Delete portfolio")}</Button>
           </section>
         </aside>
       </div>
@@ -179,11 +177,12 @@ export default function PortfolioDetailPage() {
 }
 
 function InfoRow({ icon: Icon, label, value }: { icon: typeof Layers3; label: string; value: string }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div className="flex items-center gap-3">
       <span className="flex size-9 items-center justify-center rounded-xl bg-ws-panel text-ws-muted"><Icon className="size-4" /></span>
       <div>
-        <p className="text-xs text-ws-muted">{label}</p>
+        <p className="text-xs text-ws-muted">{tx(label)}</p>
         <p className="mt-0.5 text-sm font-medium text-ws-fg">{value}</p>
       </div>
     </div>

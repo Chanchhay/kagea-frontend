@@ -1,3 +1,5 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import Image from "next/image";
 import type { CSSProperties, ReactNode } from "react";
 import { resolveFileUrl } from "@/lib/file-url";
@@ -27,12 +29,13 @@ export function Sheet({ children, style, className = "" }: { children: ReactNode
 }
 
 export function Photo({ url, name, size, className = "", style }: { url: string; name: string; size: number; className?: string; style?: CSSProperties }) {
+  const tx = useWorkspaceTranslation();
   const src = resolveFileUrl(url);
   if (src) {
     return (
       <Image
         src={src}
-        alt={`${name} profile`}
+        alt={tx("{0} profile", { 0: name })}
         width={size}
         height={size}
         unoptimized

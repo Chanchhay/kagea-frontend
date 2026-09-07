@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useState } from "react";
 import { Download, FileText, Loader2, RefreshCw } from "lucide-react";
@@ -17,6 +19,7 @@ import { useGenerateResumePdfMutation } from "@/services/jobSeekerApi";
  * the editor, which is why the card says when it was last generated.
  */
 export function ResumeFileCard({ resume }: { resume: ResumeResponse }) {
+  const tx = useWorkspaceTranslation();
   const [generate, { isLoading }] = useGenerateResumePdfMutation();
   const [downloading, setDownloading] = useState(false);
 
@@ -25,9 +28,9 @@ export function ResumeFileCard({ resume }: { resume: ResumeResponse }) {
   async function runGenerate() {
     try {
       await generate(resume.id).unwrap();
-      toast.success("PDF generated.");
+      toast.success(tx("PDF generated."));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Could not generate the PDF."));
+      toast.error(getApiErrorMessage(error, tx("Could not generate the PDF.")));
     }
   }
 
@@ -54,7 +57,7 @@ export function ResumeFileCard({ resume }: { resume: ResumeResponse }) {
       link.remove();
       URL.revokeObjectURL(url);
     } catch {
-      toast.error("Could not download the file.");
+      toast.error(tx("Could not download the file."));
     } finally {
       setDownloading(false);
     }
@@ -63,18 +66,14 @@ export function ResumeFileCard({ resume }: { resume: ResumeResponse }) {
   return (
     <section className="rounded-[22px] bg-ws-card p-5">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-ws-fg">Document</h2>
+        <h2 className="text-sm font-semibold text-ws-fg">{tx("Document")}</h2>
         <span className="rounded-full bg-chip-quiet px-2.5 py-1 text-[18px] font-semibold uppercase tracking-wide text-chip-quiet-fg">
-          {uploaded ? "uploaded" : "generated"}
+          {uploaded ? tx("uploaded") : tx("generated")}
         </span>
       </div>
 
       <p className="mt-3 text-sm text-ws-muted">
-        {uploaded
-          ? "You uploaded this file. It is stored exactly as supplied and is never edited or parsed."
-          : resume.hasFile
-            ? `Last generated ${formatWhen(resume.generatedAt)}. Regenerate after editing to refresh the PDF.`
-            : "No PDF yet. Generate one so recruiters can download your resume."}
+        {uploaded ? tx("You uploaded this file. It is stored exactly as supplied and is never edited or parsed.") : resume.hasFile ? `Last generated ${formatWhen(resume.generatedAt)}. Regenerate after editing to refresh the PDF.` : tx("No PDF yet. Generate one so recruiters can download your resume.")}
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -87,7 +86,7 @@ export function ResumeFileCard({ resume }: { resume: ResumeResponse }) {
             ) : (
               <FileText aria-hidden="true" />
             )}
-            {resume.hasFile ? "Regenerate PDF" : "Generate PDF"}
+            {resume.hasFile ? tx("Regenerate PDF") : tx("Generate PDF")}
           </Button>
         )}
 
@@ -98,8 +97,7 @@ export function ResumeFileCard({ resume }: { resume: ResumeResponse }) {
             ) : (
               <Download aria-hidden="true" />
             )}
-            Download
-          </Button>
+            {tx("Download")}</Button>
         ) : null}
       </div>
     </section>
