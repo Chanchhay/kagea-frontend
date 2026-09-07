@@ -12,7 +12,7 @@ import {
 } from "@/components/job-seeker/useVapiInterview";
 
 type VoiceInterviewPanelProps = {
-  sessionId: number;
+  sessionId: string;
   /** Unanswered questions in display order. */
   questions: AiInterviewQuestionResponse[];
   candidateName: string;

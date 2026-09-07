@@ -15,10 +15,11 @@ import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { formatMoney } from "@/lib/money";
 import { useGetMyInvoiceQuery } from "@/services/financeApi";
+import { isUuid } from "@/lib/uuid";
 
 export default function InvoiceDetailPage() {
   const { invoiceId } = useParams<{ invoiceId: string }>();
-  const query = useGetMyInvoiceQuery(Number(invoiceId));
+  const query = useGetMyInvoiceQuery(invoiceId, { skip: !isUuid(invoiceId) });
 
   if (query.isLoading) return <LoadingState rows={6} />;
   if (query.isError || !query.data) {

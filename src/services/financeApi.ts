@@ -14,7 +14,7 @@ export const financeApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     reportHire: builder.mutation<
       HiringRecordResponse,
-      { applicationId: number; body: ReportHireRequest }
+      { applicationId: string; body: ReportHireRequest }
     >({
       query: ({ applicationId, body }) => ({
         url: `/recruiter/forwarded-applications/${applicationId}/hire`,
@@ -49,7 +49,7 @@ export const financeApi = baseApi.injectEndpoints({
         normalizePage(unwrapApiResponse(response)),
       providesTags: ["Invoices"],
     }),
-    getMyInvoice: builder.query<InvoiceResponse, number>({
+    getMyInvoice: builder.query<InvoiceResponse, string>({
       query: (invoiceId) => `/recruiter/invoices/${invoiceId}`,
       transformResponse: (response: ApiResponseInvoice) =>
         unwrapApiResponse(response),

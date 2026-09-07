@@ -16,7 +16,7 @@ export default function RecruiterOverviewPage() {
   const companyQuery = useGetRecruiterCompanyQuery();
   const jobsQuery = useGetRecruiterJobsQuery();
   const forwardedQuery = useGetForwardedApplicationsQuery();
-  const documentsQuery = useGetCompanyDocumentsQuery(companyQuery.data?.id ?? 0, {
+  const documentsQuery = useGetCompanyDocumentsQuery(companyQuery.data?.id ?? "", {
     skip: !companyQuery.data,
   });
 

@@ -18,7 +18,7 @@ import {
 
 export default function CompanyDocumentsPage() {
   const company = useGetRecruiterCompanyQuery();
-  const documents = useGetCompanyDocumentsQuery(company.data?.id ?? 0, {
+  const documents = useGetCompanyDocumentsQuery(company.data?.id ?? "", {
     skip: !company.data,
   });
   const [deleteDocument, deletion] = useDeleteCompanyDocumentMutation();
@@ -34,7 +34,7 @@ export default function CompanyDocumentsPage() {
   const companyId = company.data.id;
   const companyDocuments = documents.data ?? [];
 
-  const onDelete = async (documentId: number) => {
+  const onDelete = async (documentId: string) => {
     try {
       await deleteDocument({ companyId, documentId }).unwrap();
       toast.success("Document removed.");

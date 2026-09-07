@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useAppDispatch } from "@/store/hooks";
 import { baseApi } from "@/services/baseApi";
+import { isUuid } from "@/lib/uuid";
 
 /**
  * The app's single live connection: one Server-Sent Events stream, feeding both
@@ -35,7 +36,7 @@ export function useLiveUpdates(enabled: boolean) {
      * Without an id every conversation is refreshed, which is what a reconnect
      * needs: it cannot know which threads moved while the stream was down.
      */
-    const refreshMessages = (conversationId?: number) => {
+    const refreshMessages = (conversationId?: string) => {
       dispatch(
         baseApi.util.invalidateTags([
           "Conversations",
@@ -89,13 +90,13 @@ export function useLiveUpdates(enabled: boolean) {
  * correct but heavier — better than throwing inside an event listener and
  * killing the rest of the stream.
  */
-function conversationIdOf(event: MessageEvent): number | undefined {
+function conversationIdOf(event: MessageEvent): string | undefined {
   try {
     const payload: unknown = JSON.parse(event.data as string);
 
     if (payload && typeof payload === "object" && "conversationId" in payload) {
-      const id = Number((payload as { conversationId: unknown }).conversationId);
-      return Number.isFinite(id) ? id : undefined;
+      const id = (payload as { conversationId: unknown }).conversationId;
+      return isUuid(typeof id === "string" ? id : null) ? (id as string) : undefined;
     }
   } catch {
     // Not JSON, or not the shape we expected.

@@ -38,7 +38,7 @@ export const guestInterviewApi = baseApi.injectEndpoints({
         unwrapApiResponse(response),
       providesTags: ["GuestInterview"],
     }),
-    startGuestInterview: builder.mutation<GuestInterviewStartResponse, number>({
+    startGuestInterview: builder.mutation<GuestInterviewStartResponse, string>({
       query: (jobId) => ({
         url: `/public/guest-interviews/jobs/${jobId}`,
         method: "POST",
@@ -48,7 +48,7 @@ export const guestInterviewApi = baseApi.injectEndpoints({
         unwrapApiResponse(response),
       invalidatesTags: ["GuestInterview"],
     }),
-    getGuestInterview: builder.query<AiInterviewSessionResponse, number>({
+    getGuestInterview: builder.query<AiInterviewSessionResponse, string>({
       query: (sessionId) => ({
         url: `/public/guest-interviews/${sessionId}`,
         headers: guestHeaders(),
@@ -57,7 +57,7 @@ export const guestInterviewApi = baseApi.injectEndpoints({
         unwrapApiResponse(response),
       providesTags: (_result, _error, id) => [{ type: "GuestInterview", id }],
     }),
-    beginGuestInterview: builder.mutation<AiInterviewSessionResponse, number>({
+    beginGuestInterview: builder.mutation<AiInterviewSessionResponse, string>({
       query: (sessionId) => ({
         url: `/public/guest-interviews/${sessionId}/start`,
         method: "POST",
@@ -69,7 +69,7 @@ export const guestInterviewApi = baseApi.injectEndpoints({
     }),
     answerGuestInterview: builder.mutation<
       AiInterviewSessionResponse,
-      { sessionId: number; questionId: number; answerText: string }
+      { sessionId: string; questionId: string; answerText: string }
     >({
       query: ({ sessionId, questionId, answerText }) => ({
         url: `/public/guest-interviews/${sessionId}/questions/${questionId}/answer`,
@@ -86,7 +86,7 @@ export const guestInterviewApi = baseApi.injectEndpoints({
     /** Attaches the voice call speaking this interview. */
     bindGuestVoiceCall: builder.mutation<
       AiInterviewSessionResponse,
-      { sessionId: number; callId: string }
+      { sessionId: string; callId: string }
     >({
       query: ({ sessionId, callId }) => ({
         url: `/public/guest-interviews/${sessionId}/vapi-call`,
@@ -99,7 +99,7 @@ export const guestInterviewApi = baseApi.injectEndpoints({
     }),
     submitGuestVoiceTranscript: builder.mutation<
       AiInterviewSessionResponse,
-      { sessionId: number; turns: { role: string; text: string }[] }
+      { sessionId: string; turns: { role: string; text: string }[] }
     >({
       query: ({ sessionId, turns }) => ({
         url: `/public/guest-interviews/${sessionId}/transcript`,
@@ -113,7 +113,7 @@ export const guestInterviewApi = baseApi.injectEndpoints({
         { type: "GuestInterview", id: sessionId },
       ],
     }),
-    completeGuestInterview: builder.mutation<AiInterviewResultResponse, number>({
+    completeGuestInterview: builder.mutation<AiInterviewResultResponse, string>({
       query: (sessionId) => ({
         url: `/public/guest-interviews/${sessionId}/complete`,
         method: "POST",

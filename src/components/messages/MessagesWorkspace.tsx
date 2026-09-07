@@ -28,7 +28,7 @@ export function MessagesWorkspace({
   conversationId,
 }: {
   basePath: string;
-  conversationId?: number;
+  conversationId?: string;
 }) {
   const router = useRouter();
   const conversations = useGetConversationsQuery({ size: 30 });
@@ -256,7 +256,7 @@ function Bubble({
   conversationId,
 }: {
   message: MessageResponse;
-  conversationId: number;
+  conversationId: string;
 }) {
   const [remove, removeState] = useDeleteMessageMutation();
   const deleted = message.status === "DELETED";

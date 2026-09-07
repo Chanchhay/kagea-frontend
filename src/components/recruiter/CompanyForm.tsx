@@ -90,7 +90,7 @@ export function CompanyForm({
     const body = {
       name: values.name,
       industryId:
-        values.industryId === NO_INDUSTRY ? undefined : Number(values.industryId),
+        values.industryId === NO_INDUSTRY ? undefined : values.industryId,
       description: values.description || undefined,
       websiteUrl: values.websiteUrl || undefined,
       address: values.address || undefined,

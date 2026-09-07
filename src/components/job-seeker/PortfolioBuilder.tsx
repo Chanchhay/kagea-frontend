@@ -23,7 +23,7 @@ import type { PortfolioProjectResponse } from "@/contracts";
 /** A project being edited. `id` is set only once it exists on the server. */
 export type DraftProject = {
   key: string;
-  id?: number;
+  id?: string;
   title: string;
   description: string;
   projectUrl: string;
@@ -41,7 +41,7 @@ export type PortfolioBuilderSubmit = {
   /** In display order; entries without an `id` are new. */
   projects: DraftProject[];
   /** Ids of saved projects the user removed. */
-  removedProjectIds: number[];
+  removedProjectIds: string[];
 };
 
 type PortfolioBuilderProps = {
@@ -72,7 +72,7 @@ export function PortfolioBuilder({
   const [publicUrl, setPublicUrl] = useState(initialPublicUrl);
   const [theme, setTheme] = useState<PortfolioTheme>(() => normalizePortfolioTheme(initialTheme));
   const [projects, setProjects] = useState<DraftProject[]>(() => initialProjects.map(toDraft));
-  const [removedProjectIds, setRemovedProjectIds] = useState<number[]>([]);
+  const [removedProjectIds, setRemovedProjectIds] = useState<string[]>([]);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,7 +97,7 @@ export function PortfolioBuilder({
     setProjects((current) => current.map((project) => (project.key === key ? { ...project, ...patch } : project)));
 
   const removeProject = (project: DraftProject) => {
-    if (project.id) setRemovedProjectIds((current) => [...current, project.id as number]);
+    if (project.id) setRemovedProjectIds((current) => [...current, project.id!]);
     setProjects((current) => current.filter((item) => item.key !== project.key));
   };
 

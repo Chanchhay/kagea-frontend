@@ -19,7 +19,7 @@ export function ResumeDownloadButton({
   title,
 }: {
   slug: string;
-  resumeId: number;
+  resumeId: string;
   title: string;
 }) {
   const [downloading, setDownloading] = useState(false);

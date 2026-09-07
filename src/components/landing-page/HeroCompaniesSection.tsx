@@ -12,7 +12,7 @@ import { TypewriterText } from './shared/TypewriterText';
 import { ScaleReveal } from './shared/ScaleReveal';
 
 type CompanyCard = {
-  id: number;
+  id: string;
   name: string;
   category: string;
   location: string;
@@ -23,13 +23,16 @@ type CompanyCard = {
   jobCount: number;
 };
 
+// Deep, saturated grounds with a light mark on top. No blues: the palette
+// stays in the warm/green half of the wheel so nothing here reads as the
+// stock "corporate blue" the rest of the interface deliberately avoids.
 const companyColors = [
   { bg: 'bg-[#063b2a]', text: 'text-emerald-200' },
-  { bg: 'bg-[#12325b]', text: 'text-blue-100' },
+  { bg: 'bg-[#1d4023]', text: 'text-lime-100' },
   { bg: 'bg-[#69410b]', text: 'text-amber-100' },
   { bg: 'bg-[#4c1d54]', text: 'text-fuchsia-100' },
   { bg: 'bg-[#7f1d2d]', text: 'text-rose-100' },
-  { bg: 'bg-[#164e63]', text: 'text-cyan-100' },
+  { bg: 'bg-[#3f3a17]', text: 'text-yellow-100' },
 ] as const;
 
 function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
@@ -71,7 +74,7 @@ function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
 export default function HeroCompaniesSection() {
   const jobsQuery = useGetPublicJobsQuery({ size: 100, sort: 'publishedAt,desc' });
   const companies = useMemo<CompanyCard[]>(() => {
-    const byCompany = new Map<number, Omit<CompanyCard, 'featured' | 'bg' | 'text' | 'logoText'>>();
+    const byCompany = new Map<string, Omit<CompanyCard, 'featured' | 'bg' | 'text' | 'logoText'>>();
 
     for (const job of jobsQuery.data?.content ?? []) {
       // Confidential postings mask their employer, so they carry no companyId
