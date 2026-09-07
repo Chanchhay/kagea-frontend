@@ -46,6 +46,8 @@ export type ConversationResponse = {
   type: ConversationType;
   status: ConversationStatus;
   applicationId: string | null;
+  /** Actual job title, independent of the optional conversation title. */
+  jobTitle?: string | null;
   participants: ConversationParticipantResponse[];
   lastMessage: MessageResponse | null;
   unreadCount: number;

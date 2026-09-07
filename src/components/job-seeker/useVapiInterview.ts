@@ -223,8 +223,28 @@ export function useVapiInterview({
     vapiRef.current = vapi;
 
     const recordTurn = (role: ConversationTurn["role"], text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+
+      const previous = turnsRef.current.at(-1);
+      if (previous?.role === role) {
+        const nextText =
+          trimmed.startsWith(previous.text)
+            ? trimmed
+            : previous.text.endsWith(trimmed)
+              ? previous.text
+              : `${previous.text} ${trimmed}`;
+
+        turnsRef.current = [
+          ...turnsRef.current.slice(0, -1),
+          { ...previous, text: nextText },
+        ];
+        setTurns(turnsRef.current);
+        return;
+      }
+
       turnIdRef.current += 1;
-      const turn = { id: turnIdRef.current, role, text };
+      const turn = { id: turnIdRef.current, role, text: trimmed };
       turnsRef.current = [...turnsRef.current, turn];
       setTurns(turnsRef.current);
     };

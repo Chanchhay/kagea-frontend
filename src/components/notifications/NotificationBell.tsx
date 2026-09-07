@@ -202,7 +202,7 @@ function NotificationRow({
           {notification.body}
         </span>
       ) : null}
-      <span className="mt-1 block text-xs text-ws-faint sm:text-[18px]">
+      <span className="mt-1 block text-xs text-ws-faint">
         {formatRelative(notification.createdAt, locale)}
       </span>
     </>

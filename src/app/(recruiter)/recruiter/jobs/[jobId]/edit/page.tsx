@@ -3,7 +3,7 @@ import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 
 
 import { useParams } from "next/navigation";
-import { PageIntro, PlainCard } from "@/components/shared/ApiCards";
+import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { JobForm } from "@/components/recruiter/JobForm";
@@ -25,9 +25,7 @@ export default function EditRecruiterJobPage() {
         title={tx("Edit {0}", { 0: jobQuery.data.title })}
         description={tx("Changes apply immediately, including to published posts.")}
       />
-      <PlainCard>
-        <JobForm job={jobQuery.data} />
-      </PlainCard>
+      <JobForm job={jobQuery.data} />
     </>
   );
 }

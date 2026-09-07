@@ -46,7 +46,7 @@ export function TemplatePicker({
                 ) : null}
               </div>
               <p className="mt-2.5 text-sm font-semibold text-ws-fg">{tx(template.name)}</p>
-              <p className="mt-0.5 text-[18px] leading-4 text-ws-muted">{tx(template.description)}</p>
+              <p className="mt-0.5 text-sm leading-5 text-ws-muted">{tx(template.description)}</p>
             </button>
           );
         })}

@@ -1,15 +1,12 @@
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+
 export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Find Job",
   description: "Discover jobs, build your professional profile, and prepare for interviews",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  logo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/images/brand/logo-light.png`,
-  sameAs: [
-    "https://facebook.com/findjob",
-    "https://twitter.com/findjob",
-    "https://linkedin.com/company/findjob",
-  ],
+  url: siteUrl,
+  logo: `${siteUrl}/images/brand/logo-light.png`,
   address: {
     "@type": "PostalAddress",
     addressCountry: "KH",
@@ -19,6 +16,19 @@ export const organizationSchema = {
     "@type": "ContactPoint",
     contactType: "Customer Service",
     email: "support@findjob.com",
+  },
+};
+
+export const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Find Job",
+  url: siteUrl,
+  description: "Find jobs in Cambodia, build a professional profile, and practice AI-powered interviews.",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${siteUrl}/jobs?keyword={search_term_string}`,
+    "query-input": "required name=search_term_string",
   },
 };
 
@@ -65,7 +75,7 @@ export const jobPostingSchema = (job: {
         price: `${job.salary.min || 0}-${job.salary.max || 0}`,
       }
     : undefined,
-  url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/jobs/${job.id}`,
+  url: `${siteUrl}/jobs/${job.id}`,
 });
 
 export const faqSchema = (faqs: Array<{ question: string; answer: string }>) => ({
@@ -97,7 +107,7 @@ export const localBusinessSchema = {
   "@type": "LocalBusiness",
   name: "Find Job Cambodia",
   description: "Job search and recruitment platform for Cambodia",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: siteUrl,
   address: {
     "@type": "PostalAddress",
     addressCountry: "KH",

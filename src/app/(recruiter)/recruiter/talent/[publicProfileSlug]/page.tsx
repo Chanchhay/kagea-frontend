@@ -104,8 +104,6 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
   return (
     <section className="relative overflow-hidden rounded-[30px] border border-ws-line bg-ws-panel">
       <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-primary" />
-      <span aria-hidden="true" className="absolute -right-20 -top-28 size-72 rounded-full border-50 border-primary/4" />
-      <span aria-hidden="true" className="absolute -bottom-28 right-1/3 size-56 rounded-full bg-primary/5 blur-3xl" />
 
       <div className="relative px-6 pb-12 pt-7 sm:px-9 sm:pb-14 sm:pt-9">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -218,7 +216,7 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
           href={portfolio.publicUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mt-4 flex items-center justify-between gap-4 rounded-2xl border border-ws-line bg-ws-panel p-4 transition hover:border-primary/40 hover:bg-primary/5"
+          className="group mt-4 flex items-center justify-between gap-4 rounded-2xl border border-ws-line bg-ws-panel p-4 transition hover:border-ws-muted/40 hover:bg-ws-card-hover"
         >
           <div className="min-w-0">
             <p className="font-semibold text-heading">{tx("Open portfolio")}</p>
