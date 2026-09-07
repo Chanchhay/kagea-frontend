@@ -6,10 +6,11 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowUpRight, BriefcaseBusiness, CalendarDays, CheckCircle2, Clock3, FileSearch, Search, Send, XCircle } from "lucide-react";
 import type { JobApplicationStatus } from "@/contracts";
-import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { useGetApplicationsQuery } from "@/services/jobSeekerApi";
+
+const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ws-panel";
 
 type Filter = "ALL" | "ACTIVE" | "SUCCESS" | "CLOSED";
 
@@ -29,37 +30,103 @@ export default function ApplicationsPage() {
   }), [applications, filter, search]);
 
   if (query.isLoading) return <LoadingState rows={5} />;
-  if (query.isError) return <ErrorState message={tx("Unable to load applications.")} />;
+  if (query.isError) return <ErrorState message={tx("Unable to load applications.")} onRetry={() => void query.refetch()} />;
   const active = applications.filter((item) => !["HIRED", "REJECTED", "WITHDRAWN", "AI_INTERVIEW_FAILED"].includes(item.status)).length;
   const interviews = applications.filter((item) => item.status.includes("INTERVIEW")).length;
   const offers = applications.filter((item) => item.status === "HIRED").length;
 
-  return <div className="mx-auto w-full max-w-7xl max-md:min-w-0">
-    <PageIntro title={tx("My applications")} description={tx("Follow every opportunity from submission to final decision.")} />
-    <section className="overflow-hidden rounded-[28px] border border-ws-line bg-ws-panel shadow-[0_18px_60px_-42px_rgba(15,23,42,.45)]">
-      <div className="grid border-b border-ws-line sm:grid-cols-3 max-md:grid-cols-1">
+  return (
+    <div className="mx-auto w-full min-w-0 max-w-7xl space-y-6">
+      <header className="relative overflow-hidden rounded-3xl border border-primary/15 bg-ws-panel p-5 sm:p-8">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-24 size-80 rounded-full bg-primary/5" />
+        <div className="relative flex min-w-0 flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 items-start gap-4">
+            <span className="hidden size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary sm:flex"><Send aria-hidden="true" className="size-6" /></span>
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold tracking-tight text-ws-fg sm:text-3xl">{tx("My applications")}</h1>
+              <p className="mt-2 text-sm leading-relaxed text-ws-muted">{tx("Follow every opportunity from submission to final decision.")}</p>
+            </div>
+          </div>
+          <Link href="/job-seeker/jobs" className={`inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-brand-hover ${focusRing}`}>{tx("Browse jobs")}<ArrowUpRight aria-hidden="true" className="size-4 shrink-0" /></Link>
+        </div>
+      </header>
+
+      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         <Metric icon={Send} label={tx("Total applications")} value={applications.length} />
         <Metric icon={Clock3} label={tx("In progress")} value={active} accent />
         <Metric icon={interviews ? CalendarDays : CheckCircle2} label={tx("Interviews / hired")} value={`${interviews} / ${offers}`} />
       </div>
 
-      <div className="flex flex-col gap-5 border-b border-ws-line bg-linear-to-r from-primary/8 via-transparent to-transparent px-5 py-5 sm:px-7 lg:flex-row lg:items-center lg:justify-between">
-        <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">{tx("Application tracker")}</p><h2 className="mt-1 text-xl font-bold tracking-tight text-ws-fg">{tx("Your hiring journey")}</h2><p className="mt-1 text-sm text-ws-muted">{tx("Review progress and prepare for your next step.")}</p></div>
-        <label className="flex h-11 items-center gap-2 rounded-xl border border-ws-line bg-ws-panel px-3.5 text-ws-muted transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10"><Search className="size-4 max-md:shrink-0" /><span className="sr-only">{tx("Search applications")}</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={tx("Search by job title")} className="w-full bg-transparent text-sm text-ws-fg outline-none placeholder:text-ws-faint sm:w-64 max-md:min-w-0 max-md:w-full" /></label>
-      </div>
+      <section aria-label={tx("Application tracker")} className="min-w-0 space-y-5">
+        <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-ws-fg">{tx("Your hiring journey")}</h2>
+            <p className="mt-1 text-sm leading-relaxed text-ws-muted">{tx("Review progress and prepare for your next step.")}</p>
+          </div>
+          <label className="flex min-h-11 min-w-0 items-center gap-2 rounded-xl border border-ws-line bg-ws-panel px-3.5 text-ws-muted transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10">
+            <Search aria-hidden="true" className="size-4 shrink-0" /><span className="sr-only">{tx("Search applications")}</span>
+            <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={tx("Search by job title")} className="min-w-0 w-full bg-transparent py-3 text-sm text-ws-fg outline-none placeholder:text-ws-faint lg:w-64" />
+          </label>
+        </div>
+        <div role="group" aria-label={tx("Application tracker")} className="grid min-w-0 grid-cols-2 gap-1 rounded-2xl border border-ws-line bg-ws-panel p-1.5 sm:flex sm:w-fit sm:max-w-full sm:flex-wrap">
+          {(["ALL", "ACTIVE", "SUCCESS", "CLOSED"] as Filter[]).map((item) => (
+            <button key={item} type="button" aria-pressed={filter === item} onClick={() => setFilter(item)} className={`inline-flex min-h-10 min-w-0 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition ${focusRing} ${filter === item ? "bg-primary text-primary-foreground shadow-sm" : "text-ws-muted hover:bg-ws-card-hover hover:text-ws-fg"}`}>
+              <span className="min-w-0 [overflow-wrap:anywhere]">{tx(item.charAt(0) + item.slice(1).toLowerCase())}</span>
+              <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-xs tabular-nums ${filter === item ? "bg-primary-foreground/20" : "bg-ws-card"}`}>{filterCount(item, applications)}</span>
+            </button>
+          ))}
+        </div>
 
-      <div className="flex gap-1 overflow-x-auto border-b border-ws-line px-5 py-3 sm:px-7 max-md:grid max-md:grid-cols-2 max-md:overflow-x-visible max-md:px-3">{(["ALL", "ACTIVE", "SUCCESS", "CLOSED"] as Filter[]).map((item) => <button key={item} type="button" onClick={() => setFilter(item)} className={`shrink-0 rounded-xl px-4 py-2 text-xs font-semibold capitalize transition ${filter === item ? "bg-primary text-primary-foreground" : "text-ws-muted hover:bg-ws-card hover:text-ws-fg"}`}>{item.toLowerCase()} <span className="ml-1 opacity-70">{filterCount(item, applications)}</span></button>)}</div>
-
-      <div className="p-5 sm:p-7 max-md:p-3">
-        {filtered.length ? <div className="grid gap-4 lg:grid-cols-2 max-md:min-w-0 max-md:grid-cols-1">{filtered.map((application) => { const status = statusInfo(application.status); const progress = statusProgress(application.status); return <Link key={application.id} href={`/job-seeker/applications/${application.id}`} className="group relative overflow-hidden rounded-[22px] border border-ws-line bg-ws-panel p-5 max-md:min-w-0 max-md:p-4 transition duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_18px_45px_-30px_rgba(15,23,42,.45)]"><span aria-hidden="true" className={`absolute inset-x-0 top-0 h-1 ${status.accent}`} /><div className="flex items-start justify-between gap-3 max-md:flex-col"><span className="flex size-12 max-md:shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground"><BriefcaseBusiness className="size-5" /></span><span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide max-md:max-w-full max-md:whitespace-normal ${status.className}`}>{tx(status.label)}</span></div><h3 className="mt-5 truncate max-md:whitespace-normal max-md:[overflow-wrap:anywhere] text-lg font-bold tracking-tight text-ws-fg transition group-hover:text-primary">{application.jobTitle}</h3><div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-ws-muted"><span className="flex items-center gap-1.5 max-md:min-w-0 max-md:max-w-full max-md:items-start max-md:[overflow-wrap:anywhere]"><CalendarDays className="size-3.5 max-md:mt-1 max-md:shrink-0" /> {tx(" Applied ")}{formatDate(application.appliedAt || application.createdAt)}</span><span className="flex items-center gap-1.5 max-md:min-w-0 max-md:max-w-full max-md:items-start max-md:[overflow-wrap:anywhere]"><FileSearch className="size-3.5 max-md:mt-1 max-md:shrink-0" /> {application.resumeTitle || tx("Resume attached")}</span></div><div className="mt-5 border-t border-ws-line pt-4"><div className="flex items-center justify-between text-[11px] max-md:flex-wrap max-md:gap-2"><span className="font-semibold text-ws-muted">{tx("Application progress")}</span><span className="font-bold text-primary">{progress}%</span></div><div className="mt-2 grid grid-cols-4 gap-1.5">{[25, 50, 75, 100].map((step) => <span key={step} className={`h-1.5 rounded-full ${progress >= step ? "bg-primary" : "bg-ws-card"}`} />)}</div></div><span className="mt-5 flex items-center justify-end gap-1.5 text-xs font-semibold text-ws-muted transition group-hover:text-primary">{tx("View application ")}<ArrowUpRight className="size-4" /></span></Link>; })}</div> : <div className="rounded-[22px] border border-dashed border-ws-line bg-ws-card px-6 py-16 text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><XCircle className="size-7" /></span><h2 className="mt-4 font-semibold text-ws-fg">{tx("No applications found")}</h2><p className="mt-2 text-sm text-ws-muted">{tx("Try another filter or explore new opportunities.")}</p><Link href="/job-seeker/jobs" className="mt-5 inline-flex h-10 items-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground">{tx("Browse jobs")}</Link></div>}
-      </div>
-    </section>
-  </div>;
+        {filtered.length ? (
+          <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((application) => {
+              const status = statusInfo(application.status);
+              const appliedAt = application.appliedAt || application.createdAt;
+              return (
+                <article key={application.id} className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-primary/20 bg-ws-panel shadow-sm transition-shadow hover:shadow-md">
+                  <div className="flex min-h-16 flex-wrap items-center gap-2 border-b border-primary/15 bg-linear-to-r from-primary/15 to-primary/5 px-4 py-3 sm:px-5">
+                    <span className={`inline-flex max-w-full items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${status.className}`}><span aria-hidden="true" className={`size-1.5 shrink-0 rounded-full ${status.accent}`} /><span className="min-w-0 [overflow-wrap:anywhere]">{tx(status.label)}</span></span>
+                  </div>
+                  <div className="flex-1 p-4 sm:p-5">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-primary/10 text-primary"><BriefcaseBusiness aria-hidden="true" className="size-5" /></span>
+                      <h3 className="min-w-0 text-lg font-semibold leading-snug tracking-tight text-ws-fg [overflow-wrap:anywhere]"><Link href={`/job-seeker/applications/${application.id}`} className={`rounded-sm transition hover:text-primary ${focusRing}`}>{application.jobTitle}</Link></h3>
+                    </div>
+                    <div className="mt-5 space-y-3 text-xs text-ws-muted">
+                      <p className="flex items-start gap-2"><CalendarDays aria-hidden="true" className="size-4 shrink-0" /><span>{tx("Applied")} <time dateTime={appliedAt}>{formatDate(appliedAt)}</time></span></p>
+                      <p className="flex min-w-0 items-start gap-2"><FileSearch aria-hidden="true" className="size-4 shrink-0" /><span className="min-w-0 [overflow-wrap:anywhere]">{application.resumeTitle || tx("Resume attached")}</span></p>
+                    </div>
+                  </div>
+                  <div className="border-t border-primary/10 bg-primary/5 p-4">
+                    <Link href={`/job-seeker/applications/${application.id}`} className={`flex min-h-11 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-white px-3 py-2 text-center text-sm font-semibold text-primary shadow-sm transition hover:border-primary/50 hover:bg-primary/5 dark:bg-ws-panel ${focusRing}`}>
+                      {tx("View application")}<ArrowUpRight aria-hidden="true" className="size-4 shrink-0" />
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="rounded-3xl border border-dashed border-primary/25 bg-primary/5 px-5 py-16 text-center">
+            <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary"><XCircle aria-hidden="true" className="size-8" /></span>
+            <h2 className="mt-5 text-lg font-semibold text-ws-fg">{tx("No applications found")}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-ws-muted">{tx("Try another filter or explore new opportunities.")}</p>
+            {search || filter !== "ALL" ? <button type="button" onClick={() => { setSearch(""); setFilter("ALL"); }} className={`mt-5 rounded-xl border border-primary/20 bg-ws-panel px-5 py-3 text-sm font-semibold text-primary ${focusRing}`}>{tx("Clear filters")}</button> : <Link href="/job-seeker/jobs" className={`mt-5 inline-flex min-h-11 items-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-brand-hover ${focusRing}`}>{tx("Browse jobs")}</Link>}
+          </div>
+        )}
+      </section>
+    </div>
+  );
 }
 
 function Metric({ icon: Icon, label, value, accent = false }: { icon: typeof Send; label: string; value: string | number; accent?: boolean }) {
-  const tx = useWorkspaceTranslation(); return <div className="flex items-center gap-4 border-b border-ws-line p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 sm:p-6 max-md:border-r-0"><span className={`flex size-11 max-md:shrink-0 items-center justify-center rounded-xl ${accent ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"}`}><Icon className="size-5" /></span><div><p className="text-2xl font-bold text-ws-fg">{value}</p><p className="mt-0.5 text-xs text-ws-muted">{tx(label)}</p></div></div>; }
-function statusInfo(status: JobApplicationStatus) { if (["HIRED", "SHORTLISTED", "AI_INTERVIEW_PASSED"].includes(status)) return { label: status === "HIRED" ? "Hired" : status === "SHORTLISTED" ? "Shortlisted" : "Interview passed", className: "bg-chip-soft text-chip-soft-fg", accent: "bg-primary" }; if (["REJECTED", "WITHDRAWN", "AI_INTERVIEW_FAILED"].includes(status)) return { label: status.replaceAll("_", " ").toLowerCase(), className: "bg-chip-alert text-chip-alert-fg capitalize", accent: "bg-destructive" }; return { label: status.replaceAll("_", " ").toLowerCase(), className: "bg-chip-quiet text-chip-quiet-fg capitalize", accent: "bg-blue-400" }; }
-function statusProgress(status: JobApplicationStatus) { if (["REJECTED", "WITHDRAWN", "AI_INTERVIEW_FAILED"].includes(status)) return 100; if (status === "HIRED") return 100; if (["SHORTLISTED", "HUMAN_INTERVIEW_SCHEDULED"].includes(status)) return 75; if (["AI_INTERVIEW_PASSED", "MODERATOR_REVIEW_PENDING", "AI_INTERVIEW_IN_PROGRESS"].includes(status)) return 50; return 25; }
+  return (
+    <div className={`flex min-w-0 items-center gap-4 rounded-2xl border p-4 sm:p-5 ${accent ? "border-primary/25 bg-primary/5" : "border-ws-line bg-ws-panel"}`}>
+      <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${accent ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"}`}><Icon aria-hidden="true" className="size-5" /></span>
+      <div className="min-w-0"><p className="text-2xl font-bold tabular-nums text-ws-fg">{value}</p><p className="mt-1 text-xs leading-relaxed text-ws-muted">{label}</p></div>
+    </div>
+  );
+}
+function statusInfo(status: JobApplicationStatus) { if (["HIRED", "SHORTLISTED", "AI_INTERVIEW_PASSED"].includes(status)) return { label: status === "HIRED" ? "Hired" : status === "SHORTLISTED" ? "Shortlisted" : "Interview passed", className: "bg-primary/10 text-primary", accent: "bg-primary" }; if (["REJECTED", "WITHDRAWN", "AI_INTERVIEW_FAILED"].includes(status)) return { label: status.replaceAll("_", " ").toLowerCase(), className: "bg-chip-alert text-chip-alert-fg capitalize", accent: "bg-destructive" }; return { label: status.replaceAll("_", " ").toLowerCase(), className: "bg-chip-quiet text-chip-quiet-fg capitalize", accent: "bg-blue-400" }; }
 function filterCount(filter: Filter, applications: { status: JobApplicationStatus }[]) { if (filter === "SUCCESS") return applications.filter((item) => ["SHORTLISTED", "HUMAN_INTERVIEW_SCHEDULED", "HIRED"].includes(item.status)).length; if (filter === "CLOSED") return applications.filter((item) => ["REJECTED", "WITHDRAWN", "AI_INTERVIEW_FAILED"].includes(item.status)).length; if (filter === "ACTIVE") return applications.filter((item) => !["HIRED", "REJECTED", "WITHDRAWN", "AI_INTERVIEW_FAILED"].includes(item.status)).length; return applications.length; }
 function formatDate(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? "Recently" : new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(date); }

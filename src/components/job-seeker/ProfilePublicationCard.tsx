@@ -11,7 +11,6 @@ import { getApiErrorMessage } from "@/lib/api-error";
 import { useUpdateJobSeekerPublicationMutation } from "@/services/jobSeekerApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatusPill } from "@/components/shared/ApiCards";
 
 interface ProfilePublicationCardProps {
   profile: JobSeekerProfileResponse;
@@ -48,26 +47,27 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
   const isPublic = profile.profileVisibility === "PUBLIC";
 
   return (
-    <Card className="overflow-hidden rounded-3xl border border-border shadow-sm">
-      <CardHeader className="border-b border-border bg-surface-muted/40 px-6 py-5">
+    <Card className="min-w-0 overflow-hidden rounded-3xl border border-primary/20 bg-ws-panel py-0 gap-0 shadow-sm ring-0">
+      <CardHeader className="border-b border-primary/15 bg-linear-to-r from-primary/10 to-primary/5 px-4 py-5 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold text-heading">
+          <CardTitle className="flex items-center gap-2 text-lg font-semibold text-ws-fg">
             <Globe className="size-5 text-brand" />
             {tx("Profile Visibility & Publishing")}</CardTitle>
-          <StatusPill>{profile.profileVisibility}</StatusPill>
+          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold capitalize text-primary">{tx(profile.profileVisibility.toLowerCase())}</span>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6 p-6">
-        <div className="grid gap-4 sm:grid-cols-3">
+      <CardContent className="space-y-5 p-4 sm:p-6">
+        <div className="grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-3">
           <button
             type="button"
+            aria-pressed={profile.profileVisibility === "PUBLIC"}
             onClick={() => handleVisibilityChange("PUBLIC")}
             disabled={isLoading}
-            className={`flex flex-col items-start rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 ${
+            className={`flex min-w-0 flex-col items-start rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60 sm:p-5 ${
               profile.profileVisibility === "PUBLIC"
-                ? "border-brand bg-brand-tint/40 ring-2 ring-brand/20"
-                : "border-border bg-surface hover:border-slate-300"
+                ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                : "border-ws-line bg-ws-panel hover:border-primary/40"
             }`}
           >
             <div className="flex w-full items-center justify-between">
@@ -78,19 +78,20 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 <span className="text-xs font-semibold text-brand">{tx("Active")}</span>
               )}
             </div>
-            <h4 className="mt-3 font-semibold text-heading">{tx("Public")}</h4>
-            <p className="mt-1 text-xs leading-relaxed text-slate-500">
+            <h4 className="mt-3 font-semibold text-ws-fg">{tx("Public")}</h4>
+            <p className="mt-1 text-xs leading-relaxed text-ws-muted">
               {tx("Visible to all recruiters and employers searching for candidates.")}</p>
           </button>
 
           <button
             type="button"
+            aria-pressed={profile.profileVisibility === "PRIVATE"}
             onClick={() => handleVisibilityChange("PRIVATE")}
             disabled={isLoading}
-            className={`flex flex-col items-start rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 ${
+            className={`flex min-w-0 flex-col items-start rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60 sm:p-5 ${
               profile.profileVisibility === "PRIVATE"
-                ? "border-brand bg-brand-tint/40 ring-2 ring-brand/20"
-                : "border-border bg-surface hover:border-slate-300"
+                ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                : "border-ws-line bg-ws-panel hover:border-primary/40"
             }`}
           >
             <div className="flex w-full items-center justify-between">
@@ -101,19 +102,20 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 <span className="text-xs font-semibold text-brand">{tx("Active")}</span>
               )}
             </div>
-            <h4 className="mt-3 font-semibold text-heading">{tx("Private")}</h4>
-            <p className="mt-1 text-xs leading-relaxed text-slate-500">
+            <h4 className="mt-3 font-semibold text-ws-fg">{tx("Private")}</h4>
+            <p className="mt-1 text-xs leading-relaxed text-ws-muted">
               {tx("Only visible to companies you directly submit job applications to.")}</p>
           </button>
 
           <button
             type="button"
+            aria-pressed={profile.profileVisibility === "HIDDEN"}
             onClick={() => handleVisibilityChange("HIDDEN")}
             disabled={isLoading}
-            className={`flex flex-col items-start rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 ${
+            className={`flex min-w-0 flex-col items-start rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60 sm:p-5 ${
               profile.profileVisibility === "HIDDEN"
-                ? "border-brand bg-brand-tint/40 ring-2 ring-brand/20"
-                : "border-border bg-surface hover:border-slate-300"
+                ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                : "border-ws-line bg-ws-panel hover:border-primary/40"
             }`}
           >
             <div className="flex w-full items-center justify-between">
@@ -124,8 +126,8 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 <span className="text-xs font-semibold text-brand">{tx("Active")}</span>
               )}
             </div>
-            <h4 className="mt-3 font-semibold text-heading">{tx("Hidden")}</h4>
-            <p className="mt-1 text-xs leading-relaxed text-slate-500">
+            <h4 className="mt-3 font-semibold text-ws-fg">{tx("Hidden")}</h4>
+            <p className="mt-1 text-xs leading-relaxed text-ws-muted">
               {tx("Completely hidden from search results and recruiter candidate lists.")}</p>
           </button>
         </div>
@@ -137,13 +139,14 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 <Sparkles className="size-5" />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-heading">{tx("Ready to publish your profile?")}</h4>
-                <p className="text-xs text-slate-600">
+                <h4 className="text-sm font-semibold text-ws-fg">{tx("Ready to publish your profile?")}</h4>
+                <p className="text-xs text-ws-muted">
                   {tx("Publishing makes your profile visible to top recruiters looking for candidates like you.")}</p>
               </div>
             </div>
             <Button
-              onClick={() => handleVisibilityChange("PUBLIC")}
+              aria-pressed={profile.profileVisibility === "PUBLIC"}
+            onClick={() => handleVisibilityChange("PUBLIC")}
               disabled={isLoading}
               className="h-10 rounded-lg px-5 bg-brand hover:bg-brand/90 text-white font-medium shadow-sm"
             >

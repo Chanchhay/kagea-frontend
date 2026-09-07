@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Save, RotateCcw, User, Briefcase, DollarSign, FileText } from "lucide-react";
+import { Save, RotateCcw, User, DollarSign } from "lucide-react";
 import type { JobSeekerProfileResponse } from "@/contracts";
 import { getApiErrorMessage } from "@/lib/api-error";
 import {
@@ -78,15 +78,15 @@ export function ProfileForm({ profile }: ProfileFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="min-w-0 space-y-6 [&_[data-slot=form-item]]:min-w-0 [&_[data-slot=select-trigger]]:max-w-full">
         {/* Professional Summary & Overview */}
-        <Card className="border border-border shadow-sm">
-          <CardHeader className="bg-surface-muted/50 pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-heading">
+        <Card className="min-w-0 overflow-hidden rounded-3xl border border-primary/20 bg-ws-panel py-0 gap-0 shadow-sm ring-0">
+          <CardHeader className="border-b border-primary/15 bg-linear-to-r from-primary/10 to-primary/5 px-4 py-5 sm:px-6">
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-ws-fg">
               <User className="size-5 text-brand" />
               {tx("General Profile Details")}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-5 pt-6">
+          <CardContent className="space-y-5 p-4 sm:p-6">
             <TextField
               control={form.control}
               name="headline"
@@ -95,7 +95,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               description={tx("A concise summary line displayed at the top of your profile.")}
             />
 
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2">
               <TextField
                 control={form.control}
                 name="currentPosition"
@@ -110,7 +110,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               />
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2">
               <SelectField
                 control={form.control}
                 name="availabilityStatus"
@@ -136,14 +136,14 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         </Card>
 
         {/* Salary Expectations & Visibility */}
-        <Card className="border border-border shadow-sm">
-          <CardHeader className="bg-surface-muted/50 pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-heading">
+        <Card className="min-w-0 overflow-hidden rounded-3xl border border-primary/20 bg-ws-panel py-0 gap-0 shadow-sm ring-0">
+          <CardHeader className="border-b border-primary/15 bg-linear-to-r from-primary/10 to-primary/5 px-4 py-5 sm:px-6">
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-ws-fg">
               <DollarSign className="size-5 text-brand" />
               {tx("Salary Expectations & Privacy")}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-5 pt-6">
-            <div className="grid gap-5 sm:grid-cols-3">
+          <CardContent className="space-y-5 p-4 sm:p-6">
+            <div className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-3">
               <TextField
                 control={form.control}
                 name="expectedSalaryMin"
@@ -187,20 +187,20 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         </Card>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
+        <div className="flex flex-col gap-3 rounded-2xl border border-primary/15 bg-primary/5 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
           <Button
             type="button"
             variant="outline"
             onClick={handleReset}
             disabled={isLoading || !form.formState.isDirty}
-            className="h-11 rounded-xl px-6"
+            className="min-h-11 h-auto whitespace-normal rounded-xl bg-ws-panel px-6 py-3"
           >
             <RotateCcw className="mr-2 size-4" />
             {tx("Discard Changes")}</Button>
           <Button
             type="submit"
             disabled={isLoading}
-            className="h-11 rounded-xl bg-brand px-8 font-medium hover:bg-brand/90 text-white shadow-sm"
+            className="min-h-11 h-auto whitespace-normal rounded-xl bg-primary px-8 py-3 font-medium hover:bg-brand/90 text-white shadow-sm"
           >
             <Save className="mr-2 size-4" />
             {isLoading ? tx("Saving Profile…") : tx("Save Profile Changes")}

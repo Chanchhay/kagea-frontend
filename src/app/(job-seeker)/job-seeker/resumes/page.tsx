@@ -6,11 +6,10 @@ import Image from "next/image";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { CalendarDays, FilePlus2, FileText, Globe2, Pencil, Star, Trash2 } from "lucide-react";
+import { ArrowUpRight, CalendarDays, FilePlus2, FileText, Globe2, LockKeyhole, Pencil, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { ResumeResponse } from "@/contracts";
 import { UploadResumeButton } from "@/components/job-seeker/UploadResumeButton";
-import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { KeycloakLoginButton } from "@/components/auth/AuthActions";
@@ -30,8 +29,8 @@ export default function ResumesPage() {
   const resumes = useMemo(() => query.data ?? [], [query.data]);
   const visible = useMemo(() => resumes.filter((resume) => {
     if (filter === "DEFAULT") return resume.isDefault;
-    if (filter === "HAS_FILE") return Boolean(resume.resumeFileUrl);
-    if (filter === "DRAFT") return !resume.resumeFileUrl && !hasContent(resume);
+    if (filter === "HAS_FILE") return hasFile(resume);
+    if (filter === "DRAFT") return !hasFile(resume) && !hasContent(resume);
     return true;
   }).sort((a, b) => (new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()) * (newestFirst ? 1 : -1)), [filter, newestFirst, resumes]);
 
@@ -74,42 +73,119 @@ export default function ResumesPage() {
     try { await deleteResume(resume.id).unwrap(); toast.success(tx("Resume deleted")); } catch { toast.error(tx("Could not delete this resume.")); }
   }
 
-  return <div className="mx-auto max-w-6xl">
-    <PageIntro title={tx("Resumes")} description={tx("Manage and organize your resumes.")} />
+  const filters: { value: Filter; label: string; count: number }[] = [
+    { value: "ALL", label: "All resumes", count: resumes.length },
+    { value: "DEFAULT", label: "Default", count: resumes.filter((resume) => resume.isDefault).length },
+    { value: "HAS_FILE", label: "Has file", count: resumes.filter(hasFile).length },
+    { value: "DRAFT", label: "Draft", count: resumes.filter((resume) => !hasFile(resume) && !hasContent(resume)).length },
+  ];
+  const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ws-panel";
 
-    <div className="mb-6 flex flex-wrap justify-end gap-3"><UploadResumeButton /><Link href="/job-seeker/resumes/new" className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition hover:bg-brand-hover"><FilePlus2 className="size-5" /> {tx(" Create new resume")}</Link></div>
+  return (
+    <div className="mx-auto w-full min-w-0 max-w-7xl space-y-7">
+      <header className="relative overflow-hidden rounded-3xl border border-ws-line bg-ws-panel p-4 sm:p-8">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-28 size-80 rounded-full bg-primary/5" />
+        <div className="relative flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex min-w-0 items-start gap-4">
+            <div className="hidden size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary sm:flex">
+              <FileText aria-hidden="true" className="size-7" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-ws-fg sm:text-3xl">{tx("Resumes")}</h1>
+              <p className="mt-2 text-sm leading-relaxed text-ws-muted">{tx("Manage and organize your resumes.")}</p>
+            </div>
+          </div>
+          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <UploadResumeButton />
+            <Link href="/job-seeker/resumes/new" className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-brand-hover ${focusRing}`}>
+              <FilePlus2 aria-hidden="true" className="size-4 shrink-0" />{tx("Create new resume")}
+            </Link>
+          </div>
+        </div>
+      </header>
 
-    <div className="mb-7 flex flex-col gap-4 border-b border-ws-line sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex gap-8 overflow-x-auto">{(["ALL", "DEFAULT", "HAS_FILE", "DRAFT"] as Filter[]).map((item) => <button key={item} onClick={() => setFilter(item)} className={`relative px-1 pb-4 text-sm font-semibold transition ${filter === item ? "text-primary after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary" : "text-ws-muted hover:text-ws-fg"}`}>{item === "HAS_FILE" ? tx("Has file") : item.charAt(0) + item.slice(1).toLowerCase()}</button>)}</div>
-      <label className="mb-3 flex items-center gap-3 text-sm text-ws-muted">{tx("Sort by:")}<Select value={newestFirst ? "newest" : "oldest"} onValueChange={(value) => setNewestFirst(value !== "oldest")}>
-      <SelectTrigger size="sm" aria-label={tx("Sort resumes")} className="w-36 font-medium text-ws-fg"><SelectValue /></SelectTrigger>
-      <SelectContent><SelectItem value="newest">{tx("Newest")}</SelectItem><SelectItem value="oldest">{tx("Oldest")}</SelectItem></SelectContent>
-    </Select></label>
+      <section aria-label={tx("All resumes")} className="space-y-5">
+        <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div role="group" aria-label={tx("Resumes")} className="grid min-w-0 max-w-full grid-cols-2 gap-1 rounded-2xl border border-ws-line bg-ws-panel p-1.5 sm:flex sm:flex-wrap">
+            {filters.map((item) => (
+              <button key={item.value} type="button" aria-pressed={filter === item.value} onClick={() => setFilter(item.value)} className={`inline-flex min-h-10 min-w-0 items-center justify-center gap-2 rounded-xl px-2 py-2 sm:shrink-0 text-sm font-medium transition sm:px-4 ${focusRing} ${filter === item.value ? "bg-primary text-primary-foreground shadow-sm" : "text-ws-muted hover:bg-ws-card-hover hover:text-ws-fg"}`}>
+                <span className="min-w-0 [overflow-wrap:anywhere]">{tx(item.label)}</span>
+                <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-xs tabular-nums ${filter === item.value ? "bg-primary-foreground/20" : "bg-ws-card"}`}>{item.count}</span>
+              </button>
+            ))}
+          </div>
+          <div className="flex min-w-0 flex-wrap items-center gap-3 text-sm text-ws-muted sm:shrink-0">
+            <span>{tx("Sort by:")}</span>
+            <Select value={newestFirst ? "newest" : "oldest"} onValueChange={(value) => setNewestFirst(value !== "oldest")}>
+              <SelectTrigger aria-label={tx("Sort resumes")} className="h-11 w-36 rounded-xl bg-ws-panel font-medium text-ws-fg"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="newest">{tx("Newest")}</SelectItem><SelectItem value="oldest">{tx("Oldest")}</SelectItem></SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {visible.length ? (
+          <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
+            {visible.map((resume) => {
+              const photo = getResumePhoto(resume);
+              const attached = hasFile(resume);
+              const populated = hasContent(resume);
+              return (
+                <article key={resume.id} className={`group flex min-w-0 flex-col overflow-hidden rounded-2xl border bg-ws-panel shadow-sm transition-shadow hover:shadow-md ${resume.isDefault ? "border-primary/50 ring-1 ring-primary/10" : "border-primary/20"}`}>
+                  <div className="flex min-h-16 flex-wrap items-center justify-between gap-2 border-b border-primary/15 bg-linear-to-r from-primary/15 to-primary/5 px-5 py-3">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
+                      {resume.visibility === "PUBLIC" ? <Globe2 aria-hidden="true" className="size-3.5" /> : <LockKeyhole aria-hidden="true" className="size-3.5" />}
+                      {tx(resume.visibility === "PUBLIC" ? "Public" : "Private")}
+                    </span>
+                    {resume.isDefault ? <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground"><Star aria-hidden="true" className="size-3 fill-current" />{tx("Default")}</span> : null}
+                  </div>
+                  <Link href={`/job-seeker/resumes/${resume.id}`} className={`flex min-w-0 flex-1 items-start gap-3 p-4 sm:gap-4 sm:p-6 ${focusRing}`}>
+                    <div className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-primary/20 bg-primary/10 text-primary">
+                      {photo ? <Image src={photo} alt="" fill unoptimized sizes="56px" className="object-cover" /> : <FileText aria-hidden="true" className="size-6" />}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium text-ws-muted">{tx("Resume profile")}</p>
+                      <h2 className="mt-1 [overflow-wrap:anywhere] text-lg font-semibold leading-snug tracking-tight text-ws-fg transition-colors group-hover:text-primary">{resume.title}</h2>
+                      <p className="mt-3 flex items-center gap-2 text-xs text-ws-muted">
+                        <span aria-hidden="true" className={`size-1.5 shrink-0 rounded-full ${attached || populated ? "bg-primary" : "bg-warning"}`} />
+                        {tx(attached ? "Has file" : populated ? "Profile completed" : "Draft")}
+                      </p>
+                    </div>
+                    <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-ws-faint transition-colors group-hover:text-primary" />
+                  </Link>
+                  <div className="flex items-center gap-2 px-5 pb-5 text-xs text-ws-muted sm:px-6">
+                    <CalendarDays aria-hidden="true" className="size-3.5 shrink-0" />
+                    <span>{tx("Updated")} <time dateTime={resume.updatedAt}>{formatDate(resume.updatedAt)}</time></span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 border-t border-primary/10 bg-primary/5 p-3 sm:flex-nowrap sm:p-4">
+                    <Link href={`/job-seeker/resumes/${resume.id}`} aria-label={tx("Edit {0}", { 0: resume.title })} className={`inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-white px-2 py-2 text-center [overflow-wrap:anywhere] sm:px-3 text-sm font-semibold text-primary shadow-sm transition hover:border-primary/50 hover:bg-primary/5 dark:bg-ws-panel dark:hover:bg-primary/10 ${focusRing}`}>
+                      <Pencil aria-hidden="true" className="size-4 shrink-0" /><span className="min-w-0">{tx("Edit document")}</span>
+                    </Link>
+                    <button type="button" onClick={() => void makeDefault(resume)} disabled={resume.isDefault || defaultState.isLoading} title={tx(resume.isDefault ? "Default resume" : "Make {0} default", { 0: resume.title })} aria-label={tx(resume.isDefault ? "Default resume" : "Make {0} default", { 0: resume.title })} className={`flex size-11 shrink-0 items-center justify-center rounded-xl border transition disabled:cursor-default ${focusRing} ${resume.isDefault ? "border-primary/25 bg-primary/15 text-primary" : "border-ws-line text-ws-muted hover:border-primary hover:text-primary disabled:opacity-50"}`}>
+                      <Star aria-hidden="true" className={`size-4 ${resume.isDefault ? "fill-current" : ""}`} />
+                    </button>
+                    <button type="button" onClick={() => void remove(resume)} disabled={deleteState.isLoading} title={tx("Delete {0}", { 0: resume.title })} aria-label={tx("Delete {0}", { 0: resume.title })} className={`flex size-11 shrink-0 items-center justify-center rounded-xl border border-ws-line text-ws-muted transition hover:border-destructive/30 hover:bg-destructive/5 hover:text-destructive disabled:opacity-50 ${focusRing}`}>
+                      <Trash2 aria-hidden="true" className="size-4" />
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center rounded-3xl border border-dashed border-ws-line bg-ws-panel px-6 py-16 text-center">
+            <div className="flex size-16 items-center justify-center rounded-2xl bg-chip-soft text-chip-soft-fg"><FileText aria-hidden="true" className="size-8" /></div>
+            <h2 className="mt-5 text-lg font-semibold text-ws-fg">{tx("No resumes in this view")}</h2>
+            <p className="mt-2 max-w-sm text-sm leading-relaxed text-ws-muted">{tx("Choose another filter or create a new resume.")}</p>
+            {filter !== "ALL" ? (
+              <button type="button" onClick={() => setFilter("ALL")} className={`mt-6 rounded-xl bg-chip-soft px-5 py-3 text-sm font-semibold text-chip-soft-fg ${focusRing}`}>{tx("All resumes")}</button>
+            ) : (
+              <Link href="/job-seeker/resumes/new" className={`mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-brand-hover ${focusRing}`}><FilePlus2 aria-hidden="true" className="size-4" />{tx("Create new resume")}</Link>
+            )}
+          </div>
+        )}
+      </section>
     </div>
-
-    {visible.length ? <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{visible.map((resume) => <article key={resume.id} className={`group rounded-[22px] border bg-ws-panel p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${resume.isDefault ? "border-primary ring-1 ring-primary/15" : "border-ws-line"}`}>
-      {resume.visibility === "PUBLIC" || resume.isDefault ? <div className="mb-4 flex flex-wrap justify-end gap-1.5">
-        {resume.visibility === "PUBLIC" ? <span className="inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1.5 text-[18px] font-semibold uppercase tracking-wide text-primary-foreground"><Globe2 className="size-3" /> {tx(" Public")}</span> : null}
-        {resume.isDefault ? <span className="rounded-lg bg-chip-soft px-2.5 py-1.5 text-[18px] font-semibold uppercase tracking-wide text-chip-soft-fg">{tx("Default")}</span> : null}
-      </div> : null}
-      <Link href={`/job-seeker/resumes/${resume.id}`} className="flex items-center gap-4 rounded-2xl bg-linear-to-r from-chip-soft/70 to-ws-card-hover p-4 transition hover:from-chip-soft hover:to-ws-card">
-        <div className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-chip-soft text-chip-soft-fg shadow-sm ring-1 ring-chip-soft dark:border-ws-panel">
-          {getResumePhoto(resume) ? <Image src={getResumePhoto(resume)!} alt={tx("{0} profile", { 0: resume.title })} fill unoptimized sizes="64px" className="object-cover" /> : <FileText className="size-6" />}
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-[18px] font-semibold uppercase tracking-[0.14em] text-primary">{tx("Resume profile")}</p>
-          <h2 className="mt-1 truncate text-base font-semibold text-ws-fg">{resume.title}</h2>
-          <p className="mt-1.5 flex items-center gap-2 text-xs text-ws-muted"><span className={`size-2 rounded-full ${resume.resumeFileUrl || hasContent(resume) ? "bg-primary" : "bg-warning"}`} /> {resume.resumeFileUrl ? tx("PDF attached") : hasContent(resume) ? tx("Profile completed") : tx("Draft")}</p>
-        </div>
-      </Link>
-      <div className="mt-4 flex items-center justify-between gap-2 px-1"><span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${resume.resumeFileUrl || hasContent(resume) ? "bg-chip-soft text-chip-soft-fg" : "bg-chip-quiet text-chip-quiet-fg"}`}>{resume.resumeFileUrl || hasContent(resume) ? tx("Complete") : tx("Draft")}</span><span className="text-xs text-ws-muted">{tx("Updated ")}{formatDate(resume.updatedAt)}</span></div>
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        <Link href={`/job-seeker/resumes/${resume.id}`} aria-label={tx("Edit {0}", { 0: resume.title })} className="flex h-11 items-center justify-center rounded-xl border border-ws-line text-ws-muted hover:border-primary hover:text-primary"><Pencil className="size-4" /></Link>
-        <button onClick={() => void remove(resume)} disabled={deleteState.isLoading} aria-label={tx("Delete {0}", { 0: resume.title })} className="flex h-11 items-center justify-center rounded-xl border border-ws-line text-ws-muted hover:border-destructive hover:text-destructive disabled:opacity-50"><Trash2 className="size-4" /></button>
-        <button onClick={() => void makeDefault(resume)} disabled={resume.isDefault || defaultState.isLoading} aria-label={tx(resume.isDefault ? "Default resume" : `Make ${resume.title} default`)} className={`flex h-11 items-center justify-center rounded-xl border transition disabled:opacity-60 ${resume.isDefault ? "border-chip-soft bg-chip-soft text-chip-soft-fg" : "border-ws-line text-ws-muted hover:border-primary hover:text-primary"}`}><Star className={`size-4 ${resume.isDefault ? "fill-current" : ""}`} /></button>
-      </div>
-    </article>)}</div> : <div className="rounded-xl border border-dashed border-ws-line bg-ws-card px-6 py-16 text-center"><FileText className="mx-auto size-10 text-ws-faint" /><h2 className="mt-4 font-semibold text-ws-fg">{tx("No resumes in this view")}</h2><p className="mt-2 text-sm text-ws-muted">{tx("Choose another filter or create a new resume.")}</p></div>}
-  </div>;
+  );
 }
 
 function hasContent(resume: ResumeResponse) { return hasResumeContent(resume.resumeData); }
@@ -117,7 +193,7 @@ function getResumePhoto(resume: ResumeResponse) {
   return resolveFileUrl(normalizeResumeData(resume.resumeData).profilePhotoUrl);
 }
 function formatDate(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? "recently" : new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(date); }
-function filterLabel(filter: Filter) { return filter === "HAS_FILE" ? "Has file" : filter.charAt(0) + filter.slice(1).toLowerCase(); }
+function hasFile(resume: ResumeResponse) { return resume.hasFile || Boolean(resume.resumeFileUrl); }
 
 function getQueryErrorMessage(error: unknown) {
   if (!error || typeof error !== "object") return "Please try again.";

@@ -74,12 +74,12 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
   };
 
   return (
-    <Card className="overflow-hidden rounded-3xl border border-border shadow-sm">
+    <Card className="min-w-0 overflow-hidden rounded-3xl border border-primary/20 bg-ws-panel py-0 gap-0 shadow-sm ring-0">
       <CardContent className="p-0">
-        <div className="relative bg-linear-to-r from-brand/15 via-brand/5 to-transparent p-6 sm:p-8">
+        <div className="relative bg-linear-to-r from-primary/15 via-primary/5 to-ws-panel p-5 sm:p-8">
           <span aria-hidden="true" className="absolute -right-16 -top-20 size-64 rounded-full bg-brand/5" />
-          <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
-            <div className="relative shrink-0">
+          <div className="relative flex min-w-0 flex-col items-start gap-6 md:flex-row md:flex-wrap md:items-center xl:flex-nowrap">
+            <div className="relative w-fit shrink-0">
               <div
                 className="flex size-24 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-2xl font-semibold text-brand shadow-md ring-4 ring-white/70 dark:ring-slate-800"
                 style={
@@ -102,13 +102,13 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-2xl font-semibold tracking-tight text-heading">{name}</h2>
-                <span className="inline-flex items-center gap-1 rounded-full bg-brand-tint px-2.5 py-1 text-[18px] font-semibold text-brand">
+                <h2 className="text-2xl font-semibold tracking-tight text-ws-fg [overflow-wrap:anywhere]">{name}</h2>
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-brand">
                   <BadgeCheck className="size-3" />
                   {tx(humanize(profile.verificationStatus))}
                 </span>
               </div>
-              <p className="mt-1 font-medium text-brand">
+              <p className="mt-2 font-medium text-primary [overflow-wrap:anywhere]">
                 {profile.headline || tx("Add your professional headline")}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -120,9 +120,9 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
               </div>
             </div>
 
-            <div className="w-full rounded-2xl border border-white/70 bg-surface/85 p-4 shadow-sm backdrop-blur sm:w-56 dark:border-border">
+            <div className="w-full min-w-0 rounded-2xl border border-primary/15 bg-ws-panel p-4 shadow-sm md:w-56 md:shrink-0">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-heading">{tx("Profile strength")}</span>
+                <span className="font-semibold text-ws-fg">{tx("Profile strength")}</span>
                 <span className="text-base font-semibold text-brand">{completion}%</span>
               </div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-muted">
@@ -131,7 +131,7 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
                   style={{ width: `${completion}%` }}
                 />
               </div>
-              <p className="mt-2 text-[18px] text-slate-500">{tx("Complete details to stand out.")}</p>
+              <p className="mt-3 text-xs leading-relaxed text-ws-muted">{tx("Complete details to stand out.")}</p>
             </div>
           </div>
 
@@ -139,13 +139,14 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
             <div className="mt-6 rounded-2xl bg-surface p-5">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-semibold text-heading">{tx("Update profile photo")}</h3>
-                  <p className="mt-1 text-xs text-slate-500">{tx("Choose a clear square portrait.")}</p>
+                  <h3 className="text-sm font-semibold text-ws-fg">{tx("Update profile photo")}</h3>
+                  <p className="mt-1 text-xs text-ws-muted">{tx("Choose a clear square portrait.")}</p>
                 </div>
                 <button
                   type="button"
+                  aria-label={tx("Close")}
                   onClick={() => setIsEditorOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-lg text-slate-500 hover:bg-surface-muted"
+                  className="flex size-8 items-center justify-center rounded-lg text-ws-muted hover:bg-surface-muted"
                 >
                   <X className="size-4" />
                 </button>
@@ -157,14 +158,14 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
                 accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
                 hint="PNG, JPG or WebP up to 5 MB."
               />
-              <div className="mt-4 flex justify-end gap-2">
+              <div className="mt-4 flex flex-wrap justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     setPhotoFile(null);
                     setIsEditorOpen(false);
                   }}
-                  className="h-10 rounded-lg px-4 text-sm font-medium text-body hover:bg-surface-muted"
+                  className="h-10 rounded-lg px-4 text-sm font-medium text-ws-muted hover:bg-surface-muted"
                 >
                   {tx("Cancel")}</button>
                 <button
@@ -187,9 +188,9 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
 function Chip({ icon: Icon, children }: { icon: typeof MapPin; children: React.ReactNode }) {
   const tx = useWorkspaceTranslation();
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-xs text-slate-600">
-      <Icon className="size-3.5" />
-      {tx(children)}
+    <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-primary/10 bg-ws-panel px-2.5 py-1 text-xs text-ws-muted">
+      <Icon aria-hidden="true" className="size-3.5 shrink-0" />
+      <span className="min-w-0 [overflow-wrap:anywhere]">{tx(children)}</span>
     </span>
   );
 }

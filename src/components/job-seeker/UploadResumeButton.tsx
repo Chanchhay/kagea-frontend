@@ -57,13 +57,13 @@ export function UploadResumeButton() {
           event.preventDefault();
           setDragging(false);
           const file = event.dataTransfer.files?.[0];
-          if (file) void send(file);
+          if (file && !isLoading) void send(file);
         }}
         disabled={isLoading}
-        className={`inline-flex h-12 items-center gap-2 rounded-xl border px-6 text-sm font-semibold transition disabled:opacity-60 ${
+        className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ws-panel disabled:opacity-60 ${
           dragging
             ? "border-chip-soft-fg bg-chip-soft text-chip-soft-fg"
-            : "border-ws-line text-ws-fg hover:border-primary hover:text-primary"
+            : "border-ws-line bg-ws-panel text-ws-fg hover:border-primary hover:text-primary"
         }`}
       >
         {isLoading ? (

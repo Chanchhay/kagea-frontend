@@ -3,13 +3,14 @@ import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 
 
 import { useState } from "react";
-import { BadgeCheck, Clock3, HandCoins, XCircle } from "lucide-react";
+import { BadgeCheck, Clock3, HandCoins, Users, XCircle } from "lucide-react";
 import type { HiringRecordResponse, HiringRecordStatus } from "@/contracts";
-import { PageIntro } from "@/components/shared/ApiCards";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
 import { formatMoney } from "@/lib/money";
 import { useGetMyHiringRecordsQuery } from "@/services/financeApi";
+
+const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ws-panel";
 
 export default function HiresPage() {
   const tx = useWorkspaceTranslation();
@@ -17,27 +18,41 @@ export default function HiresPage() {
   const query = useGetMyHiringRecordsQuery({ page });
 
   if (query.isLoading) return <LoadingState rows={5} />;
-  if (query.isError) return <ErrorState message={tx("Unable to load hires.")} />;
+  if (query.isError) return <ErrorState message={tx("Unable to load hires.")} onRetry={() => void query.refetch()} />;
 
   const hires = query.data?.content ?? [];
   const totalPages = query.data?.totalPages ?? 1;
+  const totalHires = query.data?.totalElements ?? hires.length;
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-6xl space-y-6">
-      <PageIntro
-        title={tx("Hires")}
-        description={tx("Candidates you reported as hired, and where each one stands.")}
-      />
+      <header className="relative overflow-hidden rounded-3xl border border-primary/15 bg-ws-panel p-5 sm:p-8">
+        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-24 size-80 rounded-full bg-primary/5" />
+        <div className="relative flex min-w-0 items-start gap-4">
+          <span className="hidden size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary sm:flex"><HandCoins aria-hidden="true" className="size-6" /></span>
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold tracking-tight text-ws-fg sm:text-3xl">{tx("Hires")}</h1>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-ws-muted">{tx("Candidates you reported as hired, and where each one stands.")}</p>
+          </div>
+        </div>
+      </header>
 
       {hires.length === 0 ? (
-        <div className="rounded-2xl border border-ws-line bg-ws-card px-6 py-16 text-center">
-          <HandCoins aria-hidden="true" className="mx-auto size-10 text-ws-faint" />
-          <h2 className="mt-4 font-semibold text-ws-fg">{tx("No hires reported")}</h2>
-          <p className="mt-2 text-sm text-ws-muted">
+        <div className="rounded-3xl border border-dashed border-primary/25 bg-primary/5 px-6 py-16 text-center">
+          <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary/10 text-primary"><HandCoins aria-hidden="true" className="size-8" /></span>
+          <h2 className="mt-5 text-lg font-semibold text-ws-fg">{tx("No hires reported")}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-ws-muted">
             {tx("Report a hire from a forwarded candidate once you make an offer.")}</p>
         </div>
       ) : (
         <>
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:w-fit sm:gap-4">
+            <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-primary/25 bg-primary/5 p-4">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground"><Users aria-hidden="true" className="size-4.5" /></span>
+              <div className="min-w-0"><p className="text-xl font-bold tabular-nums text-ws-fg">{totalHires}</p><p className="mt-0.5 text-xs leading-relaxed text-ws-muted">{tx("Total hires reported")}</p></div>
+            </div>
+          </div>
+
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-ws-fg">{tx("Hiring records")}</h2>
@@ -59,7 +74,7 @@ export default function HiresPage() {
                 type="button"
                 onClick={() => setPage((current) => Math.max(0, current - 1))}
                 disabled={page === 0 || query.isFetching}
-                className="h-11 rounded-xl border border-ws-line bg-ws-card px-4 text-sm font-semibold text-ws-fg transition-colors hover:bg-ws-card-hover focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-40"
+                className={`h-11 rounded-xl border border-ws-line bg-ws-card px-4 text-sm font-semibold text-ws-fg transition-colors hover:bg-ws-card-hover disabled:opacity-40 ${focusRing}`}
               >
                 {tx("Previous")}</button>
               <span className="text-xs text-ws-muted">
@@ -71,7 +86,7 @@ export default function HiresPage() {
                   setPage((current) => Math.min(totalPages - 1, current + 1))
                 }
                 disabled={page >= totalPages - 1 || query.isFetching}
-                className="h-11 rounded-xl border border-ws-line bg-ws-card px-4 text-sm font-semibold text-ws-fg transition-colors hover:bg-ws-card-hover focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-40"
+                className={`h-11 rounded-xl border border-ws-line bg-ws-card px-4 text-sm font-semibold text-ws-fg transition-colors hover:bg-ws-card-hover disabled:opacity-40 ${focusRing}`}
               >
                 {tx("Next")}</button>
             </div>
@@ -87,7 +102,8 @@ function HireRow({ hire }: { hire: HiringRecordResponse }) {
   const status = statusInfo(hire.status);
 
   return (
-    <article className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-5 rounded-2xl border border-ws-line bg-ws-card p-4 [overflow-wrap:anywhere] sm:gap-x-4 sm:p-6 lg:grid-cols-[auto_minmax(0,1fr)_200px] lg:items-center">
+    <article className="relative grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-5 overflow-hidden rounded-2xl border border-ws-line bg-ws-card p-4 [overflow-wrap:anywhere] transition duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md sm:gap-x-4 sm:p-6 lg:grid-cols-[auto_minmax(0,1fr)_200px] lg:items-center">
+      <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1 ${status.accent}`} />
       <span className={`flex size-11 items-center justify-center rounded-xl sm:size-12 ${status.className}`}>
         <status.icon aria-hidden="true" className="size-5" />
       </span>
@@ -150,6 +166,7 @@ function statusInfo(status: HiringRecordStatus) {
     return {
       label: "Confirmed",
       className: "bg-chip-soft text-chip-soft-fg",
+      accent: "bg-primary",
       icon: BadgeCheck,
     };
   }
@@ -157,12 +174,14 @@ function statusInfo(status: HiringRecordStatus) {
     return {
       label: "Rejected",
       className: "bg-chip-alert text-chip-alert-fg",
+      accent: "bg-destructive",
       icon: XCircle,
     };
   }
   return {
     label: "Awaiting review",
     className: "bg-chip-quiet text-chip-quiet-fg",
+    accent: "bg-blue-400",
     icon: Clock3,
   };
 }
