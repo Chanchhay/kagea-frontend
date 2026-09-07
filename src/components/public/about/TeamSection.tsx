@@ -383,7 +383,7 @@ function MemberCard({
         </h3>
 
         <p className={`mt-1 text-[18px] font-bold uppercase tracking-wider ${roleColor}`}>
-          {member.role}
+          {member.roleTitle}
         </p>
 
         <div
@@ -530,7 +530,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
 
               <div className="flex-1 pb-1">
                 <span className="inline-block rounded-full bg-[#1fa628]/20 px-3 py-0.5 text-[18px] font-bold uppercase tracking-wider text-[#22c55e] border border-[#22c55e]/30 mb-1">
-                  {member.roleTitle || member.role}
+                  {member.roleTitle}
                 </span>
                 <h3
                   id="drawer-title"
