@@ -1,12 +1,10 @@
 import { ScrollReveal } from "./shared/ScrollReveal";
-import CtaBannerSection from "./CtaBannerSection";
 import FaqSection from "./FaqSection";
 import HeroCompaniesSection from "./HeroCompaniesSection";
 import JobDiscoverySection from "./JobDiscoverySection";
 import NewestJobsSection from "./NewestJobsSection";
 import ProfileSection from "./ProfileSection";
 import TestimonialsSection from "./TestimonialsSection";
-import TrustedCompaniesSection from "./TrustedCompaniesSection";
 
 export default function LandingPage() {
     return (
@@ -21,15 +19,9 @@ export default function LandingPage() {
                         <ProfileSection />
                     </ScrollReveal>
 
-<<<<<<< HEAD
-          <ScrollReveal delay={0.08} className="relative z-10">
-            <TrustedCompaniesSection />
-          </ScrollReveal>
-=======
                     <ScrollReveal className="relative z-10">
                         <JobDiscoverySection />
                     </ScrollReveal>
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
 
                     <ScrollReveal direction="right" className="relative z-10">
                         <NewestJobsSection />

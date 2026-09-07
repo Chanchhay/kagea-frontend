@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useState } from "react";
 import { toast } from "sonner";
@@ -27,6 +29,7 @@ function ProfileCard({ children }: { children: React.ReactNode }) {
 }
 
 export default function RecruiterProfilePage() {
+  const tx = useWorkspaceTranslation();
   const currentUserQuery = useGetCurrentUserQuery();
   const profileQuery = useGetRecruiterProfileQuery();
   const [updateProfile, update] = useUpdateRecruiterProfileMutation();
@@ -37,7 +40,7 @@ export default function RecruiterProfilePage() {
     return <LoadingState rows={4} />;
   }
   if (currentUserQuery.isError || !currentUserQuery.data) {
-    return <ErrorState message="Unable to load your account." />;
+    return <ErrorState message={tx("Unable to load your account.")} />;
   }
 
   const currentUser = currentUserQuery.data;
@@ -53,10 +56,10 @@ export default function RecruiterProfilePage() {
       // "" clears the column; the object itself is left in MinIO.
       await updateProfile({ avatarUrl: url }).unwrap();
       setPhotoFile(null);
-      toast.success(url ? "Profile photo updated" : "Profile photo removed");
+      toast.success(url ? tx("Profile photo updated") : tx("Profile photo removed"));
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, "Could not update your profile photo."),
+        getApiErrorMessage(error, tx("Could not update your profile photo.")),
       );
     } finally {
       setIsUploading(false);
@@ -66,8 +69,8 @@ export default function RecruiterProfilePage() {
   return (
     <>
       <PageIntro
-        title="Recruiter profile"
-        description="Manage the personal details of the business owner."
+        title={tx("Recruiter profile")}
+        description={tx("Manage the personal details of the business owner.")}
       />
       <div className="grid gap-6">
         <ProfileCard>
@@ -82,7 +85,7 @@ export default function RecruiterProfilePage() {
                 }
               >
                 {avatarUrl ? (
-                  <span className="sr-only">Profile photo</span>
+                  <span className="sr-only">{tx("Profile photo")}</span>
                 ) : (
                   getInitials(currentUser.fullName)
                 )}
@@ -99,10 +102,9 @@ export default function RecruiterProfilePage() {
         </ProfileCard>
 
         <ProfileCard>
-          <h2 className="font-semibold text-heading">Profile photo</h2>
+          <h2 className="font-semibold text-heading">{tx("Profile photo")}</h2>
           <p className="mt-1 mb-5 text-sm leading-6 text-body">
-            Shown on your workspace header and anywhere your account appears.
-          </p>
+            {tx("Shown on your workspace header and anywhere your account appears.")}</p>
           <FileDropzone
             value={avatarUrl}
             file={photoFile}
@@ -117,20 +119,15 @@ export default function RecruiterProfilePage() {
               disabled={isBusy || (!photoFile && !avatarUrl)}
               className="h-11 rounded-lg px-6"
             >
-              {isUploading
-                ? "Uploading…"
-                : update.isLoading
-                  ? "Saving…"
-                  : "Save photo"}
+              {isUploading ? tx("Uploading…") : update.isLoading ? tx("Saving…") : tx("Save photo")}
             </Button>
           </div>
         </ProfileCard>
 
         <ProfileCard>
-          <h2 className="font-semibold text-heading">Recruiter details</h2>
+          <h2 className="font-semibold text-heading">{tx("Recruiter details")}</h2>
           <p className="mt-1 mb-5 text-sm leading-6 text-body">
-            Your position and LinkedIn profile, shown to candidates you contact.
-          </p>
+            {tx("Your position and LinkedIn profile, shown to candidates you contact.")}</p>
           <RecruiterProfileForm profile={profileQuery.data} />
         </ProfileCard>
       </div>

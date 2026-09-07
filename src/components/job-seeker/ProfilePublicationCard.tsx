@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useState } from "react";
 import Link from "next/link";
@@ -16,6 +18,7 @@ interface ProfilePublicationCardProps {
 }
 
 export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps) {
+  const tx = useWorkspaceTranslation();
   const [updatePublication, { isLoading }] = useUpdateJobSeekerPublicationMutation();
   const [copied, setCopied] = useState(false);
 
@@ -29,7 +32,7 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
       };
       toast.success(labels[visibility]);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Unable to update profile publication status."));
+      toast.error(getApiErrorMessage(error, tx("Unable to update profile publication status.")));
     }
   };
 
@@ -38,7 +41,7 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
     const url = `${window.location.origin}/profile/${profile.publicProfileSlug}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
-    toast.success("Public profile link copied to clipboard!");
+    toast.success(tx("Public profile link copied to clipboard!"));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -50,8 +53,7 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2 text-lg font-semibold text-heading">
             <Globe className="size-5 text-brand" />
-            Profile Visibility & Publishing
-          </CardTitle>
+            {tx("Profile Visibility & Publishing")}</CardTitle>
           <StatusPill>{profile.profileVisibility}</StatusPill>
         </div>
       </CardHeader>
@@ -73,13 +75,12 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 <Globe className="size-4" />
               </span>
               {profile.profileVisibility === "PUBLIC" && (
-                <span className="text-xs font-semibold text-brand">Active</span>
+                <span className="text-xs font-semibold text-brand">{tx("Active")}</span>
               )}
             </div>
-            <h4 className="mt-3 font-semibold text-heading">Public</h4>
+            <h4 className="mt-3 font-semibold text-heading">{tx("Public")}</h4>
             <p className="mt-1 text-xs leading-relaxed text-slate-500">
-              Visible to all recruiters and employers searching for candidates.
-            </p>
+              {tx("Visible to all recruiters and employers searching for candidates.")}</p>
           </button>
 
           <button
@@ -97,13 +98,12 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 <Lock className="size-4" />
               </span>
               {profile.profileVisibility === "PRIVATE" && (
-                <span className="text-xs font-semibold text-brand">Active</span>
+                <span className="text-xs font-semibold text-brand">{tx("Active")}</span>
               )}
             </div>
-            <h4 className="mt-3 font-semibold text-heading">Private</h4>
+            <h4 className="mt-3 font-semibold text-heading">{tx("Private")}</h4>
             <p className="mt-1 text-xs leading-relaxed text-slate-500">
-              Only visible to companies you directly submit job applications to.
-            </p>
+              {tx("Only visible to companies you directly submit job applications to.")}</p>
           </button>
 
           <button
@@ -121,13 +121,12 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 <EyeOff className="size-4" />
               </span>
               {profile.profileVisibility === "HIDDEN" && (
-                <span className="text-xs font-semibold text-brand">Active</span>
+                <span className="text-xs font-semibold text-brand">{tx("Active")}</span>
               )}
             </div>
-            <h4 className="mt-3 font-semibold text-heading">Hidden</h4>
+            <h4 className="mt-3 font-semibold text-heading">{tx("Hidden")}</h4>
             <p className="mt-1 text-xs leading-relaxed text-slate-500">
-              Completely hidden from search results and recruiter candidate lists.
-            </p>
+              {tx("Completely hidden from search results and recruiter candidate lists.")}</p>
           </button>
         </div>
 
@@ -138,10 +137,9 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 <Sparkles className="size-5" />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-heading">Ready to publish your profile?</h4>
+                <h4 className="text-sm font-semibold text-heading">{tx("Ready to publish your profile?")}</h4>
                 <p className="text-xs text-slate-600">
-                  Publishing makes your profile visible to top recruiters looking for candidates like you.
-                </p>
+                  {tx("Publishing makes your profile visible to top recruiters looking for candidates like you.")}</p>
               </div>
             </div>
             <Button
@@ -149,7 +147,7 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
               disabled={isLoading}
               className="h-10 rounded-lg px-5 bg-brand hover:bg-brand/90 text-white font-medium shadow-sm"
             >
-              {isLoading ? "Publishing…" : "Publish Profile Now"}
+              {isLoading ? tx("Publishing…") : tx("Publish Profile Now")}
             </Button>
           </div>
         ) : (
@@ -158,12 +156,11 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
               <div className="flex items-center gap-2">
                 <span className="inline-block size-2 rounded-full bg-emerald-500 animate-pulse" />
                 <h4 className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
-                  Your profile is live and published!
-                </h4>
+                  {tx("Your profile is live and published!")}</h4>
               </div>
               {profile.publishedAt && (
                 <p className="mt-0.5 text-xs text-emerald-700 dark:text-emerald-400">
-                  Published on {new Date(profile.publishedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
+                  {tx("Published on ")}{new Date(profile.publishedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
                 </p>
               )}
             </div>
@@ -175,7 +172,7 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 className="h-9 gap-1.5 rounded-lg border-emerald-200 hover:bg-emerald-100/50 dark:border-emerald-800"
               >
                 {copied ? <Check className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />}
-                {copied ? "Copied" : "Copy Link"}
+                {copied ? tx("Copied") : tx("Copy Link")}
               </Button>
               <Button
                 render={<Link href="/job-seeker/profile" target="_blank" />}
@@ -184,8 +181,7 @@ export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps)
                 className="h-9 gap-1.5 rounded-lg border-emerald-200 hover:bg-emerald-100/50 dark:border-emerald-800"
               >
                 <ExternalLink className="size-3.5" />
-                View Public Profile
-              </Button>
+                {tx("View Public Profile")}</Button>
             </div>
           </div>
         )}

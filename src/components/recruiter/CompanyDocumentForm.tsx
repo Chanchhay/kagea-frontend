@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -39,6 +41,7 @@ const defaultValues: CompanyDocumentFormValues = {
 };
 
 export function CompanyDocumentForm({ companyId }: { companyId: number }) {
+  const tx = useWorkspaceTranslation();
   const [addCompanyDocument, addition] = useAddCompanyDocumentMutation();
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -49,7 +52,7 @@ export function CompanyDocumentForm({ companyId }: { companyId: number }) {
 
   const onSubmit = async (values: CompanyDocumentFormValues) => {
     if (!documentFile && !values.documentUrl) {
-      toast.error("Choose a document file first.");
+      toast.error(tx("Choose a document file first."));
       return;
     }
 
@@ -66,11 +69,11 @@ export function CompanyDocumentForm({ companyId }: { companyId: number }) {
         body: { ...values, documentUrl },
       }).unwrap();
 
-      toast.success("Document added.");
+      toast.success(tx("Document added."));
       form.reset(defaultValues);
       setDocumentFile(null);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Unable to add the document."));
+      toast.error(getApiErrorMessage(error, tx("Unable to add the document.")));
     } finally {
       setIsUploading(false);
     }
@@ -82,7 +85,7 @@ export function CompanyDocumentForm({ companyId }: { companyId: number }) {
         <SelectField
           control={form.control}
           name="documentType"
-          label="Document type"
+          label={tx("Document type")}
           options={documentTypeOptions}
         />
 
@@ -91,7 +94,7 @@ export function CompanyDocumentForm({ companyId }: { companyId: number }) {
           name="documentUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Document file</FormLabel>
+              <FormLabel>{tx("Document file")}</FormLabel>
               <FormControl>
                 <FileDropzone
                   value={field.value}
@@ -116,7 +119,7 @@ export function CompanyDocumentForm({ companyId }: { companyId: number }) {
             disabled={addition.isLoading || isUploading}
           >
             <Plus aria-hidden="true" className="size-4" />
-            {isUploading ? "Uploading…" : addition.isLoading ? "Adding…" : "Add document"}
+            {isUploading ? tx("Uploading…") : addition.isLoading ? tx("Adding…") : tx("Add document")}
           </Button>
         </div>
       </form>

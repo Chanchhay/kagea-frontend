@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useMemo, useState, type FormEvent } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -54,6 +56,7 @@ export function JobsWorkspace({
   applications,
   initialKeyword = "",
 }: JobsWorkspaceProps) {
+  const tx = useWorkspaceTranslation();
   useSetPageHeading(
     "Find jobs",
     "Discover opportunities that match your skills and goals.",
@@ -123,33 +126,33 @@ export function JobsWorkspace({
   }, [applications]);
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
-      <div className="flex flex-col gap-4">
+    <div className="grid gap-5 max-md:min-w-0 max-md:grid-cols-1 xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
+      <div className="flex flex-col gap-4 max-md:min-w-0">
         <label className="flex items-center gap-2 rounded-full bg-ws-card px-4 py-3 text-sm text-ws-muted focus-within:bg-ws-card-hover">
           <Search aria-hidden="true" className="size-4 shrink-0" />
           <input
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
-            placeholder="Search roles, companies, skills"
-            className="w-full bg-transparent text-ws-fg outline-none placeholder:text-ws-faint"
+            placeholder={tx("Search roles, companies, skills")}
+            className="w-full bg-transparent text-ws-fg outline-none placeholder:text-ws-faint max-md:min-w-0"
           />
           {keyword ? (
             <button
               type="button"
               onClick={() => setKeyword("")}
-              aria-label="Clear search"
+              aria-label={tx("Clear search")}
               className="shrink-0 text-ws-faint hover:text-ws-fg"
             >
               <X aria-hidden="true" className="size-4" />
             </button>
           ) : null}
-          <span className="sr-only">Search published jobs</span>
+          <span className="sr-only">{tx("Search published jobs")}</span>
         </label>
 
         <PillTabs tabs={workModeTabs} value={workMode} onChange={setWorkMode} />
 
         <p className="px-1 text-xs text-ws-faint">
-          {visibleJobs.length} {visibleJobs.length === 1 ? "role" : "roles"}
+          {visibleJobs.length} {visibleJobs.length === 1 ? tx("role") : tx("roles")}
         </p>
 
         <ul className="ws-scroll flex max-h-136 flex-col gap-2 overflow-y-auto pr-1 xl:max-h-[calc(100vh-19rem)]">
@@ -171,8 +174,7 @@ export function JobsWorkspace({
 
           {!visibleJobs.length ? (
             <Panel className="text-sm text-ws-faint">
-              No published roles match that search.
-            </Panel>
+              {tx("No published roles match that search.")}</Panel>
           ) : null}
         </ul>
       </div>
@@ -186,8 +188,7 @@ export function JobsWorkspace({
         />
       ) : (
         <Panel className="flex items-center justify-center text-sm text-ws-faint">
-          Pick a role to see the details.
-        </Panel>
+          {tx("Pick a role to see the details.")}</Panel>
       )}
     </div>
   );
@@ -206,6 +207,7 @@ function JobListRow({
   applied: boolean;
   onSelect: () => void;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <button
       type="button"
@@ -223,7 +225,7 @@ function JobListRow({
           <p className="truncate text-sm font-semibold">{job.title}</p>
           <p className="truncate text-xs opacity-70">{job.companyName}</p>
         </div>
-        {applied ? <Chip tone="solid">Applied</Chip> : null}
+        {applied ? <Chip tone="solid">{tx("Applied")}</Chip> : null}
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[18px] opacity-80">
@@ -233,8 +235,8 @@ function JobListRow({
             {job.location}
           </span>
         ) : null}
-        {job.workMode ? <span>· {humanize(job.workMode)}</span> : null}
-        {job.jobType ? <span>· {humanize(job.jobType)}</span> : null}
+        {job.workMode ? <span>· {tx(humanize(job.workMode))}</span> : null}
+        {job.jobType ? <span>· {tx(humanize(job.jobType))}</span> : null}
       </div>
     </button>
   );
@@ -251,8 +253,9 @@ function JobDetail({
   resumes: ResumeResponse[];
   application?: JobApplicationResponse;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 max-md:min-w-0">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -264,7 +267,7 @@ function JobDetail({
               <GhostChip>{job.categoryName}</GhostChip>
             ) : null}
             {application ? (
-              <Chip tone="solid">{humanize(application.status)}</Chip>
+              <Chip tone="solid">{tx(humanize(application.status))}</Chip>
             ) : null}
             <SaveJobButton jobId={job.id} isFavorite={job.isFavorite} />
           </div>
@@ -276,7 +279,7 @@ function JobDetail({
 
         {job.salaryMin ? (
           <p className="text-right">
-            <span className="block text-xs text-ws-faint">Salary</span>
+            <span className="block text-xs text-ws-faint">{tx("Salary")}</span>
             <span className="text-2xl font-semibold tabular-nums text-ws-fg">
               {money(job.salaryMin)}
               {job.salaryMax ? ` – ${money(job.salaryMax)}` : "+"}
@@ -290,7 +293,7 @@ function JobDetail({
           .filter(Boolean)
           .map((value) => (
             <GhostChip key={value} className="px-3 py-2">
-              {humanize(value)}
+              {tx(humanize(value))}
             </GhostChip>
           ))}
       </div>
@@ -301,14 +304,14 @@ function JobDetail({
 
       {job.skills.length ? (
         <Panel>
-          <h3 className="mb-3 text-[18px] font-semibold">Skills</h3>
+          <h3 className="mb-3 text-[18px] font-semibold">{tx("Skills")}</h3>
           <div className="flex flex-wrap gap-2">
             {job.skills.map((skill) => (
               <Chip key={skill.id} tone="quiet">
                 {skill.skillName}
                 {skill.requiredLevel ? (
                   <span className="opacity-60">
-                    {humanize(skill.requiredLevel)}
+                    {tx(humanize(skill.requiredLevel))}
                   </span>
                 ) : null}
               </Chip>
@@ -319,7 +322,7 @@ function JobDetail({
 
       {job.description ? (
         <Panel>
-          <h3 className="mb-3 text-[18px] font-semibold">About the role</h3>
+          <h3 className="mb-3 text-[18px] font-semibold">{tx("About the role")}</h3>
           <Markdown content={job.description} />
         </Panel>
       ) : null}
@@ -348,6 +351,7 @@ function AiInterviewPanel({
   job: PublicJobResponse;
   application?: JobApplicationResponse;
 }) {
+  const tx = useWorkspaceTranslation();
   const router = useRouter();
   const [createForJob, jobCreation] = useCreateAiInterviewForJobMutation();
   const [createForApplication, applicationCreation] =
@@ -373,26 +377,22 @@ function AiInterviewPanel({
 
       router.push(`/job-seeker/interviews/${session.id}`);
     } catch {
-      toast.error("Unable to start an AI interview for this role.");
+      toast.error(tx("Unable to start an AI interview for this role."));
     }
   };
 
   return (
-    <Panel tone="soft" className="flex flex-wrap items-center gap-4">
+    <Panel tone="soft" className="flex flex-wrap items-center gap-4 max-md:grid max-md:grid-cols-[2.75rem_minmax(0,1fr)] max-md:items-start">
       <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-chip-solid text-chip-solid-fg">
         <Sparkles aria-hidden="true" className="size-5" />
       </span>
 
       <div className="min-w-0 flex-1">
         <h3 className="text-[18px] font-semibold">
-          {liveApplication
-            ? "Interview for this application"
-            : "Practise this interview"}
+          {liveApplication ? tx("Interview for this application") : tx("Practise this interview")}
         </h3>
         <p className="text-sm opacity-70">
-          {liveApplication
-            ? "Answer the generated questions and the recruiter sees your score."
-            : "A scored mock round, generated from this job post. It does not apply you."}
+          {liveApplication ? tx("Answer the generated questions and the recruiter sees your score.") : tx("A scored mock round, generated from this job post. It does not apply you.")}
         </p>
       </div>
 
@@ -400,9 +400,9 @@ function AiInterviewPanel({
         type="button"
         onClick={start}
         disabled={pending}
-        className="flex items-center gap-2 rounded-full bg-ws-fg px-5 py-3 text-sm font-semibold text-ws-panel transition-transform hover:scale-105 disabled:pointer-events-none disabled:opacity-50"
+        className="flex items-center gap-2 rounded-full bg-ws-fg px-5 py-3 text-sm font-semibold text-ws-panel transition-transform hover:scale-105 disabled:pointer-events-none disabled:opacity-50 max-md:col-span-2 max-md:w-full max-md:justify-center"
       >
-        {pending ? "Preparing…" : "Start AI interview"}
+        {pending ? tx("Preparing…") : tx("Start AI interview")}
         <ArrowRight aria-hidden="true" className="size-4" />
       </button>
     </Panel>
@@ -420,6 +420,7 @@ function ApplyPanel({
   resumes: ResumeResponse[];
   application?: JobApplicationResponse;
 }) {
+  const tx = useWorkspaceTranslation();
   const defaultResume =
     resumes.find((resume) => resume.isDefault) ?? resumes[0];
   const [resumeId, setResumeId] = useState(
@@ -435,19 +436,19 @@ function ApplyPanel({
   // apply again.
   if (application && !closedAttempt) {
     return (
-      <Panel className="flex flex-wrap items-center gap-3">
+      <Panel className="flex flex-wrap items-center gap-3 max-md:grid max-md:grid-cols-[2.25rem_minmax(0,1fr)]">
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-chip-solid text-chip-solid-fg">
           <Check aria-hidden="true" className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold">
-            Applied {formatDate(application.appliedAt)}
+            {tx("Applied ")}{formatDate(application.appliedAt)}
           </p>
           <p className="text-xs text-ws-faint">
-            {application.resumeTitle || "No resume attached"}
+            {application.resumeTitle || tx("No resume attached")}
           </p>
         </div>
-        <Chip tone="quiet">{humanize(application.status)}</Chip>
+        <Chip tone="quiet" className="max-md:col-span-2 max-md:max-w-full max-md:justify-self-start">{tx(humanize(application.status))}</Chip>
       </Panel>
     );
   }
@@ -463,13 +464,13 @@ function ApplyPanel({
           coverLetter: coverLetter.trim() || undefined,
         },
       }).unwrap();
-      toast.success("Application submitted.");
+      toast.success(tx("Application submitted."));
       setCoverLetter("");
     } catch (error) {
       // The API's reason is specific — an open application, or a cooldown that
       // has not elapsed — and worth showing verbatim.
       toast.error(
-        getApiErrorMessage(error, "Unable to submit the application."),
+        getApiErrorMessage(error, tx("Unable to submit the application.")),
       );
     }
   };
@@ -477,36 +478,34 @@ function ApplyPanel({
   return (
     <Panel>
       {closedAttempt && application ? (
-        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl bg-ws-card-hover px-4 py-3">
+        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl bg-ws-card-hover px-4 py-3 max-md:flex-col max-md:items-start">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold">
-              Previous attempt {formatDate(application.appliedAt)}
+              {tx("Previous attempt ")}{formatDate(application.appliedAt)}
             </p>
             <p className="text-xs text-ws-faint">
-              You can apply to this role again.
-            </p>
+              {tx("You can apply to this role again.")}</p>
           </div>
-          <Chip tone="alert">{humanize(application.status)}</Chip>
+          <Chip tone="alert">{tx(humanize(application.status))}</Chip>
         </div>
       ) : null}
 
       <h3 className="mb-4 flex items-center gap-2 text-[18px] font-semibold">
         <Briefcase aria-hidden="true" className="size-4" />
-        {closedAttempt ? "Apply again" : "Apply"}
+        {closedAttempt ? tx("Apply again") : tx("Apply")}
       </h3>
 
       <form className="flex flex-col gap-3" onSubmit={submit}>
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ws-muted">
-          Resume
-          <Select value={resumeId || null} onValueChange={(value) => setResumeId(value ?? "")}>
+          {tx("Resume")}<Select value={resumeId || null} onValueChange={(value) => setResumeId(value ?? "")}>
             <SelectTrigger className="w-full border-none bg-ws-card-hover text-ws-fg">
-              <SelectValue placeholder="No resume" />
+              <SelectValue placeholder={tx("No resume")} />
             </SelectTrigger>
             <SelectContent>
               {resumes.map((resume) => (
                 <SelectItem key={resume.id} value={resume.id}>
                   {resume.title}
-                  {resume.isDefault ? " (default)" : ""}
+                  {resume.isDefault ? tx(" (default)") : ""}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -514,13 +513,12 @@ function ApplyPanel({
         </label>
 
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ws-muted">
-          Cover letter
-          <textarea
+          {tx("Cover letter")}<textarea
             value={coverLetter}
             onChange={(event) => setCoverLetter(event.target.value)}
             maxLength={5000}
             rows={4}
-            placeholder="Optional — why you are a fit for this role"
+            placeholder={tx("Optional — why you are a fit for this role")}
             className="resize-y rounded-2xl bg-ws-card-hover px-4 py-3 text-sm text-ws-fg outline-none placeholder:text-ws-faint focus-visible:ring-2 focus-visible:ring-primary"
           />
         </label>
@@ -530,7 +528,7 @@ function ApplyPanel({
           disabled={submission.isLoading}
           className="mt-1 self-start rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105 disabled:pointer-events-none disabled:opacity-50"
         >
-          {submission.isLoading ? "Submitting…" : "Submit application"}
+          {submission.isLoading ? tx("Submitting…") : tx("Submit application")}
         </button>
       </form>
     </Panel>

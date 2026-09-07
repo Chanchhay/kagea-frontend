@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useRef, useState } from "react";
 import { Loader2, Upload } from "lucide-react";
@@ -19,13 +21,14 @@ const ACCEPTED = [
  * the scope limit the backend enforces too.
  */
 export function UploadResumeButton() {
+  const tx = useWorkspaceTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploadResume, { isLoading }] = useUploadOwnResumeMutation();
   const [dragging, setDragging] = useState(false);
 
   async function send(file: File) {
     if (!ACCEPTED.includes(file.type)) {
-      toast.error("Upload a PDF or a DOCX file.");
+      toast.error(tx("Upload a PDF or a DOCX file."));
       return;
     }
 
@@ -34,9 +37,9 @@ export function UploadResumeButton() {
 
     try {
       await uploadResume({ title, file }).unwrap();
-      toast.success("Resume uploaded.");
+      toast.success(tx("Resume uploaded."));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Could not upload the file."));
+      toast.error(getApiErrorMessage(error, tx("Could not upload the file.")));
     }
   }
 
@@ -68,8 +71,7 @@ export function UploadResumeButton() {
         ) : (
           <Upload aria-hidden="true" className="size-5" />
         )}
-        Upload existing
-      </button>
+        {tx("Upload existing")}</button>
 
       <input
         ref={inputRef}

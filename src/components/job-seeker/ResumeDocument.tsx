@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { normalizeResumeData, type ResumeData } from "@/lib/resume-data";
@@ -25,6 +27,7 @@ export function ResumeDocument({ title, data }: { title: string; data: ResumeSou
  * than one page still show in full.
  */
 export function ResumePreview({ title, data, className = "" }: { title: string; data: ResumeSource; className?: string }) {
+  const tx = useWorkspaceTranslation();
   const frameRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -60,7 +63,7 @@ export function ResumePreview({ title, data, className = "" }: { title: string; 
           style={{ width: A4_WIDTH, transform: `scale(${scale})`, transformOrigin: "top left" }}
           className="absolute left-0 top-0"
         >
-          <ResumeDocument title={title} data={data} />
+          <ResumeDocument title={tx(title)} data={data} />
         </div>
       </div>
     </div>

@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
 import { useState } from "react";
@@ -11,11 +13,12 @@ import { formatMoney } from "@/lib/money";
 import { useGetMyInvoicesQuery } from "@/services/financeApi";
 
 export default function InvoicesPage() {
+  const tx = useWorkspaceTranslation();
   const [page, setPage] = useState(0);
   const query = useGetMyInvoicesQuery({ page });
 
   if (query.isLoading) return <LoadingState rows={5} />;
-  if (query.isError) return <ErrorState message="Unable to load invoices." />;
+  if (query.isError) return <ErrorState message={tx("Unable to load invoices.")} />;
 
   const invoices = query.data?.content ?? [];
   const totalPages = query.data?.totalPages ?? 1;
@@ -23,17 +26,16 @@ export default function InvoicesPage() {
   return (
     <div className="mx-auto max-w-6xl">
       <PageIntro
-        title="Invoices"
-        description="Placement commissions billed to your company."
+        title={tx("Invoices")}
+        description={tx("Placement commissions billed to your company.")}
       />
 
       {invoices.length === 0 ? (
         <div className="rounded-[24px] bg-ws-card px-6 py-16 text-center">
           <ReceiptText className="mx-auto size-10 text-ws-faint" />
-          <h2 className="mt-4 font-semibold text-ws-fg">No invoices</h2>
+          <h2 className="mt-4 font-semibold text-ws-fg">{tx("No invoices")}</h2>
           <p className="mt-2 text-sm text-ws-muted">
-            Invoices appear here once a hire has been confirmed and billed.
-          </p>
+            {tx("Invoices appear here once a hire has been confirmed and billed.")}</p>
         </div>
       ) : (
         <>
@@ -53,8 +55,7 @@ export default function InvoicesPage() {
                   </div>
                   <p className="mt-1 text-xs text-ws-muted">
                     {invoice.items.length}{" "}
-                    {invoice.items.length === 1 ? "placement" : "placements"} ·
-                    due {formatDate(invoice.dueAt)}
+                    {invoice.items.length === 1 ? tx("placement") : tx("placements")} {tx(" · due ")}{formatDate(invoice.dueAt)}
                   </p>
                 </div>
 
@@ -65,8 +66,7 @@ export default function InvoicesPage() {
                   {invoice.outstandingAmount > 0 ? (
                     <p className="text-[18px] text-ws-faint">
                       {formatMoney(invoice.outstandingAmount, invoice.currency)}{" "}
-                      outstanding
-                    </p>
+                      {tx("outstanding")}</p>
                   ) : null}
                 </div>
 
@@ -83,10 +83,9 @@ export default function InvoicesPage() {
                 disabled={page === 0}
                 className="h-10 rounded-xl bg-ws-card px-4 text-sm font-semibold text-ws-fg disabled:opacity-40"
               >
-                Previous
-              </button>
+                {tx("Previous")}</button>
               <span className="text-xs text-ws-muted">
-                Page {page + 1} of {totalPages}
+                {tx("Page ")}{page + 1} {tx(" of ")}{totalPages}
               </span>
               <button
                 type="button"
@@ -96,8 +95,7 @@ export default function InvoicesPage() {
                 disabled={page >= totalPages - 1}
                 className="h-10 rounded-xl bg-ws-card px-4 text-sm font-semibold text-ws-fg disabled:opacity-40"
               >
-                Next
-              </button>
+                {tx("Next")}</button>
             </div>
           ) : null}
         </>

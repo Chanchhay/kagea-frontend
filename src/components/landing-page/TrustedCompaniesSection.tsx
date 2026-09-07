@@ -88,23 +88,6 @@ export default function TrustedCompaniesSection() {
     : [];
 
   return (
-<<<<<<< HEAD
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 sm:py-10">
-      <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-        {/* Left Content */}
-        <div className="min-w-0 space-y-6">
-          {/* Badge & Label */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true, margin: '-100px' }}
-            data-reveal
-            className="flex items-center gap-2.5"
-          >
-            <span className="rounded-md bg-emerald-100 dark:bg-emerald-950/60 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-              Companies
-=======
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 sm:py-14">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -120,75 +103,14 @@ export default function TrustedCompaniesSection() {
             <span className="mt-[0.55em] h-1.5 w-1.5 shrink-0 rounded-full bg-slate-900 dark:bg-white" />
             <span className="text-sm font-medium text-slate-900 dark:text-white">
               Who we work with
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
             </span>
           </div>
 
-<<<<<<< HEAD
-          {/* Heading */}
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
-            viewport={{ once: true, margin: '-100px' }}
-            data-reveal
-            className="break-words text-3xl font-extrabold leading-tight tracking-tight text-[#F3BE00] sm:text-4xl lg:text-5xl"
-          >
-            Get noticed by leading companies
-          </motion.h2>
-
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            viewport={{ once: true, margin: '-100px' }}
-            data-reveal
-            className="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-300 max-w-xl"
-          >
-            We collaborate with top organizations to bring you the best job opportunities, connecting you with leading employers who value your skills and expertise.
-          </motion.p>
-
-          {/* Bullet List with Green Number Badges */}
-          <motion.div
-            data-stagger
-            className="space-y-4 pt-2"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-50px' }}
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { staggerChildren: 0.1, delayChildren: 0.3 },
-              },
-            }}
-          >
-            {points.map((text, idx) => (
-              <motion.div
-                key={idx}
-                variants={{
-                  hidden: { opacity: 0, y: 12 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-                }}
-                className="flex items-start gap-3.5"
-              >
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#008A1E] text-xs font-bold text-white shadow-xs mt-0.5">
-                  {idx + 1}
-                </div>
-                <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200">
-                  {text}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-=======
           <h2 className="text-2xl font-medium leading-[1.25] tracking-tight text-slate-900 sm:text-3xl lg:text-[2.5rem] dark:text-white">
             We work with ambitious employers across Cambodia — teams whose hiring
             has outgrown word of mouth, and who need the right people faster than
             the market can find them.
           </h2>
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
         </div>
 
         {/* Clients */}

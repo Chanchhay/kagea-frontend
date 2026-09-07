@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
 import { PageIntro, PlainCard, PrimaryLink, StatusPill } from "@/components/shared/ApiCards";
@@ -18,12 +20,13 @@ const continueLabels: Record<string, string> = {
 };
 
 export default function InterviewsPage() {
+  const tx = useWorkspaceTranslation();
   const interviewsQuery = useGetAiInterviewsQuery();
   if (interviewsQuery.isLoading) return <LoadingState rows={5} />;
   if (interviewsQuery.isError)
     return (
       <ErrorState
-        message="Unable to load AI interviews."
+        message={tx("Unable to load AI interviews.")}
         onRetry={() => interviewsQuery.refetch()}
       />
     );
@@ -32,14 +35,14 @@ export default function InterviewsPage() {
   return (
     <>
       <PageIntro
-        title="AI interviews"
-        description="Practice interviews generated from the jobs you are interested in."
+        title={tx("AI interviews")}
+        description={tx("Practice interviews generated from the jobs you are interested in.")}
       />
       {aiInterviews.length === 0 ? (
         <EmptyState
-          title="No AI interviews yet"
-          description="Open a job posting and start a practice interview to see it here."
-          action={<PrimaryLink href="/jobs">Browse jobs</PrimaryLink>}
+          title={tx("No AI interviews yet")}
+          description={tx("Open a job posting and start a practice interview to see it here.")}
+          action={<PrimaryLink href="/jobs">{tx("Browse jobs")}</PrimaryLink>}
         />
       ) : (
         <div className="grid gap-4">
@@ -56,16 +59,15 @@ export default function InterviewsPage() {
                     <h2 className="text-[20px] font-medium leading-snug text-heading">
                       {interview.jobTitle}
                     </h2>
-                    <StatusPill>{interview.status}</StatusPill>
+                    <StatusPill>{tx(interview.status)}</StatusPill>
                   </div>
                   <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-body">
                     <span>
-                      {interview.answeredCount ?? 0} of {interview.questionCount ?? 0}{" "}
-                      questions answered
-                    </span>
+                      {interview.answeredCount ?? 0} {tx(" of ")}{interview.questionCount ?? 0}{" "}
+                      {tx("questions answered")}</span>
                     {interview.status === "COMPLETED" ? (
                       <span className="font-semibold text-heading">
-                        Score {interview.totalScore}
+                        {tx("Score ")}{interview.totalScore}
                       </span>
                     ) : null}
                     <span className="font-semibold text-brand">

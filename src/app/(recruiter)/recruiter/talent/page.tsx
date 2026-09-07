@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useState } from "react";
 import Link from "next/link";
@@ -30,6 +32,7 @@ import {
 import { useGetTalentQuery } from "@/services/recruiterApi";
 
 export default function TalentDiscoveryPage() {
+  const tx = useWorkspaceTranslation();
   const [keyword, setKeyword] = useState("");
   const [preferredLocation, setPreferredLocation] = useState("");
   const [availabilityStatus, setAvailabilityStatus] = useState<string>("ALL");
@@ -63,8 +66,8 @@ export default function TalentDiscoveryPage() {
     <div className="space-y-6">
       <PageIntro
         eyebrow="GET /api/v1/recruiter/talent"
-        title="Talent Discovery"
-        description="Explore published job-seeker profiles open for recruitment and candidate sourcing."
+        title={tx("Talent Discovery")}
+        description={tx("Explore published job-seeker profiles open for recruitment and candidate sourcing.")}
       />
 
       {/* Filter and Search Bar */}
@@ -77,7 +80,7 @@ export default function TalentDiscoveryPage() {
                 <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                 <Input
                   type="text"
-                  placeholder="Search headline, skills, position..."
+                  placeholder={tx("Search headline, skills, position...")}
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                   className="h-11 rounded-xl pl-10"
@@ -89,7 +92,7 @@ export default function TalentDiscoveryPage() {
                 <MapPin className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                 <Input
                   type="text"
-                  placeholder="Location (e.g. Remote, HCMC)..."
+                  placeholder={tx("Location (e.g. Remote, HCMC)...")}
                   value={preferredLocation}
                   onChange={(e) => setPreferredLocation(e.target.value)}
                   className="h-11 rounded-xl pl-10"
@@ -106,14 +109,14 @@ export default function TalentDiscoveryPage() {
                   }}
                 >
                   <SelectTrigger className="h-11 w-full rounded-xl">
-                    <SelectValue placeholder="Availability status" />
+                    <SelectValue placeholder={tx("Availability status")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ALL">All Availability Statuses</SelectItem>
-                    <SelectItem value="Actively Looking">Actively Looking</SelectItem>
-                    <SelectItem value="Open to Offers">Open to Offers</SelectItem>
-                    <SelectItem value="Notice Period Required">Serving Notice Period</SelectItem>
-                    <SelectItem value="Not Available">Not Available</SelectItem>
+                    <SelectItem value="ALL">{tx("All Availability Statuses")}</SelectItem>
+                    <SelectItem value="Actively Looking">{tx("Actively Looking")}</SelectItem>
+                    <SelectItem value="Open to Offers">{tx("Open to Offers")}</SelectItem>
+                    <SelectItem value="Notice Period Required">{tx("Serving Notice Period")}</SelectItem>
+                    <SelectItem value="Not Available">{tx("Not Available")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -121,7 +124,7 @@ export default function TalentDiscoveryPage() {
 
             <div className="flex items-center justify-between border-t border-border/60 pt-3">
               <span className="text-xs text-slate-500">
-                {talentPage ? `${talentPage.totalElements} candidate(s) found` : "Searching candidates..."}
+                {talentPage ? `${talentPage.totalElements} candidate(s) found` : tx("Searching candidates...")}
               </span>
               <div className="flex items-center gap-2">
                 {(keyword || preferredLocation || availabilityStatus !== "ALL") && (
@@ -132,13 +135,11 @@ export default function TalentDiscoveryPage() {
                     onClick={clearFilters}
                     className="h-9 rounded-lg text-slate-600"
                   >
-                    Clear Filters
-                  </Button>
+                    {tx("Clear Filters")}</Button>
                 )}
                 <Button type="submit" size="sm" className="h-9 rounded-lg bg-brand px-5 text-white">
                   <Filter className="mr-1.5 size-3.5" />
-                  Filter Candidates
-                </Button>
+                  {tx("Filter Candidates")}</Button>
               </div>
             </div>
           </form>
@@ -149,11 +150,11 @@ export default function TalentDiscoveryPage() {
       {talentQuery.isLoading ? (
         <LoadingState rows={6} />
       ) : talentQuery.isError ? (
-        <ErrorState message="Unable to load public candidate profiles. Please try again." />
+        <ErrorState message={tx("Unable to load public candidate profiles. Please try again.")} />
       ) : talents.length === 0 ? (
         <EmptyState
-          title="No candidates match your criteria"
-          description="Try broadening your search keywords or location filters."
+          title={tx("No candidates match your criteria")}
+          description={tx("Try broadening your search keywords or location filters.")}
         />
       ) : (
         <div className="grid gap-4">
@@ -167,7 +168,7 @@ export default function TalentDiscoveryPage() {
                   <div className="space-y-2 min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-lg font-semibold tracking-tight text-heading group-hover:text-brand">
-                        {talent.headline || "Published Candidate"}
+                        {talent.headline || tx("Published Candidate")}
                       </h3>
                       {talent.availabilityStatus && (
                         <StatusPill>{talent.availabilityStatus}</StatusPill>
@@ -215,8 +216,7 @@ export default function TalentDiscoveryPage() {
                       className="h-10 rounded-xl px-5 font-medium border-border hover:border-brand hover:text-brand"
                     >
                       <UserRound className="mr-1.5 size-4" />
-                      View Profile
-                    </Button>
+                      {tx("View Profile")}</Button>
                   </div>
                 </div>
               </CardContent>
@@ -227,7 +227,7 @@ export default function TalentDiscoveryPage() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4">
               <p className="text-xs text-slate-500">
-                Page {page + 1} of {totalPages}
+                {tx("Page ")}{page + 1} {tx(" of ")}{totalPages}
               </p>
               <div className="flex items-center gap-2">
                 <Button
@@ -238,8 +238,7 @@ export default function TalentDiscoveryPage() {
                   className="h-9 rounded-lg"
                 >
                   <ChevronLeft className="mr-1 size-4" />
-                  Previous
-                </Button>
+                  {tx("Previous")}</Button>
                 <Button
                   variant="outline"
                   size="sm"
@@ -247,8 +246,7 @@ export default function TalentDiscoveryPage() {
                   onClick={() => setPage((p) => p + 1)}
                   className="h-9 rounded-lg"
                 >
-                  Next
-                  <ChevronRight className="ml-1 size-4" />
+                  {tx("Next")}<ChevronRight className="ml-1 size-4" />
                 </Button>
               </div>
             </div>

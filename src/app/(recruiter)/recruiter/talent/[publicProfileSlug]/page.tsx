@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Image from "next/image";
 import Link from "next/link";
@@ -28,6 +30,7 @@ import { hasResumeContent } from "@/lib/resume-data";
 import { useGetTalentDetailQuery } from "@/services/recruiterApi";
 
 export default function TalentDetailPage() {
+  const tx = useWorkspaceTranslation();
   const { publicProfileSlug } = useParams<{ publicProfileSlug: string }>();
   const talentQuery = useGetTalentDetailQuery(publicProfileSlug);
 
@@ -36,7 +39,7 @@ export default function TalentDetailPage() {
     return (
       <div className="space-y-4">
         <BackLink />
-        <ErrorState message="Unable to load this public candidate profile." />
+        <ErrorState message={tx("Unable to load this public candidate profile.")} />
       </div>
     );
   }
@@ -48,49 +51,44 @@ export default function TalentDetailPage() {
     <div className="mx-auto w-full max-w-7xl space-y-6">
       <div className="flex items-center justify-between gap-4">
         <BackLink />
-        <p className="hidden text-xs font-medium uppercase tracking-[0.14em] text-ws-faint sm:block">Public candidate profile</p>
+        <p className="hidden text-xs font-medium uppercase tracking-[0.14em] text-ws-faint sm:block">{tx("Public candidate profile")}</p>
       </div>
 
       <div>
         <ProfileHero talent={talent} />
         <div className="relative z-10 mx-4 -mt-5 grid gap-3 sm:mx-7 sm:grid-cols-3">
-        <StatTile icon={FileText} value={resumes.length} label={resumes.length === 1 ? "Published resume" : "Published resumes"} />
-        <StatTile icon={FolderGit2} value={portfolios.length} label={portfolios.length === 1 ? "Portfolio" : "Portfolios"} />
-        <StatTile icon={Layers3} value={projectCount} label={projectCount === 1 ? "Project" : "Projects"} />
+        <StatTile icon={FileText} value={resumes.length} label={tx(resumes.length === 1 ? "Published resume" : "Published resumes")} />
+        <StatTile icon={FolderGit2} value={portfolios.length} label={tx(portfolios.length === 1 ? "Portfolio" : "Portfolios")} />
+        <StatTile icon={Layers3} value={projectCount} label={tx(projectCount === 1 ? "Project" : "Projects")} />
         </div>
       </div>
 
       {talent.bio ? (
         <section className="relative overflow-hidden rounded-[22px] border border-ws-line bg-ws-panel p-6 sm:p-7">
           <Quote aria-hidden="true" className="absolute -right-3 -top-3 size-24 text-brand/5" />
-<<<<<<< HEAD
-          <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-primary">About this candidate</h2>
+          <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-primary">{tx("About this candidate")}</h2>
           <p className="relative mt-3 max-w-4xl whitespace-pre-wrap text-[15px] leading-7 text-ws-muted">
-=======
-          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">About this candidate</h2>
-          <p className="relative mt-4 max-w-3xl whitespace-pre-wrap text-[18px] leading-7 text-slate-700 dark:text-slate-300">
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
             {talent.bio}
           </p>
         </section>
       ) : null}
 
       <section className="rounded-[26px] border border-ws-line bg-ws-panel p-5 sm:p-7">
-        <SectionHeading icon={FileText} title="Published resumes" count={resumes.length} />
+        <SectionHeading icon={FileText} title={tx("Published resumes")} count={resumes.length} />
         {resumes.length ? (
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             {resumes.map((resume) => <ResumeCard key={resume.id} resume={resume} slug={publicProfileSlug} />)}
           </div>
-        ) : <div className="mt-5"><EmptyPanel icon={FileText} message="This candidate has not published any resumes yet." /></div>}
+        ) : <div className="mt-5"><EmptyPanel icon={FileText} message={tx("This candidate has not published any resumes yet.")} /></div>}
       </section>
 
       <section className="rounded-[26px] border border-ws-line bg-ws-panel p-5 sm:p-7">
-        <SectionHeading icon={FolderGit2} title="Portfolios and projects" count={portfolios.length} />
+        <SectionHeading icon={FolderGit2} title={tx("Portfolios and projects")} count={portfolios.length} />
         {portfolios.length ? (
           <div className="mt-5 grid gap-5 lg:grid-cols-2">
             {portfolios.map((portfolio) => <PortfolioBlock key={portfolio.id} portfolio={portfolio} />)}
           </div>
-        ) : <div className="mt-5"><EmptyPanel icon={FolderGit2} message="This candidate has not published any portfolios yet." /></div>}
+        ) : <div className="mt-5"><EmptyPanel icon={FolderGit2} message={tx("This candidate has not published any portfolios yet.")} /></div>}
       </section>
     </div>
   );
@@ -98,6 +96,7 @@ export default function TalentDetailPage() {
 
 /** Banner: portrait, headline, and the facts a recruiter screens on first. */
 function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
+  const tx = useWorkspaceTranslation();
   const avatar = resolveFileUrl(talent.avatarUrl);
   const initial = (talent.headline || talent.currentPosition || "?").trim().charAt(0).toUpperCase();
   const showSalary = talent.salaryVisibility === "PUBLIC" && (talent.expectedSalaryMin || talent.expectedSalaryMax);
@@ -120,23 +119,15 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
               className="size-24 shrink-0 rounded-3xl border-4 border-ws-panel bg-ws-card object-cover ring-1 ring-ws-line sm:size-28"
             />
           ) : (
-<<<<<<< HEAD
             <span className="flex size-24 shrink-0 items-center justify-center rounded-3xl border-4 border-ws-panel bg-primary/10 text-3xl font-bold text-primary ring-1 ring-ws-line sm:size-28">
-=======
-            <span className="flex size-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-brand-tint text-3xl font-semibold text-brand shadow-md sm:size-26 dark:border-slate-800">
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
               {initial}
             </span>
           )}
 
           <div className="min-w-0 flex-1">
-<<<<<<< HEAD
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Talent profile</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">{tx("Talent profile")}</p>
             <h1 className="mt-1 text-2xl font-bold tracking-tight text-ws-fg sm:text-3xl">
-=======
-            <h1 className="text-2xl font-semibold tracking-tight text-heading sm:text-[28px]">
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
-              {talent.headline || "Candidate profile"}
+              {talent.headline || tx("Candidate profile")}
             </h1>
             {talent.currentPosition ? (
               <p className="mt-2 flex items-center gap-2 text-sm font-medium text-ws-muted">
@@ -149,7 +140,7 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
           {talent.availabilityStatus ? (
             <span className="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-primary/10 px-3 py-2 text-xs font-semibold text-primary ring-1 ring-primary/20">
               <BadgeCheck className="size-3.5" />
-              {formatEnum(talent.availabilityStatus)}
+              {tx(formatEnum(talent.availabilityStatus))}
             </span>
           ) : null}
         </div>
@@ -170,6 +161,7 @@ function ProfileHero({ talent }: { talent: PublicTalentListItemResponse }) {
 
 /** Recruiters see resume metadata first; the full document stays behind download. */
 function ResumeCard({ resume, slug }: { resume: PublicResumeResponse; slug: string }) {
+  const tx = useWorkspaceTranslation();
   const isBuilt = !resume.resumeFileUrl && hasResumeContent(resume.resumeData);
 
   return (
@@ -182,15 +174,15 @@ function ResumeCard({ resume, slug }: { resume: PublicResumeResponse; slug: stri
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="truncate font-semibold text-heading">{resume.title}</h3>
           {resume.isDefault ? (
-            <span className="shrink-0 rounded-full bg-brand-tint px-2 py-0.5 text-[18px] font-semibold text-brand">Default</span>
+            <span className="shrink-0 rounded-full bg-brand-tint px-2 py-0.5 text-[18px] font-semibold text-brand">{tx("Default")}</span>
           ) : null}
         </div>
-        <p className="mt-1 text-xs text-slate-500">{isBuilt ? "Created in Kagea" : "PDF resume"}</p>
+        <p className="mt-1 text-xs text-slate-500">{isBuilt ? tx("Created in Kagea") : tx("PDF resume")}</p>
 
         {resume.publishedAt ? (
           <p className="mt-2 flex items-center gap-1 text-xs text-slate-500">
             <Calendar className="size-3" />
-            Published {new Date(resume.publishedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
+            {tx("Published ")}{new Date(resume.publishedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
           </p>
         ) : null}
       </div>
@@ -198,7 +190,7 @@ function ResumeCard({ resume, slug }: { resume: PublicResumeResponse; slug: stri
       {resume.resumeFileUrl ? (
         <ResumeDownloadButton slug={slug} resumeId={resume.id} title={resume.title} />
       ) : (
-        <span className="shrink-0 text-xs text-slate-500">No PDF attached</span>
+        <span className="shrink-0 text-xs text-slate-500">{tx("No PDF attached")}</span>
       )}
     </article>
   );
@@ -206,6 +198,7 @@ function ResumeCard({ resume, slug }: { resume: PublicResumeResponse; slug: stri
 
 /** Portfolios are shared as web links; unlike resumes, they are not documents. */
 function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
+  const tx = useWorkspaceTranslation();
   const projects = [...(portfolio.projects ?? [])].sort((a, b) => a.displayOrder - b.displayOrder);
   const linked = projects.filter((project) => project.projectUrl || project.githubUrl);
 
@@ -215,7 +208,7 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
         <div className="min-w-0">
           <h3 className="truncate text-base font-semibold text-heading">{portfolio.title}</h3>
           <p className="mt-0.5 text-xs text-slate-500">
-            {projects.length} {projects.length === 1 ? "project" : "projects"}
+            {projects.length} {projects.length === 1 ? tx("project") : tx("projects")}
           </p>
         </div>
       </div>
@@ -228,14 +221,14 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
           className="group mt-4 flex items-center justify-between gap-4 rounded-2xl border border-ws-line bg-ws-panel p-4 transition hover:border-primary/40 hover:bg-primary/5"
         >
           <div className="min-w-0">
-            <p className="font-semibold text-heading">Open portfolio</p>
+            <p className="font-semibold text-heading">{tx("Open portfolio")}</p>
             <p className="mt-1 truncate text-sm text-slate-500">{portfolio.publicUrl}</p>
           </div>
           <ExternalLink className="size-5 shrink-0 text-brand transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </a>
       ) : (
         <div className="mt-4 rounded-2xl border border-dashed border-ws-line bg-ws-panel px-5 py-4">
-          <p className="text-sm text-slate-500">No portfolio website link was provided.</p>
+          <p className="text-sm text-slate-500">{tx("No portfolio website link was provided.")}</p>
         </div>
       )}
 
@@ -246,13 +239,11 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
               <span className="font-semibold text-heading">{project.title}</span>
               {project.projectUrl ? (
                 <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-0.5 text-brand hover:underline">
-                  <ExternalLink className="size-3" /> Live
-                </a>
+                  <ExternalLink className="size-3" /> {tx(" Live")}</a>
               ) : null}
               {project.githubUrl ? (
                 <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-0.5 text-slate-700 hover:underline dark:text-slate-300">
-                  <Code2 className="size-3" /> Code
-                </a>
+                  <Code2 className="size-3" /> {tx(" Code")}</a>
               ) : null}
             </span>
           ))}
@@ -263,11 +254,11 @@ function PortfolioBlock({ portfolio }: { portfolio: PublicPortfolioResponse }) {
 }
 
 function BackLink() {
+  const tx = useWorkspaceTranslation();
   return (
     <Button render={<Link href="/recruiter/talent" />} variant="outline" size="sm" className="rounded-xl border-border text-slate-600">
       <ArrowLeft className="mr-1.5 size-4" />
-      Back to Talent Discovery
-    </Button>
+      {tx("Back to Talent Discovery")}</Button>
   );
 }
 
@@ -285,6 +276,7 @@ function SectionHeading({ icon: Icon, title, count }: { icon: typeof FileText; t
 }
 
 function StatTile({ icon: Icon, value, label }: { icon: typeof FileText; value: number; label: string }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div className="flex items-center gap-4 rounded-2xl border border-ws-line bg-ws-panel p-4 shadow-[0_14px_35px_-28px_rgba(15,23,42,.5)] sm:p-5">
       <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -292,7 +284,7 @@ function StatTile({ icon: Icon, value, label }: { icon: typeof FileText; value: 
       </span>
       <div>
         <p className="text-2xl font-semibold leading-none text-heading">{value}</p>
-        <p className="mt-1.5 text-xs text-slate-500">{label}</p>
+        <p className="mt-1.5 text-xs text-slate-500">{tx(label)}</p>
       </div>
     </div>
   );

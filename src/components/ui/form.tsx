@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
 import {
@@ -149,6 +150,7 @@ const FormMessage = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
   const { error, formMessageId } = useFormField()
+  const tx = useWorkspaceTranslation()
   const body = error ? String(error?.message) : null
 
   if (!body) {
@@ -162,7 +164,7 @@ const FormMessage = React.forwardRef<
       className={cn("text-sm font-medium text-destructive", className)}
       {...props}
     >
-      {body}
+      {tx(body)}
     </p>
   )
 })

@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { RecruiterWorkspace } from "@/components/recruiter/workspace/RecruiterWorkspace";
 import { ErrorState } from "@/components/shared/ErrorState";
@@ -12,6 +14,7 @@ import {
 } from "@/services/recruiterApi";
 
 export default function RecruiterOverviewPage() {
+  const tx = useWorkspaceTranslation();
   const currentUserQuery = useGetCurrentUserQuery();
   const companyQuery = useGetRecruiterCompanyQuery();
   const jobsQuery = useGetRecruiterJobsQuery();
@@ -30,7 +33,7 @@ export default function RecruiterOverviewPage() {
 
   if (queries.some((query) => query.isLoading)) return <LoadingState rows={8} />;
   if (queries.some((query) => query.isError) || !companyQuery.data) {
-    return <ErrorState message="Unable to load your workspace." />;
+    return <ErrorState message={tx("Unable to load your workspace.")} />;
   }
 
   return (

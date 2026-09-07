@@ -6,11 +6,11 @@ import { ArrowUpRight, Bookmark, BriefcaseBusiness, ChevronLeft, ChevronRight, M
 import type { PublicJobFacetOption, PublicJobFacetValue, PublicJobResponse } from "@/contracts";
 import { PublicFooter, PublicShell } from "@/components/layout/PublicShell";
 import { ErrorState } from "@/components/shared/ErrorState";
-import { experienceLevelOptions, jobTypeOptions, workModeOptions } from "@/lib/job-options";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { PublicJobsQuery } from "@/services/publicApi";
 import { useGetPublicJobFacetsQuery, useGetPublicJobsQuery } from "@/services/publicApi";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 type SortOrder = "newest" | "salary" | "title";
 
@@ -19,15 +19,17 @@ const PAGE_SIZE = 12;
 /** Skills shown before the group folds into a "Show all"; the API sends 25. */
 const SKILLS_SHOWN = 8;
 
-/** Display names for the values the API reports, keyed by the raw value. */
-const knownLabels: Record<string, string> = Object.fromEntries(
-  [...jobTypeOptions, ...workModeOptions, ...experienceLevelOptions].map((option) => [option.value, option.label]),
-);
+/** i18n keys for the values the API reports, keyed by the raw value. */
+const knownLabelKeys: Record<string, string> = {
+  FULL_TIME: "jobs.fullTime", PART_TIME: "jobs.partTime", CONTRACT: "jobs.contract", INTERNSHIP: "jobs.internship", TEMPORARY: "jobs.temporary",
+  ONSITE: "jobs.onSite", HYBRID: "jobs.hybrid", REMOTE: "jobs.remote",
+  ENTRY: "jobs.entryLevel", JUNIOR: "jobs.junior", MID: "jobs.midLevel", SENIOR: "jobs.senior", LEAD: "jobs.lead",
+};
 
-const postedWithinLabels: Record<string, string> = {
-  "1": "Last 24 hours",
-  "7": "Last 7 days",
-  "30": "Last 30 days",
+const postedWithinKeys: Record<string, string> = {
+  "1": "findJobsPage.last24Hours",
+  "7": "findJobsPage.last7Days",
+  "30": "findJobsPage.last30Days",
 };
 
 const emptyFacets = {
@@ -49,6 +51,7 @@ const sortParams: Record<SortOrder, string> = {
 };
 
 export default function PublicJobsPage() {
+  const { t } = useLocale();
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState("");
@@ -130,127 +133,86 @@ export default function PublicJobsPage() {
 
   return (
     <PublicShell>
-<<<<<<< HEAD
-      <main className="jobs-page min-h-screen bg-[#FCFCFC] text-slate-950 dark:bg-[#0B0F19] dark:text-white">
-        <div className="mx-auto max-w-352 px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
-          <section aria-label="Search jobs" className="relative grid gap-2 overflow-hidden rounded-[22px] border border-slate-200/80 bg-white/95 p-2 shadow-[0_18px_50px_-28px_rgba(15,23,42,.35)] backdrop-blur-xl md:grid-cols-[1.2fr_1.15fr_1fr_1.25fr_auto] md:items-stretch dark:border-[#303741] dark:bg-[#151A24]/95 dark:shadow-[0_22px_55px_-30px_rgba(0,0,0,.9)]">
-            <div aria-hidden="true" className="pointer-events-none absolute inset-x-10 top-0 h-px bg-linear-to-r from-transparent via-[#1FA628]/65 to-transparent" />
-            <SearchField icon={Search} label="Job title or keyword" value={keyword} onChange={setKeyword} />
-            <SearchField icon={MapPin} label="Location" value={location} onChange={setLocation} />
-            <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#1D232E] dark:focus-within:bg-[#1D232E]">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-[#E9F7EB] group-focus-within:text-[#1FA628] dark:bg-[#242B35] dark:text-[#929AA3] dark:group-focus-within:bg-[#1FA628]/10 dark:group-focus-within:text-[#75D47C]"><BriefcaseBusiness className="size-4" /></span>
-              <span className="min-w-0 flex-1"><span className="block text-[10px] font-bold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]">Experience</span>
-              <select value={experience} onChange={(event) => setExperience(event.target.value)} className="mt-0.5 w-full cursor-pointer bg-transparent text-sm font-semibold text-slate-800 outline-none [&>option]:bg-white [&>option]:text-slate-800 dark:text-[#F5F5F5] dark:[color-scheme:dark] dark:[&>option]:bg-[#1D232E] dark:[&>option]:text-[#F5F5F5]">
-                <option value="">Any experience</option><option value="ENTRY">Entry level</option><option value="JUNIOR">Junior</option><option value="MID">Mid level</option><option value="SENIOR">Senior</option><option value="LEAD">Lead</option>
-              </select></span>
-=======
       <main className="min-h-screen bg-white text-slate-950 dark:bg-[#181B1C] dark:text-[#F5F5F5]">
         <div className="mx-auto max-w-[120rem] px-5 py-8 sm:px-8 lg:px-12 lg:py-12 xl:px-16 2xl:px-24">
-          <section ref={searchPanelRef} aria-label="Search jobs" className="relative grid gap-2 overflow-hidden rounded-[22px] border border-slate-200 bg-white p-2 md:grid-cols-[1.2fr_1.15fr_1fr_1.25fr_auto] md:items-stretch dark:border-[#3E444B] dark:bg-[#22262C]">
-            <SearchField icon={Search} label="Job title or keyword" value={keyword} onChange={(value) => changeFilter(() => setKeyword(value))} />
-            <SearchField icon={MapPin} label="Location" value={location} onChange={(value) => changeFilter(() => setLocation(value))} />
+          <section ref={searchPanelRef} aria-label={t("findJobsPage.searchAria")} className="relative grid gap-2 overflow-hidden rounded-[22px] border border-slate-200 bg-white p-2 md:grid-cols-[1.2fr_1.15fr_1fr_1.25fr_auto] md:items-stretch dark:border-[#3E444B] dark:bg-[#22262C]">
+            <SearchField icon={Search} topLabel={t("findJobsPage.keywordLabel")} placeholder={t("findJobsPage.keywordPlaceholder")} value={keyword} onChange={(value) => changeFilter(() => setKeyword(value))} />
+            <SearchField icon={MapPin} topLabel={t("jobs.location")} placeholder={t("jobs.location")} value={location} onChange={(value) => changeFilter(() => setLocation(value))} />
             <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#2B3036] dark:focus-within:bg-[#2B3036]">
               <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-[#E9F7EB] group-focus-within:text-[#1FA628] dark:bg-[#2B3036] dark:text-[#929AA3] dark:group-focus-within:bg-[#1FA628]/10 dark:group-focus-within:text-[#75D47C]"><BriefcaseBusiness className="size-4" /></span>
-              <span className="min-w-0 flex-1"><span className="block text-[18px] font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]">Experience</span>
+              <span className="min-w-0 flex-1"><span className="block text-[18px] font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]">{t("jobs.experience")}</span>
               <Select value={experience || null} onValueChange={(value) => changeFilter(() => setExperience(value ?? ""))}>
                 <SelectTrigger className="-ml-3 h-8 w-full border-none px-3 font-medium hover:border-none focus-visible:ring-0">
-                  <SelectValue placeholder="Any experience" />
+                  <SelectValue placeholder={t("findJobsPage.anyExperience")} />
                 </SelectTrigger>
                 <SelectContent>
                   {facets.experienceLevels.map((facet) => (
-                    <SelectItem key={facet.value} value={facet.value}>{labelFor(facet.value)} ({facet.count})</SelectItem>
+                    <SelectItem key={facet.value} value={facet.value}>{labelFor(facet.value, t)} ({facet.count})</SelectItem>
                   ))}
                 </SelectContent>
               </Select></span>
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
             </label>
             <label className="flex min-h-15 flex-col justify-center rounded-2xl px-4 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#2B3036] dark:focus-within:bg-[#2B3036]">
-              <span className="flex items-center justify-between gap-3 text-[18px] font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]"><span>Minimum salary</span><span className="rounded-full bg-[#FFF5CE] px-2 py-0.5 text-[#9A7400] dark:bg-[#F3BE00]/12 dark:text-[#F3BE00]">${minimumSalary.toLocaleString()}{minimumSalary === 0 ? "+" : ""}</span></span>
-              <input aria-label="Minimum monthly salary" type="range" min="0" max={salaryCeiling} step="250" value={minimumSalary} onChange={(event) => changeFilter(() => setMinimumSalary(Number(event.target.value)))} className="mt-2 h-1.5 cursor-pointer accent-[#F3BE00]" />
+              <span className="flex items-center justify-between gap-3 text-[18px] font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]"><span>{t("jobs.minimumSalary")}</span><span className="rounded-full bg-[#FFF5CE] px-2 py-0.5 text-[#9A7400] dark:bg-[#F3BE00]/12 dark:text-[#F3BE00]">${minimumSalary.toLocaleString()}{minimumSalary === 0 ? "+" : ""}</span></span>
+              <input aria-label={t("findJobsPage.minimumSalaryAria")} type="range" min="0" max={salaryCeiling} step="250" value={minimumSalary} onChange={(event) => changeFilter(() => setMinimumSalary(Number(event.target.value)))} className="mt-2 h-1.5 cursor-pointer accent-[#F3BE00]" />
             </label>
-<<<<<<< HEAD
-            <button type="button" className="group inline-flex h-11 self-center items-center justify-center gap-2 rounded-xl bg-[#159B23] px-5 text-xs font-semibold text-white shadow-[0_8px_18px_-11px_rgba(21,155,35,.9)] transition-[background-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#0F861C] hover:shadow-[0_12px_22px_-12px_rgba(21,155,35,.8)] active:translate-y-0 motion-reduce:transform-none md:mx-1"><Search className="size-3.5 transition-transform duration-300 group-hover:scale-110 motion-reduce:transform-none" />Search</button>
-=======
-            <button type="button" className="inline-flex h-11 items-center justify-center gap-2 self-center rounded-xl bg-[#008A1E] px-6 text-sm font-medium text-white transition-colors hover:bg-[#007018] md:mx-1"><Search className="size-4" />Search</button>
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
+            <button type="button" className="inline-flex h-11 items-center justify-center gap-2 self-center rounded-xl bg-[#008A1E] px-6 text-sm font-medium text-white transition-colors hover:bg-[#007018] md:mx-1"><Search className="size-4" />{t("findJobsPage.search")}</button>
           </section>
 
           {compactSearchVisible && (
             <div className="pointer-events-none fixed inset-x-0 top-18 z-40 hidden px-8 lg:block">
-              <section aria-label="Compact job search" className="pointer-events-auto mx-auto flex h-16 max-w-[120rem] items-center gap-2 rounded-b-2xl border border-t-0 border-slate-200 bg-white/95 p-2 backdrop-blur-xl dark:border-[#3E444B] dark:bg-[#22262C]/95">
-                <CompactSearchField icon={Search} label="Job title or keyword" value={keyword} onChange={(value) => changeFilter(() => setKeyword(value))} />
+              <section aria-label={t("findJobsPage.compactSearchAria")} className="pointer-events-auto mx-auto flex h-16 max-w-[120rem] items-center gap-2 rounded-b-2xl border border-t-0 border-slate-200 bg-white/95 p-2 backdrop-blur-xl dark:border-[#3E444B] dark:bg-[#22262C]/95">
+                <CompactSearchField icon={Search} label={t("findJobsPage.keywordPlaceholder")} value={keyword} onChange={(value) => changeFilter(() => setKeyword(value))} />
                 <div className="h-8 w-px bg-slate-200 dark:bg-[#3E444B]" />
-                <CompactSearchField icon={MapPin} label="Location" value={location} onChange={(value) => changeFilter(() => setLocation(value))} />
+                <CompactSearchField icon={MapPin} label={t("jobs.location")} value={location} onChange={(value) => changeFilter(() => setLocation(value))} />
                 <button type="button" className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#008A1E] px-6 text-sm font-medium text-white transition-colors hover:bg-[#007018]">
-                  <Search className="size-3.5" />Search
+                  <Search className="size-3.5" />{t("findJobsPage.search")}
                 </button>
               </section>
             </div>
           )}
 
           <div className="mt-8 flex items-center justify-between gap-4 lg:hidden">
-<<<<<<< HEAD
-            <button type="button" onClick={() => setFiltersOpen((open) => !open)} className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold dark:border-slate-700 dark:bg-[#171C27]"><SlidersHorizontal className="size-4" />Filters</button>
-            <SortSelect value={sortOrder} onChange={setSortOrder} />
-          </div>
-
-          <div className="mt-6 grid items-start gap-7 lg:mt-10 lg:grid-cols-[240px_minmax(0,1fr)]">
-            <aside className={`${filtersOpen ? "block" : "hidden"} rounded-xl border border-slate-200 bg-white p-5 lg:sticky lg:top-28 lg:block lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto dark:border-slate-700 dark:bg-[#171C27]`}>
-              <div className="flex items-center justify-between"><h2 className="text-xl font-semibold">Filters</h2><button type="button" onClick={clearFilters} className="text-xs font-medium text-slate-400 hover:text-[#008A1E]">Clear all</button></div>
-              <FilterGroup title="Job Type">{jobTypeOptions.map((option) => <FilterCheckbox key={option.value} label={option.label} checked={jobTypes.has(option.value)} onChange={() => setJobTypes(toggleSet(jobTypes, option.value))} />)}</FilterGroup>
-              <FilterGroup title="Work Type">{workModeOptions.map((option) => <FilterCheckbox key={option.value} label={option.label} checked={workModes.has(option.value)} onChange={() => setWorkModes(toggleSet(workModes, option.value))} />)}</FilterGroup>
-              <FilterGroup title="Job Functions">{(categoriesQuery.data ?? []).map((category) => <FilterCheckbox key={category.id} label={category.name} checked={categoryIds.has(category.id)} onChange={() => setCategoryIds(toggleSet(categoryIds, category.id))} />)}</FilterGroup>
-=======
-            <button type="button" onClick={() => setFiltersOpen((open) => !open)} className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-medium dark:border-[#3E444B]"><SlidersHorizontal className="size-4" />Filters</button>
+            <button type="button" onClick={() => setFiltersOpen((open) => !open)} className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-medium dark:border-[#3E444B]"><SlidersHorizontal className="size-4" />{t("findJobsPage.filtersButton")}</button>
             <SortSelect value={sortOrder} onChange={(value) => changeFilter(() => setSortOrder(value))} />
           </div>
 
           <div className="mt-8 grid items-start gap-8 lg:mt-12 lg:grid-cols-[240px_minmax(0,1fr)]">
             <aside className={`${filtersOpen ? "block" : "hidden"} rounded-2xl border border-slate-200 bg-white p-5 lg:sticky lg:block lg:transition-[top] lg:duration-300 ${compactSearchVisible ? "lg:top-[152px]" : "lg:top-20"} dark:border-[#3E444B] dark:bg-[#22262C]`}>
-              <div className="flex items-center justify-between"><h2 className="text-xl font-semibold">Filters</h2><button type="button" onClick={clearFilters} className="text-xs font-medium text-slate-600 hover:text-[#008A1E]">Clear all</button></div>
+              <div className="flex items-center justify-between"><h2 className="text-xl font-semibold">{t("findJobsPage.filtersButton")}</h2><button type="button" onClick={clearFilters} className="text-xs font-medium text-slate-600 hover:text-[#008A1E]">{t("findJobsPage.clearAll")}</button></div>
               {/* Each group lists only what the matching jobs carry, so a
                   filter never leads to an empty result. */}
-              <FilterGroup title="Job Type" options={facets.jobTypes.length}>
-                {facets.jobTypes.map((facet) => <FilterCheckbox key={facet.value} label={labelFor(facet.value)} count={facet.count} checked={jobTypes.has(facet.value)} onChange={() => changeFilter(() => setJobTypes(toggleSet(jobTypes, facet.value)))} />)}
+              <FilterGroup title={t("findJobsPage.jobTypeGroup")} options={facets.jobTypes.length}>
+                {facets.jobTypes.map((facet) => <FilterCheckbox key={facet.value} label={labelFor(facet.value, t)} count={facet.count} checked={jobTypes.has(facet.value)} onChange={() => changeFilter(() => setJobTypes(toggleSet(jobTypes, facet.value)))} />)}
               </FilterGroup>
-              <FilterGroup title="Work Type" options={facets.workModes.length}>
-                {facets.workModes.map((facet) => <FilterCheckbox key={facet.value} label={labelFor(facet.value)} count={facet.count} checked={workModes.has(facet.value)} onChange={() => changeFilter(() => setWorkModes(toggleSet(workModes, facet.value)))} />)}
+              <FilterGroup title={t("findJobsPage.workTypeGroup")} options={facets.workModes.length}>
+                {facets.workModes.map((facet) => <FilterCheckbox key={facet.value} label={labelFor(facet.value, t)} count={facet.count} checked={workModes.has(facet.value)} onChange={() => changeFilter(() => setWorkModes(toggleSet(workModes, facet.value)))} />)}
               </FilterGroup>
-              <FilterGroup title="Job Functions" options={facets.categories.length}>
+              <FilterGroup title={t("findJobsPage.jobFunctionsGroup")} options={facets.categories.length}>
                 {facets.categories.map((category) => <FilterCheckbox key={category.id} label={category.name} count={category.count} checked={categoryIds.has(category.id)} onChange={() => changeFilter(() => setCategoryIds(toggleSet(categoryIds, category.id)))} />)}
               </FilterGroup>
-              <FilterGroup title="Skills" options={facets.skills.length}>
+              <FilterGroup title={t("findJobsPage.skillsGroup")} options={facets.skills.length}>
                 {shownSkills.map((skill) => <FilterCheckbox key={skill.id} label={skill.name} count={skill.count} checked={skillIds.has(skill.id)} onChange={() => changeFilter(() => setSkillIds(toggleSet(skillIds, skill.id)))} />)}
                 {facets.skills.length > SKILLS_SHOWN ? (
                   <button type="button" onClick={() => setAllSkillsShown((shown) => !shown)} className="text-xs font-medium text-[#008A1E] hover:underline">
-                    {allSkillsShown ? "Show fewer" : `Show all ${facets.skills.length}`}
+                    {allSkillsShown ? t("findJobsPage.showFewer") : `${t("findJobsPage.showAll")} ${facets.skills.length}`}
                   </button>
                 ) : null}
               </FilterGroup>
-              <FilterGroup title="Date Posted" options={facets.postedWithin.length}>
+              <FilterGroup title={t("findJobsPage.datePostedGroup")} options={facets.postedWithin.length}>
                 {/* One window at a time, so these behave as radios: picking the
                     one already chosen clears it. */}
-                {facets.postedWithin.map((facet) => <FilterCheckbox key={facet.value} label={postedWithinLabels[facet.value] ?? `Last ${facet.value} days`} count={facet.count} checked={postedWithinDays === Number(facet.value)} onChange={() => changeFilter(() => setPostedWithinDays(postedWithinDays === Number(facet.value) ? null : Number(facet.value)))} />)}
+                {facets.postedWithin.map((facet) => <FilterCheckbox key={facet.value} label={postedWithinKeys[facet.value] ? t(postedWithinKeys[facet.value]) : `${t("findJobsPage.datePostedGroup")} ${facet.value}`} count={facet.count} checked={postedWithinDays === Number(facet.value)} onChange={() => changeFilter(() => setPostedWithinDays(postedWithinDays === Number(facet.value) ? null : Number(facet.value)))} />)}
               </FilterGroup>
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
             </aside>
 
             <section>
               <div className="mb-5 flex items-center justify-between gap-4">
-<<<<<<< HEAD
-                <h1 className="text-xl font-semibold sm:text-2xl">{keyword.trim() || "All Jobs"} <span className="text-sm font-normal text-slate-500">Search Result ({jobs.length})</span></h1>
-                <div className="hidden lg:block"><SortSelect value={sortOrder} onChange={setSortOrder} /></div>
-              </div>
-              {jobsQuery.isLoading || categoriesQuery.isLoading ? <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 6 }).map((_, index) => <div key={index} className="h-72 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />)}</div> :
-                jobsQuery.isError || categoriesQuery.isError ? <ErrorState message="Unable to load published jobs." /> : jobs.length ?
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{jobs.map((job) => <JobCard key={job.id} job={job} saved={savedJobs.has(job.id)} onSave={() => setSavedJobs(toggleSet(savedJobs, job.id))} />)}</div> :
-                <div className="rounded-2xl border border-dashed border-slate-300 px-6 py-20 text-center dark:border-slate-700"><h2 className="text-lg font-semibold">No matching jobs</h2><p className="mt-2 text-sm text-slate-500">Try changing or clearing your filters.</p><button type="button" onClick={clearFilters} className="mt-5 rounded-lg bg-black px-5 py-2.5 text-sm font-semibold text-white dark:bg-white dark:text-black">Clear filters</button></div>}
-=======
-                <h1 className="text-xl font-semibold sm:text-2xl">{keyword.trim() || "All Jobs"} <span className="text-sm font-normal text-slate-600">Search Result ({totalElements})</span></h1>
+                <h1 className="text-xl font-semibold sm:text-2xl">{keyword.trim() || t("findJobsPage.allJobs")} <span className="text-sm font-normal text-slate-600">{t("findJobsPage.searchResult")} ({totalElements})</span></h1>
                 <div className="hidden lg:block"><SortSelect value={sortOrder} onChange={(value) => changeFilter(() => setSortOrder(value))} /></div>
               </div>
               {jobsQuery.isLoading || facetsQuery.isLoading ? <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 6 }).map((_, index) => <div key={index} className="h-80 animate-pulse rounded-2xl bg-slate-100 dark:bg-[#22262C]" />)}</div> :
-                jobsQuery.isError || facetsQuery.isError ? <ErrorState message="Unable to load published jobs." /> : jobs.length ?
+                jobsQuery.isError || facetsQuery.isError ? <ErrorState message={t("findJobsPage.unableToLoad")} /> : jobs.length ?
                 <>
                   {/* Dimmed rather than replaced while the next page loads, so
                       the grid does not collapse and jump the page under the
@@ -258,8 +220,7 @@ export default function PublicJobsPage() {
                   <div className={`grid gap-6 transition-opacity sm:grid-cols-2 xl:grid-cols-3 ${jobsQuery.isFetching ? "opacity-60" : ""}`} aria-busy={jobsQuery.isFetching}>{jobs.map((job) => <JobCard key={job.id} job={job} saved={savedJobs.has(job.id)} onSave={() => setSavedJobs(toggleSet(savedJobs, job.id))} />)}</div>
                   <Pagination page={page} totalPages={totalPages} totalElements={totalElements} pageSize={PAGE_SIZE} onChange={setPage} />
                 </> :
-                <div className="rounded-2xl border border-dashed border-slate-300 px-6 py-20 text-center dark:border-[#3E444B]"><h2 className="text-lg font-semibold">No matching jobs</h2><p className="mt-2 text-sm text-slate-500">Try changing or clearing your filters.</p><button type="button" onClick={clearFilters} className="mt-5 rounded-xl bg-[#008A1E] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#007018]">Clear filters</button></div>}
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
+                <div className="rounded-2xl border border-dashed border-slate-300 px-6 py-20 text-center dark:border-[#3E444B]"><h2 className="text-lg font-semibold">{t("findJobsPage.noMatchingJobs")}</h2><p className="mt-2 text-sm text-slate-500">{t("findJobsPage.tryChangingFilters")}</p><button type="button" onClick={clearFilters} className="mt-5 rounded-xl bg-[#008A1E] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#007018]">{t("findJobsPage.clearFilters")}</button></div>}
             </section>
           </div>
         </div>
@@ -270,42 +231,9 @@ export default function PublicJobsPage() {
 }
 
 function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolean; onSave: () => void }) {
+  const { t } = useLocale();
+
   return (
-<<<<<<< HEAD
-    <article className="group relative flex min-h-[205px] flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_4px_20px_-4px_rgba(15,23,42,.08)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:border-[#1FA628]/60 hover:shadow-[0_20px_40px_-15px_rgba(31,166,40,0.18),0_10px_20px_-8px_rgba(15,23,42,0.06)] dark:border-[#3E444B] dark:bg-[#22262C] dark:shadow-[0_14px_32px_-18px_rgba(0,0,0,.9)] dark:hover:border-[#1FA628]/50 dark:hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8),0_0_24px_rgba(31,166,40,0.2)] will-change-transform">
-      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-linear-to-b from-[#1FA628]/[0.05] via-transparent to-transparent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 dark:from-[#1FA628]/[0.10]" />
-      <div>
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[#1FA628]/15 bg-[#EEF8F0] text-[10px] font-semibold tracking-wide text-[#1FA628] shadow-[inset_0_0_0_2px_white] transition-all duration-300 ease-out group-hover:scale-105 group-hover:border-[#1FA628]/40 group-hover:shadow-[0_4px_12px_rgba(31,166,40,0.25)] dark:border-[#4A5159] dark:bg-[#2B3036] dark:text-[#F3BE00] dark:shadow-none dark:group-hover:border-[#F3BE00]/40">
-            {initials(job.companyName)}
-          </div>
-          <button
-            type="button"
-            onClick={onSave}
-            aria-label={`${saved ? "Remove" : "Save"} ${job.title}`}
-            aria-pressed={saved}
-            className={`inline-flex h-7.5 items-center gap-1 rounded-md border px-2 text-[11px] font-semibold transition-all duration-200 active:scale-95 ${
-              saved
-                ? "border-[#1FA628]/20 bg-[#E8F5EA] text-[#1FA628] dark:border-[#59616A] dark:bg-[#3A4047] dark:text-white"
-                : "border-slate-200 bg-[#FAFAF9] text-slate-500 hover:border-slate-300 hover:bg-white hover:text-slate-700 dark:border-[#3E444B] dark:bg-[#22262C] dark:text-[#CBD0D5] dark:hover:bg-[#2B3036] dark:hover:text-white"
-            }`}
-          >
-            {saved ? "Saved" : "Save"}
-            <Bookmark className={`size-3 transition-transform duration-200 ${saved ? "fill-current scale-110" : ""}`} />
-          </button>
-        </div>
-        <div className="mt-2.5">
-          <p className="flex flex-wrap items-baseline gap-x-1.5 text-xs font-medium text-slate-600 dark:text-slate-400">
-            <span>{job.companyName}</span>
-            <span className="text-[10px] font-normal text-slate-400 dark:text-[#929AA3]">{timeAgo(job.publishedAt)}</span>
-          </p>
-          <h2 className="mt-1 line-clamp-2 text-[15px] font-semibold leading-snug tracking-[-.01em] text-slate-950 transition-colors duration-200 group-hover:text-[#008A1E] dark:text-white dark:group-hover:text-[#F3BE00]">
-            {job.title}
-          </h2>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            <Tag>{formatLabel(job.jobType || "Job")}</Tag>
-            <Tag>{formatLabel(job.workMode || "Flexible")}</Tag>
-=======
     <article className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-colors duration-200 hover:border-[#008A1E] dark:border-[#3E444B] dark:bg-[#22262C] dark:hover:border-emerald-400">
       {/* Employer */}
       <div className="flex items-start justify-between gap-4">
@@ -315,15 +243,14 @@ function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolea
           </span>
           <div className="min-w-0">
             <p className="truncate font-medium text-slate-900 dark:text-[#F5F5F5]">{job.companyName}</p>
-            <p className="mt-0.5 truncate text-slate-500 dark:text-slate-400">{timeAgo(job.publishedAt)}</p>
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
+            <p className="mt-0.5 truncate text-slate-500 dark:text-slate-400">{timeAgo(job.publishedAt, t)}</p>
           </div>
         </div>
 
         <button
           type="button"
           onClick={onSave}
-          aria-label={`${saved ? "Remove" : "Save"} ${job.title}`}
+          aria-label={`${saved ? t("findJobsPage.remove") : t("findJobsPage.save")} ${job.title}`}
           aria-pressed={saved}
           className={`inline-flex size-9 shrink-0 items-center justify-center rounded-full transition-colors ${
             saved
@@ -334,17 +261,6 @@ function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolea
           <Bookmark className={`size-5 ${saved ? "fill-current" : ""}`} />
         </button>
       </div>
-<<<<<<< HEAD
-      <div className="mt-3 flex items-end justify-between gap-3 border-t border-slate-100 pt-2.5 dark:border-[#3E444B]">
-        <div className="min-w-0">
-          <p className="truncate text-xs font-semibold text-slate-950 sm:text-sm dark:text-[#F5F5F5]">{salary(job.salaryMin, job.salaryMax)}</p>
-          <p className="mt-0.5 flex items-center gap-1 truncate text-[10px] text-slate-400 dark:text-[#929AA3]"><MapPin className="size-2.5 shrink-0" />{job.location || "Location not specified"}</p>
-        </div>
-        <Link
-          href={`/jobs/${job.id}`}
-          aria-label={`Apply for ${job.title}`}
-          className="group/btn relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#1FA628] px-3.5 text-xs font-semibold text-white shadow-sm transition-all duration-300 ease-out group-hover:shadow-[0_4px_14px_rgba(31,166,40,0.35)] hover:!bg-[#F3BE00] hover:!text-slate-950 hover:!shadow-[#F3BE00]/30 active:scale-95"
-=======
 
       {/* Role */}
       <h2 className="mt-6 line-clamp-2 text-xl font-medium leading-snug tracking-tight text-slate-950 transition-colors group-hover:text-[#008A1E] dark:text-white dark:group-hover:text-[#F3BE00]">
@@ -353,27 +269,26 @@ function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolea
 
       <p className="mt-3 flex items-center gap-2 text-slate-500 dark:text-slate-400">
         <MapPin className="size-4 shrink-0" />
-        <span className="truncate">{job.location || "Location not specified"}</span>
+        <span className="truncate">{job.location || t("findJobsPage.locationNotSpecified")}</span>
       </p>
 
       <div className="mt-5 mb-8 flex flex-wrap gap-2">
-        <Tag>{formatLabel(job.jobType || "Job")}</Tag>
-        <Tag>{formatLabel(job.workMode || "Flexible")}</Tag>
+        <Tag>{job.jobType ? labelFor(job.jobType, t) : t("jobs.job")}</Tag>
+        <Tag>{job.workMode ? labelFor(job.workMode, t) : t("jobs.flexible")}</Tag>
       </div>
 
       {/* `mt-auto` keeps the footer on the card's bottom edge whatever the
           title wraps to, so a grid of cards lines its actions up. */}
       <div className="mt-auto flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 dark:border-[#3E444B]">
         <p className="min-w-0 truncate font-medium text-slate-950 dark:text-[#F5F5F5]">
-          {salary(job.salaryMin, job.salaryMax)}
+          {salary(job.salaryMin, job.salaryMax, t)}
         </p>
         <Link
           href={`/jobs/${job.id}`}
-          aria-label={`Apply for ${job.title}`}
+          aria-label={`${t("findJobsPage.applyForAria")} ${job.title}`}
           className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#008A1E] px-5 font-medium text-white transition-colors hover:bg-[#007018]"
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
         >
-          Apply now
+          {t("jobs.apply")}
           <ArrowUpRight className="size-4" />
         </Link>
       </div>
@@ -381,19 +296,13 @@ function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolea
   );
 }
 
-<<<<<<< HEAD
-function SearchField({ icon: Icon, label, value, onChange }: { icon: typeof Search; label: string; value: string; onChange: (value: string) => void }) { return <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#1D232E] dark:focus-within:bg-[#1D232E]"><span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-[#E9F7EB] group-focus-within:text-[#1FA628] dark:bg-[#242B35] dark:text-[#929AA3] dark:group-focus-within:bg-[#1FA628]/10 dark:group-focus-within:text-[#75D47C]"><Icon className="size-4" /></span><span className="min-w-0 flex-1"><span className="block text-[10px] font-bold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]">{label === "Location" ? "Location" : "Search jobs"}</span><input type="search" value={value} onChange={(event) => onChange(event.target.value)} placeholder={label} className="mt-0.5 w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:font-medium placeholder:text-slate-400 dark:text-[#F5F5F5] dark:placeholder:text-[#7F8995]" /></span></label>; }
-function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) { return <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-700"><h3 className="mb-3 text-sm font-semibold">{title}</h3><div className="space-y-2.5">{children}</div></div>; }
-function FilterCheckbox({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) { return <label className="flex cursor-pointer items-center gap-2.5 text-xs text-slate-600 dark:text-slate-300"><input type="checkbox" checked={checked} onChange={onChange} className="size-4 rounded accent-[#F3BE00]" />{label}</label>; }
-function SortSelect({ value, onChange }: { value: SortOrder; onChange: (value: SortOrder) => void }) { return <select aria-label="Sort jobs" value={value} onChange={(event) => onChange(event.target.value as SortOrder)} className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold outline-none dark:border-slate-700 dark:bg-[#171C27]"><option value="newest">Newest</option><option value="salary">Highest salary</option><option value="title">Job title</option></select>; }
-function Tag({ children }: { children: React.ReactNode }) { return <span className="inline-flex min-h-6 items-center rounded-lg border border-slate-200/70 bg-[#F1F2F0] px-2.5 text-[10px] font-semibold text-slate-600 transition-all duration-200 group-hover:border-[#1FA628]/25 group-hover:bg-[#EBF7ED] group-hover:text-[#008A1E] dark:border-transparent dark:bg-[#30353B] dark:text-[#CBD0D5] dark:group-hover:border-[#F3BE00]/25 dark:group-hover:bg-[#2B3036] dark:group-hover:text-[#F3BE00]">{children}</span>; }
-=======
 /**
  * Pages the listing. Long results collapse to a window around the current page
  * with the first and last always reachable, so the control keeps its width
  * whether there are three pages or three hundred.
  */
 function Pagination({ page, totalPages, totalElements, pageSize, onChange }: { page: number; totalPages: number; totalElements: number; pageSize: number; onChange: (page: number) => void }) {
+  const { t } = useLocale();
   if (totalPages <= 1) return null;
 
   const first = page * pageSize + 1;
@@ -402,13 +311,13 @@ function Pagination({ page, totalPages, totalElements, pageSize, onChange }: { p
   const shown = [...around].sort((a, b) => a - b);
 
   return (
-    <nav aria-label="Job results pages" className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 dark:border-[#3E444B]">
+    <nav aria-label={t("findJobsPage.resultsPagesAria")} className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 dark:border-[#3E444B]">
       <p className="text-sm text-slate-500 dark:text-slate-400">
-        Showing <span className="font-medium text-slate-800 dark:text-[#F5F5F5]">{first}–{last}</span> of {totalElements}
+        {t("findJobsPage.showingResults")} <span className="font-medium text-slate-800 dark:text-[#F5F5F5]">{first}–{last}</span> {t("findJobsPage.of")} {totalElements}
       </p>
 
       <div className="flex items-center gap-1.5">
-        <PageButton label="Previous page" disabled={page === 0} onClick={() => onChange(page - 1)}>
+        <PageButton label={t("findJobsPage.previousPage")} disabled={page === 0} onClick={() => onChange(page - 1)}>
           <ChevronLeft className="size-4" />
         </PageButton>
 
@@ -416,7 +325,7 @@ function Pagination({ page, totalPages, totalElements, pageSize, onChange }: { p
           <span key={value} className="flex items-center gap-1.5">
             {index > 0 && value - shown[index - 1] > 1 ? <span className="px-1 text-slate-400">…</span> : null}
             <PageButton
-              label={`Page ${value + 1}`}
+              label={`${t("findJobsPage.page")} ${value + 1}`}
               current={value === page}
               onClick={() => onChange(value)}
             >
@@ -425,7 +334,7 @@ function Pagination({ page, totalPages, totalElements, pageSize, onChange }: { p
           </span>
         ))}
 
-        <PageButton label="Next page" disabled={page >= totalPages - 1} onClick={() => onChange(page + 1)}>
+        <PageButton label={t("findJobsPage.nextPage")} disabled={page >= totalPages - 1} onClick={() => onChange(page + 1)}>
           <ChevronRight className="size-4" />
         </PageButton>
       </div>
@@ -452,7 +361,7 @@ function PageButton({ label, children, onClick, disabled = false, current = fals
   );
 }
 
-function SearchField({ icon: Icon, label, value, onChange }: { icon: typeof Search; label: string; value: string; onChange: (value: string) => void }) { return <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#2B3036] dark:focus-within:bg-[#2B3036]"><span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-[#E9F7EB] group-focus-within:text-[#1FA628] dark:bg-[#2B3036] dark:text-[#929AA3] dark:group-focus-within:bg-[#1FA628]/10 dark:group-focus-within:text-[#75D47C]"><Icon className="size-4" /></span><span className="min-w-0 flex-1"><span className="block text-[18px] font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]">{label === "Location" ? "Location" : "Search jobs"}</span><input type="search" value={value} onChange={(event) => onChange(event.target.value)} placeholder={label} className="mt-0.5 w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:font-medium placeholder:text-slate-400 dark:text-[#F5F5F5] dark:placeholder:text-[#7F8995]" /></span></label>; }
+function SearchField({ icon: Icon, topLabel, placeholder, value, onChange }: { icon: typeof Search; topLabel: string; placeholder: string; value: string; onChange: (value: string) => void }) { return <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#2B3036] dark:focus-within:bg-[#2B3036]"><span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-[#E9F7EB] group-focus-within:text-[#1FA628] dark:bg-[#2B3036] dark:text-[#929AA3] dark:group-focus-within:bg-[#1FA628]/10 dark:group-focus-within:text-[#75D47C]"><Icon className="size-4" /></span><span className="min-w-0 flex-1"><span className="block text-[18px] font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]">{topLabel}</span><input type="search" value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="mt-0.5 w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:font-medium placeholder:text-slate-400 dark:text-[#F5F5F5] dark:placeholder:text-[#7F8995]" /></span></label>; }
 function CompactSearchField({ icon: Icon, label, value, onChange }: { icon: typeof Search; label: string; value: string; onChange: (value: string) => void }) { return <label className="group flex min-w-0 flex-1 items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#2B3036] dark:focus-within:bg-[#2B3036]"><Icon className="size-4 shrink-0 text-slate-400 transition-colors group-focus-within:text-[#1FA628]" /><span className="min-w-0 flex-1"><span className="sr-only">{label}</span><input type="search" value={value} onChange={(event) => onChange(event.target.value)} placeholder={label} className="w-full bg-transparent text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400 dark:text-[#F5F5F5] dark:placeholder:text-[#7F8995]" /></span></label>; }
 /** Renders nothing when the search leaves the group with no options. */
 function FilterGroup({ title, options, children }: { title: string; options: number; children: React.ReactNode }) {
@@ -471,32 +380,33 @@ function FilterCheckbox({ label, count, checked, onChange }: { label: string; co
 }
 
 /** The display name for a raw API value, or a readable form of the value. */
-function labelFor(value: string) { return knownLabels[value] ?? formatLabel(value); }
+function labelFor(value: string, t: (key: string) => string) { const key = knownLabelKeys[value]; return key ? t(key) : formatLabel(value); }
 
-const sortOptions: { value: SortOrder; label: string }[] = [
-  { value: "newest", label: "Newest" },
-  { value: "salary", label: "Highest salary" },
-  { value: "title", label: "Job title" },
+const sortOptions: { value: SortOrder; labelKey: string }[] = [
+  { value: "newest", labelKey: "findJobsPage.sortNewest" },
+  { value: "salary", labelKey: "findJobsPage.sortSalary" },
+  { value: "title", labelKey: "findJobsPage.sortTitle" },
 ];
 
 function SortSelect({ value, onChange }: { value: SortOrder; onChange: (value: SortOrder) => void }) {
+  const { t } = useLocale();
+
   return (
     <Select value={value} onValueChange={(next) => onChange((next ?? "newest") as SortOrder)}>
-      <SelectTrigger aria-label="Sort jobs" size="sm" className="w-44 bg-white font-medium dark:bg-[#22262C]">
+      <SelectTrigger aria-label={t("findJobsPage.sortAria")} size="sm" className="w-44 bg-white font-medium dark:bg-[#22262C]">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
         {sortOptions.map((option) => (
-          <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+          <SelectItem key={option.value} value={option.value}>{t(option.labelKey)}</SelectItem>
         ))}
       </SelectContent>
     </Select>
   );
 }
 function Tag({ children }: { children: React.ReactNode }) { return <span className="inline-flex min-h-8 items-center rounded-full border border-slate-200 px-3.5 text-slate-600 dark:border-[#3E444B] dark:text-[#CBD0D5]">{children}</span>; }
->>>>>>> afdc0b8e48bbc453f563954761ac35d22ed4ba83
 function formatLabel(value: string) { return value.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase()); }
-function salary(min?: number, max?: number) { if (!min && !max) return "Salary negotiable"; const money = (value: number) => `$${new Intl.NumberFormat().format(value)}`; return min && max ? `${money(min)} – ${money(max)}` : min ? `From ${money(min)}` : `Up to ${money(max!)}`; }
-function timeAgo(value: string) { const time = Date.parse(value); if (Number.isNaN(time)) return "Recently"; const days = Math.max(0, Math.floor((Date.now() - time) / 86_400_000)); if (days === 0) return "Today"; if (days === 1) return "1 day ago"; if (days < 30) return `${days} days ago`; const months = Math.floor(days / 30); return `${months} ${months === 1 ? "month" : "months"} ago`; }
+function salary(min: number | undefined, max: number | undefined, t: (key: string) => string) { if (!min && !max) return t("landing.newestJobs.salaryNegotiable"); const money = (value: number) => `$${new Intl.NumberFormat().format(value)}`; return min && max ? `${money(min)} – ${money(max)}` : min ? `${t("landing.newestJobs.salaryFrom")} ${money(min)}` : `${t("landing.newestJobs.salaryUpTo")} ${money(max!)}`; }
+function timeAgo(value: string, t: (key: string) => string) { const time = Date.parse(value); if (Number.isNaN(time)) return t("landing.newestJobs.time.recently"); const days = Math.max(0, Math.floor((Date.now() - time) / 86_400_000)); if (days === 0) return t("landing.newestJobs.time.today"); if (days === 1) return t("landing.newestJobs.time.oneDayAgo"); if (days < 30) return `${days} ${t("landing.newestJobs.time.daysAgo")}`; const months = Math.floor(days / 30); return months === 1 ? t("landing.newestJobs.time.oneMonthAgo") : `${months} ${t("landing.newestJobs.time.monthsAgo")}`; }
 function initials(name: string) { return name.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join("").toUpperCase() || "CO"; }
 function toggleSet<T>(current: Set<T>, value: T) { const next = new Set(current); if (next.has(value)) next.delete(value); else next.add(value); return next; }

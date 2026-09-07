@@ -2,43 +2,36 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons';
+import { useLocale } from '@/i18n/LocaleProvider';
 
 const AUTOPLAY_MS = 6500;
 
 const TESTIMONIALS = [
   {
+    key: 't1',
     name: 'Srey ChanChhay',
-    role: 'Fullstack Developer',
     company: 'Kosign Cambodia',
     rating: 5,
-    quote:
-      'ការងារ is a good website for learning IT with a great environment and mentors. A perfect place to start your IT career.',
-    image:
-      '/images/testimonials/chanchhay.png',
+    image: '/images/testimonials/chanchhay.png',
   },
   {
+    key: 't2',
     name: 'Khann Kanhchana',
-    role: 'Backend Engineer',
     company: 'Wing Bank',
     rating: 5,
-    quote:
-      'I applied to four companies in one afternoon. Two called me back the same week. The job descriptions here are honest about salary, which saved me a lot of time.',
-    image:
-      '/images/testimonials/kanha.png',
+    image: '/images/testimonials/kanha.png',
   },
   {
+    key: 't3',
     name: 'Lut Lyna',
-    role: 'UI/UX Designer',
     company: 'Freelance',
     rating: 5,
-    quote:
-      'The portfolio section lets me show real work instead of a plain CV. Three clients found me through my profile without me sending a single message.',
-    image:
-      '/images/testimonials/lyna.png',
+    image: '/images/testimonials/lyna.png',
   },
-];
+] as const;
 
 export default function TestimonialsSection() {
+  const { t } = useLocale();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
@@ -97,7 +90,7 @@ export default function TestimonialsSection() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 sm:py-10">
       <h2 data-reveal className="text-center text-3xl font-bold text-[#1A202C] dark:text-white sm:text-4xl">
-        Clients Testimonial
+        {t('landing.testimonials.heading')}
       </h2>
 
       {/* Pagination dots */}
@@ -106,7 +99,7 @@ export default function TestimonialsSection() {
           <button
             key={i}
             onClick={() => setIndex(i)}
-            aria-label={`Go to slide ${i + 1}`}
+            aria-label={`${t('landing.testimonials.goToSlide')} ${i + 1}`}
             className={`h-2 rounded-full transition-all duration-300 ${
               i === index ? 'w-6 bg-[#22C55E]' : 'w-2 bg-[#22C55E]'
             }`}
@@ -128,9 +121,9 @@ export default function TestimonialsSection() {
         onTouchEnd={onTouchEnd}
       >
         {/* Left arrow */}
-        <button 
+        <button
           onClick={prev}
-          aria-label="Previous testimonial"
+          aria-label={t('landing.testimonials.previous')}
           className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white dark:bg-[#23272D] dark:border dark:border-[#3E444B] shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition hover:scale-105 active:scale-95 text-slate-500 hover:text-slate-900 dark:hover:text-white -ml-4 z-10"
         >
           <ChevronLeftIcon className="w-6 h-6" />
@@ -141,11 +134,11 @@ export default function TestimonialsSection() {
           {/* Avatar Area */}
           <div className="relative shrink-0 flex items-center justify-center">
             {/* Green squircle background */}
-            <div className="relative flex h-[260px] w-[260px] items-center justify-center rounded-[64px] rounded-tr-[80px] rounded-bl-[80px] bg-[#108A12] shadow-sm">
+            <div className="relative flex h-45 w-45 items-center justify-center rounded-[48px] rounded-tr-[60px] rounded-bl-[60px] bg-[#108A12] shadow-sm sm:h-65 sm:w-65 sm:rounded-[64px] sm:rounded-tr-[80px] sm:rounded-bl-[80px]">
               <img
                 src={active.image}
                 alt={active.name}
-                className="h-[210px] w-[210px] rounded-full object-cover border-[3px] border-white bg-white"
+                className="h-36.5 w-36.5 rounded-full object-cover border-[3px] border-white bg-white sm:h-52.5 sm:w-52.5"
               />
             </div>
 
@@ -161,12 +154,12 @@ export default function TestimonialsSection() {
               {active.name}
             </h3>
             <p className="mt-1.5 text-lg font-medium text-[#E53E3E]">
-              {active.role}
+              {t(`landing.testimonials.items.${active.key}.role`)}
             </p>
 
             <blockquote className="relative mt-8 text-xl leading-relaxed text-slate-600 dark:text-slate-300 font-normal">
               <span className="absolute -left-10 -top-4 text-6xl font-serif text-slate-100 dark:text-slate-800 select-none">&ldquo;</span>
-              <span className="relative z-10">{active.quote}</span>
+              <span className="relative z-10">{t(`landing.testimonials.items.${active.key}.quote`)}</span>
             </blockquote>
           </div>
         </div>

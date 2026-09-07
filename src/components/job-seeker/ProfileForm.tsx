@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +24,7 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ profile }: ProfileFormProps) {
+  const tx = useWorkspaceTranslation();
   const [updateProfile, { isLoading }] = useUpdateJobSeekerProfileMutation();
 
   const getDefaultValues = (p: JobSeekerProfileResponse): JobSeekerProfileFormValues => ({
@@ -62,15 +65,15 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         availabilityStatus: values.availabilityStatus.trim() || undefined,
       }).unwrap();
 
-      toast.success("Profile information updated successfully!");
+      toast.success(tx("Profile information updated successfully!"));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Unable to update profile."));
+      toast.error(getApiErrorMessage(error, tx("Unable to update profile.")));
     }
   };
 
   const handleReset = () => {
     form.reset(getDefaultValues(profile));
-    toast.info("Form reset to saved profile information.");
+    toast.info(tx("Form reset to saved profile information."));
   };
 
   return (
@@ -81,30 +84,29 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           <CardHeader className="bg-surface-muted/50 pb-4">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-heading">
               <User className="size-5 text-brand" />
-              General Profile Details
-            </CardTitle>
+              {tx("General Profile Details")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5 pt-6">
             <TextField
               control={form.control}
               name="headline"
-              label="Professional Headline"
-              placeholder="e.g. Senior Full Stack Software Engineer | React & Node.js Specialist"
-              description="A concise summary line displayed at the top of your profile."
+              label={tx("Professional Headline")}
+              placeholder={tx("e.g. Senior Full Stack Software Engineer | React & Node.js Specialist")}
+              description={tx("A concise summary line displayed at the top of your profile.")}
             />
 
             <div className="grid gap-5 md:grid-cols-2">
               <TextField
                 control={form.control}
                 name="currentPosition"
-                label="Current Position"
-                placeholder="e.g. Senior Frontend Engineer at TechCorp"
+                label={tx("Current Position")}
+                placeholder={tx("e.g. Senior Frontend Engineer at TechCorp")}
               />
               <TextField
                 control={form.control}
                 name="preferredLocation"
-                label="Preferred Location"
-                placeholder="e.g. Ho Chi Minh City, Remote, Relocation"
+                label={tx("Preferred Location")}
+                placeholder={tx("e.g. Ho Chi Minh City, Remote, Relocation")}
               />
             </div>
 
@@ -112,7 +114,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               <SelectField
                 control={form.control}
                 name="availabilityStatus"
-                label="Availability Status"
+                label={tx("Availability Status")}
                 options={[
                   { value: "Actively Looking", label: "Actively Looking - Available Immediately" },
                   { value: "Open to Offers", label: "Open to Offers - Passive Job Seeking" },
@@ -125,10 +127,10 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             <TextAreaField
               control={form.control}
               name="bio"
-              label="About You / Bio"
+              label={tx("About You / Bio")}
               rows={5}
-              placeholder="Write a brief professional summary describing your key skills, background, achievements, and career goals..."
-              description="Provide detailed background information for recruiters to learn more about you."
+              placeholder={tx("Write a brief professional summary describing your key skills, background, achievements, and career goals...")}
+              description={tx("Provide detailed background information for recruiters to learn more about you.")}
             />
           </CardContent>
         </Card>
@@ -138,29 +140,28 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           <CardHeader className="bg-surface-muted/50 pb-4">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-heading">
               <DollarSign className="size-5 text-brand" />
-              Salary Expectations & Privacy
-            </CardTitle>
+              {tx("Salary Expectations & Privacy")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5 pt-6">
             <div className="grid gap-5 sm:grid-cols-3">
               <TextField
                 control={form.control}
                 name="expectedSalaryMin"
-                label="Minimum Expected Salary"
+                label={tx("Minimum Expected Salary")}
                 type="number"
-                placeholder="e.g. 2000"
+                placeholder={tx("e.g. 2000")}
               />
               <TextField
                 control={form.control}
                 name="expectedSalaryMax"
-                label="Maximum Expected Salary"
+                label={tx("Maximum Expected Salary")}
                 type="number"
-                placeholder="e.g. 3500"
+                placeholder={tx("e.g. 3500")}
               />
               <SelectField
                 control={form.control}
                 name="expectedSalaryCurrency"
-                label="Currency"
+                label={tx("Currency")}
                 options={[
                   { value: "USD", label: "USD ($)" },
                   { value: "VND", label: "VND (₫)" },
@@ -174,8 +175,8 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             <SelectField
               control={form.control}
               name="salaryVisibility"
-              label="Salary Privacy & Visibility"
-              description="Control who can see your expected salary range."
+              label={tx("Salary Privacy & Visibility")}
+              description={tx("Control who can see your expected salary range.")}
               options={[
                 { value: "PRIVATE", label: "Private - Only visible to you" },
                 { value: "RECRUITERS_ONLY", label: "Recruiters Only - Visible to verified recruiters" },
@@ -195,15 +196,14 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             className="h-11 rounded-xl px-6"
           >
             <RotateCcw className="mr-2 size-4" />
-            Discard Changes
-          </Button>
+            {tx("Discard Changes")}</Button>
           <Button
             type="submit"
             disabled={isLoading}
             className="h-11 rounded-xl bg-brand px-8 font-medium hover:bg-brand/90 text-white shadow-sm"
           >
             <Save className="mr-2 size-4" />
-            {isLoading ? "Saving Profile…" : "Save Profile Changes"}
+            {isLoading ? tx("Saving Profile…") : tx("Save Profile Changes")}
           </Button>
         </div>
       </form>

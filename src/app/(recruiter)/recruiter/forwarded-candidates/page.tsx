@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useState } from "react";
 import Link from "next/link";
@@ -35,6 +37,7 @@ import { useGetForwardedApplicationsQuery } from "@/services/recruiterApi";
 import type { JobApplicationStatus } from "@/contracts";
 
 export default function ForwardedCandidatesPage() {
+  const tx = useWorkspaceTranslation();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
 
@@ -42,7 +45,7 @@ export default function ForwardedCandidatesPage() {
 
   if (applicationsQuery.isLoading) return <LoadingState rows={6} />;
   if (applicationsQuery.isError) {
-    return <ErrorState message="Unable to load forwarded candidates. Please try again." />;
+    return <ErrorState message={tx("Unable to load forwarded candidates. Please try again.")} />;
   }
 
   const forwardedApplications = applicationsQuery.data ?? [];
@@ -66,8 +69,8 @@ export default function ForwardedCandidatesPage() {
     <div className="space-y-6">
       <PageIntro
         eyebrow="GET /api/v1/recruiter/forwarded-applications"
-        title="Forwarded Candidates"
-        description="Qualified candidates reviewed and forwarded by moderators after AI evaluation."
+        title={tx("Forwarded Candidates")}
+        description={tx("Qualified candidates reviewed and forwarded by moderators after AI evaluation.")}
       />
 
       {/* Filter and Search Bar */}
@@ -78,7 +81,7 @@ export default function ForwardedCandidatesPage() {
               <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
               <Input
                 type="text"
-                placeholder="Search candidates, job title, position, location..."
+                placeholder={tx("Search candidates, job title, position, location...")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="h-11 rounded-xl pl-10"
@@ -91,16 +94,16 @@ export default function ForwardedCandidatesPage() {
                 onValueChange={(val) => setStatusFilter(val ?? "ALL")}
               >
                 <SelectTrigger className="h-11 w-full rounded-xl">
-                  <SelectValue placeholder="Application status" />
+                  <SelectValue placeholder={tx("Application status")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">All Statuses</SelectItem>
-                  <SelectItem value="AI_INTERVIEW_PASSED">AI Interview Passed</SelectItem>
-                  <SelectItem value="SHORTLISTED">Shortlisted</SelectItem>
-                  <SelectItem value="HUMAN_INTERVIEW_SCHEDULED">Human Interview Scheduled</SelectItem>
-                  <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
-                  <SelectItem value="HIRED">Hired</SelectItem>
-                  <SelectItem value="REJECTED">Rejected</SelectItem>
+                  <SelectItem value="ALL">{tx("All Statuses")}</SelectItem>
+                  <SelectItem value="AI_INTERVIEW_PASSED">{tx("AI Interview Passed")}</SelectItem>
+                  <SelectItem value="SHORTLISTED">{tx("Shortlisted")}</SelectItem>
+                  <SelectItem value="HUMAN_INTERVIEW_SCHEDULED">{tx("Human Interview Scheduled")}</SelectItem>
+                  <SelectItem value="UNDER_REVIEW">{tx("Under Review")}</SelectItem>
+                  <SelectItem value="HIRED">{tx("Hired")}</SelectItem>
+                  <SelectItem value="REJECTED">{tx("Rejected")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -108,8 +111,7 @@ export default function ForwardedCandidatesPage() {
 
           <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3 text-xs text-slate-500">
             <span>
-              Showing {filteredCandidates.length} of {forwardedApplications.length} candidate(s)
-            </span>
+              {tx("Showing ")}{filteredCandidates.length} {tx(" of ")}{forwardedApplications.length} {tx(" candidate(s)")}</span>
             {(search || statusFilter !== "ALL") && (
               <Button
                 type="button"
@@ -121,8 +123,7 @@ export default function ForwardedCandidatesPage() {
                 }}
                 className="h-7 text-xs text-slate-600"
               >
-                Reset filters
-              </Button>
+                {tx("Reset filters")}</Button>
             )}
           </div>
         </CardContent>
@@ -131,12 +132,10 @@ export default function ForwardedCandidatesPage() {
       {/* Candidate List */}
       {filteredCandidates.length === 0 ? (
         <EmptyState
-          title="No forwarded candidates found"
-          description={
-            forwardedApplications.length === 0
+          title={tx("No forwarded candidates found")}
+          description={tx(forwardedApplications.length === 0
               ? "Candidates who pass AI screening and moderator review will appear here."
-              : "No candidates match your search filters."
-          }
+              : "No candidates match your search filters.")}
         />
       ) : (
         <div className="grid gap-4">
@@ -154,7 +153,7 @@ export default function ForwardedCandidatesPage() {
                     <div className="min-w-0 flex-1 space-y-2.5">
                       <div className="flex flex-wrap items-center gap-2.5">
                         <h3 className="text-lg font-semibold tracking-tight text-heading group-hover:text-brand">
-                          {item.candidate.headline || "Candidate Profile"}
+                          {item.candidate.headline || tx("Candidate Profile")}
                         </h3>
                         <StatusPill>{item.application.status}</StatusPill>
                         {item.candidate.availabilityStatus && (
@@ -174,7 +173,7 @@ export default function ForwardedCandidatesPage() {
                         )}
                         <span className="flex items-center gap-1.5 text-brand font-medium">
                           <Briefcase className="size-4" />
-                          Applied: {item.application.jobTitle}
+                          {tx("Applied: ")}{item.application.jobTitle}
                         </span>
                       </div>
 
@@ -189,19 +188,19 @@ export default function ForwardedCandidatesPage() {
                         {item.submittedResume?.title && (
                           <span className="flex items-center gap-1">
                             <FileText className="size-3.5 text-brand" />
-                            Resume: {item.submittedResume.title}
+                            {tx("Resume: ")}{item.submittedResume.title}
                           </span>
                         )}
                         {aiScore !== undefined && (
                           <span className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
                             <Sparkles className="size-3.5" />
-                            AI Score: {aiScore}/100 ({aiResult || "PASSED"})
+                            {tx("AI Score: ")}{aiScore}/100 ({aiResult || tx("PASSED")})
                           </span>
                         )}
                         {item.forwardedAt && (
                           <span className="flex items-center gap-1 text-slate-400">
                             <Calendar className="size-3.5" />
-                            Forwarded: {new Date(item.forwardedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
+                            {tx("Forwarded: ")}{new Date(item.forwardedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
                           </span>
                         )}
                       </div>
@@ -218,8 +217,7 @@ export default function ForwardedCandidatesPage() {
                         size="sm"
                         className="h-10 rounded-xl px-5 font-medium border-border hover:border-brand hover:text-brand"
                       >
-                        View Full Details
-                        <ChevronRight className="ml-1.5 size-4" />
+                        {tx("View Full Details")}<ChevronRight className="ml-1.5 size-4" />
                       </Button>
                     </div>
                   </div>

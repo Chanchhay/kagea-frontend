@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Image from "next/image";
 import Link from "next/link";
@@ -17,6 +19,7 @@ import {
 } from "@/services/recruiterApi";
 
 export default function RecruiterCompanyPage() {
+  const tx = useWorkspaceTranslation();
   const companyQuery = useGetRecruiterCompanyQuery();
   const [submitVerification, submission] =
     useSubmitCompanyVerificationMutation();
@@ -32,8 +35,8 @@ export default function RecruiterCompanyPage() {
     return (
       <>
         <PageIntro
-          title="Company profile"
-          description="Create your company before posting jobs. A moderator must verify it before your posts can go live."
+          title={tx("Company profile")}
+          description={tx("Create your company before posting jobs. A moderator must verify it before your posts can go live.")}
         />
         <PlainCard>
           <CompanyForm />
@@ -45,10 +48,10 @@ export default function RecruiterCompanyPage() {
   const onSubmitVerification = async () => {
     try {
       await submitVerification(company.id).unwrap();
-      toast.success("Submitted for verification.");
+      toast.success(tx("Submitted for verification."));
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, "Unable to submit for verification."),
+        getApiErrorMessage(error, tx("Unable to submit for verification.")),
       );
     }
   };
@@ -58,8 +61,8 @@ export default function RecruiterCompanyPage() {
   return (
     <>
       <PageIntro
-        title="Company profile"
-        description="Manage your company details and submit them for moderator verification."
+        title={tx("Company profile")}
+        description={tx("Manage your company details and submit them for moderator verification.")}
       />
 
       {isEditing ? (
@@ -75,7 +78,7 @@ export default function RecruiterCompanyPage() {
                   {resolveFileUrl(company.logoUrl) ? (
                     <Image
                       src={resolveFileUrl(company.logoUrl)!}
-                      alt={`${company.name} logo`}
+                      alt={tx("{0} logo", { 0: company.name })}
                       fill
                       unoptimized
                       sizes="80px"
@@ -93,7 +96,7 @@ export default function RecruiterCompanyPage() {
                     <StatusPill>{company.verificationStatus}</StatusPill>
                   </div>
                   <p className="mt-2 max-w-2xl text-sm leading-6 text-body">
-                    {company.description || "No description yet."}
+                    {company.description || tx("No description yet.")}
                   </p>
                 </div>
               </div>
@@ -104,20 +107,19 @@ export default function RecruiterCompanyPage() {
                 onClick={() => setIsEditing(true)}
               >
                 <Pencil aria-hidden="true" className="size-4" />
-                Edit
-              </Button>
+                {tx("Edit")}</Button>
             </div>
 
             <dl className="mt-6 grid gap-5 text-sm sm:grid-cols-2">
-              <Detail label="Industry" value={company.industryName} />
+              <Detail label={tx("Industry")} value={company.industryName} />
               <Detail
-                label="Business registration"
+                label={tx("Business registration")}
                 value={company.businessRegistrationNo}
               />
-              <Detail label="Contact email" value={company.contactEmail} />
-              <Detail label="Phone number" value={company.contactPhone} />
-              <Detail label="Website" value={company.websiteUrl} />
-              <Detail label="Address" value={company.address} />
+              <Detail label={tx("Contact email")} value={company.contactEmail} />
+              <Detail label={tx("Phone number")} value={company.contactPhone} />
+              <Detail label={tx("Website")} value={company.websiteUrl} />
+              <Detail label={tx("Address")} value={company.address} />
             </dl>
           </PlainCard>
 
@@ -128,11 +130,9 @@ export default function RecruiterCompanyPage() {
                   <ShieldCheck aria-hidden="true" className="size-5" />
                 </span>
                 <div>
-                  <h2 className="font-semibold text-heading">Verification</h2>
+                  <h2 className="font-semibold text-heading">{tx("Verification")}</h2>
                   <p className="mt-1 max-w-xl text-sm leading-6 text-body">
-                    Attach supporting documents, then submit for review. Jobs can
-                    only be published once a moderator approves the company.
-                  </p>
+                    {tx("Attach supporting documents, then submit for review. Jobs can only be published once a moderator approves the company.")}</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-3">
@@ -141,17 +141,14 @@ export default function RecruiterCompanyPage() {
                   className="inline-flex h-11 items-center gap-2 rounded-lg border border-border px-5 text-sm font-semibold text-body transition-colors hover:border-brand/30 hover:text-brand"
                 >
                   <FileText aria-hidden="true" className="size-4" />
-                  Documents
-                </Link>
+                  {tx("Documents")}</Link>
                 <Button
                   type="button"
                   className="h-11 rounded-lg px-6"
                   disabled={!canSubmit || submission.isLoading}
                   onClick={onSubmitVerification}
                 >
-                  {submission.isLoading
-                    ? "Submitting…"
-                    : "Submit for verification"}
+                  {submission.isLoading ? tx("Submitting…") : tx("Submit for verification")}
                 </Button>
               </div>
             </div>
@@ -163,10 +160,11 @@ export default function RecruiterCompanyPage() {
 }
 
 function Detail({ label, value }: { label: string; value?: string }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div>
       <dt className="text-xs font-semibold uppercase tracking-wide text-muted-fg">
-        {label}
+        {tx(label)}
       </dt>
       <dd className="mt-1 text-heading">{value || "—"}</dd>
     </div>

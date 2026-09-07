@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { StoreProvider } from "@/store/StoreProvider";
+import { LocaleProvider } from "@/i18n/LocaleProvider";
+import { inter, notoSansKhmer } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,22 +21,28 @@ export default function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="en" suppressHydrationWarning>
+        <html
+            lang="en"
+            className={`${inter.variable} ${notoSansKhmer.variable}`}
+            suppressHydrationWarning
+        >
             <body className="min-h-screen bg-canvas" suppressHydrationWarning>
                 <ThemeProvider>
-                    <StoreProvider>
-                        {children}
-                        <Toaster
-                            richColors
-                            position="top-right"
-                            toastOptions={{
-                                classNames: {
-                                    success:
-                                        "!bg-brand !text-white !border-brand",
-                                },
-                            }}
-                        />
-                    </StoreProvider>
+                    <LocaleProvider>
+                        <StoreProvider>
+                            {children}
+                            <Toaster
+                                richColors
+                                position="top-right"
+                                toastOptions={{
+                                    classNames: {
+                                        success:
+                                            "!bg-brand !text-white !border-brand",
+                                    },
+                                }}
+                            />
+                        </StoreProvider>
+                    </LocaleProvider>
                 </ThemeProvider>
             </body>
         </html>

@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useState } from "react";
 import { toast } from "sonner";
@@ -22,6 +24,7 @@ export function ResumeDownloadButton({
   resumeId: number;
   title: string;
 }) {
+  const tx = useWorkspaceTranslation();
   const [downloading, setDownloading] = useState(false);
 
   const onDownload = async () => {
@@ -44,7 +47,7 @@ export function ResumeDownloadButton({
       link.remove();
       URL.revokeObjectURL(url);
     } catch {
-      toast.error("Unable to download this resume.");
+      toast.error(tx("Unable to download this resume."));
     } finally {
       setDownloading(false);
     }
@@ -55,12 +58,12 @@ export function ResumeDownloadButton({
       type="button"
       variant="outline"
       className="h-9 rounded-lg px-4"
-      aria-label={`Download ${title}`}
+      aria-label={tx("Download {0}", { 0: title })}
       disabled={downloading}
       onClick={onDownload}
     >
       <Download aria-hidden="true" className="size-4" />
-      {downloading ? "Preparing…" : "Download"}
+      {downloading ? tx("Preparing…") : tx("Download")}
     </Button>
   );
 }

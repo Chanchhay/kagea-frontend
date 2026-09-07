@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
 import { ArrowRight, FileText, FolderGit2 } from "lucide-react";
@@ -12,11 +14,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useGetJobSeekerProfileQuery } from "@/services/jobSeekerApi";
 
 export default function JobSeekerProfilePage() {
+  const tx = useWorkspaceTranslation();
   const profileQuery = useGetJobSeekerProfileQuery();
 
   if (profileQuery.isLoading) return <LoadingState rows={6} />;
   if (profileQuery.isError || !profileQuery.data) {
-    return <ErrorState message="Unable to load your job seeker profile. Please try refreshing." />;
+    return <ErrorState message={tx("Unable to load your job seeker profile. Please try refreshing.")} />;
   }
 
   const profile = profileQuery.data;
@@ -26,8 +29,8 @@ export default function JobSeekerProfilePage() {
       {/* Header section */}
       <PageIntro
         eyebrow="Job Seeker Workspace"
-        title="Profile & Visibility"
-        description="Keep your profile up-to-date and manage how recruiters discover you."
+        title={tx("Profile & Visibility")}
+        description={tx("Keep your profile up-to-date and manage how recruiters discover you.")}
       />
 
       {/* Avatar, identity chips & profile strength */}
@@ -43,8 +46,8 @@ export default function JobSeekerProfilePage() {
                 <FileText className="size-5.5" />
               </div>
               <div>
-                <h3 className="font-semibold text-heading">Resumes & CVs</h3>
-                <p className="mt-1 text-sm text-body">Create and manage resumes for applications</p>
+                <h3 className="font-semibold text-heading">{tx("Resumes & CVs")}</h3>
+                <p className="mt-1 text-sm text-body">{tx("Create and manage resumes for applications")}</p>
               </div>
             </div>
             <ArrowRight className="size-5 shrink-0 text-muted-fg transition group-hover:translate-x-1 group-hover:text-brand" />
@@ -60,8 +63,8 @@ export default function JobSeekerProfilePage() {
                 <FolderGit2 className="size-5.5" />
               </div>
               <div>
-                <h3 className="font-semibold text-heading">Portfolios & Projects</h3>
-                <p className="mt-1 text-sm text-body">Showcase your strongest projects and work</p>
+                <h3 className="font-semibold text-heading">{tx("Portfolios & Projects")}</h3>
+                <p className="mt-1 text-sm text-body">{tx("Showcase your strongest projects and work")}</p>
               </div>
             </div>
             <ArrowRight className="size-5 shrink-0 text-muted-fg transition group-hover:translate-x-1 group-hover:text-brand" />
