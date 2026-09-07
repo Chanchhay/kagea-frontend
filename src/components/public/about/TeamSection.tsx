@@ -286,7 +286,9 @@ export default function TeamSection() {
 // Member Front Card Component
 // -------------------------------------------------------------
 interface MemberCardProps {
-  member: TeamMember;
+  member: Pick<TeamMember, "name" | "role" | "badge" | "avatar" | "social"> & {
+    roleTitle?: string;
+  };
   index: number;
   accentColor?: "green" | "gold";
   floatingWave?: boolean;
@@ -304,10 +306,10 @@ function MemberCard({
 }: MemberCardProps) {
   const formattedIndex = index < 10 ? `0${index}` : `${index}`;
   const isGold = accentColor === "gold";
+  const roleLabel = member.roleTitle || member.role;
 
-  const pillBg = isGold
-    ? "bg-amber-500/10 text-amber-600 border border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-300"
-    : "bg-[#1fa628]/10 text-[#1fa628] border border-[#1fa628]/30 dark:bg-[#1fa628]/20 dark:text-[#1fa628]";
+  const pillBg =
+    "border border-[#1fa628] bg-[#1fa628] text-white shadow-sm dark:border-[#22c55e] dark:bg-[#22c55e] dark:text-slate-950";
 
   const roleColor = isGold
     ? "text-[#F3BE00] dark:text-[#F3BE00]"
@@ -378,12 +380,14 @@ function MemberCard({
           {member.name}
         </h3>
 
-        <p className={`mt-1 text-[18px] font-bold uppercase tracking-wider ${roleColor}`}>
-          {member.role}
+        <p
+          className={`mt-1 max-w-[15rem] text-[12px] font-semibold uppercase leading-snug tracking-[0.08em] ${roleColor}`}
+        >
+          {roleLabel}
         </p>
 
         <div
-          className={`mt-2.5 inline-block rounded-full px-4 py-0.5 text-[18px] font-semibold ${pillBg}`}
+          className={`mt-2.5 inline-block rounded-full px-3 py-0.5 text-xs font-semibold tracking-wide ${pillBg}`}
         >
           {member.badge}
         </div>
