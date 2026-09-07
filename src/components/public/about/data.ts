@@ -15,7 +15,7 @@ export interface TeamMember {
   name: string;
 
   roleTitle: string;
-  badge: "LEADER" | "MEMBER" | "MENTOR" | "SUB-LEADER";
+  badge: "LEAD" | "SUB LEAD" | "MEMBER" | "MENTOR";
   avatar: string;
   bio: string;
   quote: string;
@@ -35,185 +35,67 @@ export interface TeamMember {
   };
 }
 
-export const mentors: TeamMember[] = [
-  {
-    id: "M1",
-    name: "Mr. Kit Tara",
-  
-    roleTitle: "SOLUTION ARCHITECT & ADVISOR",
-    badge: "MENTOR",
-    avatar: "/images/avatar/dara.jpg",
-    bio: "Senior Architect with extensive experience in cloud-native systems, enterprise system design, and engineering team mentorship.",
-    quote: "Building resilient systems begins with clean abstraction, scalable patterns, and empathy for developer experience.",
-    education: "Master of Science in Software Engineering",
-    roleBreakdown: [
-      "Architectural review and system design consulting",
-      "Cloud deployment strategy and scalability guidance",
-      "Engineering best practices and code standards enforcement",
-    ],
-    skills: ["System Design", "Cloud Native", "Spring Boot", "Kubernetes", "Microservices", "Docker"],
-    stackCategories: [
-      { category: "Architecture & Cloud", items: ["Microservices", "Kubernetes", "Docker", "AWS", "CI/CD"] },
-      { category: "Backend Core", items: ["Java", "Spring Boot", "PostgreSQL", "Redis"] },
-    ],
-    projects: [
-      {
-        name: "Enterprise Architecture Review",
-        description: "Formulated the distributed service layout and API gateway protocols for Find Job.",
-        impact: "Ensured low-latency response times and horizontal auto-scaling support.",
-      },
-    ],
-    journey: [
-      {
-        period: "Month 1 - 2",
-        title: "Architecture & Technical Baseline",
-        detail: "Guided team through high-level microservices topology, OpenAPI specification, and database schema design.",
-      },
-      {
-        period: "Month 3 - 4",
-        title: "Security & Scale Hardening",
-        detail: "Mentored on OAuth2/OIDC integration, RBAC authorization filters, and zero-downtime deployment pipelines.",
-      },
-    ],
-    social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
-      linkedin: "https://linkedin.com",
-    },
-  },
+export interface Mentor {
+  id: string;
+  name: string;
+  role: string;
+  roleTitle?: string;
+  badge: "MENTOR";
+  avatar: string;
+  social: { github?: string; telegram?: string; linkedin?: string };
+}
+
+export const mentors: Mentor[] = [
   {
     id: "M2",
     name: "Miss. Mom Raksmey",
- 
-    roleTitle: "TECHNICAL ADVISOR & MENTOR",
+    role: "MENTOR",
+    roleTitle: "TECHNICAL ADVISOR",
     badge: "MENTOR",
     avatar: "/images/avatar/raksmey.jpg",
-    bio: "Passionate software mentor specializing in agile delivery, database design, and clean code paradigms.",
-    quote: "Sustainable software is built when maintainability, unit testing, and developer velocity work in harmony.",
-    education: "Computer Science & Engineering Specialist",
-    roleBreakdown: [
-      "Agile development guidance and sprint cadence alignment",
-      "Database schema normalization and relational performance",
-      "Frontend-backend synchronization and API contract validation",
-    ],
-    skills: ["Enterprise Systems", "PostgreSQL", "Next.js", "CI/CD", "Prisma", "TypeScript"],
-    stackCategories: [
-      { category: "Data & Architecture", items: ["PostgreSQL", "Database Indexing", "Prisma", "Docker"] },
-      { category: "Frontend & Full Stack", items: ["TypeScript", "Next.js", "REST APIs", "Jest"] },
-    ],
-    projects: [
-      {
-        name: "Contract & API Schema Validation",
-        description: "Assisted in establishing strict OpenAPI contracts bridging Spring Boot and Next.js.",
-        impact: "Zero contract drift across frontend and backend development teams.",
-      },
-    ],
-    journey: [
-      {
-        period: "Month 1 - 2",
-        title: "Data Modeling & Contract Foundation",
-        detail: "Guided the creation of comprehensive entity models for job seekers, recruiters, and moderators.",
-      },
-      {
-        period: "Month 3 - 4",
-        title: "Quality Review & Performance Auditing",
-        detail: "Conducted sprint performance reviews, database indexing optimizations, and UX audits.",
-      },
-    ],
     social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
-      linkedin: "https://linkedin.com",
+      github: "https://github.com/Reksmeys",
+      telegram: "https://t.me/reksmey_mom",
+      linkedin: "https://www.linkedin.com/in/reksmey-mom/",
     },
   },
   {
     id: "M3",
     name: "Mr. Chan Chhaya",
-  
-    roleTitle: "BACKEND SPECIALIST & MENTOR",
+    role: "MENTOR",
+    roleTitle: "BACKEND SPECIALIST",
     badge: "MENTOR",
     avatar: "/images/avatar/chhayya.jpg",
-    bio: "Enterprise backend veteran dedicated to high-throughput systems, security tokens, and developer growth.",
-    quote: "Security and data integrity are non-negotiable fundamentals of any production career platform.",
-    education: "Senior Software Engineering Advisor",
-    roleBreakdown: [
-      "Spring Security, Keycloak, and OAuth2/OIDC integration",
-      "Caching strategies with Redis and connection pooling",
-      "API rate limiting, audit trails, and data isolation rules",
-    ],
-    skills: ["Spring Security", "Java", "Redis", "API Gateway", "Keycloak", "OAuth2"],
-    stackCategories: [
-      { category: "Security & Identity", items: ["Keycloak", "OAuth2/OIDC", "Spring Security", "JWT", "RBAC"] },
-      { category: "Backend Infrastructure", items: ["Java", "Spring Boot", "Redis", "PostgreSQL"] },
-    ],
-    projects: [
-      {
-        name: "Keycloak & Authentication Gateway",
-        description: "Engineered single sign-on architecture and role-based access token validation.",
-        impact: "Protected cross-tenant recruiter and applicant sensitive data.",
-      },
-    ],
-    journey: [
-      {
-        period: "Month 1 - 2",
-        title: "Authentication Architecture",
-        detail: "Specified Keycloak realm structure, user groups, and custom token claims mapping.",
-      },
-      {
-        period: "Month 3 - 4",
-        title: "Resilience & Security Hardening",
-        detail: "Implemented gateway route protection and strict recruiter verification workflows.",
-      },
-    ],
     social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
-      linkedin: "https://linkedin.com",
+      github: "https://github.com/it-chhaya",
+      telegram: "https://t.me/chhayadevkh",
+      linkedin: "https://www.linkedin.com/in/chan-chhaya-222a69178/",
+    },
+  },
+  {
+    id: "M1",
+    name: "Mr. Kim Chansokpheng",
+    role: "MENTOR",
+    roleTitle: "CYBERSECURITY SPECIALIST",
+    badge: "MENTOR",
+    avatar: "/images/avatar/kim_chansopheng.png",
+    social: {
+      github: "https://github.com/sokpheng001",
+      telegram: "https://t.me/sokpheng001",
+      linkedin: "https://www.linkedin.com/in/kim-chansokpheng-6b6513267/",
     },
   },
   {
     id: "M4",
     name: "Miss. Eung Lyzhia",
-  
-    roleTitle: "PRODUCT & QUALITY MENTOR",
+    role: "MENTOR",
+    roleTitle: "PRODUCT & QUALITY",
     badge: "MENTOR",
     avatar: "/images/avatar/lyzhia.jpg",
-    bio: "Quality engineering leader ensuring exceptional user experience, performance metrics, and testing rigor.",
-    quote: "User satisfaction is the true benchmark of software excellence — build with purpose and polish with care.",
-    education: "Quality Assurance & Product Strategy Lead",
-    roleBreakdown: [
-      "Product requirement validation and user story refinement",
-      "Automated testing strategy and edge-case prevention",
-      "Accessibility (a11y) and user experience standards review",
-    ],
-    skills: ["QA Automation", "UX Research", "Performance", "Agile", "Cypress", "Playwright"],
-    stackCategories: [
-      { category: "Testing & Quality", items: ["Playwright", "Cypress", "Lighthouse", "Jest", "A11y"] },
-      { category: "Product & Process", items: ["Figma Audits", "User Journey Mapping", "Scrum"] },
-    ],
-    projects: [
-      {
-        name: "End-to-End Quality Standards",
-        description: "Implemented comprehensive test plans covering job seeker applications and recruiter review pipelines.",
-        impact: "Over 95% pass rate on core user flows and high accessibility compliance.",
-      },
-    ],
-    journey: [
-      {
-        period: "Month 1 - 2",
-        title: "UX Workflow & Acceptance Criteria",
-        detail: "Defined testing matrices and UI acceptance criteria across all platform roles.",
-      },
-      {
-        period: "Month 3 - 4",
-        title: "Testing Automation & Flow Audits",
-        detail: "Oversaw AI interview simulator stability tests and cross-browser responsiveness.",
-      },
-    ],
     social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
-      linkedin: "https://linkedin.com",
+      github: "https://github.com/lyzhiaa",
+      telegram: "https://t.me/lyzhia",
+      linkedin: "https://www.linkedin.com/in/lyzhia-eung-aa66912b9/",
     },
   },
 ];
@@ -272,17 +154,17 @@ export const developmentTeam: TeamMember[] = [
       },
     ],
     social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
+      github: "https://github.com/Chanchhay",
+      telegram: "https://t.me/chanchhayy",
       linkedin: "https://linkedin.com",
     },
   },
   {
     id: "02",
     name: "Khan Kanhchana",
-    
-    roleTitle: "FRONTEND ARCHITECT & SUB LEADER",
-    badge: "SUB-LEADER",
+    role: "SUB LEADER",
+    roleTitle: "FRONTEND ARCHITECT",
+    badge: "SUB LEAD",
     avatar: "/images/avatar/kanhchana.jpg",
     bio: "Frontend Specialist & Sub Leader focusing on UI/UX excellence, state management, and modern component systems. Committed to crafting highly responsive, visually stunning web experiences with Framer Motion.",
     quote: "Design and code must converge effortlessly to evoke delight, clarity, and trust in every user interaction.",
@@ -329,9 +211,9 @@ export const developmentTeam: TeamMember[] = [
       },
     ],
     social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
-      linkedin: "https://linkedin.com",
+      github: "https://github.com/khannkanhchana",
+      telegram: "https://t.me/khann_kanhchana",
+      linkedin: "https://linkedin.com/in",
     },
   },
   {
@@ -386,9 +268,9 @@ export const developmentTeam: TeamMember[] = [
       },
     ],
     social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
-      linkedin: "https://linkedin.com",
+      github: "https://github.com/Linaa14567",
+      telegram: "https://t.me/Ly_NaNaNaNa",
+      linkedin: "https://www.linkedin.com/in/lut-lyna-2a8867434/",
     },
   },
   {
@@ -443,9 +325,9 @@ export const developmentTeam: TeamMember[] = [
       },
     ],
     social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
-      linkedin: "https://linkedin.com",
+      github: "https://github.com/heangbunlong-zk",
+      telegram: "https://t.me/heangbunlong",
+      linkedin: "https://linkedin.com/in/heangbunlong",
     },
   },
   {
@@ -500,9 +382,9 @@ export const developmentTeam: TeamMember[] = [
       },
     ],
     social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
-      linkedin: "https://linkedin.com",
+      github: " https://github.com/mantolfary",
+      telegram: "https://t.me/tolfary",
+      linkedin: "https://www.linkedin.com/in/man-tolfary-390b83368/",
     },
   },
   {
@@ -557,9 +439,9 @@ export const developmentTeam: TeamMember[] = [
       },
     ],
     social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
-      linkedin: "https://linkedin.com",
+      github: "https://github.com/SamrachCR",
+      telegram: "https://t.me/Samrach1001",
+      linkedin: "https://www.linkedin.com/in/lozy-ize-7a2b86344/",
     },
   },
   {
@@ -614,9 +496,9 @@ export const developmentTeam: TeamMember[] = [
       },
     ],
     social: {
-      github: "https://github.com",
-      telegram: "https://t.me",
-      linkedin: "https://linkedin.com",
+      github: "https://github.com/pechphakley",
+      telegram: "https://t.me/phakley",
+      linkedin: "https://www.linkedin.com/feed/",
     },
   },
 ];
