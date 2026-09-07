@@ -8,7 +8,7 @@ import { useGetPublicJobsQuery } from '@/services/publicApi';
 import { resolveFileUrl } from '@/lib/file-url';
 
 type Client = {
-  id: number;
+  id: string;
   name: string;
   logoUrl: string;
   jobCount: number;
@@ -24,7 +24,7 @@ function useClients() {
   const jobsQuery = useGetPublicJobsQuery({ size: 100, sort: 'publishedAt,desc' });
 
   const clients = useMemo<Client[]>(() => {
-    const byCompany = new Map<number, Client>();
+    const byCompany = new Map<string, Client>();
 
     for (const job of jobsQuery.data?.content ?? []) {
       if (job.companyId === null) continue;

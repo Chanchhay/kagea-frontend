@@ -28,6 +28,7 @@ export const authApi = baseApi.injectEndpoints({
         try {
           const response = await fetch("/bff/session", {
             headers: { accept: "application/json" },
+            credentials: "include",
           });
           if (!response.ok) {
             return {

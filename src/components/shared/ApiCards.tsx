@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -27,10 +29,11 @@ export function PageIntro({
 
 /** Small capitalised section heading with the brand underline. */
 export function SectionLabel({ children }: { children: ReactNode }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div className="mb-6">
       <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-heading">
-        {children}
+        {tx(children)}
       </h2>
       <span aria-hidden="true" className="mt-2 block h-0.5 w-10 bg-brand" />
     </div>
@@ -46,21 +49,23 @@ export function MetricCard({
   value: ReactNode;
   hint?: string;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div className="rounded-xl border border-border bg-surface p-5">
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-fg">
-        {label}
+        {tx(label)}
       </p>
       <p className="mt-2 text-2xl font-semibold text-heading">{value}</p>
-      {hint ? <p className="mt-1 text-sm text-body">{hint}</p> : null}
+      {hint ? <p className="mt-1 text-sm text-body">{tx(hint)}</p> : null}
     </div>
   );
 }
 
 export function StatusPill({ children }: { children: ReactNode }) {
+  const tx = useWorkspaceTranslation();
   return (
     <span className="inline-flex rounded-md bg-brand-tint px-2 py-1 text-xs font-semibold text-brand">
-      {children}
+      {tx(children)}
     </span>
   );
 }

@@ -407,7 +407,7 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         normalizePage(unwrapApiResponse(response)),
       providesTags: ["FavoriteJobs"],
     }),
-    saveFavoriteJob: builder.mutation<FavoriteJobResponse, number>({
+    saveFavoriteJob: builder.mutation<FavoriteJobResponse, string>({
       query: (jobId) => ({
         url: `/job-seeker/favorite-jobs/${jobId}`,
         method: "POST",
@@ -422,7 +422,7 @@ export const jobSeekerApi = baseApi.injectEndpoints({
         { type: "PublicJobs", id: jobId },
       ],
     }),
-    removeFavoriteJob: builder.mutation<void, number>({
+    removeFavoriteJob: builder.mutation<void, string>({
       query: (jobId) => ({
         url: `/job-seeker/favorite-jobs/${jobId}`,
         method: "DELETE",

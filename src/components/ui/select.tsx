@@ -18,13 +18,25 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   )
 }
 
-function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function SelectValue({ className, children, ...props }: SelectPrimitive.Value.Props) {
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
       className={cn("flex flex-1 text-left", className)}
       {...props}
-    />
+    >
+      {typeof children === "function"
+        ? children
+        : (value: any) => {
+            if (children) return children;
+            if (typeof value === "string" && UUID_REGEX.test(value)) {
+              return "";
+            }
+            return value;
+          }}
+    </SelectPrimitive.Value>
   )
 }
 

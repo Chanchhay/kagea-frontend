@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
 import { AlertTriangle, EyeOff, Globe2, Loader2, Lock } from "lucide-react";
@@ -11,7 +13,6 @@ import { useGetJobSeekerProfileQuery, useUpdateResumePublicationMutation } from 
 const OPTIONS: { value: PublicationVisibility; label: string; icon: typeof Globe2; description: string }[] = [
   { value: "PUBLIC", label: "Public", icon: Globe2, description: "Recruiters browsing talent can open this resume." },
   { value: "PRIVATE", label: "Private", icon: Lock, description: "Only shared with companies you apply to." },
-  { value: "HIDDEN", label: "Hidden", icon: EyeOff, description: "Kept out of every recruiter view." },
 ];
 
 /**
@@ -20,6 +21,7 @@ const OPTIONS: { value: PublicationVisibility; label: string; icon: typeof Globe
  * otherwise a resume can read as "Public" while nobody can actually reach it.
  */
 export function ResumePublishCard({ resume }: { resume: ResumeResponse }) {
+  const tx = useWorkspaceTranslation();
   const [updatePublication, { isLoading }] = useUpdateResumePublicationMutation();
   const profileQuery = useGetJobSeekerProfileQuery();
   const visibility = resume.visibility ?? "PRIVATE";
@@ -31,18 +33,18 @@ export function ResumePublishCard({ resume }: { resume: ResumeResponse }) {
     try {
       await updatePublication({ resumeId: resume.id, body: { visibility: next } }).unwrap();
       toast.success(
-        next === "PUBLIC" ? "Resume published to your profile" : next === "PRIVATE" ? "Resume set to private" : "Resume hidden",
+        next === "PUBLIC" ? tx("Resume published to your profile") : next === "PRIVATE" ? tx("Resume set to private") : tx("Resume hidden"),
       );
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Could not update this resume's visibility."));
+      toast.error(getApiErrorMessage(error, tx("Could not update this resume's visibility.")));
     }
   }
 
   return (
     <section className="rounded-[22px] bg-ws-card p-5">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-ws-fg">Publishing</h2>
-        <span className={`rounded-full px-2.5 py-1 text-[18px] font-semibold uppercase tracking-wide ${isPublic ? "bg-chip-soft text-chip-soft-fg" : "bg-chip-quiet text-chip-quiet-fg"}`}>
+        <h2 className="text-sm font-semibold text-ws-fg">{tx("Publishing")}</h2>
+        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wider ${isPublic ? "bg-chip-soft text-chip-soft-fg" : "bg-chip-quiet text-chip-quiet-fg"}`}>
           {visibility.toLowerCase()}
         </span>
       </div>
@@ -65,8 +67,8 @@ export function ResumePublishCard({ resume }: { resume: ResumeResponse }) {
                 {isLoading && active ? <Loader2 className="size-4 animate-spin" /> : <option.icon className="size-4" />}
               </span>
               <span className="min-w-0">
-                <span className="block text-sm font-semibold text-ws-fg">{option.label}</span>
-                <span className="mt-0.5 block text-xs leading-5 text-ws-muted">{option.description}</span>
+                <span className="block text-sm font-semibold text-ws-fg">{tx(option.label)}</span>
+                <span className="mt-0.5 block text-xs leading-5 text-ws-muted">{tx(option.description)}</span>
               </span>
             </button>
           );
@@ -77,27 +79,23 @@ export function ResumePublishCard({ resume }: { resume: ResumeResponse }) {
         <div className="mt-4 flex gap-3 rounded-xl border border-warning/30 bg-chip-alert p-3">
           <AlertTriangle className="mt-0.5 size-4 shrink-0 text-chip-alert-fg" />
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-chip-alert-fg">Your profile is still private</p>
+            <p className="text-xs font-semibold text-chip-alert-fg">{tx("Your profile is still private")}</p>
             <p className="mt-1 text-xs leading-5 text-ws-muted">
-              Recruiters reach your resumes through your public profile, so publish that too.
-            </p>
+              {tx("Recruiters reach your resumes through your public profile, so publish that too.")}</p>
             <Link href="/job-seeker/profile" className="mt-2 inline-block text-xs font-semibold text-primary hover:underline">
-              Go to profile settings →
-            </Link>
+              {tx("Go to profile settings →")}</Link>
           </div>
         </div>
       ) : null}
 
       {isPublic && !resume.resumeFileUrl ? (
         <p className="mt-4 text-xs leading-5 text-ws-muted">
-          This resume has no PDF, so recruiters read it as a page rather than downloading a file.
-        </p>
+          {tx("This resume has no PDF, so recruiters read it as a page rather than downloading a file.")}</p>
       ) : null}
 
       {!isPublic ? (
         <Button onClick={() => setVisibility("PUBLIC")} disabled={isLoading} className="mt-4 w-full rounded-xl">
-          {isLoading ? <Loader2 className="animate-spin" /> : <Globe2 />} Publish resume
-        </Button>
+          {isLoading ? <Loader2 className="animate-spin" /> : <Globe2 />} {tx(" Publish resume")}</Button>
       ) : null}
     </section>
   );

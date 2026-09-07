@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import type { SVGProps } from 'react';
 import { useGetCurrentUserQuery, useGetSessionQuery } from '@/services/authApi';
+import { useLocale } from '@/i18n/LocaleProvider';
 
 /* ------------------------------------------------------------------ */
 /*  Geometry — tweak these constants to nudge the whole diagram        */
@@ -124,21 +125,21 @@ type Side = 'top' | 'bottom' | 'left' | 'right';
 
 const NODES: {
   id: string;
-  label: string;
+  labelKey: string;
   angle: number;
   side: Side;
   Icon: (p: IconProps) => React.ReactNode;
 }[] = [
-  { id: 'skills', label: 'SKILLS', angle: 90, side: 'top', Icon: SkillsIcon },
-  { id: 'experience', label: 'EXPERIENCE', angle: 60, side: 'right', Icon: ExperienceIcon },
-  { id: 'portfolio', label: 'PORTFOLIO', angle: 20, side: 'right', Icon: PortfolioIcon },
-  { id: 'education', label: 'EDUCATION', angle: 340, side: 'right', Icon: EducationIcon },
-  { id: 'publications', label: 'PUBLICATIONS', angle: 300, side: 'right', Icon: PublicationsIcon },
-  { id: 'goals', label: 'GOALS', angle: 270, side: 'bottom', Icon: GoalsIcon },
-  { id: 'achievements', label: 'ACHIEVEMENTS', angle: 240, side: 'left', Icon: AchievementsIcon },
-  { id: 'languages', label: 'LANGUAGES', angle: 200, side: 'left', Icon: LanguagesIcon },
-  { id: 'projects', label: 'PROJECTS', angle: 160, side: 'left', Icon: ProjectsIcon },
-  { id: 'networking', label: 'NETWORKING', angle: 120, side: 'left', Icon: NetworkingIcon },
+  { id: 'skills', labelKey: 'landing.profile.wheel.skills', angle: 90, side: 'top', Icon: SkillsIcon },
+  { id: 'experience', labelKey: 'landing.profile.wheel.experience', angle: 60, side: 'right', Icon: ExperienceIcon },
+  { id: 'portfolio', labelKey: 'landing.profile.wheel.portfolio', angle: 20, side: 'right', Icon: PortfolioIcon },
+  { id: 'education', labelKey: 'landing.profile.wheel.education', angle: 340, side: 'right', Icon: EducationIcon },
+  { id: 'publications', labelKey: 'landing.profile.wheel.publications', angle: 300, side: 'right', Icon: PublicationsIcon },
+  { id: 'goals', labelKey: 'landing.profile.wheel.goals', angle: 270, side: 'bottom', Icon: GoalsIcon },
+  { id: 'achievements', labelKey: 'landing.profile.wheel.achievements', angle: 240, side: 'left', Icon: AchievementsIcon },
+  { id: 'languages', labelKey: 'landing.profile.wheel.languages', angle: 200, side: 'left', Icon: LanguagesIcon },
+  { id: 'projects', labelKey: 'landing.profile.wheel.projects', angle: 160, side: 'left', Icon: ProjectsIcon },
+  { id: 'networking', labelKey: 'landing.profile.wheel.networking', angle: 120, side: 'left', Icon: NetworkingIcon },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -155,6 +156,7 @@ const CIRC = 2 * Math.PI * RING_R; // ring circumference
 const SWEEP = 9;                   // seconds for one full sweep
 
 function ProfileWheel() {
+  const { t } = useLocale();
   const [active, setActive] = useState<string | null>(null);
 
   return (
@@ -301,13 +303,13 @@ function ProfileWheel() {
       </svg>
 
       {/* ---------- label layer (HTML so the underline hugs the text) ---------- */}
-      {NODES.map(({ id, label, angle, side, Icon }) => {
+      {NODES.map(({ id, labelKey, angle, side, Icon }) => {
         const e = polar(angle, ELBOW_R);
         const on = active === id;
         const delay = `${0.55 + cwIndex(id) * 0.07}s`;
 
         const text = (
-          <span className="text-[18px] font-bold tracking-wide sm:text-[18px]">{label}</span>
+          <span className="text-[11px] font-bold tracking-wide sm:text-[18px]">{t(labelKey)}</span>
         );
         const icon = <Icon className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" />;
 
@@ -375,6 +377,7 @@ function ProfileWheel() {
 }
 
 export default function CandidateProfileSection() {
+  const { t } = useLocale();
   const sessionQuery = useGetSessionQuery();
   const currentUserQuery = useGetCurrentUserQuery(undefined, {
     skip: !sessionQuery.data?.authenticated,
@@ -389,12 +392,12 @@ export default function CandidateProfileSection() {
       ? '/recruiter/dashboard'
       : '/job-seeker/profile';
   const profileCta = !sessionQuery.data?.authenticated
-    ? 'Create now'
+    ? t('landing.profile.ctaCreate')
     : !currentUserQuery.data
-      ? 'Continue'
+      ? t('landing.profile.ctaContinue')
     : isRecruiter
-      ? 'Open recruiter dashboard'
-      : 'Build my profile';
+      ? t('landing.profile.ctaRecruiterDashboard')
+      : t('landing.profile.ctaBuildProfile');
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 sm:py-10">
@@ -409,23 +412,21 @@ export default function CandidateProfileSection() {
           <span
             className="inline-flex items-center rounded-md px-3 py-1 text-xs font-semibold bg-[#E9F6E9] text-[#008A1E] dark:bg-slate-800 dark:text-emerald-400"
           >
-            Profile
+            {t('landing.profile.badge')}
           </span>
 
           <h2
             className="mt-6 text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-[2.75rem]"
             style={{ color: YELLOW }}
           >
-            Be the candidate employers are looking for
+            {t('landing.profile.title')}
           </h2>
 
           <p className="mt-6 text-base leading-relaxed text-slate-500 sm:text-lg dark:text-slate-400">
-            Create a comprehensive profile and start receiving interview invites and job offers
-            that align with your unique skills.
+            {t('landing.profile.body1')}
           </p>
           <p className="mt-5 text-base leading-relaxed text-slate-500 sm:text-lg dark:text-slate-400">
-            Don&rsquo;t miss out on your dream job&mdash;get started today and make your profile
-            stand out.
+            {t('landing.profile.body2')}
           </p>
 
           <Link

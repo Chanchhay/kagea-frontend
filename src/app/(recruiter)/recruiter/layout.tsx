@@ -1,3 +1,5 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import {
   recruiterLinks,
   WorkspaceShell,
@@ -8,8 +10,9 @@ export default function RecruiterLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
-    <WorkspaceShell role="recruiter" title="Recruiter" links={recruiterLinks}>
+    <WorkspaceShell role="recruiter" title={tx("Recruiter")} links={recruiterLinks}>
       {children}
     </WorkspaceShell>
   );

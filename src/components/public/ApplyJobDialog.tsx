@@ -4,14 +4,13 @@ import { useState, type FormEvent } from "react";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getApiErrorMessage } from "@/lib/api-error";
-import { useApplyToJobMutation } from "@/services/jobSeekerApi";
-import { KeycloakLoginButton } from "@/components/auth/AuthActions";
+import { useApplyToJobMutation, useGetResumesQuery } from "@/services/jobSeekerApi";
 
 type ApplyJobDialogProps = {
-  jobId: number;
+  jobId: string;
   jobTitle: string;
 };
 
@@ -20,6 +19,10 @@ export function ApplyJobDialog({ jobId, jobTitle }: ApplyJobDialogProps) {
   const [resumeId, setResumeId] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
   const [apply, application] = useApplyToJobMutation();
+  const { data: resumes } = useGetResumesQuery(undefined, { skip: !open });
+  const defaultResume = resumes?.find((r) => r.isDefault) ?? resumes?.[0];
+  const selectedResumeId = resumeId || (defaultResume ? String(defaultResume.id) : "");
+  const selectedResume = resumes?.find((r) => String(r.id) === selectedResumeId);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -27,19 +30,13 @@ export function ApplyJobDialog({ jobId, jobTitle }: ApplyJobDialogProps) {
       await apply({
         jobId,
         body: {
-          resumeId: resumeId ? Number(resumeId) : undefined,
+          resumeId: selectedResumeId || undefined,
           coverLetter: coverLetter || undefined,
         },
       }).unwrap();
       toast.success("Application submitted.");
       setOpen(false);
     } catch (error) {
-      /*
-       * Surface what the API said. The refusal is usually specific — an open
-       * application already exists, or a re-apply cooldown has not elapsed —
-       * and a blanket "sign in and try again" sends the candidate to fix
-       * something that was never wrong.
-       */
       toast.error(
         getApiErrorMessage(
           error,
@@ -51,6 +48,10 @@ export function ApplyJobDialog({ jobId, jobTitle }: ApplyJobDialogProps) {
 
   return (
     <>
+      <Button type="button" onClick={() => setOpen(true)}>
+        Apply
+      </Button>
+
       {open ? (
         <div
           aria-modal="true"
@@ -77,16 +78,25 @@ export function ApplyJobDialog({ jobId, jobTitle }: ApplyJobDialogProps) {
               </Button>
             </div>
             <form className="mt-5 space-y-4" onSubmit={submit}>
-              <label className="block text-sm font-medium text-heading">
-                Resume ID
-                <Input
-                  className="mt-1"
-                  inputMode="numeric"
-                  value={resumeId}
-                  onChange={(event) => setResumeId(event.target.value)}
-                  placeholder="Optional resume ID"
-                />
-              </label>
+              {resumes && resumes.length > 0 ? (
+                <label className="block text-sm font-medium text-heading">
+                  Resume
+                  <Select value={selectedResumeId || null} onValueChange={(val) => setResumeId(val ?? "")}>
+                    <SelectTrigger className="mt-1 w-full bg-surface border-border">
+                      <SelectValue placeholder="Select a resume">
+                        {selectedResume ? selectedResume.title : undefined}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {resumes.map((r) => (
+                        <SelectItem key={r.id} value={String(r.id)}>
+                          {r.title || "Resume"}{r.isDefault ? " (default)" : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </label>
+              ) : null}
               <label className="block text-sm font-medium text-heading">
                 Cover letter
                 <Textarea

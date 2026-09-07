@@ -1,19 +1,19 @@
 import type { ApiResponse, PagedModel } from "./common";
 
 export type PublicSkillResponse = {
-  id: number;
+  id: string;
   name: string;
   skillType: string;
 };
 
 export type PublicJobCategoryResponse = {
-  id: number;
+  id: string;
   name: string;
   description: string;
 };
 
 export type PublicIndustryResponse = {
-  id: number;
+  id: string;
   name: string;
   description: string;
 };
@@ -27,7 +27,7 @@ export type JobPostSectionType =
   | "ABOUT_ROLE";
 
 export type JobPostSectionResponse = {
-  id: number;
+  id: string;
   sectionType: JobPostSectionType;
   title: string;
   contentMarkdown: string;
@@ -36,28 +36,32 @@ export type JobPostSectionResponse = {
 };
 
 export type JobPostSkillResponse = {
-  id: number;
-  skillId: number;
+  id: string;
+  skillId: string;
   skillName: string;
   skillType: string;
   requiredLevel: string;
 };
 
 export type PublicJobResponse = {
-  id: number;
+  id: string;
   /**
    * Null when an administrator has masked the company. The id is withheld along
    * with the name, so there is nothing to link to and no way to tell that two
    * confidential postings came from the same employer.
    */
-  companyId: number | null;
+  companyId: string | null;
   /** "Confidential company" when the company is masked. */
   companyName: string;
-  /** Uploaded company logo when included by the public jobs endpoint. */
-  companyLogoUrl?: string;
+  /**
+   * The employer's logo. Null for a masked posting unless an administrator set
+   * a stand-in for it, and null for any company that never uploaded one — so
+   * the absence of a logo is ordinary, not an error.
+   */
+  companyLogoUrl?: string | null;
   /** Compatibility with APIs that expose the company field without a prefix. */
   logoUrl?: string;
-  categoryId: number;
+  categoryId: string;
   categoryName: string;
   title: string;
   description: string;
@@ -88,7 +92,7 @@ export type PublicJobFacetValue = {
 
 /** A facet option that names a row - a category or a skill. */
 export type PublicJobFacetOption = {
-  id: number;
+  id: string;
   name: string;
   count: number;
 };

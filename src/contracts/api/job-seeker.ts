@@ -18,7 +18,7 @@ export type ResumeUpdateRequest = Partial<ResumeCreateRequest>;
 export type ResumeSourceType = "PLATFORM_TEMPLATE" | "USER_UPLOAD";
 
 export type ResumeResponse = {
-  id: number;
+  id: string;
   title: string;
   resumeFileUrl: string;
   resumeData: Record<string, unknown>;
@@ -36,7 +36,7 @@ export type ResumeResponse = {
 
 /** A layout the builder offers. `templateKey` is what goes in resumeData.templateId. */
 export type PublicResumeTemplateResponse = {
-  id: number;
+  id: string;
   templateKey: string | null;
   name: string;
   description: string | null;
@@ -61,7 +61,7 @@ export type PortfolioProjectRequest = {
 export type PortfolioProjectUpdateRequest = Partial<PortfolioProjectRequest>;
 
 export type PortfolioProjectResponse = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   projectUrl: string;
@@ -84,7 +84,7 @@ export type PortfolioCreateRequest = {
 export type PortfolioUpdateRequest = Partial<PortfolioCreateRequest>;
 
 export type PortfolioResponse = {
-  id: number;
+  id: string;
   title: string;
   summary: string;
   publicUrl: string;
@@ -103,14 +103,14 @@ export type PublicationRequest = {
 
 export type PublicationResponse = {
   resourceType: string;
-  resourceId: number;
+  resourceId: string;
   visibility: PublicationVisibility;
   publicProfileSlug: string;
   publishedAt: string;
 };
 
 export type JobApplicationCreateRequest = {
-  resumeId?: number;
+  resumeId?: string;
   coverLetter?: string;
 };
 
@@ -142,10 +142,10 @@ export function isClosedApplication(status: JobApplicationStatus) {
 }
 
 export type JobApplicationResponse = {
-  id: number;
-  jobId: number;
+  id: string;
+  jobId: string;
   jobTitle: string;
-  resumeId: number;
+  resumeId: string;
   resumeTitle: string;
   coverLetter: string;
   status: JobApplicationStatus;
@@ -171,7 +171,7 @@ export type VoiceTranscriptRequest = {
 };
 
 export type AiInterviewAnswerResponse = {
-  id: number;
+  id: string;
   answerText: string;
   score: number;
   feedback: string;
@@ -183,7 +183,7 @@ export type AiInterviewAnswerResponse = {
 };
 
 export type AiInterviewQuestionResponse = {
-  id: number;
+  id: string;
   displayOrder: number;
   questionType:
     | "TECHNICAL"
@@ -199,9 +199,9 @@ export type AiInterviewQuestionResponse = {
 };
 
 export type AiInterviewSessionResponse = {
-  id: number;
-  applicationId: number;
-  jobId: number;
+  id: string;
+  applicationId: string;
+  jobId: string;
   jobTitle: string;
   status: InterviewStatus;
   startedAt: string;
@@ -245,7 +245,7 @@ export type JobSeekerProfileUpdateRequest = {
 };
 
 export type JobSeekerProfileResponse = JobSeekerProfileUpdateRequest & {
-  id: number;
+  id: string;
   publicProfileSlug: string;
   profileVisibility: PublicationVisibility;
   publishedAt: string;
@@ -281,12 +281,12 @@ export type ApiResponseJobSeekerProfileResponse =
  * stays on the page, greyed out, rather than disappearing.
  */
 export type FavoriteJobResponse = {
-  id: number;
+  id: string;
   savedAt: string;
-  jobId: number;
+  jobId: string;
   title: string;
   /** Null when the company is masked; see PublicJobResponse. */
-  companyId: number | null;
+  companyId: string | null;
   companyName: string;
   location: string | null;
   jobType: string | null;

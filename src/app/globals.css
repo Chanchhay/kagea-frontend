@@ -5,26 +5,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  /* Inter covers Latin text; Noto Sans Khmer fills in Khmer glyphs the
+     browser can't find in Inter, so both locales render on-brand without a
+     JS-driven font switch. */
+  --font-sans: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
   /* One family everywhere: mono and serif resolve to the same stack, so a
      stray `font-mono` cannot introduce a second typeface. */
-  --font-mono: Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-serif: Inter, ui-sans-serif, system-ui, sans-serif;
-
-  /*
-   * Type scale with an 18px floor.
-   *
-   * `xs`, `sm` and `base` were 12/14/16px and are used ~600 times across the
-   * app; rather than rewrite every call site, the scale itself is redefined so
-   * all three resolve to 18px. Every step from `lg` up is already >= 18px in
-   * Tailwind's default scale and is left alone.
-   */
-  --text-xs: 1.125rem;
-  --text-xs--line-height: 1.6;
-  --text-sm: 1.125rem;
-  --text-sm--line-height: 1.6;
-  --text-base: 1.125rem;
-  --text-base--line-height: 1.6;
+  --font-mono: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
 
   /* Brand */
   --color-brand: var(--primary);
@@ -151,6 +139,9 @@
 }
 
 @layer components {
+
+
+
   /*
    * The public landing experience paints on plain white, not the app's pale
    * blue canvas — `.landing-page` has always done this with a hardcoded
@@ -180,8 +171,8 @@
    */
   .rich-text {
     color: var(--text-secondary);
-    font-size: 1.125rem;
-    line-height: 1.75;
+    font-size: 0.875rem;
+    line-height: 1.65;
     /* Long URLs and unbroken strings wrap instead of widening the card. */
     overflow-wrap: break-word;
   }
@@ -199,7 +190,7 @@
   }
 
   .rich-text h1 {
-    font-size: 1.75rem;
+    font-size: 1.875rem;
   }
 
   .rich-text h2 {
@@ -514,6 +505,18 @@
   .ws-scroll {
     scrollbar-width: thin;
     scrollbar-color: var(--ws-line) transparent;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="skeleton"]::after {
+    animation: none !important;
   }
 }
 

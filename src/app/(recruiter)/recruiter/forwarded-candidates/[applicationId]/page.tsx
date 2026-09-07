@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
@@ -30,6 +32,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGetForwardedApplicationQuery } from "@/services/recruiterApi";
 
 export default function ForwardedCandidateDetailPage() {
+  const tx = useWorkspaceTranslation();
   const { applicationId } = useParams<{ applicationId: string }>();
   const forwardedQuery = useGetForwardedApplicationQuery(applicationId);
 
@@ -43,9 +46,8 @@ export default function ForwardedCandidateDetailPage() {
           size="sm"
           className="rounded-lg"
         >
-          <ArrowLeft className="mr-1.5 size-4" /> Back to Forwarded Candidates
-        </Button>
-        <ErrorState message="Unable to load this forwarded candidate profile." />
+          <ArrowLeft className="mr-1.5 size-4" /> {tx(" Back to Forwarded Candidates")}</Button>
+        <ErrorState message={tx("Unable to load this forwarded candidate profile.")} />
       </div>
     );
   }
@@ -66,16 +68,14 @@ export default function ForwardedCandidateDetailPage() {
           className="mb-4 rounded-xl text-slate-600 border-border"
         >
           <ArrowLeft className="mr-1.5 size-4" />
-          Back to Forwarded Candidates
-        </Button>
+          {tx("Back to Forwarded Candidates")}</Button>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <span className="text-xs font-semibold uppercase tracking-wider text-brand">
-              Forwarded Candidate Review
-            </span>
+              {tx("Forwarded Candidate Review")}</span>
             <h1 className="text-3xl font-semibold tracking-tight text-heading">
-              {candidate.headline || "Candidate Profile"}
+              {candidate.headline || tx("Candidate Profile")}
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -84,7 +84,7 @@ export default function ForwardedCandidateDetailPage() {
                 {candidate.availabilityStatus}
               </span>
             )}
-            <StatusPill>{application.status}</StatusPill>
+            <StatusPill>{tx(application.status)}</StatusPill>
             <ReportHireDialog
               applicationId={application.id}
               alreadyReported={application.status === "HIRED"}
@@ -101,24 +101,24 @@ export default function ForwardedCandidateDetailPage() {
               {candidate.currentPosition && (
                 <p className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-200">
                   <Briefcase className="size-4 text-brand" />
-                  Current Position: {candidate.currentPosition}
+                  {tx("Current Position: ")}{candidate.currentPosition}
                 </p>
               )}
               <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600 dark:text-slate-400">
                 {candidate.preferredLocation && (
                   <span className="flex items-center gap-1.5">
                     <MapPin className="size-4 text-slate-400" />
-                    Location: {candidate.preferredLocation}
+                    {tx("Location: ")}{candidate.preferredLocation}
                   </span>
                 )}
                 <span className="flex items-center gap-1.5 font-medium text-brand">
                   <Briefcase className="size-4" />
-                  Target Role: {application.jobTitle}
+                  {tx("Target Role: ")}{application.jobTitle}
                 </span>
                 {forwarded.forwardedAt && (
                   <span className="flex items-center gap-1.5 text-slate-500">
                     <Calendar className="size-4 text-slate-400" />
-                    Forwarded Date: {new Date(forwarded.forwardedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
+                    {tx("Forwarded Date: ")}{new Date(forwarded.forwardedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
                   </span>
                 )}
               </div>
@@ -129,8 +129,7 @@ export default function ForwardedCandidateDetailPage() {
           {application.coverLetter && (
             <div className="rounded-xl border border-border/70 bg-surface-muted/40 p-4">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                Cover Letter
-              </h4>
+                {tx("Cover Letter")}</h4>
               <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
                 {application.coverLetter}
               </p>
@@ -146,11 +145,10 @@ export default function ForwardedCandidateDetailPage() {
                 </div>
                 <div>
                   <h4 className="text-sm font-semibold text-heading">
-                    {submittedResume.title || "Submitted Resume"}
+                    {submittedResume.title || tx("Submitted Resume")}
                   </h4>
                   <p className="text-xs text-slate-500">
-                    Attached application resume
-                  </p>
+                    {tx("Attached application resume")}</p>
                 </div>
               </div>
               {submittedResume.resumeFileUrl && (
@@ -167,8 +165,7 @@ export default function ForwardedCandidateDetailPage() {
                   className="rounded-lg border-brand/40 bg-surface text-brand hover:bg-brand-tint/50"
                 >
                   <ExternalLink className="mr-1.5 size-3.5" />
-                  Open Resume Document
-                </Button>
+                  {tx("Open Resume Document")}</Button>
               )}
             </div>
           )}
@@ -182,17 +179,16 @@ export default function ForwardedCandidateDetailPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <CardTitle className="flex items-center gap-2 text-lg font-semibold text-heading">
                 <Sparkles className="size-5 text-brand" />
-                AI Interview Screening Results
-              </CardTitle>
+                {tx("AI Interview Screening Results")}</CardTitle>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-500">Overall Score:</span>
-                <span className="rounded-lg bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                <span className="text-xs text-slate-500">{tx("Overall Score:")}</span>
+                <span className="rounded-lg bg-ws-card px-3 py-1 text-sm font-semibold text-primary border border-ws-line">
                   {feedback.overallScore} / 100
                 </span>
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${
                     feedback.result === "PASSED"
-                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300"
+                      ? "bg-ws-card text-primary border border-ws-line"
                       : feedback.result === "FAILED"
                         ? "bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300"
                         : "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300"
@@ -207,19 +203,19 @@ export default function ForwardedCandidateDetailPage() {
             {/* Score Breakdown Grid */}
             <div className="grid gap-3 sm:grid-cols-4">
               <ScoreCard
-                label="Communication"
+                label={tx("Communication")}
                 score={feedback.communicationScore}
               />
               <ScoreCard
-                label="Technical"
+                label={tx("Technical")}
                 score={feedback.technicalScore}
               />
               <ScoreCard
-                label="Confidence"
+                label={tx("Confidence")}
                 score={feedback.confidenceScore}
               />
               <ScoreCard
-                label="Problem Solving"
+                label={tx("Problem Solving")}
                 score={feedback.problemSolvingScore}
               />
             </div>
@@ -228,8 +224,7 @@ export default function ForwardedCandidateDetailPage() {
             {feedback.recommendation && (
               <div className="rounded-xl border border-border/80 bg-surface p-4">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                  AI Recommendation
-                </h4>
+                  {tx("AI Recommendation")}</h4>
                 <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                   {feedback.recommendation}
                 </p>
@@ -239,12 +234,11 @@ export default function ForwardedCandidateDetailPage() {
             {/* Strengths & Weaknesses */}
             <div className="grid gap-4 md:grid-cols-2">
               {feedback.strengths && (
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
-                  <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 mb-1.5">
-                    <CheckCircle2 className="size-4" />
-                    Key Strengths
-                  </h4>
-                  <p className="text-xs leading-relaxed text-emerald-950 dark:text-emerald-200 whitespace-pre-wrap">
+                <div className="rounded-xl border border-ws-line bg-ws-card/50 p-4">
+                  <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-ws-fg mb-1.5">
+                    <CheckCircle2 className="size-4 text-primary" />
+                    {tx("Key Strengths")}</h4>
+                  <p className="text-xs leading-relaxed text-ws-muted whitespace-pre-wrap">
                     {feedback.strengths}
                   </p>
                 </div>
@@ -254,8 +248,7 @@ export default function ForwardedCandidateDetailPage() {
                 <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
                   <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-1.5">
                     <AlertCircle className="size-4" />
-                    Areas of Improvement
-                  </h4>
+                    {tx("Areas of Improvement")}</h4>
                   <p className="text-xs leading-relaxed text-amber-950 dark:text-amber-200 whitespace-pre-wrap">
                     {feedback.weaknesses}
                   </p>
@@ -267,7 +260,7 @@ export default function ForwardedCandidateDetailPage() {
             {session?.questions && session.questions.length > 0 && (
               <div className="space-y-3 pt-2">
                 <h4 className="text-sm font-semibold text-heading">
-                  Questions & Candidate Answers ({session.questions.length})
+                  {tx("Questions & Candidate Answers (")}{session.questions.length})
                 </h4>
                 <div className="space-y-3">
                   {session.questions.map((q, idx) => (
@@ -277,25 +270,24 @@ export default function ForwardedCandidateDetailPage() {
                     >
                       <div className="flex items-start justify-between gap-2">
                         <span className="font-semibold text-sm text-heading">
-                          Q{idx + 1}. {q.questionText}
+                          {tx("Q")}{idx + 1}. {q.questionText}
                         </span>
                         {q.answer?.score !== undefined && (
                           <span className="shrink-0 rounded bg-brand-tint px-2 py-0.5 text-xs font-semibold text-brand">
-                            {q.answer.score} / {q.maxScore} pts
-                          </span>
+                            {q.answer.score} / {q.maxScore} {tx(" pts")}</span>
                         )}
                       </div>
                       {q.answer?.answerText ? (
                         <div className="rounded-lg bg-surface-muted/50 p-3 text-xs text-slate-700 dark:text-slate-300">
-                          <p className="font-medium text-slate-500 mb-1">Answer:</p>
+                          <p className="font-medium text-slate-500 mb-1">{tx("Answer:")}</p>
                           <p className="leading-relaxed">{q.answer.answerText}</p>
                         </div>
                       ) : (
-                        <p className="text-xs italic text-slate-400">Unanswered</p>
+                        <p className="text-xs italic text-slate-400">{tx("Unanswered")}</p>
                       )}
                       {q.answer?.feedback && (
                         <p className="text-xs text-slate-500 italic">
-                          Feedback: {q.answer.feedback}
+                          {tx("Feedback: ")}{q.answer.feedback}
                         </p>
                       )}
                     </div>
@@ -313,7 +305,7 @@ export default function ForwardedCandidateDetailPage() {
           <CardHeader className="bg-surface-muted/40 pb-4">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold text-heading">
               <Video className="size-5 text-brand" />
-              Human Interview Sessions ({humanInterviews.length})
+              {tx("Human Interview Sessions (")}{humanInterviews.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 p-6">
@@ -324,18 +316,18 @@ export default function ForwardedCandidateDetailPage() {
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <StatusPill>{interview.status}</StatusPill>
+                    <StatusPill>{tx(interview.status)}</StatusPill>
                     {interview.result && <StatusPill>{interview.result}</StatusPill>}
                   </div>
                   {interview.scheduledAt && (
                     <p className="text-xs text-slate-500 flex items-center gap-1 mt-1">
                       <Calendar className="size-3.5" />
-                      Scheduled: {new Date(interview.scheduledAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}
+                      {tx("Scheduled: ")}{new Date(interview.scheduledAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}
                     </p>
                   )}
                   {interview.note && (
                     <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-                      Note: {interview.note}
+                      {tx("Note: ")}{interview.note}
                     </p>
                   )}
                 </div>
@@ -353,8 +345,7 @@ export default function ForwardedCandidateDetailPage() {
                     className="rounded-lg text-brand"
                   >
                     <Video className="mr-1.5 size-3.5" />
-                    Join Meeting
-                  </Button>
+                    {tx("Join Meeting")}</Button>
                 )}
               </div>
             ))}
@@ -366,10 +357,11 @@ export default function ForwardedCandidateDetailPage() {
 }
 
 function ScoreCard({ label, score }: { label: string; score?: number }) {
+  const tx = useWorkspaceTranslation();
   const displayScore = score !== undefined ? `${score}/100` : "—";
   return (
     <div className="rounded-xl border border-border/80 bg-surface-muted/30 p-3.5 text-center">
-      <span className="text-xs font-medium text-slate-500">{label}</span>
+      <span className="text-xs font-medium text-slate-500">{tx(label)}</span>
       <p className="mt-1 text-lg font-semibold text-heading">{displayScore}</p>
     </div>
   );

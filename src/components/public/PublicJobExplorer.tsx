@@ -42,10 +42,10 @@ export function PublicJobExplorer({ jobs, categories, skills }: PublicJobExplore
         (job.skills ?? []).some((skill) => (skill.skillName ?? "").toLowerCase().includes(keyword));
       const matchesLocation = !location || (job.location ?? "").toLowerCase().includes(location);
       const matchesCategory =
-        !filters.categoryId || job.categoryId === Number(filters.categoryId);
+        !filters.categoryId || job.categoryId === filters.categoryId;
       const matchesSkill =
         !filters.skillId ||
-        (job.skills ?? []).some((skill) => skill.skillId === Number(filters.skillId));
+        (job.skills ?? []).some((skill) => skill.skillId === filters.skillId);
       const matchesWorkMode = !filters.workMode || job.workMode === filters.workMode;
       const matchesJobType = !filters.jobType || job.jobType === filters.jobType;
       const offeredSalary = job.salaryMax ?? job.salaryMin;
@@ -71,9 +71,11 @@ export function PublicJobExplorer({ jobs, categories, skills }: PublicJobExplore
         return secondPublished - firstPublished;
       }
 
-      // IDs are monotonic in the current API and provide a safe fallback for
-      // older records that do not contain a valid publication timestamp.
-      return secondJob.id - firstJob.id;
+      // Ids are UUIDs, so they say nothing about which job is newer. This is
+      // only reached when neither record has a usable publication timestamp;
+      // comparing the ids keeps the order stable across renders and pages,
+      // which is what pagination needs, rather than implying a real recency.
+      return secondJob.id.localeCompare(firstJob.id);
     });
   }, [filters, jobs]);
 

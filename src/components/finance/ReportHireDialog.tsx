@@ -19,7 +19,7 @@ export function ReportHireDialog({
   applicationId,
   alreadyReported,
 }: {
-  applicationId: number;
+  applicationId: string;
   alreadyReported?: boolean;
 }) {
   const [open, setOpen] = useState(false);

@@ -1,8 +1,11 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import { Code2 as Github, ExternalLink } from "lucide-react";
 import { Cover, EmptyProjects, Page, ProjectImage, TechTags, displayUrl, type PortfolioTemplateProps } from "./shared";
 
 /** Dark, high-contrast presentation where cover images do the talking. */
 export function SpotlightTemplate({ title, summary, publicUrl, projects, theme }: PortfolioTemplateProps) {
+  const tx = useWorkspaceTranslation();
   const accent = theme.accent;
 
   return (
@@ -29,29 +32,27 @@ export function SpotlightTemplate({ title, summary, publicUrl, projects, theme }
       </header>
 
       <main className="px-16 pb-16">
-        <h2 className="mb-7 text-[18px] font-semibold uppercase tracking-[0.24em] text-slate-500">Work</h2>
+        <h2 className="mb-7 text-[18px] font-semibold uppercase tracking-[0.24em] text-slate-500">{tx("Work")}</h2>
         {projects.length ? (
           <div className="grid grid-cols-2 gap-6">
             {projects.map((project) => (
               <article key={project.id} className="overflow-hidden rounded-2xl bg-white/5 ring-1 ring-white/10">
-                <ProjectImage url={project.imageUrl} alt={project.title} accent={accent} className="h-44 w-full" />
+                <ProjectImage url={project.imageUrl} alt={tx(project.title)} accent={accent} className="h-44 w-full" />
                 <div className="p-6">
                   <h3 className="text-[19px] font-semibold text-white">{project.title}</h3>
                   <TechTags techStack={project.techStack} accent={accent} muted className="mt-3" />
                   {project.description ? (
-                    <p className="mt-3 line-clamp-4 whitespace-pre-line text-[18px] leading-6 text-slate-400">{project.description}</p>
+                    <p className="mt-3 line-clamp-4 whitespace-pre-line text-[18px] leading-6 text-slate-400">{tx(project.description)}</p>
                   ) : null}
                   {project.projectUrl || project.githubUrl ? (
                     <div className="mt-5 flex gap-5 border-t border-white/10 pt-4 text-[18px] font-semibold">
                       {project.projectUrl ? (
                         <span className="inline-flex items-center gap-1.5" style={{ color: accent }}>
-                          <ExternalLink className="size-4" /> Live project
-                        </span>
+                          <ExternalLink className="size-4" /> {tx(" Live project")}</span>
                       ) : null}
                       {project.githubUrl ? (
                         <span className="inline-flex items-center gap-1.5 text-slate-400">
-                          <Github className="size-4" /> Source
-                        </span>
+                          <Github className="size-4" /> {tx(" Source")}</span>
                       ) : null}
                     </div>
                   ) : null}

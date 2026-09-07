@@ -1,16 +1,15 @@
 "use client";
 
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import { MessagesWorkspace } from "@/components/messages/MessagesWorkspace";
-import { PageIntro } from "@/components/shared/ApiCards";
+import { useSetPageHeading } from "@/components/layout/PageHeader";
 
 export default function MessagesPage() {
-  return (
-    <div className="mx-auto max-w-6xl">
-      <PageIntro
-        title="Messages"
-        description="Threads a moderator has opened with you."
-      />
-      <MessagesWorkspace basePath="/job-seeker/messages" />
-    </div>
+  const tx = useWorkspaceTranslation();
+  useSetPageHeading(
+    tx("Messages"),
+    tx("Threads a moderator has opened with you.")
   );
+
+  return <MessagesWorkspace basePath="/job-seeker/messages" />;
 }

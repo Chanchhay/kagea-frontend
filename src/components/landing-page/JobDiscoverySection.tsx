@@ -12,10 +12,10 @@ import {
 } from "framer-motion";
 import { Bot } from "lucide-react";
 import { NoiseBackground } from "@/components/ui/noise-background";
-import ParticleText from "./ParticleText";
 import StrokeText from "./StrokeText";
 import { jobCategoryRows } from "./data";
 import { CheckIcon, SearchIcon, UploadIcon, UserPlusIcon } from "./icons";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 /**
  * The Cambodia map as a plain background line behind the whole section, the way
@@ -59,41 +59,11 @@ function CambodiaMapBackdrop({ reducedMotion }: { reducedMotion: boolean }) {
  * -- with the concrete artefact each step leaves behind.
  */
 const workSteps = [
-    {
-        title: "Create your account",
-        description:
-            "Sign up as a job seeker with an email address. Nothing is required upfront beyond that -- browsing stays open to everyone.",
-        outcome: "Account ready",
-        Icon: UserPlusIcon,
-    },
-    {
-        title: "Build your profile and CV",
-        description:
-            "Add your experience, skills and education once. Pick a resume template and your CV is generated from the same details.",
-        outcome: "Profile and CV",
-        Icon: UploadIcon,
-    },
-    {
-        title: "Find the roles that fit",
-        description:
-            "Filter openings by category, location, work mode and job type, then save the ones worth a second look.",
-        outcome: "Shortlist saved",
-        Icon: SearchIcon,
-    },
-    {
-        title: "Rehearse with AI",
-        description:
-            "Run a practice interview against the posting itself and see how your answers land before the real conversation.",
-        outcome: "Interview practised",
-        Icon: Bot,
-    },
-    {
-        title: "Apply and follow it through",
-        description:
-            "Apply in a few clicks, then watch each application move through the employer’s pipeline from your dashboard.",
-        outcome: "Application tracked",
-        Icon: CheckIcon,
-    },
+    { key: "create", Icon: UserPlusIcon },
+    { key: "buildProfile", Icon: UploadIcon },
+    { key: "findRoles", Icon: SearchIcon },
+    { key: "rehearse", Icon: Bot },
+    { key: "apply", Icon: CheckIcon },
 ] as const;
 
 type WorkStep = (typeof workSteps)[number];
@@ -107,6 +77,7 @@ function TimelineStep({
     index: number;
     reducedMotion: boolean;
 }) {
+    const { t } = useLocale();
     const rowRef = useRef<HTMLDivElement>(null);
     const isInView = useInView(rowRef, { once: true, amount: 0.5 });
     const active = reducedMotion || isInView;
@@ -143,17 +114,17 @@ function TimelineStep({
                         {String(index + 1).padStart(2, "0")}
                     </span>
                     <h3 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                        {step.title}
+                        {t(`landing.jobDiscovery.steps.${step.key}.title`)}
                     </h3>
                 </div>
 
                 <p className="mt-3 max-w-xl text-sm leading-7 text-slate-500 sm:text-base dark:text-slate-400">
-                    {step.description}
+                    {t(`landing.jobDiscovery.steps.${step.key}.description`)}
                 </p>
 
                 <p className="mt-4 inline-flex items-center gap-2 text-[18px] font-semibold uppercase tracking-[0.16em] text-[#008A1E] dark:text-emerald-400">
                     <span className="h-px w-6 bg-[#008A1E]/40 dark:bg-emerald-400/40" />
-                    {step.outcome}
+                    {t(`landing.jobDiscovery.steps.${step.key}.outcome`)}
                 </p>
             </div>
         </motion.div>
@@ -161,6 +132,7 @@ function TimelineStep({
 }
 
 export default function JobDiscoverySection() {
+    const { t, locale } = useLocale();
     const [jobCategoriesRow1, jobCategoriesRow2, jobCategoriesRow3] =
         jobCategoryRows;
     const timelineRef = useRef<HTMLDivElement>(null);
@@ -184,25 +156,38 @@ export default function JobDiscoverySection() {
                         data-reveal
                         className="mx-auto mb-14 max-w-3xl sm:mb-20"
                     >
-                        <StrokeText
-                            text="How Find Job Work"
-                            strokeColor="#008A1E"
-                            fillColor="#008A1E"
-                            accentText="Work"
-                            accentColor="#F3BE00"
-                            fadeStrokeOnFill
-                            strokeWidth={1.6}
-                            drawDuration={1.35}
-                            fillDelay={0.12}
-                            stagger={0.045}
-                            ease="power2.out"
-                            trigger="scroll"
-                            fillMode="wipe"
-                            fontSize={72}
-                            fontWeight={700}
-                            letterSpacing={-2}
-                            className="dark:[&_text:last-of-type]:fill-white"
-                        />
+                        {locale === "en" ? (
+                            <StrokeText
+                                text={t("landing.jobDiscovery.howItWorksHeading")}
+                                strokeColor="#008A1E"
+                                fillColor="#008A1E"
+                                accentText="Work"
+                                accentColor="#F3BE00"
+                                fadeStrokeOnFill
+                                strokeWidth={1.6}
+                                drawDuration={1.35}
+                                fillDelay={0.12}
+                                stagger={0.045}
+                                ease="power2.out"
+                                trigger="scroll"
+                                fillMode="wipe"
+                                fontSize={72}
+                                fontWeight={700}
+                                letterSpacing={-2}
+                                className="dark:[&_text:last-of-type]:fill-white"
+                            />
+                        ) : (
+                            /*
+                             * StrokeText draws each Unicode code point into its own SVG
+                             * <tspan>, which breaks Khmer's combining vowels/subscript
+                             * consonants (they need to shape together). Khmer gets a
+                             * plain heading with the same weight instead of the
+                             * character-stroke animation.
+                             */
+                            <h2 className="text-[clamp(2.25rem,6vw,4.5rem)] font-bold leading-tight tracking-tight text-[#008A1E]">
+                                {t("landing.jobDiscovery.howItWorksHeading")}
+                            </h2>
+                        )}
                     </div>
 
                     <div ref={timelineRef} className="relative">
@@ -221,7 +206,7 @@ export default function JobDiscoverySection() {
                         <div>
                             {workSteps.map((step, index) => (
                                 <TimelineStep
-                                    key={step.title}
+                                    key={step.key}
                                     step={step}
                                     index={index}
                                     reducedMotion={Boolean(
@@ -246,16 +231,16 @@ export default function JobDiscoverySection() {
                             data-reveal
                             className="text-[18px] font-semibold uppercase tracking-[0.22em] text-[#008A1E] dark:text-emerald-400"
                         >
-                            Built for Cambodia
+                            {t("landing.jobDiscovery.builtForCambodia")}
                         </p>
 
                         <h2
                             data-reveal
                             className="mx-auto mt-7 max-w-3xl text-[clamp(2.5rem,5.5vw,4.25rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-[#008A1E]"
                         >
-                            Connecting Talent With{" "}
+                            {t("landing.jobDiscovery.connectingTitle")}{" "}
                             <span className="text-[#F3BE00]">
-                                Better Opportunities
+                                {t("landing.jobDiscovery.connectingHighlight")}
                             </span>
                         </h2>
 
@@ -263,9 +248,7 @@ export default function JobDiscoverySection() {
                             data-reveal
                             className="mx-auto mt-7 max-w-xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8 dark:text-slate-300"
                         >
-                            Discover job opportunities, build your professional
-                            profile, and practice interviews with AI—all in one
-                            platform.
+                            {t("landing.jobDiscovery.connectingBody")}
                         </p>
 
                         <div
@@ -276,13 +259,13 @@ export default function JobDiscoverySection() {
                                 href="/jobs"
                                 className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#F3BE00] px-8 text-sm font-semibold text-[#006F18] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[#E8B500] active:translate-y-0 active:scale-[0.98]"
                             >
-                                Explore Jobs
+                                {t("landing.jobDiscovery.exploreJobs")}
                             </Link>
                             <Link
                                 href="/register"
                                 className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#008A1E]/30 px-8 text-sm font-semibold text-[#008A1E] transition-colors duration-200 hover:border-[#008A1E] hover:bg-[#008A1E] hover:text-white dark:border-emerald-400/30 dark:text-emerald-400 dark:hover:border-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white"
                             >
-                                Create an account
+                                {t("landing.hero.createAccountCta")}
                             </Link>
                         </div>
                     </div>
@@ -296,29 +279,16 @@ export default function JobDiscoverySection() {
                         data-stagger
                         className="mt-20 grid border-t border-slate-200/80 sm:mt-28 sm:grid-cols-3 dark:border-white/10"
                     >
-                        {[
-                            {
-                                label: "Nationwide",
-                                text: "Roles from employers in Phnom Penh, Siem Reap, Sihanoukville and beyond.",
-                            },
-                            {
-                                label: "One profile",
-                                text: "Build it once, then apply to every opening without starting over.",
-                            },
-                            {
-                                label: "AI interview practice",
-                                text: "Rehearse the questions a real hiring team is going to ask you.",
-                            },
-                        ].map((item) => (
+                        {(["nationwide", "oneProfile", "aiPractice"] as const).map((key) => (
                             <div
-                                key={item.label}
+                                key={key}
                                 className="border-b border-slate-200/80 px-1 py-8 sm:border-b-0 sm:border-r sm:px-8 sm:py-10 sm:last:border-r-0 sm:first:pl-0 sm:last:pr-0 dark:border-white/10"
                             >
                                 <p className="text-[18px] font-semibold uppercase tracking-[0.16em] text-slate-900 dark:text-white">
-                                    {item.label}
+                                    {t(`landing.jobDiscovery.highlights.${key}.label`)}
                                 </p>
                                 <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                                    {item.text}
+                                    {t(`landing.jobDiscovery.highlights.${key}.text`)}
                                 </p>
                             </div>
                         ))}

@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -9,6 +11,7 @@ import { LoadingState } from "@/components/shared/LoadingState";
 import { useGetAiInterviewQuery } from "@/services/jobSeekerApi";
 
 export default function InterviewSessionPage() {
+  const tx = useWorkspaceTranslation();
   const { sessionId } = useParams<{ sessionId: string }>();
   const interviewQuery = useGetAiInterviewQuery(sessionId);
   const interview = interviewQuery.data;
@@ -34,7 +37,7 @@ export default function InterviewSessionPage() {
   if (interviewQuery.isError || !interview)
     return (
       <ErrorState
-        message="Unable to load this interview."
+        message={tx("Unable to load this interview.")}
         onRetry={() => interviewQuery.refetch()}
       />
     );
@@ -43,15 +46,14 @@ export default function InterviewSessionPage() {
     <>
       <PageIntro
         title={interview.jobTitle}
-        description="Answer each question, then submit the interview for AI scoring."
+        description={tx("Answer each question, then submit the interview for AI scoring.")}
         action={
           interview.status === "COMPLETED" ? (
             <Link
               className="text-sm font-semibold text-brand"
               href={`/job-seeker/interviews/${interview.id}/result`}
             >
-              View result
-            </Link>
+              {tx("View result")}</Link>
           ) : null
         }
       />

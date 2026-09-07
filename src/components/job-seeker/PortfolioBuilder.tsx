@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Eye, FolderKanban, Image as ImageIcon, LayoutTemplate, Layers3, Loader2, PencilLine, Save, UserRound } from "lucide-react";
@@ -23,7 +25,7 @@ import type { PortfolioProjectResponse } from "@/contracts";
 /** A project being edited. `id` is set only once it exists on the server. */
 export type DraftProject = {
   key: string;
-  id?: number;
+  id?: string;
   title: string;
   description: string;
   projectUrl: string;
@@ -41,7 +43,7 @@ export type PortfolioBuilderSubmit = {
   /** In display order; entries without an `id` are new. */
   projects: DraftProject[];
   /** Ids of saved projects the user removed. */
-  removedProjectIds: number[];
+  removedProjectIds: string[];
 };
 
 type PortfolioBuilderProps = {
@@ -67,12 +69,13 @@ export function PortfolioBuilder({
   onSubmit,
   onCancel,
 }: PortfolioBuilderProps) {
+  const tx = useWorkspaceTranslation();
   const [title, setTitle] = useState(initialTitle);
   const [summary, setSummary] = useState(initialSummary);
   const [publicUrl, setPublicUrl] = useState(initialPublicUrl);
   const [theme, setTheme] = useState<PortfolioTheme>(() => normalizePortfolioTheme(initialTheme));
   const [projects, setProjects] = useState<DraftProject[]>(() => initialProjects.map(toDraft));
-  const [removedProjectIds, setRemovedProjectIds] = useState<number[]>([]);
+  const [removedProjectIds, setRemovedProjectIds] = useState<string[]>([]);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,7 +100,7 @@ export function PortfolioBuilder({
     setProjects((current) => current.map((project) => (project.key === key ? { ...project, ...patch } : project)));
 
   const removeProject = (project: DraftProject) => {
-    if (project.id) setRemovedProjectIds((current) => [...current, project.id as number]);
+    if (project.id) setRemovedProjectIds((current) => [...current, project.id!]);
     setProjects((current) => current.filter((item) => item.key !== project.key));
   };
 
@@ -105,12 +108,12 @@ export function PortfolioBuilder({
     event.preventDefault();
     const cleanTitle = title.trim();
     if (!cleanTitle) {
-      setError("Give your portfolio a title.");
+      setError(tx("Give your portfolio a title."));
       setPane("edit");
       return;
     }
     if (projects.some((project) => !project.title.trim())) {
-      setError("Every project needs a title.");
+      setError(tx("Every project needs a title."));
       setPane("edit");
       return;
     }
@@ -135,7 +138,7 @@ export function PortfolioBuilder({
       );
       setProjects(nextProjects);
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : "Upload failed.");
+      setError(uploadError instanceof Error ? uploadError.message : tx("Upload failed."));
       return;
     } finally {
       setIsUploading(false);
@@ -156,13 +159,13 @@ export function PortfolioBuilder({
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-4 grid grid-cols-2 gap-2 rounded-xl bg-ws-card p-1 lg:hidden">
-        <PaneTab active={pane === "edit"} icon={PencilLine} label="Edit" onClick={() => setPane("edit")} />
-        <PaneTab active={pane === "preview"} icon={Eye} label="Preview" onClick={() => setPane("preview")} />
+        <PaneTab active={pane === "edit"} icon={PencilLine} label={tx("Edit")} onClick={() => setPane("edit")} />
+        <PaneTab active={pane === "preview"} icon={Eye} label={tx("Preview")} onClick={() => setPane("preview")} />
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_1fr]">
         <div className={`space-y-5 ${pane === "edit" ? "" : "hidden lg:block"}`}>
-          <BuilderSection icon={LayoutTemplate} title="Template" description="Pick a layout and accent color. Switching keeps all your content.">
+          <BuilderSection icon={LayoutTemplate} title={tx("Template")} description={tx("Pick a layout and accent color. Switching keeps all your content.")}>
             <PortfolioTemplatePicker
               templateId={theme.templateId}
               accent={theme.accent}
@@ -171,28 +174,28 @@ export function PortfolioBuilder({
             />
           </BuilderSection>
 
-          <BuilderSection icon={FolderKanban} title="Portfolio details" description="The headline visitors read before they look at your work.">
+          <BuilderSection icon={FolderKanban} title={tx("Portfolio details")} description={tx("The headline visitors read before they look at your work.")}>
             <div className="space-y-4">
-              <Field label="Portfolio title" required>
-                <Input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Product design portfolio" maxLength={150} autoFocus />
+              <Field label={tx("Portfolio title")} required>
+                <Input value={title} onChange={(event) => setTitle(event.target.value)} placeholder={tx("e.g. Product design portfolio")} maxLength={150} autoFocus />
               </Field>
-              <TextField label="Tagline" value={theme.tagline} onChange={(value) => setThemeField("tagline", value)} placeholder="Frontend developer · Phnom Penh" />
+              <TextField label={tx("Tagline")} value={theme.tagline} onChange={(value) => setThemeField("tagline", value)} placeholder={tx("Frontend developer · Phnom Penh")} />
               <TextAreaField
-                label="About this portfolio"
+                label={tx("About this portfolio")}
                 value={summary}
                 onChange={setSummary}
-                placeholder="Tell visitors what you do and what this collection represents…"
+                placeholder={tx("Tell visitors what you do and what this collection represents…")}
                 maxLength={5000}
                 className="min-h-32"
               />
-              <Field label="Portfolio link">
+              <Field label={tx("Portfolio link")}>
                 <Input type="url" value={publicUrl} onChange={(event) => setPublicUrl(event.target.value)} placeholder="https://yourportfolio.com" maxLength={500} />
-                <span className="mt-1.5 block text-xs text-ws-muted">Recruiters open this link to view your portfolio online.</span>
+                <span className="mt-1.5 block text-xs text-ws-muted">{tx("Recruiters open this link to view your portfolio online.")}</span>
               </Field>
             </div>
           </BuilderSection>
 
-          <BuilderSection icon={UserRound} title="Portrait" description="Optional photo shown in the header of your portfolio.">
+          <BuilderSection icon={UserRound} title={tx("Portrait")} description={tx("Optional photo shown in the header of your portfolio.")}>
             <label className="mb-4 flex items-center gap-2.5 text-sm text-ws-fg">
               <input
                 type="checkbox"
@@ -200,8 +203,7 @@ export function PortfolioBuilder({
                 onChange={(event) => setThemeField("showPhoto", event.target.checked)}
                 className="size-4 accent-[var(--primary)]"
               />
-              Show a photo in the header
-            </label>
+              {tx("Show a photo in the header")}</label>
             {theme.showPhoto ? (
               <FileDropzone
                 value={theme.photoUrl}
@@ -214,18 +216,18 @@ export function PortfolioBuilder({
             ) : null}
           </BuilderSection>
 
-          <BuilderSection icon={Layers3} title="Projects" description="Reorder them to control what a visitor sees first.">
+          <BuilderSection icon={Layers3} title={tx("Projects")} description={tx("Reorder them to control what a visitor sees first.")}>
             <div className="space-y-4">
               {projects.map((project, index) => (
                 <EntryCard
                   key={project.key}
                   index={index}
                   total={projects.length}
-                  title={project.title || `Project ${index + 1}`}
+                  title={tx(project.title || `Project ${index + 1}`)}
                   onMove={(from, to) => setProjects(moveItem(projects, from, to))}
                   onRemove={() => removeProject(project)}
                 >
-                  <Field label="Cover image">
+                  <Field label={tx("Cover image")}>
                     <FileDropzone
                       value={project.imageUrl}
                       file={project.coverFile}
@@ -235,21 +237,21 @@ export function PortfolioBuilder({
                       hint="PNG, JPG or WebP up to 5 MB."
                     />
                   </Field>
-                  <TextField label="Project title" required value={project.title} onChange={(value) => updateProject(project.key, { title: value })} placeholder="Project name" />
+                  <TextField label={tx("Project title")} required value={project.title} onChange={(value) => updateProject(project.key, { title: value })} placeholder={tx("Project name")} />
                   <TextAreaField
-                    label="Description"
+                    label={tx("Description")}
                     value={project.description}
                     onChange={(value) => updateProject(project.key, { description: value })}
-                    placeholder="Explain the problem, your approach, and the outcome…"
+                    placeholder={tx("Explain the problem, your approach, and the outcome…")}
                     maxLength={5000}
                   />
-                  <TextField label="Live project URL" value={project.projectUrl} onChange={(value) => updateProject(project.key, { projectUrl: value })} placeholder="https://project.com" />
-                  <TextField label="GitHub URL" value={project.githubUrl} onChange={(value) => updateProject(project.key, { githubUrl: value })} placeholder="https://github.com/…" />
-                  <TextField label="Tech stack" value={project.techStack} onChange={(value) => updateProject(project.key, { techStack: value })} placeholder="Next.js, TypeScript, PostgreSQL" />
+                  <TextField label={tx("Live project URL")} value={project.projectUrl} onChange={(value) => updateProject(project.key, { projectUrl: value })} placeholder="https://project.com" />
+                  <TextField label={tx("GitHub URL")} value={project.githubUrl} onChange={(value) => updateProject(project.key, { githubUrl: value })} placeholder="https://github.com/…" />
+                  <TextField label={tx("Tech stack")} value={project.techStack} onChange={(value) => updateProject(project.key, { techStack: value })} placeholder={tx("Next.js, TypeScript, PostgreSQL")} />
                 </EntryCard>
               ))}
             </div>
-            <AddEntryButton label="Add project" onClick={() => setProjects([...projects, blankProject()])} />
+            <AddEntryButton label={tx("Add project")} onClick={() => setProjects([...projects, blankProject()])} />
           </BuilderSection>
 
           {error ? <p role="alert" className="text-sm font-medium text-destructive">{error}</p> : null}
@@ -257,12 +259,11 @@ export function PortfolioBuilder({
           <div className="flex flex-col-reverse gap-3 border-t border-ws-line pt-5 sm:flex-row sm:justify-end">
             {onCancel ? (
               <Button type="button" variant="ghost" onClick={onCancel} className="rounded-xl">
-                Cancel
-              </Button>
+                {tx("Cancel")}</Button>
             ) : null}
             <Button type="submit" disabled={busy} className="h-11 rounded-xl px-5">
               {busy ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Save aria-hidden="true" />}
-              {isUploading ? "Uploading…" : isSubmitting ? "Saving…" : submitLabel}
+              {isUploading ? tx("Uploading…") : isSubmitting ? tx("Saving…") : tx(submitLabel)}
             </Button>
           </div>
         </div>
@@ -270,11 +271,10 @@ export function PortfolioBuilder({
         <div className={`lg:sticky lg:top-6 ${pane === "preview" ? "" : "hidden lg:block"}`}>
           <div className="rounded-2xl border border-ws-line bg-ws-card p-4">
             <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-ws-muted">
-              <Eye className="size-3.5" /> Live preview
-            </div>
+              <Eye className="size-3.5" /> {tx(" Live preview")}</div>
             <div className="max-h-[calc(100vh-11rem)] overflow-y-auto rounded-xl bg-ws-card-hover p-3">
               <PortfolioPreview
-                title={title || "Untitled portfolio"}
+                title={tx(title || "Untitled portfolio")}
                 summary={summary}
                 publicUrl={publicUrl}
                 projects={previewProjects}
@@ -283,8 +283,7 @@ export function PortfolioBuilder({
             </div>
             <p className="mt-3 flex items-center gap-1.5 text-xs leading-5 text-ws-muted">
               <ImageIcon className="size-3.5 shrink-0" />
-              Images you pick appear here before they are uploaded on save.
-            </p>
+              {tx("Images you pick appear here before they are uploaded on save.")}</p>
           </div>
         </div>
       </div>
@@ -346,6 +345,7 @@ function useObjectUrls(projects: DraftProject[]): Record<string, string> {
 }
 
 function PaneTab({ active, icon: Icon, label, onClick }: { active: boolean; icon: typeof Eye; label: string; onClick: () => void }) {
+  const tx = useWorkspaceTranslation();
   return (
     <button
       type="button"
@@ -355,7 +355,7 @@ function PaneTab({ active, icon: Icon, label, onClick }: { active: boolean; icon
         active ? "bg-ws-panel text-ws-fg shadow-sm" : "text-ws-muted"
       }`}
     >
-      <Icon className="size-4" /> {label}
+      <Icon className="size-4" /> {tx(label)}
     </button>
   );
 }
