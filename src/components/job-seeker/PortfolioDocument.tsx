@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { normalizePortfolioTheme } from "@/lib/portfolio-data";
@@ -20,9 +22,10 @@ export type PortfolioDocumentProps = {
  * whole page rather than restyling it.
  */
 export function PortfolioDocument({ title, summary, publicUrl, projects, theme }: PortfolioDocumentProps) {
+  const tx = useWorkspaceTranslation();
   const resolved = normalizePortfolioTheme(theme);
   const Template = getPortfolioTemplate(resolved.templateId).component;
-  return <Template title={title || "Untitled portfolio"} summary={summary} publicUrl={publicUrl} projects={projects} theme={resolved} />;
+  return <Template title={tx(title || "Untitled portfolio")} summary={summary} publicUrl={publicUrl} projects={projects} theme={resolved} />;
 }
 
 /** Scales a `PortfolioDocument` down to the width of its container. */

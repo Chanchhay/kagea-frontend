@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 /**
  * The Kagea brand assets ship as a light/dark pair rather than a single
  * recolourable mark: the wordmark is green on light backgrounds and white on
- * dark ones, while the icon keeps its green/amber palette in both. Both files
- * are pre-trimmed and transparent, so a height plus `w-auto` is all the layout
- * they need.
+ * dark ones, while the icon keeps its green/amber palette in both. The
+ * wordmark PNGs include large transparent margins, so their measured artwork
+ * bounds are cropped by the wrapper to make the requested height meaningful.
  *
  * The swap is done with CSS (`dark:hidden` / `hidden dark:block`) instead of
  * `useTheme()` so the logo renders correctly in server components and never
@@ -14,9 +14,12 @@ import { cn } from "@/lib/utils";
  */
 
 const WORDMARK = {
-  light: "/images/brand/logo-light.png?v=khmer-20260831b",
-  dark: "/images/brand/logo-dark.png?v=khmer-20260831b",
-  ratio: 1345 / 424,
+  light: "/images/brand/logo1-light.png",
+  dark: "/images/brand/logo1-dark.png",
+  ratio: 1237 / 397,
+  sourceWidth: 1672,
+  sourceHeight: 941,
+  trim: { x: 238, y: 272, width: 1237, height: 397 },
 } as const;
 
 const MARK = {
@@ -45,33 +48,43 @@ function ThemedImage({
   height: number;
 }) {
   const width = Math.round(height * asset.ratio);
-  const shared = "absolute inset-0 size-full object-contain object-left";
+  const trimmed = "trim" in asset;
+  const scale = trimmed ? height / asset.trim.height : 1;
+  const imageStyle = trimmed
+    ? {
+        width: asset.sourceWidth * scale,
+        height: asset.sourceHeight * scale,
+        left: -asset.trim.x * scale,
+        top: -asset.trim.y * scale,
+      }
+    : undefined;
+  const shared = trimmed
+    ? "absolute max-w-none object-fill"
+    : "absolute inset-0 size-full object-contain object-left";
 
   return (
     <span
-      className={cn("relative inline-block shrink-0", className)}
+      className={cn("relative inline-block shrink-0 overflow-hidden", className)}
       style={{ width, height }}
     >
       <Image
         src={asset.light}
         alt={alt}
-      width={width}
-      height={height}
-      priority={priority}
-      unoptimized
-        className={cn(shared, "dark:hidden", className)}
-        style={{ height, width: "auto" }}
+        width={width}
+        height={height}
+        priority={priority}
+        style={imageStyle}
+        className={cn(shared, "dark:hidden")}
       />
       <Image
         src={asset.dark}
         alt=""
         aria-hidden="true"
-      width={width}
-      height={height}
-      priority={priority}
-      unoptimized
-        className={cn(shared, "hidden dark:block", className)}
-        style={{ height, width: "auto" }}
+        width={width}
+        height={height}
+        priority={priority}
+        style={imageStyle}
+        className={cn(shared, "hidden dark:block")}
       />
     </span>
   );

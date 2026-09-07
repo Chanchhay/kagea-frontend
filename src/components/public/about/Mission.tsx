@@ -4,10 +4,11 @@ import React, { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { Globe2, Bot, Target, ShieldCheck, Sparkles, CheckCircle2 } from "lucide-react";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 interface MissionFeature {
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   // Narrower than React.ElementType: @react-three/fiber augments
   // JSX.IntrinsicElements, which collapses `className` to never on ElementType.
   icon: React.ComponentType<{ className?: string }>;
@@ -17,29 +18,29 @@ interface MissionFeature {
 
 const missionFeatures: MissionFeature[] = [
   {
-    title: "Flexible Job Search",
-    description: "Learn anytime, anywhere at your own pace with tailored paths.",
+    titleKey: "about.mission.feature1Title",
+    descriptionKey: "about.mission.feature1Description",
     icon: Globe2,
     accentColor: "border-[#E8C222]/40 text-[#E8C222]",
     badgeBg: "bg-[#E8C222]/10 text-[#E8C222]",
   },
   {
-    title: "24/7 AI Guidance",
-    description: "AI tutors and mock interview mentors available round-the-clock.",
+    titleKey: "about.mission.feature2Title",
+    descriptionKey: "about.mission.feature2Description",
     icon: Bot,
     accentColor: "border-[#008A1E]/40 text-[#008A1E]",
     badgeBg: "bg-[#008A1E]/10 text-[#008A1E]",
   },
   {
-    title: "Progress Guarantee",
-    description: "Actionable analytics and structured roadmaps for real results.",
+    titleKey: "about.mission.feature3Title",
+    descriptionKey: "about.mission.feature3Description",
     icon: Target,
     accentColor: "border-[#E33434]/40 text-[#E33434]",
     badgeBg: "bg-[#E33434]/10 text-[#E33434]",
   },
   {
-    title: "Verified Opportunities",
-    description: "Direct connections with vetted recruiters and verified job listings.",
+    titleKey: "about.mission.feature4Title",
+    descriptionKey: "about.mission.feature4Description",
     icon: ShieldCheck,
     accentColor: "border-[#0284C7]/40 text-[#0284C7]",
     badgeBg: "bg-[#0284C7]/10 text-[#0284C7]",
@@ -47,6 +48,7 @@ const missionFeatures: MissionFeature[] = [
 ];
 
 export default function MissionSection() {
+  const { t } = useLocale();
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
@@ -86,15 +88,15 @@ export default function MissionSection() {
             {/* Tagline Badge */}
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1fa628]/30 bg-[#1fa628]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-[#1fa628]">
               <Sparkles className="h-3.5 w-3.5 text-[#F3BE00]" />
-              Empowering Careers
+              {t("about.mission.badge")}
             </div>
 
             <h2 className="mb-6 text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
-              <span className="text-[#1fa628]">Our</span> <span className="text-[#F3BE00]">Mission</span>
+              <span className="text-[#1fa628]">{t("about.mission.headingPart1")}</span> <span className="text-[#F3BE00]">{t("about.mission.headingPart2")}</span>
             </h2>
 
             <p className="mb-8 max-w-xl text-base text-slate-600 dark:text-slate-300 sm:text-lg">
-              To bridge the gap between ambitious job seekers and top tech companies by providing AI-driven skill building, real-time interview practice, and personalized career matching.
+              {t("about.mission.description")}
             </p>
 
             {/* Organic Blob Frame Container */}
@@ -116,7 +118,7 @@ export default function MissionSection() {
                 <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-2xl border border-white/20 bg-slate-950/80 p-3.5 backdrop-blur-md">
                   <CheckCircle2 className="h-5 w-5 shrink-0 text-[#1fa628]" />
                   <p className="text-xs font-medium text-white">
-                    Built for next-generation tech talents & recruiters.
+                    {t("about.mission.imageCaption")}
                   </p>
                 </div>
               </div>
@@ -135,7 +137,7 @@ export default function MissionSection() {
 
               return (
                 <motion.div
-                  key={feature.title}
+                  key={feature.titleKey}
                   variants={fadeInUp}
                   whileHover={{ x: 8 }}
                   className={`group relative flex w-full items-start gap-5 rounded-3xl border border-slate-200/90 bg-white/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-[#1fa628]/50 hover:shadow-lg dark:border-slate-800/90 dark:bg-slate-900/80 dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] ${
@@ -158,10 +160,10 @@ export default function MissionSection() {
                   {/* Text Content */}
                   <div className="space-y-1">
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-                      {feature.title}
+                      {t(feature.titleKey)}
                     </h3>
                     <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                      {feature.description}
+                      {t(feature.descriptionKey)}
                     </p>
                   </div>
                 </motion.div>

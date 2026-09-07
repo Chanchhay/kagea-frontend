@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -56,6 +58,7 @@ export function CompanyForm({
   company?: CompanyResponse;
   onDone?: () => void;
 }) {
+  const tx = useWorkspaceTranslation();
   const industries = useGetPublicIndustriesQuery();
   const [createCompany, creation] = useCreateCompanyMutation();
   const [updateCompany, update] = useUpdateCompanyMutation();
@@ -79,7 +82,7 @@ export function CompanyForm({
         logoUrl = await uploadFile(logoFile, "public");
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Unable to upload the logo.",
+          error instanceof Error ? error.message : tx("Unable to upload the logo."),
         );
         return;
       } finally {
@@ -103,10 +106,10 @@ export function CompanyForm({
     try {
       if (company) {
         await updateCompany({ id: company.id, body }).unwrap();
-        toast.success("Company updated.");
+        toast.success(tx("Company updated."));
       } else {
         await createCompany(body).unwrap();
-        toast.success("Company created.");
+        toast.success(tx("Company created."));
       }
       onDone?.();
     } catch (error) {
@@ -114,8 +117,8 @@ export function CompanyForm({
         getApiErrorMessage(
           error,
           company
-            ? "Unable to update the company."
-            : "Unable to create the company.",
+            ? tx("Unable to update the company.")
+            : tx("Unable to create the company."),
         ),
       );
     }
@@ -133,18 +136,18 @@ export function CompanyForm({
     <Form {...form}>
       <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
         <section>
-          <SectionLabel>Company identity</SectionLabel>
+          <SectionLabel>{tx("Company identity")}</SectionLabel>
           <div className="grid gap-5 md:grid-cols-2">
             <TextField
               control={form.control}
               name="name"
-              label="Legal name"
-              placeholder="ISTAD Store"
+              label={tx("Legal name")}
+              placeholder={tx("ISTAD Store")}
             />
             <SelectField
               control={form.control}
               name="industryId"
-              label="Industry"
+              label={tx("Industry")}
               options={industryOptions}
             />
           </div>
@@ -152,22 +155,22 @@ export function CompanyForm({
             <TextAreaField
               control={form.control}
               name="description"
-              label="Public description"
-              placeholder="What your company does."
+              label={tx("Public description")}
+              placeholder={tx("What your company does.")}
             />
           </div>
           <div className="mt-5 grid gap-5 md:grid-cols-2">
             <TextField
               control={form.control}
               name="businessRegistrationNo"
-              label="Business registration number"
+              label={tx("Business registration number")}
             />
             <FormField
               control={form.control}
               name="logoUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company logo</FormLabel>
+                  <FormLabel>{tx("Company logo")}</FormLabel>
                   <FormControl>
                     <FileDropzone
                       value={field.value}
@@ -186,27 +189,27 @@ export function CompanyForm({
         </section>
 
         <section>
-          <SectionLabel>Contact information</SectionLabel>
+          <SectionLabel>{tx("Contact information")}</SectionLabel>
           <div className="grid gap-5 md:grid-cols-2">
             <TextField
               control={form.control}
               name="contactEmail"
-              label="Email address"
+              label={tx("Email address")}
               type="email"
               placeholder="hello@company.com"
             />
             <TextField
               control={form.control}
               name="contactPhone"
-              label="Phone number"
+              label={tx("Phone number")}
             />
             <TextField
               control={form.control}
               name="websiteUrl"
-              label="Website"
+              label={tx("Website")}
               placeholder="https://…"
             />
-            <TextField control={form.control} name="address" label="Address" />
+            <TextField control={form.control} name="address" label={tx("Address")} />
           </div>
         </section>
 
@@ -218,15 +221,14 @@ export function CompanyForm({
               className="h-11 rounded-lg px-6"
               onClick={onDone}
             >
-              Cancel
-            </Button>
+              {tx("Cancel")}</Button>
           ) : null}
           <Button
             type="submit"
             className="h-11 rounded-lg px-8"
             disabled={isSaving}
           >
-            {isSaving ? "Saving…" : company ? "Save changes" : "Create company"}
+            {isSaving ? tx("Saving…") : company ? tx("Save changes") : tx("Create company")}
           </Button>
         </div>
       </form>

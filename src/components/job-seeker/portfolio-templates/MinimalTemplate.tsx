@@ -1,8 +1,11 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import { Code2 as Github, ExternalLink } from "lucide-react";
 import { Cover, EmptyProjects, Page, ProjectImage, TechTags, displayUrl, type PortfolioTemplateProps } from "./shared";
 
 /** Text-first list with small thumbnails — reads fast, works with many projects. */
 export function MinimalTemplate({ title, summary, publicUrl, projects, theme }: PortfolioTemplateProps) {
+  const tx = useWorkspaceTranslation();
   const accent = theme.accent;
 
   return (
@@ -22,30 +25,28 @@ export function MinimalTemplate({ title, summary, publicUrl, projects, theme }: 
       </header>
 
       <main className="px-20 pb-20">
-        <h2 className="border-t border-slate-200 pt-8 text-[18px] font-semibold uppercase tracking-[0.22em] text-slate-400">Projects</h2>
+        <h2 className="border-t border-slate-200 pt-8 text-[18px] font-semibold uppercase tracking-[0.22em] text-slate-400">{tx("Projects")}</h2>
         {projects.length ? (
           <div className="mt-2 divide-y divide-slate-100">
             {projects.map((project) => (
               <article key={project.id} className="flex gap-7 py-7">
-                <ProjectImage url={project.imageUrl} alt={project.title} accent={accent} className="h-24 w-32 shrink-0 rounded-lg" />
+                <ProjectImage url={project.imageUrl} alt={tx(project.title)} accent={accent} className="h-24 w-32 shrink-0 rounded-lg" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-4">
                     <h3 className="text-[18px] font-semibold text-slate-950">{project.title}</h3>
                     <div className="flex shrink-0 gap-4 text-[18px] font-semibold">
                       {project.projectUrl ? (
                         <span className="inline-flex items-center gap-1" style={{ color: accent }}>
-                          <ExternalLink className="size-3.5" /> Live
-                        </span>
+                          <ExternalLink className="size-3.5" /> {tx(" Live")}</span>
                       ) : null}
                       {project.githubUrl ? (
                         <span className="inline-flex items-center gap-1 text-slate-400">
-                          <Github className="size-3.5" /> Source
-                        </span>
+                          <Github className="size-3.5" /> {tx(" Source")}</span>
                       ) : null}
                     </div>
                   </div>
                   {project.description ? (
-                    <p className="mt-2 line-clamp-3 whitespace-pre-line text-[18px] leading-6 text-slate-600">{project.description}</p>
+                    <p className="mt-2 line-clamp-3 whitespace-pre-line text-[18px] leading-6 text-slate-600">{tx(project.description)}</p>
                   ) : null}
                   <TechTags techStack={project.techStack} accent={accent} className="mt-3" />
                 </div>

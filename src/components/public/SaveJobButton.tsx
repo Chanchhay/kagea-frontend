@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import type { PublicJobResponse } from "@/contracts";
@@ -33,6 +35,7 @@ export function SaveJobButton({
   variant = "icon",
   className,
 }: SaveJobButtonProps) {
+  const tx = useWorkspaceTranslation();
   const [saveJob, saveState] = useSaveFavoriteJobMutation();
   const [removeJob, removeState] = useRemoveFavoriteJobMutation();
 
@@ -62,8 +65,8 @@ export function SaveJobButton({
       onClick={toggle}
       disabled={pending}
       aria-pressed={isFavorite}
-      aria-label={isFavorite ? "Remove from saved jobs" : "Save this job"}
-      title={isFavorite ? "Remove from saved jobs" : "Save this job"}
+      aria-label={tx(isFavorite ? "Remove from saved jobs" : "Save this job")}
+      title={tx(isFavorite ? "Remove from saved jobs" : "Save this job")}
       className={cn(
         "inline-flex shrink-0 items-center justify-center gap-2 rounded-full border transition disabled:opacity-50",
         variant === "icon" ? "size-9" : "h-10 px-4 text-sm font-semibold",

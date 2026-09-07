@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useState, type FormEvent } from "react";
 import { FileText, Loader2, Save } from "lucide-react";
@@ -21,6 +23,7 @@ type ResumeFormProps = {
  * Resumes written from scratch go through `ResumeBuilder` instead.
  */
 export function ResumeForm({ initialTitle = "", initialFileUrl = "", submitLabel, isSubmitting, onSubmit, onCancel }: ResumeFormProps) {
+  const tx = useWorkspaceTranslation();
   const [title, setTitle] = useState(initialTitle);
   const [resumeFileUrl, setResumeFileUrl] = useState(initialFileUrl);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -31,11 +34,11 @@ export function ResumeForm({ initialTitle = "", initialFileUrl = "", submitLabel
     event.preventDefault();
     const cleanTitle = title.trim();
     if (!cleanTitle) {
-      setError("Give your resume a name so you can find it later.");
+      setError(tx("Give your resume a name so you can find it later."));
       return;
     }
     if (!resumeFile && !resumeFileUrl) {
-      setError("Choose a PDF resume before continuing.");
+      setError(tx("Choose a PDF resume before continuing."));
       return;
     }
     setError(null);
@@ -49,7 +52,7 @@ export function ResumeForm({ initialTitle = "", initialFileUrl = "", submitLabel
         setResumeFileUrl(fileUrl);
         setResumeFile(null);
       } catch (uploadError) {
-        setError(uploadError instanceof Error ? uploadError.message : "Upload failed.");
+        setError(uploadError instanceof Error ? uploadError.message : tx("Upload failed."));
         return;
       } finally {
         setIsUploading(false);
@@ -69,31 +72,30 @@ export function ResumeForm({ initialTitle = "", initialFileUrl = "", submitLabel
             <FileText className="size-4.5" />
           </span>
           <div>
-            <h3 className="font-semibold text-ws-fg">Resume document</h3>
-            <p className="mt-0.5 text-xs leading-5 text-ws-muted">Name this version and attach the PDF employers will receive.</p>
+            <h3 className="font-semibold text-ws-fg">{tx("Resume document")}</h3>
+            <p className="mt-0.5 text-xs leading-5 text-ws-muted">{tx("Name this version and attach the PDF employers will receive.")}</p>
           </div>
         </div>
 
         <div>
           <label htmlFor="resume-title" className="mb-2 block text-sm font-semibold text-ws-fg">
-            Resume name
-          </label>
+            {tx("Resume name")}</label>
           <div className="relative">
             <FileText aria-hidden="true" className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ws-faint" />
             <Input
               id="resume-title"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              placeholder="e.g. Product Designer — 2026"
+              placeholder={tx("e.g. Product Designer — 2026")}
               className="h-12 rounded-xl border-ws-line bg-ws-card pl-10 text-ws-fg"
               autoFocus
             />
           </div>
-          <p className="mt-2 text-xs text-ws-muted">Use a clear name tailored to the roles you are applying for.</p>
+          <p className="mt-2 text-xs text-ws-muted">{tx("Use a clear name tailored to the roles you are applying for.")}</p>
         </div>
 
         <div className="mt-5">
-          <p className="mb-2 text-sm font-semibold text-ws-fg">Resume file</p>
+          <p className="mb-2 text-sm font-semibold text-ws-fg">{tx("Resume file")}</p>
           <FileDropzone
             value={resumeFileUrl}
             file={resumeFile}
@@ -110,12 +112,11 @@ export function ResumeForm({ initialTitle = "", initialFileUrl = "", submitLabel
       <div className="flex flex-col-reverse gap-3 border-t border-ws-line pt-5 sm:flex-row sm:justify-end">
         {onCancel ? (
           <Button type="button" variant="ghost" onClick={onCancel} className="rounded-xl">
-            Cancel
-          </Button>
+            {tx("Cancel")}</Button>
         ) : null}
         <Button type="submit" disabled={busy} className="h-11 rounded-xl px-5">
           {busy ? <Loader2 aria-hidden="true" className="animate-spin" /> : <Save aria-hidden="true" />}
-          {isUploading ? "Uploading…" : isSubmitting ? "Saving…" : submitLabel}
+          {isUploading ? tx("Uploading…") : isSubmitting ? tx("Saving…") : tx(submitLabel)}
         </Button>
       </div>
     </form>

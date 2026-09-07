@@ -1,12 +1,10 @@
 import { ScrollReveal } from "./shared/ScrollReveal";
-import CtaBannerSection from "./CtaBannerSection";
 import FaqSection from "./FaqSection";
 import HeroCompaniesSection from "./HeroCompaniesSection";
 import JobDiscoverySection from "./JobDiscoverySection";
 import NewestJobsSection from "./NewestJobsSection";
 import ProfileSection from "./ProfileSection";
 import TestimonialsSection from "./TestimonialsSection";
-import TrustedCompaniesSection from "./TrustedCompaniesSection";
 
 export default function LandingPage() {
     return (

@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { Check, Minus } from "lucide-react";
 import type { JobDocumentParseResponse } from "@/contracts";
@@ -42,6 +44,7 @@ function SkillChip({
   skillType: string | null;
   isNew?: boolean;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <span
       className={
@@ -54,7 +57,7 @@ function SkillChip({
       {/* The type is shown even when absent, so nothing about what we recorded
           is left to guess. */}
       <span className="text-body/70">
-        {skillType ? skillType.toLowerCase() : "no type"}
+        {skillType ? skillType.toLowerCase() : tx("no type")}
       </span>
     </span>
   );
@@ -75,6 +78,7 @@ export function JobImportSummary({
 }: {
   parsed: JobDocumentParseResponse;
 }) {
+  const tx = useWorkspaceTranslation();
   const fields: { label: string; value: string | null }[] = [
     { label: "Job title", value: parsed.title },
     { label: "Category", value: parsed.categoryName },
@@ -100,13 +104,9 @@ export function JobImportSummary({
   return (
     <div className="rounded-xl border border-border p-5">
       <h3 className="text-sm font-semibold text-heading">
-        What we read from your PDF
-      </h3>
+        {tx("What we read from your PDF")}</h3>
       <p className="mt-1 text-xs text-body">
-        Everything below came from the document, and you can edit all of it. The
-        job itself isn&apos;t saved until you press save — the one thing already
-        stored is any new skill, since those are shared with everyone.
-      </p>
+        {tx("Everything below came from the document, and you can edit all of it. The job itself isn't saved until you press save — the one thing already stored is any new skill, since those are shared with everyone.")}</p>
 
       <dl className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
         {found.map((field) => (
@@ -115,7 +115,7 @@ export function JobImportSummary({
               aria-hidden="true"
               className="mt-0.5 size-3.5 shrink-0 text-brand"
             />
-            <dt className="text-body">{field.label}:</dt>
+            <dt className="text-body">{tx(field.label)}:</dt>
             <dd className="font-medium text-heading">{field.value}</dd>
           </div>
         ))}
@@ -125,18 +125,17 @@ export function JobImportSummary({
         <p className="mt-3 flex items-start gap-2 text-xs text-body">
           <Minus aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
           <span>
-            Not stated in the document, so left for you to fill in:{" "}
+            {tx("Not stated in the document, so left for you to fill in:")}{" "}
             {missing.map((field) => field.label.toLowerCase()).join(", ")}.
             {/* Called out separately because it is never extracted at all. */}{" "}
-            The expiry date is never read from a PDF — those are usually stale.
-          </span>
+            {tx("The expiry date is never read from a PDF — those are usually stale.")}</span>
         </p>
       ) : null}
 
       {parsed.sections.length > 0 ? (
         <div className="mt-4">
           <p className="text-xs font-medium text-heading">
-            Sections ({parsed.sections.length})
+            {tx("Sections (")}{parsed.sections.length})
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {parsed.sections.map((section) => (
@@ -154,8 +153,7 @@ export function JobImportSummary({
       {existingSkills.length > 0 ? (
         <div className="mt-4">
           <p className="text-xs font-medium text-heading">
-            Skills we already had ({existingSkills.length}) — attached
-          </p>
+            {tx("Skills we already had (")}{existingSkills.length}{tx(") — attached")}</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {existingSkills.map((skill) => (
               <SkillChip
@@ -171,13 +169,9 @@ export function JobImportSummary({
       {createdSkills.length > 0 ? (
         <div className="mt-4">
           <p className="text-xs font-medium text-heading">
-            Skills we added for you ({createdSkills.length}) — attached
-          </p>
+            {tx("Skills we added for you (")}{createdSkills.length}{tx(") — attached")}</p>
           <p className="mt-1 text-xs text-body">
-            These weren&apos;t in our list, so your PDF created them. They now
-            exist for everyone, under the type shown. Remove any that don&apos;t
-            belong to this job in the Skills section below.
-          </p>
+            {tx("These weren't in our list, so your PDF created them. They now exist for everyone, under the type shown. Remove any that don't belong to this job in the Skills section below.")}</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {createdSkills.map((skill) => (
               <SkillChip

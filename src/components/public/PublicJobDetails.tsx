@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CalendarDays, Clock, MapPin, WalletCards } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, MapPin, WalletCards } from "lucide-react";
 import type { PublicJobResponse } from "@/contracts";
 import { Markdown } from "@/components/shared/Markdown";
 import { ApplyJobDialog } from "./ApplyJobDialog";
@@ -31,39 +31,51 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10 max-lg:[overflow-wrap:anywhere]">
+      <Link
+        href="/jobs"
+        className="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-body hover:text-brand lg:hidden"
+      >
+        <ArrowLeft aria-hidden="true" className="size-4 shrink-0" />
+        Back to jobs
+      </Link>
       {/*
        * Title and the one primary action share the top row; the apply button
        * used to sit in a sidebar card, where it competed with the job's own
        * identity for the first thing a candidate reads.
        */}
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
         <div className="flex min-w-0 flex-col gap-4">
-          <h1 className="text-3xl font-semibold leading-tight tracking-tight text-heading sm:text-4xl">
+          <h1 className="text-2xl font-semibold leading-tight tracking-tight text-heading sm:text-3xl lg:text-4xl">
             {job.title}
           </h1>
 
-          <div className="flex items-center gap-3">
+          <div className="relative grid grid-cols-[44px_minmax(0,1fr)] items-center gap-3 lg:flex">
             <CompanyLogo job={job} />
-            <div className="flex min-w-0 flex-col gap-1">
+            <div className="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-1">
               {/*
                * A masked company has no id, so there is no page to open — the
                * name renders as plain text rather than as a link to
                * /companies/null.
                */}
               {job.companyId == null ? (
-                <span className="text-sm font-semibold text-heading">
+                <span className="text-sm font-semibold text-heading max-lg:pr-14">
                   {job.companyName}
                 </span>
               ) : (
                 <Link
                   href={`/companies/${job.companyId}`}
-                  className="text-sm font-semibold text-brand transition-colors hover:text-brand-hover"
+                  className="text-sm font-semibold text-brand transition-colors hover:text-brand-hover max-lg:pr-14"
                 >
                   {job.companyName}
                 </Link>
               )}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-body">
+              <SaveJobButton
+                jobId={job.id}
+                isFavorite={job.isFavorite}
+                className="absolute right-0 top-0 size-11 lg:hidden"
+              />
+              <div className="col-span-2 grid min-w-0 gap-3 rounded-xl border border-border bg-surface p-4 text-sm text-body sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-center lg:gap-x-4 lg:gap-y-1 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 max-lg:[&_svg]:shrink-0 max-lg:[&>span]:items-start">
                 {job.location ? (
                   <span className="inline-flex items-center gap-1.5">
                     <MapPin aria-hidden="true" className="size-4 text-muted-fg" />
@@ -98,7 +110,7 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 max-lg:flex-nowrap max-lg:gap-1.5 max-lg:overflow-x-auto max-lg:pb-1 max-lg:[&>span]:shrink-0 max-lg:[&>span]:whitespace-nowrap max-lg:[&>span]:px-2">
             <span className="inline-flex items-center rounded-full bg-landing-tint px-3 py-1 text-xs font-semibold text-brand">
               {job.categoryName}
             </span>
@@ -112,14 +124,14 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2.5">
+        <div className="hidden shrink-0 items-center gap-2.5 lg:flex">
           <ApplyJobDialog jobId={job.id} jobTitle={job.title} />
           <SaveJobButton jobId={job.id} isFavorite={job.isFavorite} />
         </div>
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
-        <div className="min-w-0 space-y-5">
+      <div className="mt-6 grid gap-4 lg:mt-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-6">
+        <div className="min-w-0 space-y-4 lg:space-y-5">
           {job.description ? (
             <ContentCard title="About this role">
               <Markdown content={job.description} />
@@ -136,7 +148,7 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
           ))}
         </div>
 
-        <aside className="space-y-5">
+        <aside className="min-w-0 space-y-4 lg:space-y-5 max-lg:[&>div]:p-4 sm:max-lg:[&>div]:p-5 max-lg:[&>div]:min-w-0 max-lg:[&_span]:max-w-full">
           {job.skills.length > 0 ? (
             <div className={`${PANEL} p-6`}>
               <h2 className="font-semibold text-heading">Required skills</h2>
@@ -170,7 +182,7 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
                       <span className="text-sm font-semibold text-heading">
                         {relatedJob.title}
                       </span>
-                      <span className="truncate text-xs text-body">
+                      <span className="text-xs text-body lg:truncate">
                         {relatedJob.companyName}
                         {relatedJob.location ? ` · ${relatedJob.location}` : null}
                       </span>
@@ -221,9 +233,9 @@ function ContentCard({
   children: ReactNode;
 }) {
   return (
-    <div className={`${PANEL} p-6 sm:p-7`}>
-      <h2 className="text-xl font-semibold text-heading">{title}</h2>
-      <div className="mt-3">{children}</div>
+    <div className={`${PANEL} min-w-0 p-4 sm:p-5 lg:p-7`}>
+      <h2 className="text-lg font-semibold text-heading lg:text-xl">{title}</h2>
+      <div className="mt-3 max-lg:[&_.rich-text]:text-sm max-lg:[&_.rich-text]:leading-7 max-lg:[&_table]:block max-lg:[&_table]:overflow-x-auto max-lg:[&_table]:[table-layout:auto] max-lg:[&_th]:min-w-32 max-lg:[&_td]:min-w-32">{children}</div>
     </div>
   );
 }

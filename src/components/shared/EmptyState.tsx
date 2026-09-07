@@ -1,3 +1,5 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import type { ReactNode } from "react";
 import { Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,6 +12,7 @@ type EmptyStateProps = {
 };
 
 export function EmptyState({ title, description, action, className }: EmptyStateProps) {
+  const tx = useWorkspaceTranslation();
   return (
     <div
       className={cn(
@@ -22,7 +25,7 @@ export function EmptyState({ title, description, action, className }: EmptyState
       </span>
       <h2 className="mt-3 text-sm font-semibold text-heading">{title}</h2>
       {description ? (
-        <p className="mt-1 max-w-sm text-sm leading-6 text-body">{description}</p>
+        <p className="mt-1 max-w-sm text-sm leading-6 text-body">{tx(description)}</p>
       ) : null}
       {action ? <div className="mt-4">{action}</div> : null}
     </div>

@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -108,6 +110,7 @@ function toDateTime(value: string) {
 }
 
 export function JobForm({ job }: { job?: JobPostResponse }) {
+  const tx = useWorkspaceTranslation();
   const router = useRouter();
   const categories = useGetPublicJobCategoriesQuery();
   const [createJobDraft, creation] = useCreateJobDraftMutation();
@@ -291,23 +294,23 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
         ? await updateJob({ id: job.id, body }).unwrap()
         : await createJobDraft(body).unwrap();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Unable to save the job."));
+      toast.error(getApiErrorMessage(error, tx("Unable to save the job.")));
       return;
     }
 
     if (publish) {
       try {
         await publishJob(saved.id).unwrap();
-        toast.success("Job published.");
+        toast.success(tx("Job published."));
       } catch (error) {
         // The draft exists either way, so move on to it rather than let a retry
         // create a second copy.
         toast.error(
-          getApiErrorMessage(error, "Saved as a draft, but publishing failed."),
+          getApiErrorMessage(error, tx("Saved as a draft, but publishing failed.")),
         );
       }
     } else {
-      toast.success(job ? "Job updated." : "Draft saved.");
+      toast.success(job ? tx("Job updated.") : tx("Draft saved."));
     }
 
     router.push(`/recruiter/jobs/${saved.id}`);
@@ -326,25 +329,6 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
         className="space-y-6"
         onSubmit={form.handleSubmit((values) => submit(values, false))}
       >
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          <Button
-            type="submit"
-            variant="outline"
-            className="h-11 rounded-lg px-6"
-            disabled={isSaving}
-          >
-            {job ? "Save changes" : "Save draft"}
-          </Button>
-          <Button
-            type="button"
-            className="h-11 rounded-lg px-6"
-            disabled={isSaving}
-            onClick={form.handleSubmit((values) => submit(values, true))}
-          >
-            {publication.isLoading ? "Publishing…" : "Publish Job"}
-          </Button>
-        </div>
-
         <JobDocumentImport onParsed={applyParsed} disabled={isSaving} />
 
         {lastImport ? <JobImportSummary parsed={lastImport} /> : null}
@@ -353,57 +337,57 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
           <TextField
             control={form.control}
             name="title"
-            label="Job title"
-            placeholder="e.g. Senior Full Stack Engineer"
+            label={tx("Job title")}
+            placeholder={tx("e.g. Senior Full Stack Engineer")}
           />
           <SelectField
             control={form.control}
             name="categoryId"
-            label="Category / department"
+            label={tx("Category / department")}
             options={categoryOptions}
           />
           <TextField
             control={form.control}
             name="location"
-            label="Location"
-            placeholder="Remote / Phnom Penh, Cambodia"
+            label={tx("Location")}
+            placeholder={tx("Remote / Phnom Penh, Cambodia")}
           />
           <SelectField
             control={form.control}
             name="workMode"
-            label="Work mode"
+            label={tx("Work mode")}
             options={withNotSpecified(workModeOptions)}
           />
           <TextField
             control={form.control}
             name="salaryMin"
-            label="Salary min"
+            label={tx("Salary min")}
             type="number"
             placeholder="80000"
           />
           <TextField
             control={form.control}
             name="salaryMax"
-            label="Salary max"
+            label={tx("Salary max")}
             type="number"
             placeholder="120000"
           />
           <SelectField
             control={form.control}
             name="experienceLevel"
-            label="Experience level"
+            label={tx("Experience level")}
             options={withNotSpecified(experienceLevelOptions)}
           />
           <SelectField
             control={form.control}
             name="jobType"
-            label="Job type"
+            label={tx("Job type")}
             options={withNotSpecified(jobTypeOptions)}
           />
           <TextField
             control={form.control}
             name="expiredAt"
-            label="Expires on"
+            label={tx("Expires on")}
             type="date"
           />
         </div>
@@ -413,12 +397,12 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Job description</FormLabel>
+              <FormLabel>{tx("Job description")}</FormLabel>
               <FormControl>
                 <RichTextEditor
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Write the core responsibilities and mission of this role…"
+                  placeholder={tx("Write the core responsibilities and mission of this role…")}
                 />
               </FormControl>
               <FormMessage />
@@ -431,12 +415,12 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
           name="requirements"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Requirements &amp; responsibilities</FormLabel>
+              <FormLabel>{tx("Requirements & responsibilities")}</FormLabel>
               <FormControl>
                 <RichTextEditor
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="List the specific technical requirements, years of experience, and day-to-day duties…"
+                  placeholder={tx("List the specific technical requirements, years of experience, and day-to-day duties…")}
                 />
               </FormControl>
               <FormMessage />
@@ -461,12 +445,11 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel className="sr-only">
-                      Section {index + 1} heading
-                    </FormLabel>
+                      {tx("Section ")}{index + 1} {tx(" heading")}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder="Section heading, e.g. Benefits, Our stack, How we hire"
+                        placeholder={tx("Section heading, e.g. Benefits, Our stack, How we hire")}
                         className="h-10 font-medium"
                       />
                     </FormControl>
@@ -477,7 +460,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
               <div className="flex shrink-0 items-center gap-1 pt-1">
                 <button
                   type="button"
-                  aria-label="Move section up"
+                  aria-label={tx("Move section up")}
                   disabled={index === 0}
                   onClick={() => extraSections.move(index, index - 1)}
                   className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-heading disabled:pointer-events-none disabled:opacity-40"
@@ -486,7 +469,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
                 </button>
                 <button
                   type="button"
-                  aria-label="Move section down"
+                  aria-label={tx("Move section down")}
                   disabled={index === extraSections.fields.length - 1}
                   onClick={() => extraSections.move(index, index + 1)}
                   className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-heading disabled:pointer-events-none disabled:opacity-40"
@@ -495,7 +478,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
                 </button>
                 <button
                   type="button"
-                  aria-label="Remove section"
+                  aria-label={tx("Remove section")}
                   onClick={() => extraSections.remove(index)}
                   className="rounded-md p-1.5 text-body hover:bg-surface-muted hover:text-destructive"
                 >
@@ -510,13 +493,12 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="sr-only">
-                    Section {index + 1} content
-                  </FormLabel>
+                    {tx("Section ")}{index + 1} {tx(" content")}</FormLabel>
                   <FormControl>
                     <RichTextEditor
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Write this section…"
+                      placeholder={tx("Write this section…")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -537,21 +519,15 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
             }
           >
             <Plus aria-hidden="true" className="size-3.5" />
-            Add a section
-          </Button>
+            {tx("Add a section")}</Button>
           <span className="text-xs text-body">
-            Anything else worth saying — benefits, your stack, the hiring
-            process.
-          </span>
+            {tx("Anything else worth saying — benefits, your stack, the hiring process.")}</span>
         </div>
 
         <div>
-          <p className="text-sm font-medium text-heading">Skills</p>
+          <p className="text-sm font-medium text-heading">{tx("Skills")}</p>
           <p className="mt-1 text-xs text-body">
-            Everything your PDF asked for is already here. Type a skill and press
-            Enter to add another — anything we don&apos;t have yet joins the
-            shared list for everyone.
-          </p>
+            {tx("Everything your PDF asked for is already here. Type a skill and press Enter to add another — anything we don't have yet joins the shared list for everyone.")}</p>
 
           {skills.length > 0 ? (
             <div className="mt-3 flex flex-wrap gap-2">
@@ -568,7 +544,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
                   ) : null}
                   <button
                     type="button"
-                    aria-label={`Remove ${skill.name}`}
+                    aria-label={tx("Remove {0}", { 0: skill.name })}
                     onClick={() =>
                       form.setValue(
                         "skills",
@@ -597,7 +573,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
                 event.preventDefault();
                 void attachSkill(skillDraft);
               }}
-              placeholder="e.g. Zustand"
+              placeholder={tx("e.g. Zustand")}
               className="h-10 w-full sm:w-64"
             />
             <datalist id="known-skills">
@@ -612,20 +588,35 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
               disabled={!skillDraft.trim() || skillCreation.isLoading}
               onClick={() => void attachSkill(skillDraft)}
             >
-              {skillCreation.isLoading ? "Adding…" : "Add skill"}
+              {skillCreation.isLoading ? tx("Adding…") : tx("Add skill")}
             </Button>
           </div>
 
         </div>
 
-        <div className="flex justify-end border-t border-border pt-6">
+        <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border pt-6">
           <Button
             type="button"
             variant="ghost"
             className="h-11 rounded-lg px-6"
             onClick={() => router.back()}
           >
-            Cancel
+            {tx("Cancel")}</Button>
+          <Button
+            type="submit"
+            variant="outline"
+            className="h-11 rounded-lg px-6"
+            disabled={isSaving}
+          >
+            {job ? tx("Save changes") : tx("Save draft")}
+          </Button>
+          <Button
+            type="button"
+            className="h-11 rounded-lg px-6"
+            disabled={isSaving}
+            onClick={form.handleSubmit((values) => submit(values, true))}
+          >
+            {publication.isLoading ? tx("Publishing…") : tx("Publish Job")}
           </Button>
         </div>
       </form>

@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -30,6 +32,7 @@ export function MessagesWorkspace({
   basePath: string;
   conversationId?: number;
 }) {
+  const tx = useWorkspaceTranslation();
   const router = useRouter();
   const conversations = useGetConversationsQuery({ size: 30 });
 
@@ -45,7 +48,7 @@ export function MessagesWorkspace({
   if (conversations.isError) {
     return (
       <ErrorState
-        message="Unable to load conversations."
+        message={tx("Unable to load conversations.")}
         onRetry={conversations.refetch}
       />
     );
@@ -55,10 +58,9 @@ export function MessagesWorkspace({
     return (
       <div className="rounded-[24px] bg-ws-card px-6 py-16 text-center">
         <MessageSquare className="mx-auto size-10 text-ws-faint" />
-        <h2 className="mt-4 font-semibold text-ws-fg">No conversations</h2>
+        <h2 className="mt-4 font-semibold text-ws-fg">{tx("No conversations")}</h2>
         <p className="mt-2 text-sm text-ws-muted">
-          A moderator will start a thread here when they need to reach you.
-        </p>
+          {tx("A moderator will start a thread here when they need to reach you.")}</p>
       </div>
     );
   }
@@ -93,6 +95,7 @@ function ThreadRow({
   active: boolean;
   onSelect: () => void;
 }) {
+  const tx = useWorkspaceTranslation();
   const other = thread.participants.find((participant) => !participant.self);
 
   return (
@@ -106,7 +109,7 @@ function ThreadRow({
     >
       <span className="flex items-center gap-2">
         <span className="min-w-0 flex-1 truncate text-sm font-semibold text-ws-fg">
-          {thread.title || "Conversation"}
+          {thread.title || tx("Conversation")}
         </span>
         {thread.unreadCount > 0 ? (
           <span className="rounded-full bg-primary px-1.5 py-0.5 text-[18px] font-semibold text-primary-foreground">
@@ -115,11 +118,11 @@ function ThreadRow({
         ) : null}
       </span>
       <span className="mt-1 block truncate text-xs text-ws-muted">
-        {other ? other.displayLabel : "No other participant"}
+        {other ? other.displayLabel : tx("No other participant")}
       </span>
       {thread.lastMessage ? (
         <span className="mt-1 block truncate text-xs text-ws-faint">
-          {thread.lastMessage.content ?? "Message deleted"}
+          {thread.lastMessage.content ?? tx("Message deleted")}
         </span>
       ) : null}
       {thread.status !== "OPEN" ? (
@@ -132,6 +135,7 @@ function ThreadRow({
 }
 
 function Thread({ conversation }: { conversation: ConversationResponse }) {
+  const tx = useWorkspaceTranslation();
   const messages = useGetMessagesQuery({
     conversationId: conversation.id,
     size: 50,
@@ -183,7 +187,7 @@ function Thread({ conversation }: { conversation: ConversationResponse }) {
     <section className="flex max-h-[70vh] flex-col rounded-[22px] bg-ws-card">
       <header className="px-5 py-4">
         <h2 className="truncate text-sm font-semibold text-ws-fg">
-          {conversation.title || "Conversation"}
+          {conversation.title || tx("Conversation")}
         </h2>
         <p className="mt-0.5 truncate text-xs text-ws-muted">
           {conversation.participants
@@ -197,16 +201,15 @@ function Thread({ conversation }: { conversation: ConversationResponse }) {
         {messages.isLoading ? (
           <LoadingState rows={4} />
         ) : messages.isError ? (
-          <ErrorState message="Unable to load messages." />
+          <ErrorState message={tx("Unable to load messages.")} />
         ) : ordered.length === 0 ? (
           <p className="py-8 text-center text-sm text-ws-faint">
-            No messages yet.
-          </p>
+            {tx("No messages yet.")}</p>
         ) : (
           ordered.map((message) => (
             <Bubble
               key={message.id}
-              message={message}
+              message={tx(message)}
               conversationId={conversation.id}
             />
           ))
@@ -216,9 +219,7 @@ function Thread({ conversation }: { conversation: ConversationResponse }) {
 
       {closed ? (
         <p className="px-5 py-4 text-xs text-ws-faint">
-          This conversation is {conversation.status.toLowerCase()} and no longer
-          accepts messages.
-        </p>
+          {tx("This conversation is ")}{conversation.status.toLowerCase()} {tx(" and no longer accepts messages.")}</p>
       ) : (
         <form className="flex items-end gap-2 px-5 py-4" onSubmit={submit}>
           <textarea
@@ -234,13 +235,13 @@ function Thread({ conversation }: { conversation: ConversationResponse }) {
             }}
             rows={2}
             maxLength={4000}
-            placeholder="Write a message"
+            placeholder={tx("Write a message")}
             className="min-w-0 flex-1 resize-none rounded-xl bg-ws-panel px-3.5 py-2.5 text-sm text-ws-fg outline-none placeholder:text-ws-faint"
           />
           <button
             type="submit"
             disabled={sendState.isLoading || !draft.trim()}
-            aria-label="Send message"
+            aria-label={tx("Send message")}
             className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground disabled:opacity-40"
           >
             <SendHorizontal aria-hidden="true" className="size-4" />
@@ -258,6 +259,7 @@ function Bubble({
   message: MessageResponse;
   conversationId: number;
 }) {
+  const tx = useWorkspaceTranslation();
   const [remove, removeState] = useDeleteMessageMutation();
   const deleted = message.status === "DELETED";
 
@@ -272,7 +274,7 @@ function Bubble({
           type="button"
           onClick={() => void remove({ conversationId, messageId: message.id })}
           disabled={removeState.isLoading}
-          aria-label="Delete message"
+          aria-label={tx("Delete message")}
           className="mb-1 flex size-7 items-center justify-center rounded-lg text-ws-faint opacity-0 transition hover:text-ws-fg focus-visible:opacity-100 group-hover/msg:opacity-100 disabled:opacity-30"
         >
           <Trash2 aria-hidden="true" className="size-3.5" />
@@ -291,7 +293,7 @@ function Bubble({
             deleted ? "italic opacity-60" : ""
           }`}
         >
-          {deleted ? "This message was deleted" : message.content}
+          {deleted ? tx("This message was deleted") : message.content}
         </p>
         <p
           className={`mt-1 text-[18px] ${
