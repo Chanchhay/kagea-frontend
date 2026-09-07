@@ -10,8 +10,8 @@ export default function NewestJobsSection() {
   const { t } = useLocale();
   const jobsQuery = useGetPublicJobsQuery({ size: 100, sort: "publishedAt,desc" });
   const categoriesQuery = useGetPublicJobCategoriesQuery();
-  const [categoryId, setCategoryId] = useState<number | null>(null);
-  const [savedJobIds, setSavedJobIds] = useState<Set<number>>(() => new Set());
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [savedJobIds, setSavedJobIds] = useState<Set<string>>(() => new Set());
 
   const jobs = useMemo(
     () => [...(jobsQuery.data?.content ?? [])]
@@ -125,5 +125,5 @@ function jobTypeLabel(value: string | undefined, t: (key: string) => string) { i
 function workModeLabel(value: string | undefined, t: (key: string) => string) { if (!value) return t("jobs.flexible"); const key = workModeKeys[value.toUpperCase()]; return key ? t(key) : formatLabel(value); }
 function salary(min: number | undefined, max: number | undefined, t: (key: string) => string) { if (!min && !max) return t("landing.newestJobs.salaryNegotiable"); const money = (value: number) => `$${new Intl.NumberFormat().format(value)}`; return min && max ? `${money(min)} – ${money(max)}` : min ? `${t("landing.newestJobs.salaryFrom")} ${money(min)}` : `${t("landing.newestJobs.salaryUpTo")} ${money(max!)}`; }
 function companyInitials(value: string) { return value.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join("").toUpperCase() || "CO"; }
-function toggleSaved(current: Set<number>, jobId: number) { const next = new Set(current); if (next.has(jobId)) next.delete(jobId); else next.add(jobId); return next; }
-function timeAgo(value: string, t: (key: string) => string) { const time = Date.parse(value); if (Number.isNaN(time)) return t("landing.newestJobs.time.recently"); const days = Math.max(0, Math.floor((Date.now() - time) / 86_400_000)); if (days === 0) return t("landing.newestJobs.time.today"); if (days === 1) return t("landing.newestJobs.time.oneDayAgo"); if (days < 30) return `${days} ${t("landing.newestJobs.time.daysAgo")}`; const months = Math.floor(days / 30); return months === 1 ? t("landing.newestJobs.time.oneMonthAgo") : `${months} ${t("landing.newestJobs.time.monthsAgo")}`; }
+function toggleSaved(current: Set<string>, jobId: string) { const next = new Set(current); if (next.has(jobId)) next.delete(jobId); else next.add(jobId); return next; }
+function timeAgo(value: string) { const time = Date.parse(value); if (Number.isNaN(time)) return "Recently"; const days = Math.max(0, Math.floor((Date.now() - time) / 86_400_000)); if (days === 0) return "Today"; if (days === 1) return "1 day ago"; if (days < 30) return `${days} days ago`; const months = Math.floor(days / 30); return `${months} ${months === 1 ? "month" : "months"} ago`; }

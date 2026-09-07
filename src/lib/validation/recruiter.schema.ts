@@ -84,7 +84,7 @@ export const jobSchema = z
      */
     skills: z.array(
       z.object({
-        skillId: z.number(),
+        skillId: z.uuid(),
         name: z.string(),
         skillType: z.string().nullable(),
       }),

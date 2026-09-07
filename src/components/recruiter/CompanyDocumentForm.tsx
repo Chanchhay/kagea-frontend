@@ -40,7 +40,7 @@ const defaultValues: CompanyDocumentFormValues = {
   documentUrl: "",
 };
 
-export function CompanyDocumentForm({ companyId }: { companyId: number }) {
+export function CompanyDocumentForm({ companyId }: { companyId: string }) {
   const tx = useWorkspaceTranslation();
   const [addCompanyDocument, addition] = useAddCompanyDocumentMutation();
   const [documentFile, setDocumentFile] = useState<File | null>(null);

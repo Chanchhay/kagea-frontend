@@ -30,7 +30,7 @@ export function MessagesWorkspace({
   conversationId,
 }: {
   basePath: string;
-  conversationId?: number;
+  conversationId?: string;
 }) {
   const tx = useWorkspaceTranslation();
   const router = useRouter();
@@ -257,7 +257,7 @@ function Bubble({
   conversationId,
 }: {
   message: MessageResponse;
-  conversationId: number;
+  conversationId: string;
 }) {
   const tx = useWorkspaceTranslation();
   const [remove, removeState] = useDeleteMessageMutation();

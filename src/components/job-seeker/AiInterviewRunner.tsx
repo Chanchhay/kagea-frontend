@@ -42,7 +42,7 @@ function AnswerForm({
   sessionId,
   question,
 }: {
-  sessionId: number;
+  sessionId: string;
   question: AiInterviewQuestionResponse;
 }) {
   const tx = useWorkspaceTranslation();

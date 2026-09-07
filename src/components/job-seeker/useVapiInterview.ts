@@ -38,7 +38,7 @@ export type TranscriptTurnInput = {
 };
 
 type UseVapiInterviewArgs = {
-  sessionId: number;
+  sessionId: string;
   /** Unanswered questions in display order. */
   questions: AiInterviewQuestionResponse[];
   candidateName: string;

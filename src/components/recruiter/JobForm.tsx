@@ -212,9 +212,7 @@ export function JobForm({ job }: { job?: JobPostResponse }) {
       title: values.title,
       description: values.description,
       categoryId:
-        values.categoryId === NOT_SPECIFIED
-          ? undefined
-          : Number(values.categoryId),
+        values.categoryId === NOT_SPECIFIED ? undefined : values.categoryId,
       location: optional(values.location),
       jobType: optional(values.jobType),
       workMode: optional(values.workMode),

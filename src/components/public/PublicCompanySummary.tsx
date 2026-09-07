@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { PublicJobCard } from "./PublicJobCard";
 
 type PublicCompanySummaryProps = {
-  companyId: number;
+  companyId: string;
   jobs: PublicJobResponse[];
 };
 

@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 
 type SaveJobButtonProps = {
-  jobId: number;
+  jobId: string;
   /**
    * The job's `isFavorite`, straight from the public job response: `null` when
    * the visitor is not a signed-in job seeker.

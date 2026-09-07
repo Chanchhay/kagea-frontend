@@ -19,7 +19,7 @@ import type {
 } from "./job-seeker";
 
 export type JobPostRequest = {
-  categoryId?: number;
+  categoryId?: string;
   title: string;
   description: string;
   location?: string;
@@ -48,7 +48,7 @@ export type JobPostSectionRequest = {
 };
 
 export type JobPostSkillRequest = {
-  skillId: number;
+  skillId: string;
   requiredLevel?: string;
 };
 
@@ -63,11 +63,11 @@ export type JobPostStatus =
   | "EXPIRED";
 
 export type JobPostResponse = {
-  id: number;
-  companyId: number;
+  id: string;
+  companyId: string;
   companyName: string;
-  recruiterProfileId: number;
-  categoryId: number;
+  recruiterProfileId: string;
+  categoryId: string;
   categoryName: string;
   title: string;
   description: string;
@@ -92,7 +92,7 @@ export type JobPostResponse = {
  * when it was already there.
  */
 export type ParsedJobSkill = {
-  skillId: number;
+  skillId: string;
   name: string;
   /** The type it is stored under, not the model's guess. */
   skillType: string | null;
@@ -105,11 +105,11 @@ export type SkillCreateRequest = {
 };
 
 export type SkillResponse = {
-  id: number;
+  id: string;
   name: string;
   skillType: string | null;
   /** Set when a recruiter added this skill; null for admin-entered ones. */
-  createdByRecruiterProfileId: number | null;
+  createdByRecruiterProfileId: string | null;
   createdByCompanyName: string | null;
   createdAt: string;
   updatedAt: string;
@@ -134,7 +134,7 @@ export type JobDocumentParseResponse = {
   experienceLevel: string | null;
   salaryMin: number | null;
   salaryMax: number | null;
-  categoryId: number | null;
+  categoryId: string | null;
   categoryName: string | null;
   sections: JobPostSectionRequest[];
   /** Every skill the document named, attached and ready to save. */
@@ -142,7 +142,7 @@ export type JobDocumentParseResponse = {
 };
 
 export type CompanyCreateRequest = {
-  industryId?: number;
+  industryId?: string;
   name: string;
   description?: string;
   websiteUrl?: string;
@@ -156,9 +156,9 @@ export type CompanyCreateRequest = {
 export type CompanyUpdateRequest = CompanyCreateRequest;
 
 export type CompanyResponse = {
-  id: number;
-  recruiterProfileId: number;
-  industryId: number;
+  id: string;
+  recruiterProfileId: string;
+  industryId: string;
   industryName: string;
   name: string;
   description: string;
@@ -178,9 +178,9 @@ export type CompanyDocumentRequest = {
 };
 
 export type CompanyDocumentResponse = {
-  id: number;
-  companyId: number;
-  uploadedByRecruiterProfileId: number;
+  id: string;
+  companyId: string;
+  uploadedByRecruiterProfileId: string;
   documentType: string;
   documentUrl: string;
   status: EntityStatus;
@@ -195,7 +195,7 @@ export type RecruiterProfileUpdateRequest = {
 };
 
 export type RecruiterProfileResponse = {
-  id: number;
+  id: string;
   avatarUrl?: string;
   position: string;
   linkedinUrl: string;
@@ -212,7 +212,7 @@ export type FindTalentParams = {
 };
 
 export type PublicTalentListItemResponse = {
-  profileId: number;
+  profileId: string;
   publicProfileSlug: string;
   avatarUrl?: string;
   headline: string;
@@ -227,7 +227,7 @@ export type PublicTalentListItemResponse = {
 };
 
 export type PublicPortfolioProjectResponse = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   projectUrl: string;
@@ -238,7 +238,7 @@ export type PublicPortfolioProjectResponse = {
 };
 
 export type PublicPortfolioResponse = {
-  id: number;
+  id: string;
   title: string;
   summary: string;
   publicUrl: string;
@@ -248,7 +248,7 @@ export type PublicPortfolioResponse = {
 };
 
 export type PublicResumeResponse = {
-  id: number;
+  id: string;
   title: string;
   isDefault: boolean;
   /** Empty for resumes built in the app; those render from `resumeData`. */
@@ -264,8 +264,8 @@ export type PublicTalentDetailResponse = {
 };
 
 export type ApplicationSummaryResponse = {
-  id: number;
-  jobId: number;
+  id: string;
+  jobId: string;
   jobTitle: string;
   coverLetter: string;
   status: JobApplicationStatus;
@@ -273,7 +273,7 @@ export type ApplicationSummaryResponse = {
 };
 
 export type CandidateProfileResponse = {
-  id: number;
+  id: string;
   headline: string;
   currentPosition: string;
   preferredLocation: string;
@@ -281,15 +281,15 @@ export type CandidateProfileResponse = {
 };
 
 export type SubmittedResumeResponse = {
-  id: number;
+  id: string;
   title: string;
   resumeFileUrl: string;
   visibility: PublicationVisibility;
 };
 
 export type HumanInterviewResponse = {
-  id: number;
-  applicationId: number;
+  id: string;
+  applicationId: string;
   scheduledAt: string;
   meetingUrl: string;
   status: InterviewStatus;

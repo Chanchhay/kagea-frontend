@@ -9,7 +9,6 @@ import { useGetPublicJobsQuery } from "@/services/publicApi";
 
 export default function PublicCompanyPage() {
   const { companyId } = useParams<{ companyId: string }>();
-  const numericCompanyId = Number(companyId);
   const jobsQuery = useGetPublicJobsQuery({ size: 100 });
 
   if (jobsQuery.isLoading) {
@@ -20,13 +19,13 @@ export default function PublicCompanyPage() {
   }
 
   const jobs = (jobsQuery.data?.content ?? []).filter(
-    (job) => job.companyId === numericCompanyId,
+    (job) => job.companyId === companyId,
   );
 
   return (
     <PublicShell>
       <main className="bg-canvas">
-        <PublicCompanySummary companyId={numericCompanyId} jobs={jobs} />
+        <PublicCompanySummary companyId={companyId} jobs={jobs} />
       </main>
       <PublicFooter />
     </PublicShell>

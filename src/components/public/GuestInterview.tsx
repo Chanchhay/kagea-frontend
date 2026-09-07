@@ -31,7 +31,7 @@ export function GuestInterview({
   jobId,
   jobTitle,
 }: {
-  jobId: number;
+  jobId: string;
   jobTitle: string;
 }) {
   const availability = useGetGuestInterviewAvailabilityQuery();
