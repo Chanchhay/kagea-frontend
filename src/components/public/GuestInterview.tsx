@@ -41,11 +41,6 @@ export function GuestInterview({
   const [session, setSession] = useState<AiInterviewSessionResponse | null>(null);
   const [result, setResult] = useState<AiInterviewResultResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  /*
-   * Typing is the default because it always works: speaking needs a microphone,
-   * permission, and a configured voice provider, and a visitor who has none of
-   * those should still be able to sit the interview.
-   */
   const [mode, setMode] = useState<"typing" | "speaking">("typing");
 
   if (availability.isLoading) {
@@ -166,14 +161,6 @@ export function GuestInterview({
   );
 }
 
-/**
- * The interview, spoken.
- *
- * <p>Runs the same call a signed-in candidate gets — the panel and its hook are
- * shared — with the guest's own endpoints passed in. When the transcript has
- * been scored, the result is fetched through the ordinary complete call, which
- * simply returns the finished interview if the voice path already scored it.
- */
 function Speaking({
   session,
   jobTitle,
@@ -209,8 +196,8 @@ function Speaking({
           .unwrap()
           .then(onResult)
           .catch(() => {
-            // The interview was scored; only fetching the result failed, and
-            // the panel already tells the visitor if submitting did not work.
+            // The panel already reports submission failures; this only means
+            // fetching the scored result failed after submit.
           });
       }}
     />
