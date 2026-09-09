@@ -58,14 +58,14 @@ export const metadata: Metadata = {
         googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
     },
     verification: {
-        google: "aW0aU3XLaxToraFCORpo9_rOV8AfDyio4or4M8snf3Q",
+        google: "-raHhFOlJt1Lk-33sKTPkMeOBkAgwyX9-YaIEFbuESU",
     },
     icons: {
         icon: "/images/brand/favicon-64.png",
         shortcut: "/images/brand/favicon-64.png",
         apple: "/images/brand/apple-icon-180.png",
     },
-    
+
 };
 
 const googleSans = localFont({
