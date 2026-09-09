@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { jobPostingSchema } from "@/lib/schema";
 import { isUuid } from "@/lib/uuid";
 import { getApiEndpoint } from "@/lib/api-url";
+import { absoluteSiteUrl, siteUrl } from "@/lib/site-url";
 
 type Props = {
   params: Promise<{ jobId: string }>;
@@ -48,7 +49,6 @@ export async function generateMetadata({
   params: Promise<{ jobId: string }>;
 }): Promise<Metadata> {
   const { jobId } = await params;
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
   const job = await getJob(jobId);
 
   if (!job) {
@@ -87,7 +87,7 @@ export async function generateMetadata({
           ]
         : [
             {
-              url: "/images/seo/find-job-og.png",
+              url: absoluteSiteUrl("/images/seo/find-job-og.png"),
               width: 1733,
               height: 908,
               alt: title,
@@ -98,7 +98,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: `${title} | Find Job`,
       description: plainDesc,
-      images: job.companyLogoUrl ? [job.companyLogoUrl] : ["/images/seo/find-job-og.png"],
+      images: job.companyLogoUrl ? [job.companyLogoUrl] : [absoluteSiteUrl("/images/seo/find-job-og.png")],
     },
   };
 }

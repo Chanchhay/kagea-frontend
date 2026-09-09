@@ -57,6 +57,9 @@ export const metadata: Metadata = {
         follow: true,
         googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
     },
+    verification: {
+        google: "aW0aU3XLaxToraFCORpo9_rOV8AfDyio4or4M8snf3Q",
+    },
     icons: {
         icon: "/images/brand/favicon-64.png",
         shortcut: "/images/brand/favicon-64.png",

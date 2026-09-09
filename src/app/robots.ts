@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
+import { siteUrl } from "@/lib/site-url";
 
 export default function robots(): MetadataRoute.Robots {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
   return {
     rules: [
       {
@@ -12,8 +11,8 @@ export default function robots(): MetadataRoute.Robots {
       },
       {
         userAgent: "*",
-        allow: ["/", "/jobs", "/companies", "/about-us", "/register"],
-        disallow: ["/auth/", "/job-seeker/", "/recruiter/", "/practice-interview/", "/*.json$", "/*?*sort"],
+        allow: ["/", "/jobs", "/companies", "/about-us", "/register", "/practice-interview/"],
+        disallow: ["/auth/", "/job-seeker/", "/recruiter/", "/*.json$", "/*?*sort"],
       },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,
