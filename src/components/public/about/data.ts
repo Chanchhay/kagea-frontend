@@ -104,7 +104,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "01",
     name: "Srey ChanChhay",
-  
+
     roleTitle: "LEAD FULL-STACK ENGINEER",
     badge: "LEAD",
     avatar: "/images/avatar/chanchhay.jpg",

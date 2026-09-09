@@ -289,14 +289,9 @@ export default function TeamSection() {
 // Member Front Card Component
 // -------------------------------------------------------------
 interface MemberCardProps {
-  member: {
-    name: string;
-    badge: TeamMember["badge"] | "MENTOR";
-    avatar: string;
-    social: TeamMember["social"];
+  member: (Pick<TeamMember, "name" | "badge" | "avatar" | "social"> & {
     roleTitle?: string;
-    role?: string;
-  };
+  }) | (typeof mentors[number]);
   index: number;
   accentColor?: "green" | "gold";
   floatingWave?: boolean;
@@ -315,7 +310,7 @@ function MemberCard({
   const { t } = useLocale();
   const formattedIndex = index < 10 ? `0${index}` : `${index}`;
   const isGold = accentColor === "gold";
-  const roleLabel = member.roleTitle ?? member.role ?? member.badge;
+  const roleLabel = (member as any).roleTitle || (member as any).role || "";
 
   const pillBg =
     "border border-[#1fa628] bg-[#1fa628] text-white shadow-sm dark:border-[#22c55e] dark:bg-[#22c55e] dark:text-slate-950";
