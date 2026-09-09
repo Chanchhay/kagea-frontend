@@ -411,8 +411,6 @@
 // function initials(name: string) { return name.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join("").toUpperCase() || "CO"; }
 // function toggleSet<T>(current: Set<T>, value: T) { const next = new Set(current); if (next.has(value)) next.delete(value); else next.add(value); return next; }
 
-
-
 "use client";
 
 import Link from "next/link";
@@ -538,23 +536,6 @@ export default function PublicJobsPage() {
     <PublicShell>
       <main className="min-h-screen bg-white text-slate-950 dark:bg-[#181B1C] dark:text-[#F5F5F5]">
         <div className="mx-auto max-w-[120rem] px-5 py-8 sm:px-8 lg:px-12 lg:py-12 xl:px-16 2xl:px-24">
-          {/* Logo Header Bar for Admin & Users */}
-          <div className="mb-6 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-[#008A1E] text-white shadow-sm transition-transform group-hover:scale-105 dark:bg-[#008A1E]">
-                <BriefcaseBusiness className="size-5" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
-                  FindJob<span className="text-[#008A1E] dark:text-[#F3BE00]">.ai</span>
-                </span>
-                <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  Platform
-                </span>
-              </div>
-            </Link>
-          </div>
-
           <section ref={searchPanelRef} aria-label={t("findJobsPage.searchAria")} className="relative grid gap-2 overflow-hidden rounded-[22px] border border-slate-200 bg-white p-2 md:grid-cols-[1.2fr_1.15fr_1fr_1.25fr_auto] md:items-stretch dark:border-[#3E444B] dark:bg-[#22262C]">
             <SearchField icon={Search} topLabel={t("findJobsPage.keywordLabel")} placeholder={t("findJobsPage.keywordPlaceholder")} value={keyword} onChange={(value) => changeFilter(() => setKeyword(value))} />
             <SearchField icon={MapPin} topLabel={t("jobs.location")} placeholder={t("jobs.location")} value={location} onChange={(value) => changeFilter(() => setLocation(value))} />
