@@ -9,7 +9,9 @@ const previewImage = {
 };
 
 export const metadata: Metadata = {
-  title: "Find Job Cambodia | Jobs, Profiles, and AI Interview Practice",
+  title: {
+    absolute: "Find Job Cambodia | Jobs, Profiles, and AI Interview Practice",
+  },
   description:
     "Search Cambodian job openings, build a career profile, and practice interviews with AI-powered preparation tools.",
   alternates: {
