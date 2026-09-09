@@ -25,6 +25,7 @@ const continueLabels: Record<InterviewStatus, string> = {
   READY: "Ready to start",
   PENDING: "Ready to start",
   IN_PROGRESS: "Continue interview",
+  SCORING: "Scoring…",
   COMPLETED: "View result",
   FAILED: "Interview failed",
   CANCELLED: "Interview cancelled",
@@ -47,7 +48,7 @@ export default function InterviewsPage() {
   const completed = aiInterviews.filter((interview) => interview.status === "COMPLETED");
   const passed = completed.filter((interview) => interview.result === "PASSED").length;
   const inProgress = aiInterviews.filter((interview) =>
-    ["IN_PROGRESS", "READY", "PENDING", "PREPARING"].includes(interview.status),
+    ["IN_PROGRESS", "SCORING", "READY", "PENDING", "PREPARING"].includes(interview.status),
   ).length;
   const avgScore = completed.length
     ? Math.round(completed.reduce((sum, interview) => sum + (interview.totalScore || 0), 0) / completed.length)

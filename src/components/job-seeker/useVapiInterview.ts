@@ -185,12 +185,18 @@ export function useVapiInterview({
         }).unwrap();
       }
       onScored?.();
+      /*
+       * Deliberately stays in "scoring". The backend now answers as soon as the
+       * transcript is stored and scores it on a background thread, so returning
+       * to idle here would offer "Start voice interview" again while the
+       * interview is still being marked. The session reaching COMPLETED is what
+       * ends this state, and it replaces this panel outright.
+       */
     } catch (error) {
       console.error("Submitting the interview transcript failed:", error);
       setSubmitFailed(true);
-      toast.error("Your interview could not be submitted. Retry below.");
-    } finally {
       setStatus("idle");
+      toast.error("Your interview could not be submitted. Retry below.");
     }
   }, [onScored, sessionId, submitTranscript, submitTurns]);
 
