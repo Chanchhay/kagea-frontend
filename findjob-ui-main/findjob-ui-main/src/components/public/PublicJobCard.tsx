@@ -1,0 +1,122 @@
+import Link from "next/link";
+import { BriefcaseBusiness, CalendarDays, MapPin } from "lucide-react";
+import type { PublicJobResponse } from "@/contracts";
+import { markdownToPlainText } from "@/lib/markdown";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { SaveJobButton } from "./SaveJobButton";
+
+type PublicJobCardProps = {
+  job: PublicJobResponse;
+  compact?: boolean;
+  className?: string;
+};
+
+function formatEnum(value?: string | null) {
+  if (!value) return "Not specified";
+  return value
+    .split("_")
+    .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function formatDate(value?: string | null) {
+  if (!value) return "Not specified";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Not specified";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
+function formatSalary(job: PublicJobResponse) {
+  if (job.salaryMin == null && job.salaryMax == null) return null;
+  if (job.salaryMin == null) return `Up to $${job.salaryMax?.toLocaleString()}`;
+  if (job.salaryMax == null) return `From $${job.salaryMin.toLocaleString()}`;
+  return `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`;
+}
+
+export function PublicJobCard({ job, compact = false, className }: PublicJobCardProps) {
+  const salary = formatSalary(job);
+
+  return (
+    <Card
+      className={cn(
+        "group relative overflow-hidden border-border transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:border-brand/60 hover:shadow-[0_20px_40px_-15px_rgba(31,166,40,0.15),0_10px_20px_-8px_rgba(15,23,42,0.06)] dark:hover:border-brand/50 dark:hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7),0_0_20px_rgba(31,166,40,0.15)] will-change-transform",
+        className,
+      )}
+    >
+      <CardContent className={cn("p-5", compact ? "space-y-3" : "space-y-4")}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <Link
+              href={`/jobs/${job.id}`}
+              className="text-lg font-semibold text-heading outline-none transition-colors duration-200 hover:text-brand focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring group-hover:text-brand"
+            >
+              {job.title}
+            </Link>
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-body">
+              <span className="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+                <BriefcaseBusiness aria-hidden="true" className="size-4 text-brand" />
+                {job.companyName || "Company not specified"}
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin aria-hidden="true" className="size-4 text-muted-fg" />
+                {job.location || "Location not specified"}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            <span className="rounded-md bg-brand-tint px-2.5 py-1 text-xs font-medium text-brand">
+              {formatEnum(job.jobType)}
+            </span>
+            <span className="rounded-md bg-surface-muted px-2.5 py-1 text-xs font-medium text-body">
+              {formatEnum(job.workMode)}
+            </span>
+            <SaveJobButton jobId={job.id} isFavorite={job.isFavorite} />
+          </div>
+        </div>
+
+        {!compact ? (
+          <p className="line-clamp-2 text-sm leading-6 text-body">
+            {job.description ? markdownToPlainText(job.description) : "No description provided."}
+          </p>
+        ) : null}
+
+        <div className="flex flex-wrap gap-2">
+          {job.categoryName ? <span className="rounded-md border border-border px-2.5 py-1 text-xs text-body">
+            {job.categoryName}
+          </span> : null}
+          {(job.skills ?? []).slice(0, compact ? 2 : 4).map((skill) => (
+            <span
+              key={skill.id}
+              className="rounded-md border border-border px-2.5 py-1 text-xs text-body"
+            >
+              {skill.skillName}
+            </span>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-3 border-t border-border pt-4 text-sm text-body sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            {salary ? <span className="font-semibold text-heading">{salary}</span> : null}
+            <span>{formatEnum(job.experienceLevel)}</span>
+            <span className="inline-flex items-center gap-1.5">
+              <CalendarDays aria-hidden="true" className="size-4 text-muted-fg" />
+              Expires {formatDate(job.expiredAt)}
+            </span>
+          </div>
+          <Button render={<Link href={`/jobs/${job.id}`} />} variant="outline" size="sm">
+            View details
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export { formatDate, formatEnum, formatSalary };

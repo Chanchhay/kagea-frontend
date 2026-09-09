@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #181b1c; }
+    a { color: #27b733; text-decoration: none; } a:hover { color: #3bc846; }
+    ul { margin: 0; padding: 0 0 0 18px; }
+  </style>
+</helmet>
+
+<div style="background: #181b1c; color: #f5f5f5; padding: 40px 40px 48px; box-sizing: border-box; min-height: 100%">
+  <div style="max-width: 1216px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+    <!-- Header: title and the one primary action, as in the reference -->
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 24px">
+      <div style="display: flex; flex-direction: column; gap: 14px; min-width: 0">
+        <h1 style="margin: 0; font-size: 30px; line-height: 1.2; font-weight: 600; letter-spacing: -0.4px; color: #f5f5f5">Fullstack Developer</h1>
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: #202a22; color: #27b733; flex-shrink: 0">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M10 12h4"></path><path d="M10 16h4"></path></svg>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <a href="#" style="font-size: 15px; font-weight: 600">TechSphere Innovations</a>
+            <div style="display: flex; align-items: center; gap: 16px; font-size: 14px; color: #cbd0d5">
+              <span style="display: flex; align-items: center; gap: 6px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#929aa3" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                Phnom Penh, Cambodia
+              </span>
+              <span style="display: flex; align-items: center; gap: 6px; font-weight: 600; color: #f5f5f5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#929aa3" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"></rect><path d="M2 10h20"></path></svg>
+                $80,000 &ndash; $120,000
+              </span>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <span style="display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 999px; background: #202a22; color: #27b733; font-size: 12px; font-weight: 600">Developer</span>
+          <span style="display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px; font-weight: 500">Full Time</span>
+          <span style="display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px; font-weight: 500">Hybrid</span>
+          <span style="display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px; font-weight: 500">Mid level</span>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0">
+        <a href="#" style="display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 28px; border-radius: 12px; background: #27b733; color: #ffffff; font-size: 15px; font-weight: 600">Apply now</a>
+        <button style="display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 12px; border: 1px solid #3e444b; background: #23272d; color: #cbd0d5; cursor: pointer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+        </button>
+        <button style="display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 12px; border: 1px solid #3e444b; background: #23272d; color: #cbd0d5; cursor: pointer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4"></path><path d="M15.4 6.5l-6.8 4"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Body: content left, sidebar right -->
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start">
+
+      <div style="display: flex; flex-direction: column; gap: 20px; min-width: 0">
+        <div style="border: 1px solid #3e444b; border-radius: 16px; background: #23272d; padding: 28px">
+          <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600; color: #f5f5f5">About this role</h2>
+          <p style="margin: 0 0 12px; font-size: 15px; line-height: 1.7; color: #cbd0d5; text-wrap: pretty">TechSphere Innovations is seeking a highly skilled and motivated Fullstack Developer to join our dynamic engineering team. In this role, you will play a critical part in designing, developing, and maintaining scalable web applications that power our core business services.</p>
+          <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #cbd0d5; text-wrap: pretty">You will bridge the gap between robust backend architecture and seamless, interactive frontend user experiences.</p>
+        </div>
+
+        <div style="border: 1px solid #3e444b; border-radius: 16px; background: #23272d; padding: 28px">
+          <h2 style="margin: 0 0 14px; font-size: 18px; font-weight: 600; color: #f5f5f5">Qualification</h2>
+          <ul style="display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.65; color: #cbd0d5">
+            <li>Bachelor&#39;s degree in Computer Science, Software Engineering, or a related technical field.</li>
+            <li>3+ years of proven experience in full-stack web development.</li>
+            <li><span style="color: #f5f5f5; font-weight: 600">Backend</span> &mdash; strong proficiency in Java (11+) with Spring Boot, Spring Security, and Spring Data JPA.</li>
+            <li><span style="color: #f5f5f5; font-weight: 600">Frontend</span> &mdash; deep understanding of JavaScript (ES6+), HTML5, CSS3, React and Next.js.</li>
+          </ul>
+        </div>
+
+        <div style="border: 1px solid #3e444b; border-radius: 16px; background: #23272d; padding: 28px">
+          <h2 style="margin: 0 0 14px; font-size: 18px; font-weight: 600; color: #f5f5f5">Responsibility</h2>
+          <ul style="display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.65; color: #cbd0d5">
+            <li><span style="color: #f5f5f5; font-weight: 600">End-to-end development</span> &mdash; design, build, and maintain both server-side logic and client-side web applications.</li>
+            <li><span style="color: #f5f5f5; font-weight: 600">Backend architecture</span> &mdash; develop robust, secure, scalable RESTful APIs and microservices.</li>
+            <li><span style="color: #f5f5f5; font-weight: 600">Database management</span> &mdash; design data models and manage relational databases (PostgreSQL, MySQL).</li>
+            <li><span style="color: #f5f5f5; font-weight: 600">Collaboration</span> &mdash; work closely with product managers, designers, and other developers.</li>
+            <li><span style="color: #f5f5f5; font-weight: 600">Code quality</span> &mdash; participate in peer reviews and write comprehensive unit and integration tests.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 20px">
+
+        <div style="border: 1px solid #3e444b; border-radius: 16px; background: #23272d; padding: 24px">
+          <h2 style="margin: 0 0 14px; font-size: 16px; font-weight: 600; color: #f5f5f5">Required skills</h2>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">Java</span>
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">Spring Boot</span>
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">Spring Security</span>
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">Spring Data JPA</span>
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">React</span>
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">Next.js</span>
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">TypeScript</span>
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">PostgreSQL</span>
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">MySQL</span>
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">Git</span>
+            <span style="display: inline-flex; padding: 5px 12px; border-radius: 999px; border: 1px solid #3e444b; color: #cbd0d5; font-size: 12px">Agile</span>
+          </div>
+        </div>
+
+        <!-- Practice interview: the one tinted card, sitting between skills and related jobs -->
+        <div style="border: 1px solid rgba(39, 183, 51, 0.35); border-radius: 16px; background: #202a22; padding: 24px">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span style="width: 6px; height: 6px; border-radius: 999px; background: #27b733; flex-shrink: 0"></span>
+            <span style="font-size: 13px; font-weight: 500; color: #cbd0d5">Practice first</span>
+          </div>
+          <h2 style="margin: 12px 0 0; font-size: 17px; line-height: 1.35; font-weight: 600; color: #f5f5f5">Try the <span style="color: #27b733">AI interview</span> for this role</h2>
+          <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.6; color: #cbd0d5">No account needed. Answer a few role-specific questions and see how you sound before you apply.</p>
+          <a href="#" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; height: 44px; border-radius: 12px; background: #27b733; color: #ffffff; font-size: 14px; font-weight: 600">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"></path><path d="M18 15l.9 2.1L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.9z"></path></svg>
+            Start practice interview
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg>
+          </a>
+        </div>
+
+        <div style="border: 1px solid #3e444b; border-radius: 16px; background: #23272d; padding: 24px">
+          <h2 style="margin: 0 0 14px; font-size: 16px; font-weight: 600; color: #f5f5f5">Similar jobs</h2>
+          <div style="display: flex; flex-direction: column; gap: 12px">
+            <a href="#" style="display: flex; gap: 12px; padding: 14px; border: 1px solid #3e444b; border-radius: 12px; color: inherit">
+              <div style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: #2b3036; color: #27b733; flex-shrink: 0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path></svg>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+                <span style="font-size: 14px; font-weight: 600; color: #f5f5f5">Frontend Developer</span>
+                <span style="font-size: 12px; color: #cbd0d5">TechSphere Innovations &middot; Phnom Penh</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px">
+                  <span style="display: inline-flex; padding: 3px 9px; border-radius: 999px; background: #2b3036; color: #cbd0d5; font-size: 11px">Full Time</span>
+                  <span style="display: inline-flex; padding: 3px 9px; border-radius: 999px; background: #2b3036; color: #cbd0d5; font-size: 11px">Onsite</span>
+                  <span style="display: inline-flex; padding: 3px 9px; border-radius: 999px; background: #2b3036; color: #cbd0d5; font-size: 11px">1-3 Years</span>
+                </div>
+                <span style="font-size: 11px; color: #929aa3">Expires in 24 days</span>
+              </div>
+            </a>
+          </div>
+          <a href="#" style="display: flex; align-items: center; justify-content: center; margin-top: 18px; height: 44px; border-radius: 12px; border: 1px solid rgba(39, 183, 51, 0.35); color: #27b733; font-size: 14px; font-weight: 600">Back to jobs</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,192 @@
+/* Dashboard-only adaptations. Desktop (the existing xl layout) is untouched. */
+@media (width < 80rem) {
+  .dashboard,
+  .columns,
+  .columns > *,
+  .notes > *,
+  .files > * {
+    min-width: 0;
+  }
+
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero > div > p {
+    flex-wrap: wrap;
+  }
+
+  /* The pipeline is the direct sibling immediately before the columns. */
+  .dashboard > div:has(> :global(.ws-track-rest)) {
+    flex-wrap: wrap;
+  }
+
+  .notes dd {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .notes :global(.ws-notch__body) > div:last-child {
+    flex-wrap: wrap;
+  }
+
+  .notes :global(.ws-notch__body) > p {
+    overflow-wrap: break-word;
+  }
+
+  /* Counts sit above the tabs so the active tab still joins its panel. */
+  .stream > div:first-child {
+    min-width: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .stream > div:first-child > span {
+    order: -1;
+    padding-bottom: 0.5rem;
+  }
+
+  .stream > div:first-child > div {
+    min-width: 0;
+    gap: 0.5rem;
+    padding-left: 1.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .stream > section > a {
+    width: max-content;
+    max-width: calc(100% - 2rem);
+  }
+
+  .files > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .shell > div > header > div:first-of-type {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .shell > div > header > div:last-child {
+    flex-shrink: 0;
+  }
+
+  .shell > nav {
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+}
+
+.notes :global(.ws-notch) {
+  container-type: inline-size;
+}
+
+@container (width < 21rem) {
+  /* On narrow cards, put actions on their own row instead of cutting titles. */
+  .notes :global(.ws-notch__top) {
+    width: 100%;
+    border-radius: var(--panel-r) var(--panel-r) 0 0;
+  }
+
+  .notes :global(.ws-notch__joint) {
+    display: none;
+  }
+
+  .notes :global(.ws-notch__actions) {
+    position: static;
+    order: 1;
+    height: auto;
+    justify-content: flex-end;
+    padding: 0 1.25rem 0.75rem;
+    background: var(--panel-fill);
+  }
+
+  .notes :global(.ws-notch__body) {
+    order: 2;
+    border-top-right-radius: 0;
+  }
+}
+
+@media (48rem <= width < 80rem) {
+  .notes,
+  .files {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .shell > div > header input {
+    width: 7rem;
+  }
+}
+
+@media (width < 48rem) {
+  .stream {
+    min-height: 20rem;
+  }
+
+  .seekerRow {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    padding-inline: 0.75rem;
+  }
+
+  .seekerRow > span:last-child {
+    grid-column: 2;
+    justify-self: start;
+    max-width: 100%;
+  }
+
+  .candidateStream li {
+    gap: 0.5rem;
+  }
+
+  .candidateStream li > a {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding-inline: 0.75rem;
+  }
+
+  .candidateStream li > a > span:first-child {
+    flex: none;
+  }
+
+  .candidateStream li > a > span:last-child {
+    align-self: flex-start;
+    max-width: 100%;
+  }
+}
+
+@media (width < 40rem) {
+  /* Shrink the folder tabs enough that Timeline / Applications / Interviews
+     sit in one row without scrolling to read the last label. */
+  .stream > div:first-child > div {
+    gap: 0.25rem;
+    padding-left: 0.875rem;
+    padding-right: 0.5rem;
+  }
+
+  .stream > div:first-child > div > button {
+    padding-inline: 0.5rem;
+    font-size: 0.8125rem;
+  }
+
+  .shell > div > header {
+    gap: 0.5rem;
+    padding-inline: 0.75rem;
+  }
+
+  .shell > div > header > div:last-child {
+    gap: 0.375rem;
+  }
+
+  .shell > div > header > div:last-child > a,
+  .shell > div > header > div:last-child > button:not([data-language-switch]),
+  .shell > div > header > div:last-child > div > button:not([data-language-switch]) {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+  }
+
+}

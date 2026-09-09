@@ -1,0 +1,556 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../styles/tokens.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Inter covers Latin text; Noto Sans Khmer fills in Khmer glyphs the
+     browser can't find in Inter, so both locales render on-brand without a
+     JS-driven font switch. */
+  --font-sans: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
+  /* One family everywhere: mono and serif resolve to the same stack, so a
+     stray `font-mono` cannot introduce a second typeface. */
+  --font-mono: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand */
+  --color-brand: var(--primary);
+  --color-brand-hover: var(--primary-hover);
+  --color-brand-tint: var(--primary-tint);
+  --color-landing-tint: var(--landing-tint);
+
+  /* Surfaces */
+  --color-canvas: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+
+  /* Text */
+  --color-heading: var(--text-primary);
+  --color-body: var(--text-secondary);
+  --color-muted-fg: var(--text-muted);
+
+  /* Status */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Workspace surface */
+  --color-ws-canvas: var(--ws-canvas);
+  --color-ws-panel: var(--ws-panel);
+  --color-ws-card: var(--ws-card);
+  --color-ws-card-hover: var(--ws-card-hover);
+  --color-ws-line: var(--ws-line);
+  --color-ws-fg: var(--ws-fg);
+  --color-ws-muted: var(--ws-muted);
+  --color-ws-faint: var(--ws-faint);
+
+  --color-chip-solid: var(--chip-solid);
+  --color-chip-solid-fg: var(--chip-solid-fg);
+  --color-chip-soft: var(--chip-soft);
+  --color-chip-soft-fg: var(--chip-soft-fg);
+  --color-chip-quiet: var(--chip-quiet);
+  --color-chip-quiet-fg: var(--chip-quiet-fg);
+  --color-chip-alert: var(--chip-alert);
+  --color-chip-alert-fg: var(--chip-alert-fg);
+
+  --color-note-warm: var(--note-warm);
+  --color-note-warm-fg: var(--note-warm-fg);
+  --color-note-cool: var(--note-cool);
+  --color-note-cool-fg: var(--note-cool-fg);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: calc(var(--radius-lg) + 4px);
+}
+
+:root {
+  --radius: var(--radius-lg);
+
+  --foreground: var(--text-primary);
+  --card: var(--surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface);
+  --popover-foreground: var(--text-primary);
+  --secondary: var(--surface-muted);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--surface-muted);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--primary-tint);
+  --accent-foreground: var(--primary-hover);
+  --destructive: var(--error);
+  --input: var(--border);
+  --ring: var(--primary);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/30;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Sticky PublicShell header, so a snapped section starts below it. */
+    scroll-padding-top: 78px;
+  }
+
+  /*
+   * Section-to-section snapping. `proximity`, not `mandatory`: several landing
+   * sections are taller than the viewport, and mandatory snapping makes their
+   * middles unreachable — the scroll keeps yanking back to a snap point.
+   * Proximity still jumps to the next section from a nudge near a boundary.
+   * Opted out entirely for reduced-motion users, for whom hijacked scrolling
+   * is exactly the kind of movement they asked not to have.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-snap-type: y proximity;
+    }
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 28%, transparent);
+  }
+}
+
+@layer components {
+
+
+
+  /*
+   * The public landing experience paints on plain white, not the app's pale
+   * blue canvas — `.landing-page` has always done this with a hardcoded
+   * `bg-white`, so the token says it instead and any page joining the class
+   * gets the same ground.
+   */
+  .landing-page {
+    --background: #ffffff;
+  }
+
+  /* Neutral charcoal palette used by the public landing experience. */
+  .dark .landing-page {
+    --background: #181b1c;
+    --surface: #23272d;
+    --surface-muted: #2b3036;
+    --border: #3e444b;
+    --text-primary: #f5f5f5;
+    --text-secondary: #cbd0d5;
+    --text-muted: #929aa3;
+    --primary-tint: #263329;
+    --landing-tint: #202a22;
+  }
+
+  /*
+   * Shared by the editor surface and the published view, so authored content
+   * renders identically in both.
+   */
+  .rich-text {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    /* Long URLs and unbroken strings wrap instead of widening the card. */
+    overflow-wrap: break-word;
+  }
+
+  .rich-text > * + * {
+    margin-top: 0.85em;
+  }
+
+  .rich-text h1,
+  .rich-text h2,
+  .rich-text h3 {
+    color: var(--text-primary);
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .rich-text h1 {
+    font-size: 1.875rem;
+  }
+
+  .rich-text h2 {
+    font-size: 1.5rem;
+  }
+
+  .rich-text h3 {
+    font-size: 1.25rem;
+  }
+
+  .rich-text h1:not(:first-child),
+  .rich-text h2:not(:first-child),
+  .rich-text h3:not(:first-child) {
+    margin-top: 1.5em;
+  }
+
+  .rich-text strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .rich-text a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .rich-text ul,
+  .rich-text ol {
+    padding-left: 1.35rem;
+  }
+
+  .rich-text ul {
+    list-style: disc;
+  }
+
+  .rich-text ol {
+    list-style: decimal;
+  }
+
+  .rich-text li::marker {
+    color: var(--text-muted);
+  }
+
+  .rich-text li + li {
+    margin-top: 0.35em;
+  }
+
+  .rich-text li > ul,
+  .rich-text li > ol {
+    margin-top: 0.35em;
+  }
+
+  .rich-text blockquote {
+    border-left: 3px solid var(--border);
+    padding-left: 1rem;
+    color: var(--text-muted);
+  }
+
+  .rich-text code {
+    background: var(--surface-muted);
+    border-radius: var(--radius-sm);
+    padding: 0.1em 0.35em;
+    font-size: 1em;
+  }
+
+  /*
+   * Wrapped, never scrolled: a job description is prose, and indented pasted
+   * text becomes a code block whether the author meant it to or not.
+   */
+  .rich-text pre {
+    background: var(--surface-muted);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .rich-text pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .rich-text hr {
+    border-color: var(--border);
+  }
+
+  .rich-text table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Fixed layout so columns share the width rather than forcing a scrollbar. */
+    table-layout: fixed;
+  }
+
+  .rich-text th,
+  .rich-text td {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+
+  .rich-text th {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Placeholder shown on the empty first line of the editor. */
+  .rich-text p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: var(--text-muted);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* Workspace panel: one flat rounded sheet. */
+  .ws-panel {
+    background: var(--ws-panel);
+  }
+
+  /*
+   * Notched panel. The top-right corner is scooped out of the fill so the
+   * header's round actions sit in the gap, on the sheet, instead of crowding
+   * the card. The shape is three flat blocks — a short top strip, the body,
+   * and one square whose rounded corner carves the concave joint between them
+   * — so nothing here is a gradient or a mask, just fills meeting at arcs.
+   */
+  .ws-notch {
+    /*
+     * The cut has to clear the actions AND the fillet, not just the actions:
+     * two 2.25rem circles plus their gap need 5.25rem, the fillet swings
+     * --notch-r further in from the strip's edge, and the rest is the breathing
+     * room between the two. Size it to the buttons alone and the fillet grows
+     * out underneath the first one.
+     */
+    --notch-w: 7.25rem;
+    --notch-h: 3.25rem;
+    --notch-r: 1.5rem;
+    --panel-r: 2rem;
+    position: relative;
+  }
+
+  .ws-notch__top {
+    width: calc(100% - var(--notch-w));
+    height: var(--notch-h);
+    background: var(--panel-fill);
+    border-radius: var(--panel-r) var(--notch-r) 0 0;
+  }
+
+  .ws-notch__body {
+    background: var(--panel-fill);
+    border-radius: 0 var(--panel-r) var(--panel-r) var(--panel-r);
+  }
+
+  /*
+   * The reflex corner where the top strip's right edge meets the body, filled
+   * so the two surfaces meet on an arc instead of a hard 270° corner.
+   *
+   * The arc is a radial gradient anchored ON the square's top-right corner:
+   * transparent inside the radius, sheet colour outside it. That leaves the
+   * wedge between the two straight edges and the circle, which is tangent to
+   * the strip's right edge and to the body's top edge — so the curve starts
+   * and ends flush instead of stepping.
+   *
+   * border-radius cannot express this. It keeps the quarter-disc INSIDE its
+   * corner circle, which is the complement of the wedge, and renders as a
+   * fin floating above the body rather than a fillet joining it.
+   */
+  .ws-notch__joint {
+    position: absolute;
+    top: calc(var(--notch-h) - var(--notch-r));
+    left: calc(100% - var(--notch-w));
+    width: var(--notch-r);
+    height: var(--notch-r);
+    background: radial-gradient(
+      circle var(--notch-r) at 100% 0,
+      transparent 0 var(--notch-r),
+      var(--panel-fill) calc(var(--notch-r) + 0.5px)
+    );
+  }
+
+  /* Centred in the cut rather than pinned to its top edge. */
+  .ws-notch__actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: var(--notch-h);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-right: 0.125rem;
+  }
+
+  /*
+   * Scooped corner. A radial gradient centred exactly ON a corner point masks
+   * the box: only a quarter of that circle falls inside, so the corner is
+   * bitten away by a concave arc instead of rounded outward by one. The
+   * transparent stop hides the card there, which reveals whatever is actually
+   * behind it — no fill to keep in sync with the background.
+   *
+   * The mask clips content as well as fill, so keep text and controls out of
+   * the scooped corner: --scoop is how far in the bite reaches.
+   */
+  .ws-scoop {
+    --scoop: 2.5rem;
+    --scoop-at: 100% 100%;
+    -webkit-mask-image: radial-gradient(
+      circle at var(--scoop-at),
+      transparent 0 var(--scoop),
+      #000 calc(var(--scoop) + 0.5px)
+    );
+    mask-image: radial-gradient(
+      circle at var(--scoop-at),
+      transparent 0 var(--scoop),
+      #000 calc(var(--scoop) + 0.5px)
+    );
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+
+  .ws-scoop-tl {
+    --scoop-at: 0% 0%;
+  }
+
+  .ws-scoop-tr {
+    --scoop-at: 100% 0%;
+  }
+
+  .ws-scoop-bl {
+    --scoop-at: 0% 100%;
+  }
+
+  .ws-scoop-br {
+    --scoop-at: 100% 100%;
+  }
+
+  /*
+   * Folder tab. The active tab is part of the sheet below it: square feet, and
+   * a quarter-round of the sheet's own fill on either side of its base so the
+   * two surfaces read as one piece of paper rather than a pill above a card.
+   */
+  .ws-foldertab {
+    --tab-r: 0.875rem;
+    position: relative;
+    background: var(--ws-card);
+    border-radius: var(--tab-r) var(--tab-r) 0 0;
+  }
+
+  /*
+   * The feet, filleted the same way as the notch joint: a circle anchored on
+   * the corner of each pad, transparent inside and sheet colour outside, which
+   * leaves the wedge tangent to the tab's edge and to the panel's top. With
+   * border-radius these render as two blobs detached from the tab.
+   */
+  .ws-foldertab::before,
+  .ws-foldertab::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: var(--tab-r);
+    height: var(--tab-r);
+  }
+
+  .ws-foldertab::before {
+    left: calc(-1 * var(--tab-r));
+    background: radial-gradient(
+      circle var(--tab-r) at 0 0,
+      transparent 0 var(--tab-r),
+      var(--ws-card) calc(var(--tab-r) + 0.5px)
+    );
+  }
+
+  .ws-foldertab::after {
+    right: calc(-1 * var(--tab-r));
+    background: radial-gradient(
+      circle var(--tab-r) at 100% 0,
+      transparent 0 var(--tab-r),
+      var(--ws-card) calc(var(--tab-r) + 0.5px)
+    );
+  }
+
+  /* The unfilled remainder of the pipeline track: hatched rather than flat, so
+     an empty tail still reads as track waiting to be filled instead of as one
+     more dark card. The colour on the bar still belongs only to the segments
+     that are actually filled. */
+  .ws-track-rest {
+    background-image: repeating-linear-gradient(
+      115deg,
+      var(--ws-line) 0 1px,
+      transparent 1px 7px
+    );
+  }
+
+  /*
+   * Document thumbnail: ruled paper standing in for the file preview. The
+   * sheet is light in both themes on purpose — it stands for paper, and a
+   * dark rectangle with faint rules on a dark card reads as an empty box
+   * rather than as a document. The rules are ink on that sheet, so they are
+   * literal here rather than themed.
+   */
+  .ws-paper {
+    background-color: #f2f2f4;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(24, 24, 27, 0.24) 0 1px,
+      transparent 1px 9px
+    );
+  }
+
+  .ws-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ws-line) transparent;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="skeleton"]::after {
+    animation: none !important;
+  }
+}
+
+@media print {
+  /* Resume documents are laid out at A4 96dpi, so they print 1:1 with no margin
+     of the browser's own on top of the sheet's padding. */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  aside[aria-label="Workspace navigation"],
+  nav[aria-label="Workspace navigation"],
+  .ws-panel > header {
+    display: none !important;
+  }
+
+  /* The shell pins itself to the viewport on screen; on paper it has to grow
+     to the full document instead, or everything past the first screen is lost. */
+  .ws-shell,
+  .ws-panel,
+  .ws-scroll,
+  main {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border-radius: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+}

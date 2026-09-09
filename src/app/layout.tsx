@@ -5,7 +5,7 @@ import { StoreProvider } from "@/store/StoreProvider";
 import { localBusinessSchema, organizationSchema, websiteSchema } from "@/lib/schema";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { absoluteSiteUrl, siteUrl } from "@/lib/site-url";
-import { inter, notoSansKhmer } from "./fonts";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const previewImage = {
@@ -68,11 +68,27 @@ export const metadata: Metadata = {
     
 };
 
+const googleSans = localFont({
+  src: [
+    {
+      path: "./font/GoogleSans-VariableFont_GRAD,opsz,wght.ttf",
+      weight: "100 900",
+      style: "normal",
+    },
+    {
+      path: "./font/GoogleSans-Italic-VariableFont_GRAD,opsz,wght.ttf",
+      weight: "100 900",
+      style: "italic",
+    },
+  ],
+  variable: "--font-google-sans",
+  display: "swap",
+});
 export default function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="en" className={`${inter.variable} ${notoSansKhmer.variable}`} suppressHydrationWarning>
+        <html lang="en" className={googleSans.variable} suppressHydrationWarning>
             <head>
                 <script
                     type="application/ld+json"
