@@ -4,12 +4,12 @@ import { Toaster } from "@/components/ui/sonner";
 import { StoreProvider } from "@/store/StoreProvider";
 import { localBusinessSchema, organizationSchema, websiteSchema } from "@/lib/schema";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
+import { absoluteSiteUrl, siteUrl } from "@/lib/site-url";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 const previewImage = {
-    url: "/images/seo/find-job-preview.png",
+    url: absoluteSiteUrl("/images/seo/find-job-preview.png"),
     width: 1200,
     height: 630,
     alt: "Find Job Cambodia career platform preview",

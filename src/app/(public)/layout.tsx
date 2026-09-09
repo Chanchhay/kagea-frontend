@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
+import { absoluteSiteUrl, siteUrl } from "@/lib/site-url";
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+const previewImage = {
+  url: absoluteSiteUrl("/images/seo/find-job-preview.png"),
+  width: 1200,
+  height: 630,
+  alt: "Find Job Cambodia career platform preview",
+};
 
 export const metadata: Metadata = {
   title: "Find Job Cambodia | Jobs, Profiles, and AI Interview Practice",
@@ -15,20 +21,13 @@ export const metadata: Metadata = {
       "Search Cambodian job openings, build a career profile, and practice interviews with AI-powered preparation tools.",
     url: siteUrl,
     type: "website",
-    images: [
-      {
-        url: "/images/seo/find-job-preview.png",
-        width: 1200,
-        height: 630,
-        alt: "Find Job Cambodia career platform preview",
-      },
-    ],
+    images: [previewImage],
   },
   twitter: {
     card: "summary_large_image",
     title: "Find Job Cambodia",
     description: "Search jobs in Cambodia and practice interviews with AI-powered tools.",
-    images: ["/images/seo/find-job-preview.png"],
+    images: [previewImage.url],
   },
 };
 

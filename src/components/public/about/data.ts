@@ -162,7 +162,6 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "02",
     name: "Khan Kanhchana",
-
     roleTitle: "FRONTEND ARCHITECT",
     badge: "SUB LEAD",
     avatar: "/images/avatar/kanhchana.jpg",
@@ -506,7 +505,6 @@ export const developmentTeam: TeamMember[] = [
 // For backward compatibility
 export const topMembers = developmentTeam.slice(0, 3);
 export const bottomMembers = developmentTeam.slice(3);
-
 
 
 
