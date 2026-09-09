@@ -104,9 +104,9 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "01",
     name: "Srey ChanChhay",
-  
+
     roleTitle: "LEAD FULL-STACK ENGINEER",
-    badge: "LEADER",
+    badge: "LEAD",
     avatar: "/images/avatar/chanchhay.jpg",
     bio: "Lead Full-Stack Engineer spearheading project architecture, technical vision, and AI integration for Find Job. Specializes in building distributed systems, Next.js architecture, and orchestrating cross-functional engineering deliverables.",
     quote: "Engineering is about turning complex challenges into clean, intuitive, and impactful digital experiences.",
@@ -162,7 +162,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "02",
     name: "Khan Kanhchana",
-    role: "SUB LEADER",
+
     roleTitle: "FRONTEND ARCHITECT",
     badge: "SUB LEAD",
     avatar: "/images/avatar/kanhchana.jpg",

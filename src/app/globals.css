@@ -5,14 +5,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Inter covers Latin text; Noto Sans Khmer fills in Khmer glyphs the
-     browser can't find in Inter, so both locales render on-brand without a
-     JS-driven font switch. */
-  --font-sans: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
-  /* One family everywhere: mono and serif resolve to the same stack, so a
-     stray `font-mono` cannot introduce a second typeface. */
-  --font-mono: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-inter), var(--font-khmer), ui-sans-serif, system-ui, sans-serif;
+  /* Google Sans is the app's sole configured typeface. */
+  --font-sans: var(--font-google-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Keep the existing utility families visually consistent with the app's
+     primary typeface. */
+  --font-mono: var(--font-google-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-google-sans), ui-sans-serif, system-ui, sans-serif;
 
   /* Brand */
   --color-brand: var(--primary);
@@ -113,6 +111,9 @@
     @apply bg-background text-foreground antialiased;
   }
 
+  body {
+    font-family: var(--font-google-sans), ui-sans-serif, system-ui, sans-serif;
+  }
   html {
     scroll-behavior: smooth;
     /* Sticky PublicShell header, so a snapped section starts below it. */

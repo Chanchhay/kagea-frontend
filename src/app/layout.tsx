@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { StoreProvider } from "@/store/StoreProvider";
 import { localBusinessSchema, organizationSchema, websiteSchema } from "@/lib/schema";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
-import { inter, notoSansKhmer } from "./fonts";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
@@ -65,11 +65,27 @@ export const metadata: Metadata = {
     
 };
 
+const googleSans = localFont({
+  src: [
+    {
+      path: "./font/GoogleSans-VariableFont_GRAD,opsz,wght.ttf",
+      weight: "100 900",
+      style: "normal",
+    },
+    {
+      path: "./font/GoogleSans-Italic-VariableFont_GRAD,opsz,wght.ttf",
+      weight: "100 900",
+      style: "italic",
+    },
+  ],
+  variable: "--font-google-sans",
+  display: "swap",
+});
 export default function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="en" className={`${inter.variable} ${notoSansKhmer.variable}`} suppressHydrationWarning>
+        <html lang="en" className={googleSans.variable} suppressHydrationWarning>
             <head>
                 <script
                     type="application/ld+json"
