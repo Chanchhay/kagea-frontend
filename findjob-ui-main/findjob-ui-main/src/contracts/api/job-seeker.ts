@@ -1,0 +1,307 @@
+import type {
+  ApiResponse,
+  PagedModel,
+  InterviewResult,
+  InterviewStatus,
+  PublicationVisibility,
+  SalaryVisibility,
+} from "./common";
+
+export type ResumeCreateRequest = {
+  title: string;
+  resumeFileUrl?: string;
+  resumeData?: Record<string, unknown>;
+};
+
+export type ResumeUpdateRequest = Partial<ResumeCreateRequest>;
+
+export type ResumeSourceType = "PLATFORM_TEMPLATE" | "USER_UPLOAD";
+
+export type ResumeResponse = {
+  id: string;
+  title: string;
+  resumeFileUrl: string;
+  resumeData: Record<string, unknown>;
+  isDefault: boolean;
+  visibility: PublicationVisibility;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  /** An uploaded resume is stored as supplied and cannot be regenerated. */
+  sourceType: ResumeSourceType;
+  generatedAt: string | null;
+  fileVersion: number;
+  hasFile: boolean;
+};
+
+/** A layout the builder offers. `templateKey` is what goes in resumeData.templateId. */
+export type PublicResumeTemplateResponse = {
+  id: string;
+  templateKey: string | null;
+  name: string;
+  description: string | null;
+  previewImageUrl: string | null;
+  templateSchema: Record<string, unknown>;
+};
+
+export type ApiResponseListResumeTemplate = ApiResponse<
+  PublicResumeTemplateResponse[]
+>;
+
+export type PortfolioProjectRequest = {
+  title: string;
+  description?: string;
+  projectUrl?: string;
+  githubUrl?: string;
+  imageUrl?: string;
+  techStack?: string;
+  displayOrder?: number;
+};
+
+export type PortfolioProjectUpdateRequest = Partial<PortfolioProjectRequest>;
+
+export type PortfolioProjectResponse = {
+  id: string;
+  title: string;
+  description: string;
+  projectUrl: string;
+  githubUrl: string;
+  imageUrl: string;
+  techStack: string;
+  displayOrder: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PortfolioCreateRequest = {
+  title: string;
+  summary?: string;
+  publicUrl?: string;
+  /** Frontend-owned presentation settings: chosen template and accent color. */
+  portfolioData?: Record<string, unknown>;
+};
+
+export type PortfolioUpdateRequest = Partial<PortfolioCreateRequest>;
+
+export type PortfolioResponse = {
+  id: string;
+  title: string;
+  summary: string;
+  publicUrl: string;
+  portfolioData: Record<string, unknown>;
+  visibility: PublicationVisibility;
+  publishedAt: string;
+  status: "ACTIVE" | "INACTIVE" | "PENDING" | "SUSPENDED";
+  projects: PortfolioProjectResponse[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PublicationRequest = {
+  visibility: PublicationVisibility;
+};
+
+export type PublicationResponse = {
+  resourceType: string;
+  resourceId: string;
+  visibility: PublicationVisibility;
+  publicProfileSlug: string;
+  publishedAt: string;
+};
+
+export type JobApplicationCreateRequest = {
+  resumeId?: string;
+  coverLetter?: string;
+};
+
+export type JobApplicationStatus =
+  | "SUBMITTED"
+  | "UNDER_REVIEW"
+  | "AI_INTERVIEW_REQUIRED"
+  | "AI_INTERVIEW_IN_PROGRESS"
+  | "AI_INTERVIEW_FAILED"
+  | "MODERATOR_REVIEW_PENDING"
+  | "AI_INTERVIEW_PASSED"
+  | "SHORTLISTED"
+  | "HUMAN_INTERVIEW_SCHEDULED"
+  | "HIRED"
+  | "REJECTED"
+  | "WITHDRAWN";
+
+/**
+ * Whether an application is over and no longer occupies the candidate's single
+ * live slot for that job.
+ *
+ * <p>Mirrors `ApplicationStatus.isClosed()` on the backend, which is what
+ * actually decides whether a new application is accepted. A closed application
+ * is history: it should be shown as a past attempt rather than treated as the
+ * one in progress.
+ */
+export function isClosedApplication(status: JobApplicationStatus) {
+  return status === "REJECTED" || status === "WITHDRAWN";
+}
+
+export type JobApplicationResponse = {
+  id: string;
+  jobId: string;
+  jobTitle: string;
+  resumeId: string;
+  resumeTitle: string;
+  coverLetter: string;
+  status: JobApplicationStatus;
+  appliedAt: string;
+  createdAt: string;
+};
+
+export type AiInterviewAnswerRequest = {
+  answerText: string;
+};
+
+/** Binds the Vapi voice call to the session so its webhook can find it again. */
+export type VapiCallBindingRequest = {
+  callId: string;
+};
+
+/**
+ * The finished voice interview, sent for splitting into answers and scoring.
+ * The backend runs the same work from Vapi's webhook; either path may win.
+ */
+export type VoiceTranscriptRequest = {
+  turns: { role: "interviewer" | "candidate"; text: string }[];
+};
+
+export type AiInterviewAnswerResponse = {
+  id: string;
+  answerText: string;
+  score: number;
+  feedback: string;
+  /**
+   * What a strong answer to this question sounds like, written by the AI when
+   * the interview was scored. Absent until the interview is complete.
+   */
+  modelAnswer?: string;
+};
+
+export type AiInterviewQuestionResponse = {
+  id: string;
+  displayOrder: number;
+  questionType:
+    | "TECHNICAL"
+    | "BEHAVIORAL"
+    | "SITUATIONAL"
+    | "COMMUNICATION"
+    | "PROBLEM_SOLVING"
+    | "GENERAL";
+  questionText: string;
+  maxScore: number;
+  answered: boolean;
+  answer?: AiInterviewAnswerResponse;
+};
+
+export type AiInterviewSessionResponse = {
+  id: string;
+  applicationId: string;
+  jobId: string;
+  jobTitle: string;
+  status: InterviewStatus;
+  startedAt: string;
+  endedAt: string;
+  totalScore: number;
+  result: InterviewResult;
+  questionCount: number;
+  answeredCount: number;
+  questions: AiInterviewQuestionResponse[];
+};
+
+export type AiInterviewFeedbackResponse = {
+  communicationScore: number;
+  technicalScore: number;
+  confidenceScore: number;
+  problemSolvingScore: number;
+  overallScore: number;
+  strengths: string;
+  weaknesses: string;
+  recommendation: string;
+  result: InterviewResult;
+};
+
+export type AiInterviewResultResponse = {
+  session: AiInterviewSessionResponse;
+  feedback: AiInterviewFeedbackResponse;
+};
+
+export type JobSeekerProfileUpdateRequest = {
+  /** App-relative URL of the avatar stored in MinIO. Send "" to remove it. */
+  avatarUrl?: string;
+  headline?: string;
+  bio?: string;
+  currentPosition?: string;
+  expectedSalaryMin?: number;
+  expectedSalaryMax?: number;
+  expectedSalaryCurrency?: string;
+  salaryVisibility?: SalaryVisibility;
+  preferredLocation?: string;
+  availabilityStatus?: string;
+};
+
+export type JobSeekerProfileResponse = JobSeekerProfileUpdateRequest & {
+  id: string;
+  publicProfileSlug: string;
+  profileVisibility: PublicationVisibility;
+  publishedAt: string;
+  verificationStatus: "PENDING_VERIFICATION" | "APPROVED" | "REJECTED" | "SUSPENDED";
+  status: "ACTIVE" | "INACTIVE" | "PENDING" | "SUSPENDED";
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ApiResponseResumeResponse = ApiResponse<ResumeResponse>;
+export type ApiResponseListResumeResponse = ApiResponse<ResumeResponse[]>;
+export type ApiResponsePortfolioResponse = ApiResponse<PortfolioResponse>;
+export type ApiResponseListPortfolioResponse = ApiResponse<PortfolioResponse[]>;
+export type ApiResponsePortfolioProjectResponse =
+  ApiResponse<PortfolioProjectResponse>;
+export type ApiResponsePublicationResponse = ApiResponse<PublicationResponse>;
+export type ApiResponseJobApplicationResponse =
+  ApiResponse<JobApplicationResponse>;
+export type ApiResponseListJobApplicationResponse =
+  ApiResponse<JobApplicationResponse[]>;
+export type ApiResponseAiInterviewSessionResponse =
+  ApiResponse<AiInterviewSessionResponse>;
+export type ApiResponseListAiInterviewSessionResponse =
+  ApiResponse<AiInterviewSessionResponse[]>;
+export type ApiResponseAiInterviewResultResponse =
+  ApiResponse<AiInterviewResultResponse>;
+export type ApiResponseJobSeekerProfileResponse =
+  ApiResponse<JobSeekerProfileResponse>;
+
+/**
+ * One saved job. A save outlives the post it points at, so `status` and
+ * `available` describe a job that may since have closed or expired; the row
+ * stays on the page, greyed out, rather than disappearing.
+ */
+export type FavoriteJobResponse = {
+  id: string;
+  savedAt: string;
+  jobId: string;
+  title: string;
+  /** Null when the company is masked; see PublicJobResponse. */
+  companyId: string | null;
+  companyName: string;
+  location: string | null;
+  jobType: string | null;
+  workMode: string | null;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  experienceLevel: string | null;
+  status: string;
+  publishedAt: string | null;
+  expiredAt: string | null;
+  available: boolean;
+};
+
+export type ApiResponseFavoriteJobResponse = ApiResponse<FavoriteJobResponse>;
+
+export type ApiResponsePageFavoriteJobResponse = ApiResponse<
+  PagedModel<FavoriteJobResponse>
+>;
