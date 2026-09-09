@@ -30,7 +30,7 @@ export type PortfolioTemplateProps = {
 /** The page every portfolio template renders onto. */
 export function Page({ children, style, className = "" }: { children: ReactNode; style?: CSSProperties; className?: string }) {
   return (
-    <div style={{ width: PAGE_WIDTH, ...style }} className={`flex flex-col text-[18px] leading-relaxed ${className}`}>
+    <div style={{ width: PAGE_WIDTH, ...style }} className={`flex flex-col text-lg leading-relaxed ${className}`}>
       {children}
     </div>
   );
@@ -63,7 +63,7 @@ export function ProjectImage({ url, alt, className = "", accent }: { url: string
       {src ? (
         <Image src={src} alt={tx(alt)} fill unoptimized className="object-cover" />
       ) : (
-        <span className="absolute inset-0 flex items-center justify-center text-[18px] font-medium" style={{ color: `${accent}99` }}>
+        <span className="absolute inset-0 flex items-center justify-center text-lg font-medium" style={{ color: `${accent}99` }}>
           {tx("No cover image")}</span>
       )}
     </div>
@@ -78,7 +78,7 @@ export function TechTags({ techStack, accent, className = "", muted = false }: {
       {tags.map((tag) => (
         <span
           key={tag}
-          className="rounded-full px-2.5 py-1 text-[18px] font-medium"
+          className="rounded-full px-2.5 py-1 text-lg font-medium"
           style={muted ? { background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.85)" } : { background: `${accent}1a`, color: accent }}
         >
           {tag}
@@ -98,7 +98,7 @@ export function EmptyProjects({ accent }: { accent: string }) {
   return (
     <div className="rounded-2xl border-2 border-dashed p-12 text-center" style={{ borderColor: `${accent}33` }}>
       <p className="font-semibold" style={{ color: accent }}>{tx("No projects yet")}</p>
-      <p className="mt-1.5 text-[18px] text-slate-500">{tx("Add your first project and it appears here straight away.")}</p>
+      <p className="mt-1.5 text-lg text-slate-500">{tx("Add your first project and it appears here straight away.")}</p>
     </div>
   );
 }

@@ -16,16 +16,16 @@ export function EditorialTemplate({ title, summary, publicUrl, projects, theme }
       <header className="border-b border-slate-300 px-16 py-14">
         <div className="flex items-end justify-between gap-10">
           <div className="min-w-0">
-            <h1 className="font-serif text-[46px] leading-tight tracking-tight text-slate-950">{title}</h1>
+            <h1 className="font-serif text-5xl leading-tight tracking-tight text-slate-950">{title}</h1>
             {theme.tagline ? (
-              <p className="mt-3 text-[18px] font-semibold uppercase tracking-[0.28em]" style={{ color: accent }}>{theme.tagline}</p>
+              <p className="mt-3 text-lg font-semibold uppercase tracking-[0.28em]" style={{ color: accent }}>{theme.tagline}</p>
             ) : null}
           </div>
           {theme.showPhoto ? <Cover url={theme.photoUrl} name={title} size={88} accent={accent} /> : null}
         </div>
-        {summary ? <p className="mt-7 max-w-[700px] whitespace-pre-line font-serif text-[18px] leading-8 text-slate-600">{summary}</p> : null}
+        {summary ? <p className="mt-7 max-w-[700px] whitespace-pre-line font-serif text-lg leading-8 text-slate-600">{summary}</p> : null}
         {publicUrl ? (
-          <p className="mt-6 inline-flex items-center gap-2 border-b pb-0.5 text-[18px] font-semibold" style={{ color: accent, borderColor: accent }}>
+          <p className="mt-6 inline-flex items-center gap-2 border-b pb-0.5 text-lg font-semibold" style={{ color: accent, borderColor: accent }}>
             <ExternalLink className="size-3.5" /> {displayUrl(publicUrl)}
           </p>
         ) : null}
@@ -38,16 +38,16 @@ export function EditorialTemplate({ title, summary, publicUrl, projects, theme }
               <article key={project.id} className={`flex items-center gap-10 ${index % 2 ? "flex-row-reverse" : ""}`}>
                 <ProjectImage url={project.imageUrl} alt={tx(project.title)} accent={accent} className="h-60 w-[420px] shrink-0 rounded-sm" />
                 <div className="min-w-0 flex-1">
-                  <span className="text-[18px] font-semibold tracking-[0.24em]" style={{ color: accent }}>
+                  <span className="text-lg font-semibold tracking-[0.24em]" style={{ color: accent }}>
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="mt-2 font-serif text-[28px] leading-tight text-slate-950">{project.title}</h3>
+                  <h3 className="mt-2 font-serif text-3xl leading-tight text-slate-950">{project.title}</h3>
                   {project.description ? (
-                    <p className="mt-3 line-clamp-5 whitespace-pre-line text-[18px] leading-7 text-slate-600">{tx(project.description)}</p>
+                    <p className="mt-3 line-clamp-5 whitespace-pre-line text-lg leading-7 text-slate-600">{tx(project.description)}</p>
                   ) : null}
                   <TechTags techStack={project.techStack} accent={accent} className="mt-4" />
                   {project.projectUrl || project.githubUrl ? (
-                    <div className="mt-5 flex gap-6 text-[18px] font-semibold">
+                    <div className="mt-5 flex gap-6 text-lg font-semibold">
                       {project.projectUrl ? (
                         <span className="inline-flex items-center gap-1.5" style={{ color: accent }}>
                           <ExternalLink className="size-4" /> {displayUrl(project.projectUrl)}

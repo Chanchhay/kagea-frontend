@@ -17,7 +17,6 @@ type CompanyCard = {
   name: string;
   category: string;
   location: string;
-  featured: boolean;
   bg: string;
   text: string;
   logoText: string;
@@ -36,25 +35,23 @@ const companyColors = [
   { bg: 'bg-[#3f3a17]', text: 'text-yellow-100' },
 ] as const;
 
+/*
+ * A static card. It carries no link and no click affordances on purpose — the
+ * marquee is a display of who is hiring, not a way in. That means no cursor,
+ * no hover lift, and no hover recolour: each of those reads as "clickable" to
+ * someone deciding whether to press it.
+ */
 function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
-  const { t } = useLocale();
-
   return (
-    <Link href={`/companies/${company.id}`} className="block shrink-0" aria-label={`${t('landing.topCompanies.view')} ${company.name}`}>
-      <motion.div
-        whileHover={{ y: -4 }}
-        whileTap={{ scale: 0.99 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 24 }}
-        className="group relative flex w-[270px] cursor-pointer items-center justify-between overflow-hidden rounded-2xl border border-[#FDE68A] bg-white p-5 shadow-[0_4px_16px_rgba(15,23,42,0.06)] transition-[border-color,box-shadow,background-color] duration-300 hover:border-[#F3BE00] hover:shadow-[0_10px_24px_rgba(15,23,42,0.10)] sm:w-[310px] dark:border-[#3E444B] dark:bg-[#22262C] dark:shadow-[0_14px_32px_-18px_rgba(0,0,0,.9)] dark:hover:border-[#F3BE00]/60 dark:hover:bg-[#2B3036] dark:hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,.8)]"
-      >
+    <div className="relative flex w-[270px] shrink-0 items-center overflow-hidden rounded-2xl border border-[#FDE68A] bg-white p-5 shadow-[0_4px_16px_rgba(15,23,42,0.06)] sm:w-[310px] dark:border-border dark:bg-surface dark:shadow-[0_14px_32px_-18px_rgba(0,0,0,.9)]">
       <div className="flex min-w-0 items-center gap-3">
         <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${company.bg} ${company.text} text-[18px] font-semibold shadow-sm dark:shadow-[0_0_0_1px_rgba(255,255,255,.08)]`}
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${company.bg} ${company.text} text-lg font-semibold shadow-sm dark:shadow-[0_0_0_1px_rgba(255,255,255,.08)]`}
         >
           {company.logoText}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-base font-semibold leading-tight text-slate-600 transition-colors group-hover:text-[#0F8A22] dark:text-slate-400 dark:group-hover:text-[#7bf0a4]">
+          <p className="truncate text-base font-semibold leading-tight text-slate-600 dark:text-slate-400">
             {company.name}
           </p>
           <div className="mt-1 flex items-center gap-1 text-xs text-slate-500 dark:text-white/60">
@@ -63,14 +60,7 @@ function CompanyMarqueeCard({ company }: { company: CompanyCard }) {
           </div>
         </div>
       </div>
-
-      {company.featured && (
-        <span className="ml-2 shrink-0 rounded-full bg-white/75 px-2.5 py-1 text-[18px] font-semibold text-[#FB7185] ring-1 ring-[#FECDD3] backdrop-blur-sm dark:bg-white/[.06] dark:text-[#ffb4bd] dark:ring-white/15">
-          {company.jobCount} {t(company.jobCount === 1 ? 'landing.topCompanies.role' : 'landing.topCompanies.roles')}
-        </span>
-      )}
-      </motion.div>
-    </Link>
+    </div>
   );
 }
 
@@ -78,7 +68,7 @@ export default function HeroCompaniesSection() {
   const { t } = useLocale();
   const jobsQuery = useGetPublicJobsQuery({ size: 100, sort: 'publishedAt,desc' });
   const companies = useMemo<CompanyCard[]>(() => {
-    const byCompany = new Map<string, Omit<CompanyCard, 'featured' | 'bg' | 'text' | 'logoText'>>();
+    const byCompany = new Map<string, Omit<CompanyCard, 'bg' | 'text' | 'logoText'>>();
 
     for (const job of jobsQuery.data?.content ?? []) {
       // Confidential postings mask their employer, so they carry no companyId
@@ -104,7 +94,6 @@ export default function HeroCompaniesSection() {
       .sort((a, b) => b.jobCount - a.jobCount || a.name.localeCompare(b.name))
       .map((company, index) => ({
         ...company,
-        featured: index < 3,
         ...companyColors[index % companyColors.length],
         logoText: companyInitials(company.name),
       }));
@@ -184,13 +173,21 @@ export default function HeroCompaniesSection() {
               initial={{ opacity: 0, y: -16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55 }}
-              className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200/60 bg-[#EEF6F0] px-4 py-1.5 text-xs font-semibold text-[#008A1E] shadow-xs dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-400"
+              className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200/60 bg-brand-wash px-4 py-1.5 text-xs font-semibold text-brand shadow-xs dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-400"
             >
               <span className="flex h-2 w-2 animate-ping rounded-full bg-emerald-500" />
               <span>{t('landing.hero.badge')}</span>
             </motion.div>
 
             {/* Headline */}
+            {/*
+              * The hero headline keeps its own sizes and its own two hex
+              * colours on purpose — it is the brand lockup, tuned by eye, and
+              * it is exempt from the type-scale and token passes. Snapping the
+              * ramp to 6xl/6xl/7xl collapsed the lg->xl step, and the amber
+              * that keeps yellow readable on white is not this headline's
+              * yellow. Leave both as literals.
+              */}
             <h1 className="max-w-[12.5ch] whitespace-pre-line text-[clamp(2.25rem,9vw,2.75rem)] font-bold leading-[1] tracking-[-0.055em] sm:max-w-[12ch] sm:text-5xl sm:leading-[0.98] lg:max-w-[11.2ch] lg:text-[52px] xl:text-[64px] 2xl:text-[72px]">
               <TypewriterText
                 segments={[
@@ -211,13 +208,13 @@ export default function HeroCompaniesSection() {
             <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
               <Link
                 href="/jobs"
-                className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#008A1E] px-8 text-[18px] font-semibold text-white transition-colors hover:bg-[#007018] sm:w-auto"
+                className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-brand px-8 text-lg font-semibold text-white transition-colors hover:bg-brand-hover sm:w-auto"
               >
                 {t('landing.hero.findJobCta')}
               </Link>
               <Link
                 href="/register"
-                className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-border px-8 text-[18px] font-semibold text-heading transition-colors hover:border-[#008A1E] hover:text-[#008A1E] sm:w-auto dark:hover:border-emerald-400 dark:hover:text-emerald-400"
+                className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-border px-8 text-lg font-semibold text-heading transition-colors hover:border-brand hover:text-brand sm:w-auto dark:hover:border-emerald-400 dark:hover:text-emerald-400"
               >
                 {t('landing.hero.createAccountCta')}
               </Link>
@@ -247,14 +244,14 @@ export default function HeroCompaniesSection() {
           viewport={{ once: true, margin: '-100px' }}
           className="mx-auto mt-12 flex max-w-2xl flex-col items-center text-center"
         >
-          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-[18px] font-semibold uppercase tracking-[.12em] text-brand dark:bg-brand/20 dark:text-[#8df6a8]">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-lg font-semibold uppercase tracking-[.12em] text-brand dark:bg-brand/20 dark:text-[#8df6a8]">
             <span className="flex size-1.5 rounded-full bg-brand" />
             {t('landing.topCompanies.badge')}
           </span>
           <h2 className="mt-4 text-[clamp(1.9rem,3vw,2.6rem)] font-semibold tracking-[-0.045em] text-heading">
             {t('landing.topCompanies.title')}
           </h2>
-          <p className="mt-3 text-[18px] leading-7 text-body">
+          <p className="mt-3 text-lg leading-7 text-body">
             {t('landing.topCompanies.subtitle')}
           </p>
         </motion.div>

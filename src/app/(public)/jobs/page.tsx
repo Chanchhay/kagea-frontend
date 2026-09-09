@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, Bookmark, BriefcaseBusiness, ChevronLeft, ChevronRight, MapPin, Search, SlidersHorizontal } from "lucide-react";
@@ -9,6 +10,7 @@ import { ErrorState } from "@/components/shared/ErrorState";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { PublicJobsQuery } from "@/services/publicApi";
 import { useGetPublicJobFacetsQuery, useGetPublicJobsQuery } from "@/services/publicApi";
+import { resolveFileUrl } from "@/lib/file-url";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useLocale } from "@/i18n/LocaleProvider";
 
@@ -133,16 +135,16 @@ export default function PublicJobsPage() {
 
   return (
     <PublicShell>
-      <main className="min-h-screen bg-white text-slate-950 dark:bg-[#181B1C] dark:text-[#F5F5F5]">
+      <main className="min-h-screen bg-white text-slate-950 dark:bg-background dark:text-heading">
         <div className="mx-auto max-w-[120rem] px-5 py-8 sm:px-8 lg:px-12 lg:py-12 xl:px-16 2xl:px-24">
-          <section ref={searchPanelRef} aria-label={t("findJobsPage.searchAria")} className="relative grid gap-2 overflow-hidden rounded-[22px] border border-slate-200 bg-white p-2 md:grid-cols-[1.2fr_1.15fr_1fr_1.25fr_auto] md:items-stretch dark:border-[#3E444B] dark:bg-[#22262C]">
+          <section ref={searchPanelRef} aria-label={t("findJobsPage.searchAria")} className="relative grid gap-2 overflow-hidden rounded-[22px] border border-slate-200 bg-white p-2 md:grid-cols-[1.2fr_1.15fr_1fr_1.25fr_auto] md:items-stretch dark:border-border dark:bg-surface">
             <SearchField icon={Search} topLabel={t("findJobsPage.keywordLabel")} placeholder={t("findJobsPage.keywordPlaceholder")} value={keyword} onChange={(value) => changeFilter(() => setKeyword(value))} />
             <SearchField icon={MapPin} topLabel={t("jobs.location")} placeholder={t("jobs.location")} value={location} onChange={(value) => changeFilter(() => setLocation(value))} />
-            <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#2B3036] dark:focus-within:bg-[#2B3036]">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-[#E9F7EB] group-focus-within:text-[#1FA628] dark:bg-[#2B3036] dark:text-[#929AA3] dark:group-focus-within:bg-[#1FA628]/10 dark:group-focus-within:text-[#75D47C]"><BriefcaseBusiness className="size-4" /></span>
-              <span className="min-w-0 flex-1"><span className="block text-[18px] font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]">{t("jobs.experience")}</span>
+            <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-surface-muted dark:focus-within:bg-surface-muted">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-brand-wash group-focus-within:text-brand dark:bg-surface-muted dark:text-muted-fg dark:group-focus-within:bg-brand/10 dark:group-focus-within:text-[#75D47C]"><BriefcaseBusiness className="size-4" /></span>
+              <span className="min-w-0 flex-1"><span className="flex h-7 items-center text-lg font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-muted-fg">{t("jobs.experience")}</span>
               <Select value={experience || null} onValueChange={(value) => changeFilter(() => setExperience(value ?? ""))}>
-                <SelectTrigger className="-ml-3 h-8 w-full border-none px-3 font-medium hover:border-none focus-visible:ring-0">
+                <SelectTrigger size="sm" className="-ml-3 w-full border-none px-3 font-medium hover:border-none focus-visible:ring-0">
                   <SelectValue placeholder={t("findJobsPage.anyExperience")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -152,20 +154,20 @@ export default function PublicJobsPage() {
                 </SelectContent>
               </Select></span>
             </label>
-            <label className="flex min-h-15 flex-col justify-center rounded-2xl px-4 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#2B3036] dark:focus-within:bg-[#2B3036]">
-              <span className="flex items-center justify-between gap-3 text-[18px] font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]"><span>{t("jobs.minimumSalary")}</span><span className="rounded-full bg-[#FFF5CE] px-2 py-0.5 text-[#9A7400] dark:bg-[#F3BE00]/12 dark:text-[#F3BE00]">${minimumSalary.toLocaleString()}{minimumSalary === 0 ? "+" : ""}</span></span>
-              <input aria-label={t("findJobsPage.minimumSalaryAria")} type="range" min="0" max={salaryCeiling} step="250" value={minimumSalary} onChange={(event) => changeFilter(() => setMinimumSalary(Number(event.target.value)))} className="mt-2 h-1.5 cursor-pointer accent-[#F3BE00]" />
+            <label className="flex min-h-15 flex-col justify-center rounded-2xl px-4 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-surface-muted dark:focus-within:bg-surface-muted">
+              <span className="flex h-7 items-center justify-between gap-3 text-lg font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-muted-fg"><span>{t("jobs.minimumSalary")}</span><span className="rounded-full bg-[#FFF5CE] px-2 leading-6 text-warning-text dark:bg-warning/12 dark:text-warning-text">${minimumSalary.toLocaleString()}{minimumSalary === 0 ? "+" : ""}</span></span>
+              <span className="flex h-10 items-center"><input aria-label={t("findJobsPage.minimumSalaryAria")} type="range" min="0" max={salaryCeiling} step="250" value={minimumSalary} onChange={(event) => changeFilter(() => setMinimumSalary(Number(event.target.value)))} className="h-1.5 w-full cursor-pointer accent-warning" /></span>
             </label>
-            <button type="button" className="inline-flex h-11 items-center justify-center gap-2 self-center rounded-xl bg-[#008A1E] px-6 text-sm font-medium text-white transition-colors hover:bg-[#007018] md:mx-1"><Search className="size-4" />{t("findJobsPage.search")}</button>
+            <button type="button" className="inline-flex h-11 items-center justify-center gap-2 self-center rounded-xl bg-brand px-6 text-sm font-medium text-white transition-colors hover:bg-brand-hover md:mx-1"><Search className="size-4" />{t("findJobsPage.search")}</button>
           </section>
 
           {compactSearchVisible && (
             <div className="pointer-events-none fixed inset-x-0 top-18 z-40 hidden px-8 lg:block">
-              <section aria-label={t("findJobsPage.compactSearchAria")} className="pointer-events-auto mx-auto flex h-16 max-w-[120rem] items-center gap-2 rounded-b-2xl border border-t-0 border-slate-200 bg-white/95 p-2 backdrop-blur-xl dark:border-[#3E444B] dark:bg-[#22262C]/95">
+              <section aria-label={t("findJobsPage.compactSearchAria")} className="pointer-events-auto mx-auto flex h-16 max-w-[120rem] items-center gap-2 rounded-b-2xl border border-t-0 border-slate-200 bg-white/95 p-2 backdrop-blur-xl dark:border-border dark:bg-surface/95">
                 <CompactSearchField icon={Search} label={t("findJobsPage.keywordPlaceholder")} value={keyword} onChange={(value) => changeFilter(() => setKeyword(value))} />
-                <div className="h-8 w-px bg-slate-200 dark:bg-[#3E444B]" />
+                <div className="h-8 w-px bg-slate-200 dark:bg-border" />
                 <CompactSearchField icon={MapPin} label={t("jobs.location")} value={location} onChange={(value) => changeFilter(() => setLocation(value))} />
-                <button type="button" className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#008A1E] px-6 text-sm font-medium text-white transition-colors hover:bg-[#007018]">
+                <button type="button" className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-brand px-6 text-sm font-medium text-white transition-colors hover:bg-brand-hover">
                   <Search className="size-3.5" />{t("findJobsPage.search")}
                 </button>
               </section>
@@ -173,13 +175,13 @@ export default function PublicJobsPage() {
           )}
 
           <div className="mt-8 flex items-center justify-between gap-4 lg:hidden">
-            <button type="button" onClick={() => setFiltersOpen((open) => !open)} className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-medium dark:border-[#3E444B]"><SlidersHorizontal className="size-4" />{t("findJobsPage.filtersButton")}</button>
+            <button type="button" onClick={() => setFiltersOpen((open) => !open)} className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-medium dark:border-border"><SlidersHorizontal className="size-4" />{t("findJobsPage.filtersButton")}</button>
             <SortSelect value={sortOrder} onChange={(value) => changeFilter(() => setSortOrder(value))} />
           </div>
 
           <div className="mt-8 grid items-start gap-8 lg:mt-12 lg:grid-cols-[240px_minmax(0,1fr)]">
-            <aside className={`${filtersOpen ? "block" : "hidden"} rounded-2xl border border-slate-200 bg-white p-5 lg:sticky lg:block lg:transition-[top] lg:duration-300 ${compactSearchVisible ? "lg:top-[152px]" : "lg:top-20"} dark:border-[#3E444B] dark:bg-[#22262C]`}>
-              <div className="flex items-center justify-between"><h2 className="text-xl font-semibold">{t("findJobsPage.filtersButton")}</h2><button type="button" onClick={clearFilters} className="text-xs font-medium text-slate-600 hover:text-[#008A1E]">{t("findJobsPage.clearAll")}</button></div>
+            <aside className={`${filtersOpen ? "block" : "hidden"} rounded-2xl border border-slate-200 bg-white p-5 lg:sticky lg:block lg:transition-[top] lg:duration-300 ${compactSearchVisible ? "lg:top-[152px]" : "lg:top-20"} dark:border-border dark:bg-surface`}>
+              <div className="flex items-center justify-between"><h2 className="text-xl font-semibold">{t("findJobsPage.filtersButton")}</h2><button type="button" onClick={clearFilters} className="text-xs font-medium text-slate-600 hover:text-brand">{t("findJobsPage.clearAll")}</button></div>
               {/* Each group lists only what the matching jobs carry, so a
                   filter never leads to an empty result. */}
               <FilterGroup title={t("findJobsPage.jobTypeGroup")} options={facets.jobTypes.length}>
@@ -194,7 +196,7 @@ export default function PublicJobsPage() {
               <FilterGroup title={t("findJobsPage.skillsGroup")} options={facets.skills.length}>
                 {shownSkills.map((skill) => <FilterCheckbox key={skill.id} label={skill.name} count={skill.count} checked={skillIds.has(skill.id)} onChange={() => changeFilter(() => setSkillIds(toggleSet(skillIds, skill.id)))} />)}
                 {facets.skills.length > SKILLS_SHOWN ? (
-                  <button type="button" onClick={() => setAllSkillsShown((shown) => !shown)} className="text-xs font-medium text-[#008A1E] hover:underline">
+                  <button type="button" onClick={() => setAllSkillsShown((shown) => !shown)} className="text-xs font-medium text-brand hover:underline">
                     {allSkillsShown ? t("findJobsPage.showFewer") : `${t("findJobsPage.showAll")} ${facets.skills.length}`}
                   </button>
                 ) : null}
@@ -211,7 +213,7 @@ export default function PublicJobsPage() {
                 <h1 className="text-xl font-semibold sm:text-2xl">{keyword.trim() || t("findJobsPage.allJobs")} <span className="text-sm font-normal text-slate-600">{t("findJobsPage.searchResult")} ({totalElements})</span></h1>
                 <div className="hidden lg:block"><SortSelect value={sortOrder} onChange={(value) => changeFilter(() => setSortOrder(value))} /></div>
               </div>
-              {jobsQuery.isLoading || facetsQuery.isLoading ? <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 6 }).map((_, index) => <div key={index} className="h-80 animate-pulse rounded-2xl bg-slate-100 dark:bg-[#22262C]" />)}</div> :
+              {jobsQuery.isLoading || facetsQuery.isLoading ? <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 6 }).map((_, index) => <div key={index} className="h-80 animate-pulse rounded-2xl bg-slate-100 dark:bg-surface" />)}</div> :
                 jobsQuery.isError || facetsQuery.isError ? <ErrorState message={t("findJobsPage.unableToLoad")} /> : jobs.length ?
                 <>
                   {/* Dimmed rather than replaced while the next page loads, so
@@ -220,7 +222,7 @@ export default function PublicJobsPage() {
                   <div className={`grid gap-6 transition-opacity sm:grid-cols-2 xl:grid-cols-3 ${jobsQuery.isFetching ? "opacity-60" : ""}`} aria-busy={jobsQuery.isFetching}>{jobs.map((job) => <JobCard key={job.id} job={job} saved={savedJobs.has(job.id)} onSave={() => setSavedJobs(toggleSet(savedJobs, job.id))} />)}</div>
                   <Pagination page={page} totalPages={totalPages} totalElements={totalElements} pageSize={PAGE_SIZE} onChange={setPage} />
                 </> :
-                <div className="rounded-2xl border border-dashed border-slate-300 px-6 py-20 text-center dark:border-[#3E444B]"><h2 className="text-lg font-semibold">{t("findJobsPage.noMatchingJobs")}</h2><p className="mt-2 text-sm text-slate-500">{t("findJobsPage.tryChangingFilters")}</p><button type="button" onClick={clearFilters} className="mt-5 rounded-xl bg-[#008A1E] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#007018]">{t("findJobsPage.clearFilters")}</button></div>}
+                <div className="rounded-2xl border border-dashed border-slate-300 px-6 py-20 text-center dark:border-border"><h2 className="text-lg font-semibold">{t("findJobsPage.noMatchingJobs")}</h2><p className="mt-2 text-sm text-slate-500">{t("findJobsPage.tryChangingFilters")}</p><button type="button" onClick={clearFilters} className="mt-5 rounded-xl bg-brand px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-hover">{t("findJobsPage.clearFilters")}</button></div>}
             </section>
           </div>
         </div>
@@ -232,17 +234,34 @@ export default function PublicJobsPage() {
 
 function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolean; onSave: () => void }) {
   const { t } = useLocale();
+  const logoSrc = resolveFileUrl(job.companyLogoUrl ?? job.logoUrl);
 
   return (
-    <article className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-colors duration-200 hover:border-[#008A1E] dark:border-[#3E444B] dark:bg-[#22262C] dark:hover:border-emerald-400">
+    <article className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-colors duration-200 hover:border-brand dark:border-border dark:bg-surface dark:hover:border-emerald-400">
       {/* Employer */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-[#EEF8F0] text-[18px] font-medium text-[#008A1E] dark:border-[#3E444B] dark:bg-[#2B3036] dark:text-[#F3BE00]">
-            {initials(job.companyName)}
+          {/*
+            * `companyLogoUrl` is already the logo this viewer is allowed to
+            * see — the backend swaps a masked company's own mark for the
+            * stand-in an administrator set, and sends null when there is
+            * neither. A real logo sits on a plain surface rather than the
+            * brand wash, so a transparent mark is not tinted green; the
+            * initials keep the wash as their own ground.
+            */}
+          <span
+            className={`relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 text-lg font-medium text-brand dark:border-border dark:text-warning-text ${
+              logoSrc ? "bg-white dark:bg-surface" : "bg-brand-wash dark:bg-surface-muted"
+            }`}
+          >
+            {logoSrc ? (
+              <Image src={logoSrc} alt="" aria-hidden="true" fill unoptimized sizes="44px" className="object-contain p-1" />
+            ) : (
+              initials(job.companyName)
+            )}
           </span>
           <div className="min-w-0">
-            <p className="truncate font-medium text-slate-900 dark:text-[#F5F5F5]">{job.companyName}</p>
+            <p className="truncate font-medium text-slate-900 dark:text-heading">{job.companyName}</p>
             <p className="mt-0.5 truncate text-slate-500 dark:text-slate-400">{timeAgo(job.publishedAt, t)}</p>
           </div>
         </div>
@@ -254,7 +273,7 @@ function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolea
           aria-pressed={saved}
           className={`inline-flex size-9 shrink-0 items-center justify-center rounded-full transition-colors ${
             saved
-              ? "text-[#008A1E] dark:text-emerald-400"
+              ? "text-brand dark:text-emerald-400"
               : "text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-white"
           }`}
         >
@@ -263,7 +282,7 @@ function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolea
       </div>
 
       {/* Role */}
-      <h2 className="mt-6 line-clamp-2 text-xl font-medium leading-snug tracking-tight text-slate-950 transition-colors group-hover:text-[#008A1E] dark:text-white dark:group-hover:text-[#F3BE00]">
+      <h2 className="mt-6 line-clamp-2 text-xl font-medium leading-snug tracking-tight text-slate-950 transition-colors group-hover:text-brand dark:text-white dark:group-hover:text-warning-text">
         {job.title}
       </h2>
 
@@ -279,14 +298,14 @@ function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolea
 
       {/* `mt-auto` keeps the footer on the card's bottom edge whatever the
           title wraps to, so a grid of cards lines its actions up. */}
-      <div className="mt-auto flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 dark:border-[#3E444B]">
-        <p className="min-w-0 truncate font-medium text-slate-950 dark:text-[#F5F5F5]">
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 dark:border-border">
+        <p className="min-w-0 truncate font-medium text-slate-950 dark:text-heading">
           {salary(job.salaryMin, job.salaryMax, t)}
         </p>
         <Link
           href={`/jobs/${job.id}`}
           aria-label={`${t("findJobsPage.applyForAria")} ${job.title}`}
-          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#008A1E] px-5 font-medium text-white transition-colors hover:bg-[#007018]"
+          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-brand px-5 font-medium text-white transition-colors hover:bg-brand-hover"
         >
           {t("jobs.apply")}
           <ArrowUpRight className="size-4" />
@@ -311,9 +330,9 @@ function Pagination({ page, totalPages, totalElements, pageSize, onChange }: { p
   const shown = [...around].sort((a, b) => a - b);
 
   return (
-    <nav aria-label={t("findJobsPage.resultsPagesAria")} className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 dark:border-[#3E444B]">
+    <nav aria-label={t("findJobsPage.resultsPagesAria")} className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-6 dark:border-border">
       <p className="text-sm text-slate-500 dark:text-slate-400">
-        {t("findJobsPage.showingResults")} <span className="font-medium text-slate-800 dark:text-[#F5F5F5]">{first}–{last}</span> {t("findJobsPage.of")} {totalElements}
+        {t("findJobsPage.showingResults")} <span className="font-medium text-slate-800 dark:text-heading">{first}–{last}</span> {t("findJobsPage.of")} {totalElements}
       </p>
 
       <div className="flex items-center gap-1.5">
@@ -352,8 +371,8 @@ function PageButton({ label, children, onClick, disabled = false, current = fals
       aria-current={current ? "page" : undefined}
       className={`inline-flex size-9 items-center justify-center rounded-xl border text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
         current
-          ? "border-[#008A1E] bg-[#008A1E] text-white"
-          : "border-slate-200 text-slate-600 hover:border-[#008A1E] hover:text-[#008A1E] dark:border-[#3E444B] dark:text-[#CBD0D5] dark:hover:border-emerald-400 dark:hover:text-emerald-400"
+          ? "border-brand bg-brand text-white"
+          : "border-slate-200 text-slate-600 hover:border-brand hover:text-brand dark:border-border dark:text-body dark:hover:border-emerald-400 dark:hover:text-emerald-400"
       }`}
     >
       {children}
@@ -361,18 +380,18 @@ function PageButton({ label, children, onClick, disabled = false, current = fals
   );
 }
 
-function SearchField({ icon: Icon, topLabel, placeholder, value, onChange }: { icon: typeof Search; topLabel: string; placeholder: string; value: string; onChange: (value: string) => void }) { return <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#2B3036] dark:focus-within:bg-[#2B3036]"><span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-[#E9F7EB] group-focus-within:text-[#1FA628] dark:bg-[#2B3036] dark:text-[#929AA3] dark:group-focus-within:bg-[#1FA628]/10 dark:group-focus-within:text-[#75D47C]"><Icon className="size-4" /></span><span className="min-w-0 flex-1"><span className="block text-[18px] font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-[#7F8995]">{topLabel}</span><input type="search" value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="mt-0.5 w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:font-medium placeholder:text-slate-400 dark:text-[#F5F5F5] dark:placeholder:text-[#7F8995]" /></span></label>; }
-function CompactSearchField({ icon: Icon, label, value, onChange }: { icon: typeof Search; label: string; value: string; onChange: (value: string) => void }) { return <label className="group flex min-w-0 flex-1 items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-[#2B3036] dark:focus-within:bg-[#2B3036]"><Icon className="size-4 shrink-0 text-slate-400 transition-colors group-focus-within:text-[#1FA628]" /><span className="min-w-0 flex-1"><span className="sr-only">{label}</span><input type="search" value={value} onChange={(event) => onChange(event.target.value)} placeholder={label} className="w-full bg-transparent text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400 dark:text-[#F5F5F5] dark:placeholder:text-[#7F8995]" /></span></label>; }
+function SearchField({ icon: Icon, topLabel, placeholder, value, onChange }: { icon: typeof Search; topLabel: string; placeholder: string; value: string; onChange: (value: string) => void }) { return <label className="group flex min-h-15 items-center gap-3 rounded-2xl px-3.5 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-surface-muted dark:focus-within:bg-surface-muted"><span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition-colors group-focus-within:bg-brand-wash group-focus-within:text-brand dark:bg-surface-muted dark:text-muted-fg dark:group-focus-within:bg-brand/10 dark:group-focus-within:text-[#75D47C]"><Icon className="size-4" /></span><span className="min-w-0 flex-1"><span className="flex h-7 items-center text-lg font-semibold uppercase tracking-[.08em] text-slate-400 dark:text-muted-fg">{topLabel}</span><input type="search" value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="h-10 w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:font-medium placeholder:text-slate-400 dark:text-heading dark:placeholder:text-muted-fg" /></span></label>; }
+function CompactSearchField({ icon: Icon, label, value, onChange }: { icon: typeof Search; label: string; value: string; onChange: (value: string) => void }) { return <label className="group flex min-w-0 flex-1 items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-slate-50 focus-within:bg-slate-50 dark:hover:bg-surface-muted dark:focus-within:bg-surface-muted"><Icon className="size-4 shrink-0 text-slate-400 transition-colors group-focus-within:text-brand" /><span className="min-w-0 flex-1"><span className="sr-only">{label}</span><input type="search" value={value} onChange={(event) => onChange(event.target.value)} placeholder={label} className="w-full bg-transparent text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400 dark:text-heading dark:placeholder:text-muted-fg" /></span></label>; }
 /** Renders nothing when the search leaves the group with no options. */
 function FilterGroup({ title, options, children }: { title: string; options: number; children: React.ReactNode }) {
   if (!options) return null;
 
-  return <div className="mt-6 border-t border-slate-200 pt-5 dark:border-[#3E444B]"><h3 className="mb-3 text-sm font-semibold">{title}</h3><div className="space-y-2.5">{children}</div></div>;
+  return <div className="mt-6 border-t border-slate-200 pt-5 dark:border-border"><h3 className="mb-3 text-sm font-semibold">{title}</h3><div className="space-y-2.5">{children}</div></div>;
 }
 function FilterCheckbox({ label, count, checked, onChange }: { label: string; count?: number; checked: boolean; onChange: () => void }) {
   return (
     <label className="flex cursor-pointer items-center gap-2.5 text-xs text-slate-600 dark:text-slate-300">
-      <input type="checkbox" checked={checked} onChange={onChange} className="size-4 rounded accent-[#F3BE00]" />
+      <input type="checkbox" checked={checked} onChange={onChange} className="size-4 rounded accent-warning" />
       <span className="min-w-0 flex-1 truncate">{label}</span>
       {count === undefined ? null : <span className="shrink-0 tabular-nums text-slate-400 dark:text-slate-500">{count}</span>}
     </label>
@@ -393,7 +412,7 @@ function SortSelect({ value, onChange }: { value: SortOrder; onChange: (value: S
 
   return (
     <Select value={value} onValueChange={(next) => onChange((next ?? "newest") as SortOrder)}>
-      <SelectTrigger aria-label={t("findJobsPage.sortAria")} size="sm" className="w-44 bg-white font-medium dark:bg-[#22262C]">
+      <SelectTrigger aria-label={t("findJobsPage.sortAria")} size="sm" className="w-44 bg-white font-medium dark:bg-surface">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -404,7 +423,7 @@ function SortSelect({ value, onChange }: { value: SortOrder; onChange: (value: S
     </Select>
   );
 }
-function Tag({ children }: { children: React.ReactNode }) { return <span className="inline-flex min-h-8 items-center rounded-full border border-slate-200 px-3.5 text-slate-600 dark:border-[#3E444B] dark:text-[#CBD0D5]">{children}</span>; }
+function Tag({ children }: { children: React.ReactNode }) { return <span className="inline-flex min-h-8 items-center rounded-full border border-slate-200 px-3.5 text-slate-600 dark:border-border dark:text-body">{children}</span>; }
 function formatLabel(value: string) { return value.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase()); }
 function salary(min: number | undefined, max: number | undefined, t: (key: string) => string) { if (!min && !max) return t("landing.newestJobs.salaryNegotiable"); const money = (value: number) => `$${new Intl.NumberFormat().format(value)}`; return min && max ? `${money(min)} – ${money(max)}` : min ? `${t("landing.newestJobs.salaryFrom")} ${money(min)}` : `${t("landing.newestJobs.salaryUpTo")} ${money(max!)}`; }
 function timeAgo(value: string, t: (key: string) => string) { const time = Date.parse(value); if (Number.isNaN(time)) return t("landing.newestJobs.time.recently"); const days = Math.max(0, Math.floor((Date.now() - time) / 86_400_000)); if (days === 0) return t("landing.newestJobs.time.today"); if (days === 1) return t("landing.newestJobs.time.oneDayAgo"); if (days < 30) return `${days} ${t("landing.newestJobs.time.daysAgo")}`; const months = Math.floor(days / 30); return months === 1 ? t("landing.newestJobs.time.oneMonthAgo") : `${months} ${t("landing.newestJobs.time.monthsAgo")}`; }

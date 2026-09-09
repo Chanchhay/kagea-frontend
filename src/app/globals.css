@@ -16,6 +16,7 @@
   --color-brand: var(--primary);
   --color-brand-hover: var(--primary-hover);
   --color-brand-tint: var(--primary-tint);
+  --color-brand-wash: var(--brand-wash);
   --color-landing-tint: var(--landing-tint);
 
   /* Surfaces */
@@ -31,6 +32,7 @@
   /* Status */
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-warning-text: var(--warning-text);
   --color-error: var(--error);
   --color-info: var(--info);
 
@@ -98,7 +100,7 @@
   --accent: var(--primary-tint);
   --accent-foreground: var(--primary-hover);
   --destructive: var(--error);
-  --input: var(--border);
+  --input: var(--input-border);
   --ring: var(--primary);
 }
 
@@ -141,6 +143,75 @@
 
 @layer components {
 
+  /*
+   * Typography roles.
+   *
+   * Hierarchy comes from size and weight, in that order — never from fading
+   * text toward the background, which is how the old grey ramp ended up with
+   * 2.4:1 labels. Every role meets WCAG AA (4.5:1) on the surfaces it is used
+   * on, in both themes and under `.landing-page`.
+   */
+
+  .type-page-title {
+    font-size: var(--text-3xl);
+    line-height: var(--text-3xl--line-height);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    text-wrap: balance;
+  }
+
+  .type-section-title {
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    text-wrap: balance;
+  }
+
+  /*
+   * The sentence under a title. One step down from body and one tier down in
+   * colour, capped at a readable measure — prose past ~75 characters per line
+   * loses the reader on the carriage return.
+   */
+  .type-description {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 68ch;
+    text-wrap: pretty;
+  }
+
+  /*
+   * Eyebrow / field label. The only role that may use text-xs, and only
+   * because caps at 600 weight carry further than the size suggests. Tracking
+   * is mandatory: uppercase set at normal tracking is measurably slower to
+   * read.
+   */
+  .type-eyebrow {
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+
+  /* Timestamps, counts, and other non-essential metadata. */
+  .type-meta {
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    color: var(--text-muted);
+  }
+
+  /* Numerals in tables and stat rows line up in columns, and never reflow. */
+  .type-numeric {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+
 
 
   /*
@@ -164,6 +235,12 @@
     --text-muted: #929aa3;
     --primary-tint: #263329;
     --landing-tint: #202a22;
+    /*
+     * The landing charcoals are lighter than the app's near-black, so the
+     * app's dark red only reaches 3.99:1 on them. This one clears 4.5:1 on
+     * every landing surface.
+     */
+    --error: #f76b6b;
   }
 
   /*
@@ -172,7 +249,8 @@
    */
   .rich-text {
     color: var(--text-secondary);
-    font-size: 0.875rem;
+    /* 14px prose at a relaxed measure; matches the scale's `sm` step. */
+    font-size: var(--text-sm);
     line-height: 1.65;
     /* Long URLs and unbroken strings wrap instead of widening the card. */
     overflow-wrap: break-word;
@@ -191,15 +269,15 @@
   }
 
   .rich-text h1 {
-    font-size: 1.875rem;
+    font-size: var(--text-3xl);
   }
 
   .rich-text h2 {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 
   .rich-text h3 {
-    font-size: 1.25rem;
+    font-size: var(--text-xl);
   }
 
   .rich-text h1:not(:first-child),

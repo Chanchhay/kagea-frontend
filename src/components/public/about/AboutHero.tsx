@@ -45,7 +45,7 @@ export default function AboutHeroSection() {
             {/* Tagline Badge */}
             <motion.div variants={itemVariants} className="inline-block">
               <span className="inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/[0.07] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-brand">
-                <Sparkles className="h-3.5 w-3.5 text-[#F3BE00]" />
+                <Sparkles className="h-3.5 w-3.5 text-warning-text" />
                 {t("about.hero.badge")}
               </span>
             </motion.div>
@@ -59,7 +59,7 @@ export default function AboutHeroSection() {
               <span className="relative inline-block text-brand">
                 {t("about.hero.headlineHighlight")}
                 {/* Yellow Highlight Bar behind the highlighted phrase */}
-                <span className="absolute bottom-1 left-0 -z-10 h-3 w-full bg-[#F3BE00]/40 rounded-sm sm:h-4" />
+                <span className="absolute bottom-1 left-0 -z-10 h-3 w-full bg-warning/40 rounded-sm sm:h-4" />
               </span>{" "}
               {t("about.hero.headlineSuffix")}
             </motion.h1>
@@ -79,11 +79,11 @@ export default function AboutHeroSection() {
               className="mt-8 flex flex-wrap gap-3 text-xs font-medium text-body sm:text-sm"
             >
               <div className="flex items-center gap-2 rounded-xl border border-border bg-surface px-3.5 py-2">
-                <CheckCircle2 className="h-4 w-4 text-[#1fa628]" />
+                <CheckCircle2 className="h-4 w-4 text-brand" />
                 {t("about.hero.pillTopTalent")}
               </div>
               <div className="flex items-center gap-2 rounded-xl border border-border bg-surface px-3.5 py-2">
-                <Bot className="h-4 w-4 text-[#F3BE00]" />
+                <Bot className="h-4 w-4 text-warning-text" />
                 {t("about.hero.pillAiInterviewer")}
               </div>
             </motion.div>
@@ -112,7 +112,7 @@ export default function AboutHeroSection() {
               className="relative h-72 w-72 sm:h-96 sm:w-96"
             >
               {/* Outer Pulsing Ring */}
-              <div className="absolute inset-0 animate-ping rounded-full border border-[#F3BE00]/25 duration-3000" />
+              <div className="absolute inset-0 animate-ping rounded-full border border-warning/25 duration-3000" />
               <div className="absolute -inset-4 rounded-full border border-brand/20" />
 
               {/* Main Globe Image with Floating Effect */}
@@ -159,7 +159,7 @@ export default function AboutHeroSection() {
                 transition={{ delay: 0.8, duration: 0.5 }}
                 className="absolute -right-4 bottom-10 flex items-center gap-3 rounded-2xl border border-border bg-surface p-3.5 shadow-[0_8px_24px_rgba(24,25,28,0.08)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.45)] sm:-right-6"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F3BE00]/15 text-[#F3BE00]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-warning/15 text-warning-text">
                   <Bot className="h-5 w-5" />
                 </div>
                 <div>

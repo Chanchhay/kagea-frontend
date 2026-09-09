@@ -37,7 +37,7 @@ export function PasswordInput({
           id={inputId}
           type={visible ? "text" : "password"}
           aria-invalid={Boolean(error)}
-          className={cn(authFieldClass, "pl-11 pr-12", className)}
+          className={cn(authFieldClass, "pl-10 pr-11", className)}
           {...props}
         />
         <Lock
@@ -49,7 +49,7 @@ export function PasswordInput({
           variant="ghost"
           size="icon"
           aria-label={visible ? "Hide password" : "Show password"}
-          className="absolute right-2 top-1/2 size-8 -translate-y-1/2 rounded-full text-muted-fg hover:bg-transparent hover:text-heading dark:text-white/45 dark:hover:text-white"
+          className="absolute right-1.5 top-1/2 size-7 -translate-y-1/2 rounded-full text-muted-fg hover:bg-transparent hover:text-heading dark:text-white/45 dark:hover:text-white"
           onClick={() => setVisible((current) => !current)}
         >
           {visible ? (

@@ -21,29 +21,29 @@ const missionFeatures: MissionFeature[] = [
     titleKey: "about.mission.feature1Title",
     descriptionKey: "about.mission.feature1Description",
     icon: Globe2,
-    accentColor: "border-[#E8C222]/40 text-[#E8C222]",
-    badgeBg: "bg-[#E8C222]/10 text-[#E8C222]",
+    accentColor: "border-warning/40 text-warning-text",
+    badgeBg: "bg-warning/10 text-warning-text",
   },
   {
     titleKey: "about.mission.feature2Title",
     descriptionKey: "about.mission.feature2Description",
     icon: Bot,
-    accentColor: "border-[#008A1E]/40 text-[#008A1E]",
-    badgeBg: "bg-[#008A1E]/10 text-[#008A1E]",
+    accentColor: "border-brand/40 text-brand",
+    badgeBg: "bg-brand/10 text-brand",
   },
   {
     titleKey: "about.mission.feature3Title",
     descriptionKey: "about.mission.feature3Description",
     icon: Target,
-    accentColor: "border-[#E33434]/40 text-[#E33434]",
-    badgeBg: "bg-[#E33434]/10 text-[#E33434]",
+    accentColor: "border-error/40 text-error",
+    badgeBg: "bg-error/10 text-error",
   },
   {
     titleKey: "about.mission.feature4Title",
     descriptionKey: "about.mission.feature4Description",
     icon: ShieldCheck,
-    accentColor: "border-[#0284C7]/40 text-[#0284C7]",
-    badgeBg: "bg-[#0284C7]/10 text-[#0284C7]",
+    accentColor: "border-[#0570a8]/40 text-[#0570a8]",
+    badgeBg: "bg-[#0570a8]/10 text-[#0570a8]",
   },
 ];
 
@@ -86,13 +86,13 @@ export default function MissionSection() {
             className="w-full lg:col-span-6"
           >
             {/* Tagline Badge */}
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1fa628]/30 bg-[#1fa628]/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-[#1fa628]">
-              <Sparkles className="h-3.5 w-3.5 text-[#F3BE00]" />
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-brand">
+              <Sparkles className="h-3.5 w-3.5 text-warning-text" />
               {t("about.mission.badge")}
             </div>
 
             <h2 className="mb-6 text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
-              <span className="text-[#1fa628]">{t("about.mission.headingPart1")}</span> <span className="text-[#F3BE00]">{t("about.mission.headingPart2")}</span>
+              <span className="text-brand">{t("about.mission.headingPart1")}</span> <span className="text-warning-text">{t("about.mission.headingPart2")}</span>
             </h2>
 
             <p className="mb-8 max-w-xl text-base text-slate-600 dark:text-slate-300 sm:text-lg">
@@ -102,7 +102,7 @@ export default function MissionSection() {
             {/* Organic Blob Frame Container */}
             <div className="relative mx-auto aspect-[1.15/1] w-full max-w-[500px] lg:mx-0">
               {/* Outer Decorative Ring */}
-              <div className="absolute -inset-2 rounded-[38px] border-2 border-dashed border-[#1fa628]/20" />
+              <div className="absolute -inset-2 rounded-[38px] border-2 border-dashed border-brand/20" />
 
               <div className="relative h-full w-full overflow-hidden rounded-[32px] border-2 border-slate-200/80 bg-slate-900 dark:border-slate-800 shadow-2xl">
                 <Image
@@ -116,7 +116,7 @@ export default function MissionSection() {
 
                 {/* Subtle Image Overlay Card */}
                 <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-2xl border border-white/20 bg-slate-950/80 p-3.5 backdrop-blur-md">
-                  <CheckCircle2 className="h-5 w-5 shrink-0 text-[#1fa628]" />
+                  <CheckCircle2 className="h-5 w-5 shrink-0 text-brand" />
                   <p className="text-xs font-medium text-white">
                     {t("about.mission.imageCaption")}
                   </p>
@@ -140,7 +140,7 @@ export default function MissionSection() {
                   key={feature.titleKey}
                   variants={fadeInUp}
                   whileHover={{ x: 8 }}
-                  className={`group relative flex w-full items-start gap-5 rounded-3xl border border-slate-200/90 bg-white/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-[#1fa628]/50 hover:shadow-lg dark:border-slate-800/90 dark:bg-slate-900/80 dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] ${
+                  className={`group relative flex w-full items-start gap-5 rounded-3xl border border-slate-200/90 bg-white/80 p-6 backdrop-blur-md transition-all duration-300 hover:border-brand/50 hover:shadow-lg dark:border-slate-800/90 dark:bg-slate-900/80 dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] ${
                     index === 1
                       ? "lg:ml-4"
                       : index === 2

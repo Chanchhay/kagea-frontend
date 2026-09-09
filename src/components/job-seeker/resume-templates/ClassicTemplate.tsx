@@ -19,9 +19,9 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
       <header className="flex items-center gap-7 border-b-2 pb-8" style={{ borderColor: accent }}>
         <Photo url={data.profilePhotoUrl} name={name} size={104} className="rounded-full" style={{ boxShadow: `0 0 0 4px ${accent}1a` }} />
         <div className="min-w-0">
-          <h1 className="text-[34px] font-semibold leading-tight tracking-tight text-slate-950">{name}</h1>
+          <h1 className="text-4xl font-semibold leading-tight tracking-tight text-slate-950">{name}</h1>
           {data.professionalTitle ? (
-            <p className="mt-1 text-[18px] font-medium" style={{ color: accent }}>
+            <p className="mt-1 text-lg font-medium" style={{ color: accent }}>
               {data.professionalTitle}
             </p>
           ) : null}
@@ -31,7 +31,7 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
       <div className="grid flex-1 grid-cols-[0.68fr_1.32fr] gap-9 pt-8">
         <aside className="space-y-7 border-r border-slate-200 pr-8">
           <Section title={tx("Contact")} accent={accent}>
-            <div className="space-y-2.5 text-[18px]">
+            <div className="space-y-2.5 text-lg">
               <ContactRow icon={Mail} text={data.email} accent={accent} />
               <ContactRow icon={Phone} text={data.phone} accent={accent} />
               <ContactRow icon={MapPin} text={data.location} accent={accent} />
@@ -40,7 +40,7 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
 
           {data.links.length ? (
             <Section title={tx("Links")} accent={accent}>
-              <ul className="space-y-1.5 text-[18px]">
+              <ul className="space-y-1.5 text-lg">
                 {data.links.map((link) => (
                   <li key={link.id} className="break-all">
                     <span className="font-medium text-slate-700">{link.label || tx("Link")}</span>
@@ -53,7 +53,7 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
 
           {data.skills.length ? (
             <Section title={tx("Skills")} accent={accent}>
-              <ul className="space-y-1.5 text-[18px]">
+              <ul className="space-y-1.5 text-lg">
                 {data.skills.map((skill) => (
                   <li key={skill} className="flex gap-2">
                     <span className="mt-1.5 size-1.5 shrink-0 rounded-full" style={{ background: accent }} />
@@ -66,7 +66,7 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
 
           {data.education.length ? (
             <Section title={tx("Education")} accent={accent}>
-              <div className="space-y-4 text-[18px]">
+              <div className="space-y-4 text-lg">
                 {data.education.map((entry) => (
                   <div key={entry.id}>
                     <p className="font-semibold text-slate-800">{entry.degree}</p>
@@ -94,14 +94,14 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
                   <div key={entry.id}>
                     <div className="flex items-baseline justify-between gap-4">
                       <p className="font-semibold text-slate-900">{entry.role}</p>
-                      <p className="shrink-0 text-[18px] text-slate-500">{formatDateRange(entry.start, entry.end, entry.current)}</p>
+                      <p className="shrink-0 text-lg text-slate-500">{formatDateRange(entry.start, entry.end, entry.current)}</p>
                     </div>
                     {entry.company || entry.location ? (
-                      <p className="text-[18px] font-medium" style={{ color: accent }}>
+                      <p className="text-lg font-medium" style={{ color: accent }}>
                         {[entry.company, entry.location].filter(Boolean).join(" · ")}
                       </p>
                     ) : null}
-                    <Description text={entry.description} className="mt-1.5 text-[18px] text-slate-600" />
+                    <Description text={entry.description} className="mt-1.5 text-lg text-slate-600" />
                   </div>
                 ))}
               </div>
@@ -114,8 +114,8 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
                 {data.projects.map((project) => (
                   <div key={project.id}>
                     <p className="font-semibold text-slate-900">{project.name}</p>
-                    {project.url ? <p className="break-all text-[18px] text-slate-500">{project.url}</p> : null}
-                    <Description text={project.description} className="mt-1 text-[18px] text-slate-600" />
+                    {project.url ? <p className="break-all text-lg text-slate-500">{project.url}</p> : null}
+                    <Description text={project.description} className="mt-1 text-lg text-slate-600" />
                   </div>
                 ))}
               </div>
@@ -130,7 +130,7 @@ export function ClassicTemplate({ data, fallbackName }: ResumeTemplateProps) {
 function Section({ title, accent, children }: { title: string; accent: string; children: ReactNode }) {
   return (
     <section>
-      <h2 className="mb-3 text-[18px] font-semibold uppercase tracking-[0.18em] text-slate-950">
+      <h2 className="mb-3 text-lg font-semibold uppercase tracking-[0.18em] text-slate-950">
         {title}
         <span className="mt-1.5 block h-0.5 w-8" style={{ background: accent }} />
       </h2>

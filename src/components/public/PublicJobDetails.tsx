@@ -192,14 +192,14 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
                           .map((tag) => (
                             <span
                               key={tag}
-                              className="inline-flex rounded-full bg-surface-muted px-2 py-0.5 text-[11px] text-body"
+                              className="inline-flex rounded-full bg-surface-muted px-2 py-0.5 text-xs text-body"
                             >
                               {formatEnum(tag)}
                             </span>
                           ))}
                       </div>
                       {formatDate(relatedJob.expiredAt) ? (
-                        <span className="text-[11px] text-muted-fg">
+                        <span className="text-xs text-muted-fg">
                           Expires {formatDate(relatedJob.expiredAt)}
                         </span>
                       ) : null}

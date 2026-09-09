@@ -48,8 +48,8 @@ export function HeroSection() {
         {/* Testimonial / Rating Cards */}
         <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
           {/* Card 1 */}
-          <div className="w-72 rounded-2xl bg-[#E8F5E9]/60 py-4 px-6 text-center shadow-sm backdrop-blur-sm">
-            <div className="flex justify-center gap-1 text-[#F3C623]">
+          <div className="w-72 rounded-2xl bg-brand-wash/60 py-4 px-6 text-center shadow-sm backdrop-blur-sm">
+            <div className="flex justify-center gap-1 text-warning-text">
               {'★'.repeat(5)}
             </div>
             <p className="mt-2 text-sm font-medium text-slate-600">
@@ -58,8 +58,8 @@ export function HeroSection() {
           </div>
 
           {/* Card 2 */}
-          <div className="w-72 rounded-2xl bg-[#E8F5E9]/60 py-4 px-6 text-center shadow-sm backdrop-blur-sm">
-            <div className="flex justify-center gap-1 text-[#F3C623]">
+          <div className="w-72 rounded-2xl bg-brand-wash/60 py-4 px-6 text-center shadow-sm backdrop-blur-sm">
+            <div className="flex justify-center gap-1 text-warning-text">
               {'★'.repeat(5)}
             </div>
             <p className="mt-2 text-sm font-medium text-slate-600">
@@ -68,8 +68,8 @@ export function HeroSection() {
           </div>
 
           {/* Card 3 */}
-          <div className="w-72 rounded-2xl bg-[#E8F5E9]/60 py-4 px-6 text-center shadow-sm backdrop-blur-sm">
-            <div className="flex justify-center gap-1 text-[#F3C623]">
+          <div className="w-72 rounded-2xl bg-brand-wash/60 py-4 px-6 text-center shadow-sm backdrop-blur-sm">
+            <div className="flex justify-center gap-1 text-warning-text">
               {'★'.repeat(5)}
             </div>
             <p className="mt-2 text-sm font-medium text-slate-600">

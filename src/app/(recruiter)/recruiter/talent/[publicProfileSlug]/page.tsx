@@ -67,7 +67,7 @@ export default function TalentDetailPage() {
         <section className="relative overflow-hidden rounded-[22px] border border-ws-line bg-ws-panel p-6 sm:p-7">
           <Quote aria-hidden="true" className="absolute -right-3 -top-3 size-24 text-brand/5" />
           <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-primary">{tx("About this candidate")}</h2>
-          <p className="relative mt-3 max-w-4xl whitespace-pre-wrap text-[15px] leading-7 text-ws-muted">
+          <p className="relative mt-3 max-w-4xl whitespace-pre-wrap text-sm leading-7 text-ws-muted">
             {talent.bio}
           </p>
         </section>
@@ -172,7 +172,7 @@ function ResumeCard({ resume, slug }: { resume: PublicResumeResponse; slug: stri
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="truncate font-semibold text-heading">{resume.title}</h3>
           {resume.isDefault ? (
-            <span className="shrink-0 rounded-full bg-brand-tint px-2 py-0.5 text-[18px] font-semibold text-brand">{tx("Default")}</span>
+            <span className="shrink-0 rounded-full bg-brand-tint px-2 py-0.5 text-lg font-semibold text-brand">{tx("Default")}</span>
           ) : null}
         </div>
         <p className="mt-1 text-xs text-slate-500">{isBuilt ? tx("Created in Kagea") : tx("PDF resume")}</p>

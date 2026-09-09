@@ -6,7 +6,6 @@ export default function RegisterPage() {
     <AuthShell
       title="Create your account"
       description="Choose how you will use the platform, then tell us the essentials to get started."
-      className="lg:grid-cols-[minmax(0,.45fr)_minmax(0,.55fr)]"
     >
       <RegisterForm />
     </AuthShell>

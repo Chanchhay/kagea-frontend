@@ -62,6 +62,8 @@ export type InterviewStatus =
   | "READY"
   | "PENDING"
   | "IN_PROGRESS"
+  /** Answers are all in and the model is marking them. */
+  | "SCORING"
   | "COMPLETED"
   | "FAILED"
   | "CANCELLED";

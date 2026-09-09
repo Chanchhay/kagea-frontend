@@ -106,7 +106,7 @@ export default function CompanyDocumentsPage() {
                 <div className="flex items-start gap-4">
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><FileText className="size-5" /></span>
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2"><h4 className="font-semibold text-ws-fg">{formatDocumentType(document.documentType)}</h4><span className="rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-primary">{tx(document.status)}</span></div>
+                    <div className="flex flex-wrap items-center gap-2"><h4 className="font-semibold text-ws-fg">{formatDocumentType(document.documentType)}</h4><span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-primary">{tx(document.status)}</span></div>
                     <a
                       href={resolveFileUrl(document.documentUrl)}
                       target="_blank"

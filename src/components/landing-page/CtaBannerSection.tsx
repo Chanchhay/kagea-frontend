@@ -36,18 +36,18 @@ export default function CtaBannerSection() {
         transition={{ duration: 0.6 }}
         viewport={{ once: true, margin: '-100px' }}
         data-reveal
-        className="rounded-[28px] bg-[#008A1E] px-6 py-14 text-white sm:rounded-[36px] sm:px-10 sm:py-20 lg:px-14 dark:bg-[#0B6F1C]"
+        className="rounded-[28px] bg-brand px-6 py-14 text-white sm:rounded-[36px] sm:px-10 sm:py-20 lg:px-14 dark:bg-brand-hover"
       >
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F3BE00]" />
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-warning" />
               <span className="text-sm font-medium text-white/80">Get started</span>
             </div>
 
-            <h2 className="mt-6 max-w-2xl text-3xl font-medium leading-[1.15] tracking-tight sm:text-4xl lg:text-[2.75rem]">
+            <h2 className="mt-6 max-w-2xl text-3xl font-medium leading-[1.15] tracking-tight sm:text-4xl lg:text-5xl">
               Ready to find your next role in{' '}
-              <span className="text-[#F3BE00]">Cambodia</span>?
+              <span className="text-warning-text">Cambodia</span>?
             </h2>
 
             <p className="mt-6 max-w-xl text-sm leading-7 text-white/80 sm:text-base">
@@ -59,7 +59,7 @@ export default function CtaBannerSection() {
           <div className="flex flex-col gap-4 lg:items-end">
             <Link
               href="/register"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#F3BE00] px-8 text-sm font-semibold text-[#00450F] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[#E8B500] active:translate-y-0 active:scale-[0.98]"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-warning px-8 text-sm font-semibold text-brand-hover transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-warning active:translate-y-0 active:scale-[0.98]"
             >
               Create your account
               <ArrowUpRight className="size-4" />
@@ -67,7 +67,7 @@ export default function CtaBannerSection() {
 
             <Link
               href="/jobs"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/25 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:border-white hover:bg-white hover:text-[#008A1E]"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/25 px-8 text-sm font-semibold text-white transition-colors duration-200 hover:border-white hover:bg-white hover:text-brand"
             >
               {jobCount === null ? 'Browse jobs' : `Browse ${jobCount.toLocaleString()} open jobs`}
             </Link>

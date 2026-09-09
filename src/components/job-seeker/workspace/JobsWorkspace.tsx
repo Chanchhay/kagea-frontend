@@ -242,7 +242,7 @@ function JobListRow({
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           {active ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+            <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
               <span className="size-1.5 rounded-full bg-primary animate-pulse" />
               {tx("Viewing")}
             </span>
@@ -413,7 +413,7 @@ function AiInterviewPanel({
       </span>
 
       <div className="min-w-0 flex-1">
-        <h3 className="text-[18px] font-semibold">
+        <h3 className="text-lg font-semibold">
           {liveApplication ? tx("Interview for this application") : tx("Practise this interview")}
         </h3>
         <p className="text-sm opacity-70">

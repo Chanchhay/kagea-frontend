@@ -28,13 +28,13 @@ function FaqRow({ faq, index }: { faq: Faq; index: number }) {
             {String(index + 1).padStart(2, '0')}
           </span>
 
-          <span className="flex-1 text-lg font-medium tracking-tight text-slate-900 transition-colors group-hover:text-[#008A1E] sm:text-xl dark:text-white dark:group-hover:text-emerald-400">
+          <span className="flex-1 text-lg font-medium tracking-tight text-slate-900 transition-colors group-hover:text-brand sm:text-xl dark:text-white dark:group-hover:text-emerald-400">
             {faq.question}
           </span>
 
           <span
             aria-hidden="true"
-            className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition-colors group-hover:border-[#008A1E] group-hover:text-[#008A1E] dark:border-white/15 dark:text-white/50 dark:group-hover:border-emerald-400 dark:group-hover:text-emerald-400"
+            className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition-colors group-hover:border-brand group-hover:text-brand dark:border-white/15 dark:text-white/50 dark:group-hover:border-emerald-400 dark:group-hover:text-emerald-400"
           >
             <Plus
               className={`size-4 transition-transform duration-300 ${open ? 'rotate-45' : ''}`}

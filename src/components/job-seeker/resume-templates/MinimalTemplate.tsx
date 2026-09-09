@@ -15,12 +15,12 @@ export function MinimalTemplate({ data, fallbackName }: ResumeTemplateProps) {
   const contacts = [...contactLines(data), ...data.links.map((link) => link.url).filter(Boolean)];
 
   return (
-    <Sheet className="px-16 py-14 text-[18px]">
+    <Sheet className="px-16 py-14 text-lg">
       <header className="pb-6">
-        <h1 className="text-[30px] font-semibold uppercase tracking-[0.12em] text-slate-950">{name}</h1>
-        {data.professionalTitle ? <p className="mt-1.5 text-[18px] text-slate-600">{data.professionalTitle}</p> : null}
+        <h1 className="text-3xl font-semibold uppercase tracking-[0.12em] text-slate-950">{name}</h1>
+        {data.professionalTitle ? <p className="mt-1.5 text-lg text-slate-600">{data.professionalTitle}</p> : null}
         {contacts.length ? (
-          <p className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[18px] text-slate-500">
+          <p className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-lg text-slate-500">
             {contacts.map((item, index) => (
               <span key={`${item}-${index}`} className="break-all">
                 {index > 0 ? <span className="mr-3 text-slate-300">|</span> : null}
@@ -47,9 +47,9 @@ export function MinimalTemplate({ data, fallbackName }: ResumeTemplateProps) {
                     {entry.role}
                     {entry.company ? <span className="font-normal text-slate-600">{entry.role ? ", " : ""}{entry.company}</span> : null}
                   </p>
-                  <p className="shrink-0 text-[18px] text-slate-500">{formatDateRange(entry.start, entry.end, entry.current)}</p>
+                  <p className="shrink-0 text-lg text-slate-500">{formatDateRange(entry.start, entry.end, entry.current)}</p>
                 </div>
-                {entry.location ? <p className="text-[18px] text-slate-500">{entry.location}</p> : null}
+                {entry.location ? <p className="text-lg text-slate-500">{entry.location}</p> : null}
                 <Description text={entry.description} className="mt-1.5 text-slate-600" />
               </div>
             ))}
@@ -67,7 +67,7 @@ export function MinimalTemplate({ data, fallbackName }: ResumeTemplateProps) {
                   {entry.school ? <p className="text-slate-600">{entry.school}</p> : null}
                   <Description text={entry.description} className="mt-1 text-slate-600" />
                 </div>
-                {entry.year ? <p className="shrink-0 text-[18px] text-slate-500">{entry.year}</p> : null}
+                {entry.year ? <p className="shrink-0 text-lg text-slate-500">{entry.year}</p> : null}
               </div>
             ))}
           </div>
@@ -87,7 +87,7 @@ export function MinimalTemplate({ data, fallbackName }: ResumeTemplateProps) {
               <div key={project.id}>
                 <p className="font-semibold text-slate-900">
                   {project.name}
-                  {project.url ? <span className="ml-2 break-all text-[18px] font-normal text-slate-500">{project.url}</span> : null}
+                  {project.url ? <span className="ml-2 break-all text-lg font-normal text-slate-500">{project.url}</span> : null}
                 </p>
                 <Description text={project.description} className="mt-1 text-slate-600" />
               </div>
@@ -102,7 +102,7 @@ export function MinimalTemplate({ data, fallbackName }: ResumeTemplateProps) {
 function Section({ title, accent, children }: { title: string; accent: string; children: ReactNode }) {
   return (
     <section className="border-t pt-4 pb-5 last:pb-0" style={{ borderColor: `${accent}59` }}>
-      <h2 className="mb-3 text-[18px] font-semibold uppercase tracking-[0.2em]" style={{ color: accent }}>
+      <h2 className="mb-3 text-lg font-semibold uppercase tracking-[0.2em]" style={{ color: accent }}>
         {title}
       </h2>
       {children}

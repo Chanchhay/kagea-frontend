@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -98,6 +98,17 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
     isVapiConfigured ? "voice" : "typing",
   );
   const { data: currentUser } = useGetCurrentUserQuery();
+  /** Set when this tab asked for scoring, so only it opens the result. */
+  const awaitingResultRef = useRef(false);
+
+  // The candidate asked for feedback, and it is now ready: take them to it. A
+  // tab that merely happened to be watching the session is left where it is.
+  useEffect(() => {
+    if (session.status === "COMPLETED" && awaitingResultRef.current) {
+      awaitingResultRef.current = false;
+      router.push(`/job-seeker/interviews/${session.id}/result`);
+    }
+  }, [router, session.id, session.status]);
 
   const questions = useMemo(
     () => [...(session.questions ?? [])].sort((a, b) => a.displayOrder - b.displayOrder),
@@ -129,6 +140,23 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
           >
             View result
           </Button>
+        </div>
+      </PlainCard>
+    );
+  }
+
+  if (session.status === "SCORING") {
+    return (
+      <PlainCard>
+        <div className="flex flex-col items-center gap-3 py-6 text-center">
+          <Loader2 aria-hidden="true" className="size-8 animate-spin text-brand" />
+          <h2 className="text-lg font-semibold text-heading">
+            Scoring your interview
+          </h2>
+          <p className="max-w-md text-sm leading-6 text-body">
+            The AI is reading your answers and writing your feedback. This page
+            refreshes on its own.
+          </p>
         </div>
       </PlainCard>
     );
@@ -199,8 +227,11 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
   const finish = async () => {
     try {
       await complete(session.id).unwrap();
+      // Scoring runs on the server after this returns, so there is no result to
+      // open yet. Remembered instead, and opened when the session says it is
+      // marked — see the effect above.
+      awaitingResultRef.current = true;
       toast.success("Interview submitted for scoring.");
-      router.push(`/job-seeker/interviews/${session.id}/result`);
     } catch {
       toast.error("Unable to submit this interview.");
     }
