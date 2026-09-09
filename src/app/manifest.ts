@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Find Job",
     short_name: "Find Job",
-    description: "Discover jobs, build your professional profile, and prepare for interviews.",
+    description: "Find jobs in Cambodia, build your professional profile, and practice interviews with AI-powered tools.",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

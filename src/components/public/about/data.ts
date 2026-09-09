@@ -13,7 +13,7 @@ export interface JourneyMilestone {
 export interface TeamMember {
   id: string;
   name: string;
-  role: string;
+
   roleTitle: string;
   badge: "LEAD" | "SUB LEAD" | "MEMBER" | "MENTOR";
   avatar: string;
@@ -104,7 +104,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "01",
     name: "Srey ChanChhay",
-    role: "LEADER",
+
     roleTitle: "LEAD FULL-STACK ENGINEER",
     badge: "LEAD",
     avatar: "/images/avatar/chanchhay.jpg",
@@ -162,7 +162,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "02",
     name: "Khan Kanhchana",
-    role: "SUB LEADER",
+
     roleTitle: "FRONTEND ARCHITECT",
     badge: "SUB LEAD",
     avatar: "/images/avatar/kanhchana.jpg",
@@ -219,7 +219,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "03",
     name: "Lut Lina",
-    role: "MEMBER",
+  
     roleTitle: "FULL-STACK SOFTWARE ENGINEER",
     badge: "MEMBER",
     avatar: "/images/avatar/lina.jpg",
@@ -276,7 +276,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "04",
     name: "Heang BunLong",
-    role: "MEMBER",
+
     roleTitle: "FULL-STACK SOFTWARE ENGINEER",
     badge: "MEMBER",
     avatar: "/images/avatar/bunlong.jpg",
@@ -333,7 +333,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "05",
     name: "Man Tolfary",
-    role: "MEMBER",
+
     roleTitle: "FRONTEND SOFTWARE ENGINEER",
     badge: "MEMBER",
     avatar: "/images/avatar/fary.jpg",
@@ -390,7 +390,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "06",
     name: "Sithon Somrach",
-    role: "MEMBER",
+
     roleTitle: "UI/UX & FRONTEND ENGINEER",
     badge: "MEMBER",
     avatar: "/images/avatar/samrach.jpg",
@@ -447,7 +447,7 @@ export const developmentTeam: TeamMember[] = [
   {
     id: "07",
     name: "Pech PhakLey",
-    role: "MEMBER",
+
     roleTitle: "FRONTEND SOFTWARE ENGINEER",
     badge: "MEMBER",
     avatar: "/images/avatar/phakley.jpg",

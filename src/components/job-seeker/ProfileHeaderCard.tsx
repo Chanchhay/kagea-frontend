@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useState } from "react";
 import { BadgeCheck, BriefcaseBusiness, Camera, Eye, MapPin, X } from "lucide-react";
@@ -29,6 +31,7 @@ const STRENGTH_FIELDS = [
 ] as const satisfies readonly (keyof JobSeekerProfileResponse)[];
 
 export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
+  const tx = useWorkspaceTranslation();
   const { data: currentUser } = useGetCurrentUserQuery();
   const [updateProfile, { isLoading: isSaving }] =
     useUpdateJobSeekerProfileMutation();
@@ -60,10 +63,10 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
       await updateProfile({ avatarUrl }).unwrap();
       setPhotoFile(null);
       setIsEditorOpen(false);
-      toast.success(avatarUrl ? "Profile photo updated" : "Profile photo removed");
+      toast.success(avatarUrl ? tx("Profile photo updated") : tx("Profile photo removed"));
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, "Could not update your profile photo."),
+        getApiErrorMessage(error, tx("Could not update your profile photo.")),
       );
     } finally {
       setIsUploading(false);
@@ -71,64 +74,65 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
   };
 
   return (
-    <Card className="overflow-hidden rounded-3xl border border-border shadow-sm">
+    <Card className="min-w-0 overflow-hidden rounded-2xl border border-ws-line bg-ws-panel py-0 gap-0 shadow-xs ring-0">
       <CardContent className="p-0">
-        <div className="relative bg-linear-to-r from-brand/15 via-brand/5 to-transparent p-6 sm:p-8">
-          <span aria-hidden="true" className="absolute -right-16 -top-20 size-64 rounded-full bg-brand/5" />
-          <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
-            <div className="relative shrink-0">
+        <div className="relative bg-ws-panel p-4 sm:p-6">
+          <div className="relative flex min-w-0 flex-col items-start gap-5 md:flex-row md:flex-wrap md:items-center xl:flex-nowrap">
+            <div className="relative w-fit shrink-0">
               <div
-                className="flex size-24 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-2xl font-semibold text-brand shadow-md ring-4 ring-white/70 dark:ring-slate-800"
+                className="flex size-20 sm:size-22 items-center justify-center rounded-full bg-surface-muted bg-cover bg-center text-xl sm:text-2xl font-semibold text-primary shadow-md ring-4 ring-white/70 dark:ring-slate-800"
                 style={
                   photoUrl
                     ? { backgroundImage: `url("${resolveFileUrl(photoUrl)}")` }
                     : undefined
                 }
               >
-                {photoUrl ? <span className="sr-only">Profile photo</span> : getInitials(name)}
+                {photoUrl ? <span className="sr-only">{tx("Profile photo")}</span> : getInitials(name)}
               </div>
               <button
                 type="button"
                 onClick={() => setIsEditorOpen(true)}
-                aria-label="Change profile photo"
-                className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full bg-brand text-white shadow-md ring-2 ring-surface hover:bg-brand/90"
+                aria-label={tx("Change profile photo")}
+                className="absolute -bottom-1 -right-1 flex size-7 sm:size-8 items-center justify-center rounded-full bg-primary text-white shadow-md ring-2 ring-surface hover:bg-primary-hover"
               >
-                <Camera className="size-4" />
+                <Camera className="size-3.5 sm:size-4" />
               </button>
             </div>
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-2xl font-semibold tracking-tight text-heading">{name}</h2>
-                <span className="inline-flex items-center gap-1 rounded-full bg-brand-tint px-2.5 py-1 text-[18px] font-semibold text-brand">
+                <h2 className="text-2xl font-semibold tracking-tight text-ws-fg [overflow-wrap:anywhere]">{name}</h2>
+                <span className={`inline-flex items-center gap-1 rounded-full border border-ws-line bg-ws-card px-2.5 py-1 text-xs font-semibold ${
+                  profile.verificationStatus === "APPROVED" ? "text-primary" : "text-amber-500"
+                }`}>
                   <BadgeCheck className="size-3" />
-                  {humanize(profile.verificationStatus)}
+                  {tx(humanize(profile.verificationStatus))}
                 </span>
               </div>
-              <p className="mt-1 font-medium text-brand">
-                {profile.headline || "Add your professional headline"}
+              <p className="mt-2 font-normal text-ws-muted [overflow-wrap:anywhere]">
+                {profile.headline || tx("Add your professional headline")}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Chip icon={MapPin}>{profile.preferredLocation || "Location not set"}</Chip>
+                <Chip icon={MapPin}>{profile.preferredLocation || tx("Location not set")}</Chip>
                 <Chip icon={BriefcaseBusiness}>
-                  {humanize(profile.availabilityStatus || "OPEN_TO_WORK")}
+                  {tx(humanize(profile.availabilityStatus || "OPEN_TO_WORK"))}
                 </Chip>
-                <Chip icon={Eye}>{humanize(profile.profileVisibility)} profile</Chip>
+                <Chip icon={Eye}>{tx(humanize(profile.profileVisibility))} {tx(" profile")}</Chip>
               </div>
             </div>
 
-            <div className="w-full rounded-2xl border border-white/70 bg-surface/85 p-4 shadow-sm backdrop-blur sm:w-56 dark:border-border">
+            <div className="w-full min-w-0 rounded-2xl border border-ws-line bg-ws-card p-4 shadow-xs md:w-56 md:shrink-0">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-heading">Profile strength</span>
-                <span className="text-base font-semibold text-brand">{completion}%</span>
+                <span className="font-semibold text-ws-fg">{tx("Profile strength")}</span>
+                <span className="text-base font-semibold text-primary">{completion}%</span>
               </div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-muted">
                 <div
-                  className="h-full rounded-full bg-brand transition-all"
+                  className="h-full rounded-full bg-primary transition-all"
                   style={{ width: `${completion}%` }}
                 />
               </div>
-              <p className="mt-2 text-[18px] text-slate-500">Complete details to stand out.</p>
+              <p className="mt-3 text-xs leading-relaxed text-ws-muted">{tx("Complete details to stand out.")}</p>
             </div>
           </div>
 
@@ -136,13 +140,14 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
             <div className="mt-6 rounded-2xl bg-surface p-5">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-semibold text-heading">Update profile photo</h3>
-                  <p className="mt-1 text-xs text-slate-500">Choose a clear square portrait.</p>
+                  <h3 className="text-sm font-semibold text-ws-fg">{tx("Update profile photo")}</h3>
+                  <p className="mt-1 text-xs text-ws-muted">{tx("Choose a clear square portrait.")}</p>
                 </div>
                 <button
                   type="button"
+                  aria-label={tx("Close")}
                   onClick={() => setIsEditorOpen(false)}
-                  className="flex size-8 items-center justify-center rounded-lg text-slate-500 hover:bg-surface-muted"
+                  className="flex size-8 items-center justify-center rounded-lg text-ws-muted hover:bg-surface-muted"
                 >
                   <X className="size-4" />
                 </button>
@@ -154,24 +159,23 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
                 accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
                 hint="PNG, JPG or WebP up to 5 MB."
               />
-              <div className="mt-4 flex justify-end gap-2">
+              <div className="mt-4 flex flex-wrap justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     setPhotoFile(null);
                     setIsEditorOpen(false);
                   }}
-                  className="h-10 rounded-lg px-4 text-sm font-medium text-body hover:bg-surface-muted"
+                  className="h-10 rounded-lg px-4 text-sm font-medium text-ws-muted hover:bg-surface-muted"
                 >
-                  Cancel
-                </button>
+                  {tx("Cancel")}</button>
                 <button
                   type="button"
                   onClick={() => void savePhoto()}
                   disabled={isUploading || isSaving || (!photoFile && !photoUrl)}
                   className="h-10 rounded-lg bg-brand px-5 text-sm font-semibold text-white hover:bg-brand/90 disabled:opacity-50"
                 >
-                  {isUploading ? "Uploading…" : isSaving ? "Saving…" : "Save"}
+                  {isUploading ? tx("Uploading…") : isSaving ? tx("Saving…") : tx("Save")}
                 </button>
               </div>
             </div>
@@ -183,10 +187,11 @@ export function ProfileHeaderCard({ profile }: ProfileHeaderCardProps) {
 }
 
 function Chip({ icon: Icon, children }: { icon: typeof MapPin; children: React.ReactNode }) {
+  const tx = useWorkspaceTranslation();
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-xs text-slate-600">
-      <Icon className="size-3.5" />
-      {children}
+    <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-primary/10 bg-ws-panel px-2.5 py-1 text-xs text-ws-muted">
+      <Icon aria-hidden="true" className="size-3.5 shrink-0" />
+      <span className="min-w-0 [overflow-wrap:anywhere]">{tx(children)}</span>
     </span>
   );
 }

@@ -11,7 +11,7 @@ export function InvoiceStatusChip({ status }: { status: InvoiceStatus }) {
 
   return (
     <span
-      className={`rounded-full px-2.5 py-1 text-[18px] font-semibold capitalize ${tone}`}
+      className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${tone}`}
     >
       {status.replaceAll("_", " ").toLowerCase()}
     </span>

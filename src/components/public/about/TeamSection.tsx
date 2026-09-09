@@ -22,6 +22,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { developmentTeam, mentors, type TeamMember } from "./data";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 // Custom GitHub Icon Component
 function GithubIcon({ className = "h-4 w-4" }: { className?: string }) {
@@ -79,6 +80,7 @@ const cardVariants: Variants = {
 type TabType = "ABOUT" | "STACK" | "PROJECTS" | "JOURNEY";
 
 export default function TeamSection() {
+  const { t } = useLocale();
   const [isMarqueePaused, setIsMarqueePaused] = useState(false);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
@@ -135,13 +137,13 @@ export default function TeamSection() {
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-[#F3BE00]/40 bg-[#F3BE00]/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#D9A700] dark:text-[#F3BE00]">
             <Sparkles className="h-3.5 w-3.5" />
-            Leadership & Expertise
+            {t("about.team.mentorsBadge")}
           </div>
           <h2 className="text-3xl font-bold text-[#F3BE00] sm:text-4xl lg:text-5xl tracking-tight">
-            Meet Our Mentors
+            {t("about.team.mentorsHeading")}
           </h2>
           <p className="max-w-md mx-auto text-sm font-medium text-slate-500 dark:text-slate-400">
-            Guiding and shaping the future of next-generation tech talent.
+            {t("about.team.mentorsSubtitle")}
           </p>
         </motion.div>
 
@@ -175,17 +177,18 @@ export default function TeamSection() {
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/40 bg-[#1fa628]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#1fa628]">
             <Code2 className="h-3.5 w-3.5" />
-            DEVELOPMENT TEAM
+            {t("about.team.membersBadge")}
           </div>
 
           <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl tracking-tight">
-            <span className="text-[#1fa628]">Our</span>{" "}
-            <span className="text-[#F3BE00]">Members</span>
+            <span className="text-[#1fa628]">{t("about.team.membersHeadingPart1")}</span>{" "}
+            <span className="text-[#F3BE00]">{t("about.team.membersHeadingPart2")}</span>
           </h2>
 
           <p className="max-w-xl mx-auto text-sm sm:text-base font-medium text-slate-500 dark:text-slate-400">
-            The passionate engineers and designers driving{" "}
-            <span className="font-semibold text-[#1fa628]">Find Job</span> forward.
+            {t("about.team.membersSubtitlePre")}{" "}
+            <span className="font-semibold text-[#1fa628]">{t("about.team.membersSubtitleBrand")}</span>{" "}
+            {t("about.team.membersSubtitlePost")}
           </p>
         </motion.div>
 
@@ -202,7 +205,7 @@ export default function TeamSection() {
                 type="button"
                 onClick={scrollLeft}
                 className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[#1fa628] hover:text-[#1fa628] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                aria-label="Scroll left"
+                aria-label={t("about.team.scrollLeft")}
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -210,7 +213,7 @@ export default function TeamSection() {
                 type="button"
                 onClick={scrollRight}
                 className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[#1fa628] hover:text-[#1fa628] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                aria-label="Scroll right"
+                aria-label={t("about.team.scrollRight")}
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -286,9 +289,9 @@ export default function TeamSection() {
 // Member Front Card Component
 // -------------------------------------------------------------
 interface MemberCardProps {
-  member: Pick<TeamMember, "name" | "role" | "badge" | "avatar" | "social"> & {
+  member: (Pick<TeamMember, "name" | "badge" | "avatar" | "social"> & {
     roleTitle?: string;
-  };
+  }) | (typeof mentors[number]);
   index: number;
   accentColor?: "green" | "gold";
   floatingWave?: boolean;
@@ -304,9 +307,10 @@ function MemberCard({
   waveDelay = 0,
   onSelect,
 }: MemberCardProps) {
+  const { t } = useLocale();
   const formattedIndex = index < 10 ? `0${index}` : `${index}`;
   const isGold = accentColor === "gold";
-  const roleLabel = member.roleTitle || member.role;
+  const roleLabel = (member as any).roleTitle || (member as any).role || "";
 
   const pillBg =
     "border border-[#1fa628] bg-[#1fa628] text-white shadow-sm dark:border-[#22c55e] dark:bg-[#22c55e] dark:text-slate-950";
@@ -405,7 +409,7 @@ function MemberCard({
               target="_blank"
               rel="noopener noreferrer"
               className={`transition-colors ${hoverIconColor}`}
-              aria-label="GitHub"
+              aria-label={t("about.team.github")}
               onClick={(e) => e.stopPropagation()}
             >
               <GithubIcon className="h-4 w-4" />
@@ -417,7 +421,7 @@ function MemberCard({
               target="_blank"
               rel="noopener noreferrer"
               className={`transition-colors ${hoverIconColor}`}
-              aria-label="Telegram"
+              aria-label={t("about.team.telegram")}
               onClick={(e) => e.stopPropagation()}
             >
               <Send className="h-4 w-4" />
@@ -429,7 +433,7 @@ function MemberCard({
               target="_blank"
               rel="noopener noreferrer"
               className={`transition-colors ${hoverIconColor}`}
-              aria-label="LinkedIn"
+              aria-label={t("about.team.linkedin")}
               onClick={(e) => e.stopPropagation()}
             >
               <LinkedinIcon className="h-4 w-4" />
@@ -439,7 +443,7 @@ function MemberCard({
           {/* Quick Drawer Open Hint (Only for cards with onSelect) */}
           {onSelect && (
             <div className="flex items-center gap-1 text-[18px] font-semibold text-[#1fa628] opacity-80 group-hover:opacity-100 transition-opacity">
-              <span>Profile</span>
+              <span>{t("about.team.profile")}</span>
               <ArrowRight className="h-3.5 w-3.5 transform transition-transform group-hover:translate-x-0.5" />
             </div>
           )}
@@ -458,9 +462,16 @@ interface MemberDetailDrawerProps {
 }
 
 function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
+  const { t } = useLocale();
   const [activeTab, setActiveTab] = useState<TabType>("ABOUT");
 
   const tabs: TabType[] = ["ABOUT", "STACK", "PROJECTS", "JOURNEY"];
+  const tabLabels: Record<TabType, string> = {
+    ABOUT: t("about.team.tabAbout"),
+    STACK: t("about.team.tabStack"),
+    PROJECTS: t("about.team.tabProjects"),
+    JOURNEY: t("about.team.tabJourney"),
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -491,7 +502,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
           type="button"
           onClick={onClose}
           className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 hover:scale-105 active:scale-95"
-          aria-label="Close drawer"
+          aria-label={t("about.team.closeDrawer")}
         >
           <X className="h-5 w-5" />
         </button>
@@ -523,7 +534,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
 
               <div className="flex-1 pb-1">
                 <span className="inline-block rounded-full bg-[#1fa628]/20 px-3 py-0.5 text-[18px] font-bold uppercase tracking-wider text-[#22c55e] border border-[#22c55e]/30 mb-1">
-                  {member.roleTitle || member.role}
+                  {member.roleTitle}
                 </span>
                 <h3
                   id="drawer-title"
@@ -547,7 +558,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-[#1fa628] hover:text-[#1fa628] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               <GithubIcon className="h-3.5 w-3.5" />
-              <span>GitHub</span>
+              <span>{t("about.team.github")}</span>
             </a>
 
             <a
@@ -557,7 +568,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-[#1fa628] hover:text-[#1fa628] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               <LinkedinIcon className="h-3.5 w-3.5" />
-              <span>LinkedIn</span>
+              <span>{t("about.team.linkedin")}</span>
             </a>
 
             <a
@@ -567,7 +578,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-[#1fa628] hover:text-[#1fa628] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               <Send className="h-3.5 w-3.5" />
-              <span>Telegram</span>
+              <span>{t("about.team.telegram")}</span>
             </a>
           </div>
 
@@ -587,7 +598,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                         : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                     }`}
                   >
-                    {tab}
+                    {tabLabels[tab]}
                     {isActive && (
                       <motion.div
                         layoutId="activeDrawerTab"
@@ -613,7 +624,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                 {/* Bio Summary */}
                 <div className="space-y-2">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Biography
+                    {t("about.team.biography")}
                   </h4>
                   <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                     {member.bio}
@@ -635,7 +646,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                 {/* Education */}
                 <div className="space-y-2">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Education & Background
+                    {t("about.team.educationBackground")}
                   </h4>
                   <div className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/60">
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1fa628]/15 text-[#1fa628]">
@@ -646,7 +657,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                         {member.education}
                       </p>
                       <p className="text-[18px] text-slate-500 dark:text-slate-400">
-                        Second Year Student • Class of 2026
+                        {t("about.team.studentYear")}
                       </p>
                     </div>
                   </div>
@@ -656,7 +667,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                 {member.roleBreakdown && member.roleBreakdown.length > 0 && (
                   <div className="space-y-3">
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                      Core Responsibilities
+                      {t("about.team.coreResponsibilities")}
                     </h4>
                     <div className="space-y-2">
                       {member.roleBreakdown.map((item, idx) => (
@@ -747,14 +758,14 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                       {proj.impact && (
                         <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-[18px] font-medium text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
                           <Sparkles className="h-3 w-3 text-[#1fa628]" />
-                          <span>Impact: {proj.impact}</span>
+                          <span>{t("about.team.impact")}: {proj.impact}</span>
                         </div>
                       )}
                     </div>
                   ))
                 ) : (
                   <p className="text-xs text-slate-500">
-                    No individual project records listed.
+                    {t("about.team.noProjects")}
                   </p>
                 )}
               </motion.div>
@@ -791,7 +802,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                   </div>
                 ) : (
                   <p className="text-xs text-slate-500">
-                    No journey milestones listed.
+                    {t("about.team.noJourney")}
                   </p>
                 )}
               </motion.div>
@@ -807,7 +818,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
             rel="noreferrer"
             className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#1fa628] hover:bg-[#1fa628]/90 text-white px-4 py-2.5 text-xs font-semibold transition shadow-sm"
           >
-            <span>View Full Profile</span>
+            <span>{t("about.team.viewFullProfile")}</span>
             <ExternalLink className="h-3.5 w-3.5" />
           </Link>
 
@@ -816,7 +827,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
             onClick={onClose}
             className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800 transition"
           >
-            Close
+            {t("about.team.close")}
           </button>
         </div>
       </motion.div>

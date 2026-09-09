@@ -1,234 +1,380 @@
 "use client";
 
-import { useState } from "react";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  Award,
-  Bot,
-  Briefcase,
+  ArrowUpRight,
   Calendar,
-  CheckCircle2,
-  ChevronRight,
   FileText,
-  Filter,
-  MapPin,
   Search,
-  Sparkles,
-  User,
-  UsersRound,
+  UserCheck,
+  Users,
 } from "lucide-react";
-import { PageIntro, StatusPill } from "@/components/shared/ApiCards";
-import { EmptyState } from "@/components/shared/EmptyState";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Chip, PillTabs, type Tone } from "@/components/workspace/primitives";
+import { Pager } from "@/components/console/Pager";
+import { PageSizeSelect } from "@/components/console/PageSizeSelect";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { LoadingState } from "@/components/shared/LoadingState";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useGetForwardedApplicationsQuery } from "@/services/recruiterApi";
-import type { JobApplicationStatus } from "@/contracts";
+import { resolveFileUrl } from "@/lib/file-url";
+
+const STATUS_TABS = [
+  "ALL",
+  "AI_INTERVIEW_PASSED",
+  "SHORTLISTED",
+  "HUMAN_INTERVIEW_SCHEDULED",
+  "HIRED",
+  "REJECTED",
+] as const;
+
+type StatusTab = (typeof STATUS_TABS)[number];
+
+const COLUMNS = [
+  { key: "candidate", label: "Candidate", className: "w-[30%]" },
+  { key: "job", label: "Applied Role", className: "w-[22%]" },
+  { key: "score", label: "AI Evaluation", className: "w-[15%]" },
+  { key: "date", label: "Forwarded", className: "w-[13%]" },
+  { key: "status", label: "Status", className: "w-[12%]" },
+  { key: "actions", label: "", className: "w-[8%] text-right" },
+];
+
+const statusTone: Record<string, Tone> = {
+  AI_INTERVIEW_PASSED: "solid",
+  SHORTLISTED: "solid",
+  HUMAN_INTERVIEW_SCHEDULED: "soft",
+  UNDER_REVIEW: "soft",
+  HIRED: "solid",
+  REJECTED: "alert",
+  AI_INTERVIEW_FAILED: "alert",
+  WITHDRAWN: "quiet",
+};
 
 export default function ForwardedCandidatesPage() {
+  const tx = useWorkspaceTranslation();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [statusFilter, setStatusFilter] = useState<StatusTab>("ALL");
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
 
   const applicationsQuery = useGetForwardedApplicationsQuery();
+  const forwardedApplications = useMemo(
+    () => applicationsQuery.data ?? [],
+    [applicationsQuery.data],
+  );
+
+  const filtered = useMemo(() => {
+    return forwardedApplications.filter((item) => {
+      const query = search.toLowerCase().trim();
+      const matchesSearch =
+        !query ||
+        item.candidate.headline?.toLowerCase().includes(query) ||
+        item.candidate.currentPosition?.toLowerCase().includes(query) ||
+        item.application.jobTitle?.toLowerCase().includes(query) ||
+        item.candidate.preferredLocation?.toLowerCase().includes(query);
+
+      const matchesStatus =
+        statusFilter === "ALL" || item.application.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [forwardedApplications, search, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / size));
+  const pagedRows = useMemo(() => {
+    const start = page * size;
+    return filtered.slice(start, start + size);
+  }, [filtered, page, size]);
 
   if (applicationsQuery.isLoading) return <LoadingState rows={6} />;
   if (applicationsQuery.isError) {
-    return <ErrorState message="Unable to load forwarded candidates. Please try again." />;
+    return (
+      <ErrorState
+        message={tx("Unable to load forwarded candidates. Please try again.")}
+        onRetry={() => void applicationsQuery.refetch()}
+      />
+    );
   }
 
-  const forwardedApplications = applicationsQuery.data ?? [];
+  const hired = forwardedApplications.filter(
+    (item) => item.application.status === "HIRED",
+  ).length;
+  const scheduled = forwardedApplications.filter(
+    (item) => item.application.status === "HUMAN_INTERVIEW_SCHEDULED",
+  ).length;
 
-  const filteredCandidates = forwardedApplications.filter((item) => {
-    const query = search.toLowerCase().trim();
-    const matchesSearch =
-      !query ||
-      item.candidate.headline?.toLowerCase().includes(query) ||
-      item.candidate.currentPosition?.toLowerCase().includes(query) ||
-      item.application.jobTitle?.toLowerCase().includes(query) ||
-      item.candidate.preferredLocation?.toLowerCase().includes(query);
-
-    const matchesStatus =
-      statusFilter === "ALL" || item.application.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
+  const reset = <T,>(setter: (val: T) => void) => (val: T) => {
+    setter(val);
+    setPage(0);
+  };
 
   return (
-    <div className="space-y-6">
-      <PageIntro
-        eyebrow="GET /api/v1/recruiter/forwarded-applications"
-        title="Forwarded Candidates"
-        description="Qualified candidates reviewed and forwarded by moderators after AI evaluation."
-      />
+    <div className="flex min-h-[calc(100dvh-7.5rem)] flex-col gap-4">
+      {/* Metric Tiles */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <MetricCard
+          icon={<Users aria-hidden="true" className="size-4.5" />}
+          label={tx("Total forwarded")}
+          value={forwardedApplications.length}
+        />
+        <MetricCard
+          icon={<Calendar aria-hidden="true" className="size-4.5" />}
+          label={tx("Interviews scheduled")}
+          value={scheduled}
+          accent
+        />
+        <MetricCard
+          icon={<UserCheck aria-hidden="true" className="size-4.5" />}
+          label={tx("Hired")}
+          value={hired}
+        />
+      </div>
 
-      {/* Filter and Search Bar */}
-      <Card className="border border-border bg-surface shadow-sm">
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                type="text"
-                placeholder="Search candidates, job title, position, location..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="h-11 rounded-xl pl-10"
+      {/* Main Console Table Panel */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-ws-line bg-ws-panel">
+        <div className="flex shrink-0 flex-wrap items-center gap-3 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <h2 className="font-semibold text-ws-fg">{tx("Forwarded candidates")}</h2>
+            <span className="rounded-md bg-ws-card px-2 py-0.5 text-xs font-medium text-ws-muted">
+              {filtered.length}
+            </span>
+          </div>
+
+          <div className="relative ml-auto w-48 sm:w-64">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ws-faint"
+            />
+            <Input
+              value={search}
+              onChange={(e) => reset(setSearch)(e.target.value)}
+              placeholder={tx("Search candidates…")}
+              className="h-9 pl-9 text-sm"
+            />
+          </div>
+        </div>
+
+        <div className="shrink-0 px-4 pb-3">
+          <PillTabs
+            tabs={STATUS_TABS}
+            value={statusFilter}
+            onChange={reset(setStatusFilter)}
+            className="rounded-lg bg-ws-card p-1"
+          />
+        </div>
+
+        <div className="ws-scroll min-h-0 flex-1 overflow-auto border-t border-ws-line">
+          <table className="w-full table-fixed border-collapse text-left">
+            <thead className="sticky top-0 z-10">
+              <tr>
+                {COLUMNS.map((col) => (
+                  <th
+                    key={col.key}
+                    scope="col"
+                    className={`${col.className} bg-ws-card px-4 py-2.5 text-xs font-semibold text-ws-muted shadow-[inset_0_-1px_0_var(--ws-line)]`}
+                  >
+                    {col.label ? tx(col.label) : null}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {pagedRows.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={COLUMNS.length}
+                    className="px-4 py-12 text-center text-sm text-ws-faint"
+                  >
+                    {search || statusFilter !== "ALL"
+                      ? tx("No candidates match your search or filter.")
+                      : tx("Candidates who pass AI screening and moderator review will appear here.")}
+                  </td>
+                </tr>
+              ) : (
+                pagedRows.map((item) => {
+                  const href = `/recruiter/forwarded-candidates/${item.application.id}`;
+                  const aiScore = item.aiResult?.feedback?.overallScore;
+                  const aiResult = item.aiResult?.feedback?.result;
+                  const resumeUrl = item.submittedResume?.resumeFileUrl
+                    ? resolveFileUrl(item.submittedResume.resumeFileUrl)
+                    : null;
+
+                  return (
+                    <tr
+                      key={item.application.id}
+                      className="border-b border-ws-line/70 transition-colors hover:bg-ws-card/60"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-chip-solid text-sm font-semibold text-chip-solid-fg">
+                            {item.candidate.headline?.trim().charAt(0).toUpperCase() || "C"}
+                          </span>
+                          <div className="min-w-0">
+                            <Link
+                              href={href}
+                              className="block truncate font-semibold text-ws-fg hover:underline"
+                            >
+                              {item.candidate.headline || tx("Candidate")}
+                            </Link>
+                            <span className="block truncate text-xs text-ws-faint">
+                              {[
+                                item.candidate.currentPosition,
+                                item.candidate.preferredLocation,
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-4 py-3">
+                        <span className="block truncate text-sm font-medium text-ws-fg">
+                          {item.application.jobTitle}
+                        </span>
+                        {resumeUrl ? (
+                          <a
+                            href={resumeUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                          >
+                            <FileText aria-hidden="true" className="size-3.5" />
+                            {item.submittedResume?.title || tx("Resume")}
+                          </a>
+                        ) : null}
+                      </td>
+
+                      <td className="px-4 py-3">
+                        {aiScore !== undefined ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm font-bold tabular-nums text-ws-fg">
+                              {aiScore}
+                            </span>
+                            <Chip
+                              tone={
+                                aiResult === "PASSED"
+                                  ? "solid"
+                                  : aiResult === "FAILED"
+                                    ? "alert"
+                                    : "soft"
+                              }
+                            >
+                              {aiResult ? tx(aiResult) : tx("Score")}
+                            </Chip>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-ws-faint">
+                            {tx("Pending")}
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="px-4 py-3 text-xs text-ws-muted">
+                        {item.forwardedAt ? formatDate(item.forwardedAt) : "—"}
+                      </td>
+
+                      <td className="px-4 py-3">
+                        <Chip tone={statusTone[item.application.status] || "quiet"}>
+                          {tx(formatStatus(item.application.status))}
+                        </Chip>
+                      </td>
+
+                      <td className="px-4 py-3 text-right">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          render={<Link href={href} />}
+                          className="h-9 rounded-lg px-3 text-sm"
+                        >
+                          {tx("Open")}
+                          <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex shrink-0 flex-wrap items-center gap-3 border-t border-ws-line px-4 py-2.5">
+          <PageSizeSelect
+            value={size}
+            onChange={reset(setSize)}
+            id="forwarded-page-size"
+          />
+          {filtered.length > 0 ? (
+            <div className="ml-auto">
+              <Pager
+                page={{
+                  number: page,
+                  totalPages,
+                  totalElements: filtered.length,
+                }}
+                onPageChange={setPage}
               />
             </div>
-
-            <div className="w-full sm:w-64">
-              <Select
-                value={statusFilter}
-                onValueChange={(val) => setStatusFilter(val ?? "ALL")}
-              >
-                <SelectTrigger className="h-11 w-full rounded-xl">
-                  <SelectValue placeholder="Application status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Statuses</SelectItem>
-                  <SelectItem value="AI_INTERVIEW_PASSED">AI Interview Passed</SelectItem>
-                  <SelectItem value="SHORTLISTED">Shortlisted</SelectItem>
-                  <SelectItem value="HUMAN_INTERVIEW_SCHEDULED">Human Interview Scheduled</SelectItem>
-                  <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
-                  <SelectItem value="HIRED">Hired</SelectItem>
-                  <SelectItem value="REJECTED">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3 text-xs text-slate-500">
-            <span>
-              Showing {filteredCandidates.length} of {forwardedApplications.length} candidate(s)
-            </span>
-            {(search || statusFilter !== "ALL") && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSearch("");
-                  setStatusFilter("ALL");
-                }}
-                className="h-7 text-xs text-slate-600"
-              >
-                Reset filters
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Candidate List */}
-      {filteredCandidates.length === 0 ? (
-        <EmptyState
-          title="No forwarded candidates found"
-          description={
-            forwardedApplications.length === 0
-              ? "Candidates who pass AI screening and moderator review will appear here."
-              : "No candidates match your search filters."
-          }
-        />
-      ) : (
-        <div className="grid gap-4">
-          {filteredCandidates.map((item) => {
-            const aiScore = item.aiResult?.feedback?.overallScore;
-            const aiResult = item.aiResult?.feedback?.result;
-
-            return (
-              <Card
-                key={item.application.id}
-                className="group border border-border bg-surface shadow-sm transition-all hover:border-brand/40 hover:shadow-md"
-              >
-                <CardContent className="p-5 sm:p-6">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0 flex-1 space-y-2.5">
-                      <div className="flex flex-wrap items-center gap-2.5">
-                        <h3 className="text-lg font-semibold tracking-tight text-heading group-hover:text-brand">
-                          {item.candidate.headline || "Candidate Profile"}
-                        </h3>
-                        <StatusPill>{item.application.status}</StatusPill>
-                        {item.candidate.availabilityStatus && (
-                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            {item.candidate.availabilityStatus}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Position & Job Info */}
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-700 dark:text-slate-300">
-                        {item.candidate.currentPosition && (
-                          <span className="flex items-center gap-1.5 font-medium">
-                            <User className="size-4 text-slate-400" />
-                            {item.candidate.currentPosition}
-                          </span>
-                        )}
-                        <span className="flex items-center gap-1.5 text-brand font-medium">
-                          <Briefcase className="size-4" />
-                          Applied: {item.application.jobTitle}
-                        </span>
-                      </div>
-
-                      {/* AI Interview & Resume Highlights */}
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 text-xs text-slate-500">
-                        {item.candidate.preferredLocation && (
-                          <span className="flex items-center gap-1">
-                            <MapPin className="size-3.5 text-slate-400" />
-                            {item.candidate.preferredLocation}
-                          </span>
-                        )}
-                        {item.submittedResume?.title && (
-                          <span className="flex items-center gap-1">
-                            <FileText className="size-3.5 text-brand" />
-                            Resume: {item.submittedResume.title}
-                          </span>
-                        )}
-                        {aiScore !== undefined && (
-                          <span className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
-                            <Sparkles className="size-3.5" />
-                            AI Score: {aiScore}/100 ({aiResult || "PASSED"})
-                          </span>
-                        )}
-                        {item.forwardedAt && (
-                          <span className="flex items-center gap-1 text-slate-400">
-                            <Calendar className="size-3.5" />
-                            Forwarded: {new Date(item.forwardedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="shrink-0 pt-2 sm:pt-0">
-                      <Button
-                        render={
-                          <Link
-                            href={`/recruiter/forwarded-candidates/${item.application.id}`}
-                          />
-                        }
-                        variant="outline"
-                        size="sm"
-                        className="h-10 rounded-xl px-5 font-medium border-border hover:border-brand hover:text-brand"
-                      >
-                        View Full Details
-                        <ChevronRight className="ml-1.5 size-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+          ) : null}
         </div>
-      )}
+      </div>
     </div>
   );
+}
+
+function MetricCard({
+  icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  accent?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-ws-line bg-ws-panel p-3.5">
+      <span
+        className={`relative flex size-9 shrink-0 items-center justify-center rounded-lg border ${
+          accent
+            ? "border-primary/25 bg-primary/10 text-primary"
+            : "border-ws-line bg-ws-card text-ws-muted"
+        }`}
+      >
+        {accent ? (
+          <span
+            aria-hidden="true"
+            className="absolute right-1 top-1 size-1.5 rounded-full bg-primary"
+          />
+        ) : null}
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <p className="text-xl font-bold tabular-nums text-ws-fg">{value}</p>
+        <p className="truncate text-xs font-medium text-ws-muted">{label}</p>
+      </div>
+    </div>
+  );
+}
+
+function formatStatus(value: string) {
+  return value
+    .toLowerCase()
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function formatDate(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? "—"
+    : new Intl.DateTimeFormat("en", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }).format(date);
 }

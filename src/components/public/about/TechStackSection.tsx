@@ -22,6 +22,7 @@ import {
 } from "react-icons/si";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 import { BorderTrail } from "@/components/core/border-trail";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 // Custom SVG Icons for specialized libraries
 function VapiIcon({ className = "h-6 w-6" }: { className?: string }) {
@@ -466,6 +467,8 @@ export const frontendAnimationStack: TechItem[] = [
 ];
 
 export default function TechStackSection() {
+  const { t } = useLocale();
+
   return (
     <section className="relative space-y-12 overflow-hidden">
       {/* Section Header */}
@@ -478,16 +481,16 @@ export default function TechStackSection() {
       >
         <div className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/40 bg-[#1fa628]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#1fa628]">
           <Cpu className="h-3.5 w-3.5" />
-          ARCHITECTURE & TECHNOLOGIES
+          {t("about.techStack.badge")}
         </div>
 
         <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl tracking-tight">
-          <span className="text-[#1fa628]">Technology</span>{" "}
-          <span className="text-[#F3BE00]">Stack</span>
+          <span className="text-[#1fa628]">{t("about.techStack.headingPart1")}</span>{" "}
+          <span className="text-[#F3BE00]">{t("about.techStack.headingPart2")}</span>
         </h2>
 
         <p className="max-w-2xl mx-auto text-sm sm:text-base font-medium text-slate-500 dark:text-slate-400">
-          Powered by enterprise-grade backend microservices, real-time voice AI, cloud-native DevOps, and high-performance 3D motion engines.
+          {t("about.techStack.description")}
         </p>
       </motion.div>
 

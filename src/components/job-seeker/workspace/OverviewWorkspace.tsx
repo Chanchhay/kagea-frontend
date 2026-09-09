@@ -1,6 +1,9 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
+import responsive from "@/components/workspace/DashboardResponsive.module.css";
 import { useState } from "react";
 import {
   Briefcase,
@@ -68,7 +71,7 @@ export function OverviewWorkspace({
   const stage = groupByStage(applications);
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className={cn("flex flex-col gap-3", responsive.dashboard)}>
       <Hero
         name={name}
         profile={profile}
@@ -94,8 +97,8 @@ export function OverviewWorkspace({
        * Three columns that stack, not a grid of equal metric tiles: identity on
        * the left, the working stream in the middle, documents on the right.
        */}
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)_minmax(0,19rem)]">
-        <div className="flex flex-col gap-5">
+      <div className={cn("grid gap-3 xl:grid-cols-[minmax(0,21.5rem)_minmax(0,1fr)_minmax(0,20rem)]", responsive.columns)}>
+        <div className={cn("flex flex-col gap-3", responsive.notes)}>
           <DetailsNote name={name} user={user} profile={profile} />
           <ExpectationsNote profile={profile} />
         </div>
@@ -131,19 +134,20 @@ function Hero({
   hired: number;
   closed: number;
 }) {
+  const tx = useWorkspaceTranslation();
   const latest = [...applications].sort(
     (a, b) => date(b.appliedAt) - date(a.appliedAt),
   )[0];
 
   return (
-    <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className={cn("flex flex-wrap items-end justify-between gap-4", responsive.hero)}>
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium text-ws-muted">{name}</span>
           {profile.availabilityStatus ? (
-            <Chip tone="solid">{humanize(profile.availabilityStatus)}</Chip>
+            <Chip tone="solid">{tx(humanize(profile.availabilityStatus))}</Chip>
           ) : null}
-          <GhostChip>{humanize(profile.profileVisibility)} profile</GhostChip>
+          <GhostChip>{tx(humanize(profile.profileVisibility))} {tx(" profile")}</GhostChip>
         </div>
 
         {/* The headline number, sized like a balance — the page's single anchor. */}
@@ -152,21 +156,18 @@ function Hero({
             {applications.length}
           </span>
           <span className="text-xl font-medium text-ws-faint lg:text-2xl">
-            applications
-          </span>
+            {tx("applications")}</span>
         </p>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
         <Chip tone="solid" className="px-5 py-2.5 text-sm">
-          {hired} passed
-        </Chip>
+          {hired} {tx(" passed")}</Chip>
         <Chip tone="alert" className="px-5 py-2.5 text-sm">
-          {closed} failed
-        </Chip>
+          {closed} {tx(" failed")}</Chip>
         <GhostChip className="px-4 py-2.5">
           <Flag aria-hidden="true" className="size-3.5" />
-          {latest ? formatDate(latest.appliedAt) : "No activity yet"}
+          {latest ? formatDate(latest.appliedAt) : tx("No activity yet")}
         </GhostChip>
       </div>
     </div>
@@ -184,6 +185,7 @@ function DetailsNote({
   user?: CurrentUserResponse;
   profile: JobSeekerProfileResponse;
 }) {
+  const tx = useWorkspaceTranslation();
   const rows = [
     { icon: CircleUserRound, label: "Name", value: name },
     {
@@ -203,19 +205,19 @@ function DetailsNote({
   return (
     <NotchedPanel
       fill="warm"
-      title="Details"
+      title={tx("Details")}
       icon={<CircleUserRound aria-hidden="true" className="size-4" />}
       actions={
         <>
           <IconAction
-            label="Edit profile"
+            label={tx("Edit profile")}
             href="/job-seeker/profile"
             className="bg-ws-panel text-ws-muted opacity-100 ring-1 ring-ws-line hover:bg-ws-card hover:text-ws-fg"
           >
             <Pencil aria-hidden="true" className="size-4" />
           </IconAction>
           <IconAction
-            label="More profile actions"
+            label={tx("More profile actions")}
             className="bg-ws-panel text-ws-muted opacity-100 ring-1 ring-ws-line hover:bg-ws-card hover:text-ws-fg"
           >
             <MoreHorizontal aria-hidden="true" className="size-4" />
@@ -228,13 +230,13 @@ function DetailsNote({
           <div key={row.label} className="flex items-start gap-2.5">
             <row.icon
               aria-hidden="true"
-              className="mt-0.5 size-4 shrink-0 opacity-60"
+              className="mt-0.5 size-4 shrink-0 opacity-55"
             />
-            <div className="min-w-0">
-              <dt className="text-[18px] font-medium uppercase tracking-wide opacity-60">
-                {row.label}
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <dt className="text-xs font-medium opacity-60">
+                {tx(row.label)}
               </dt>
-              <dd className="truncate text-sm font-semibold">{row.value}</dd>
+              <dd className="break-words text-sm font-semibold leading-5">{row.value}</dd>
             </div>
           </div>
         ))}
@@ -243,35 +245,35 @@ function DetailsNote({
       {profile.publicProfileSlug ? (
         <Link
           href={`/profile?slug=${profile.publicProfileSlug}`}
-          className="mt-5 flex items-center justify-center gap-2 rounded-full bg-current/10 py-3 text-xs font-semibold transition-colors hover:bg-current/20"
+          className="mt-5 flex items-center justify-center gap-2 rounded-full bg-current/10 py-2.5 text-xs font-semibold transition-colors hover:bg-current/20"
         >
           <Eye aria-hidden="true" className="size-3.5" />
-          View public profile
-        </Link>
+          {tx("View public profile")}</Link>
       ) : null}
     </NotchedPanel>
   );
 }
 
 function ExpectationsNote({ profile }: { profile: JobSeekerProfileResponse }) {
+  const tx = useWorkspaceTranslation();
   const currency = profile.expectedSalaryCurrency || "USD";
 
   return (
     <NotchedPanel
       fill="cool"
-      title="Expectations"
+      title={tx("Expectations")}
       icon={<Wallet aria-hidden="true" className="size-4" />}
       actions={
         <>
           <IconAction
-            label="Edit expectations"
+            label={tx("Edit expectations")}
             href="/job-seeker/profile"
             className="bg-ws-panel text-ws-muted opacity-100 ring-1 ring-ws-line hover:bg-ws-card hover:text-ws-fg"
           >
             <Pencil aria-hidden="true" className="size-4" />
           </IconAction>
           <IconAction
-            label="More salary actions"
+            label={tx("More salary actions")}
             className="bg-ws-panel text-ws-muted opacity-100 ring-1 ring-ws-line hover:bg-ws-card hover:text-ws-fg"
           >
             <MoreHorizontal aria-hidden="true" className="size-4" />
@@ -279,25 +281,21 @@ function ExpectationsNote({ profile }: { profile: JobSeekerProfileResponse }) {
         </>
       }
     >
-      <p className="text-[18px] font-medium uppercase tracking-wide opacity-60">
-        Salary range
-      </p>
-      <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">
-        {profile.expectedSalaryMin
-          ? `${money(profile.expectedSalaryMin, currency)}${
+      <p className="text-xs font-medium opacity-60">
+        {tx("Salary range")}</p>
+      <p className="mt-1 text-xl font-semibold tracking-tight tabular-nums">
+        {profile.expectedSalaryMin ? `${money(profile.expectedSalaryMin, currency)}${
               profile.expectedSalaryMax
                 ? ` – ${money(profile.expectedSalaryMax, currency)}`
                 : "+"
-            }`
-          : "Not set"}
+            }` : tx("Not set")}
       </p>
 
-      <div className="mt-4 flex flex-col gap-1">
-        <p className="text-[18px] font-medium uppercase tracking-wide opacity-60">
-          Shared with
-        </p>
+      <div className="mt-4 flex flex-col gap-0.5">
+        <p className="text-xs font-medium opacity-60">
+          {tx("Shared with")}</p>
         <p className="text-sm font-semibold">
-          {humanize(profile.salaryVisibility ?? "PRIVATE")}
+          {tx(humanize(profile.salaryVisibility ?? "PRIVATE"))}
         </p>
       </div>
     </NotchedPanel>
@@ -318,6 +316,7 @@ function ActivityStream({
   interviews: AiInterviewSessionResponse[];
   portfolios: PortfolioResponse[];
 }) {
+  const tx = useWorkspaceTranslation();
   const [tab, setTab] = useState<StreamTab>("Timeline");
   const stage = groupByStage(applications);
 
@@ -363,7 +362,7 @@ function ActivityStream({
           ];
 
   return (
-    <div className="flex min-h-104 flex-col">
+    <div className={cn("flex min-h-104 flex-col", responsive.stream)}>
       {/* The tabs are cut from the card below them, not floated above it. */}
       <FolderTabs
         tabs={streamTabs}
@@ -391,9 +390,7 @@ function ActivityStream({
 
           {sections.every((section) => !section.rows.length) ? (
             <p className="px-2 py-10 text-center text-sm text-ws-faint">
-              Nothing here yet. Apply to a role and it will show up in this
-              stream.
-            </p>
+              {tx("Nothing here yet. Apply to a role and it will show up in this stream.")}</p>
           ) : null}
         </div>
 
@@ -403,8 +400,7 @@ function ActivityStream({
           className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ws-fg px-5 py-3 text-sm font-semibold text-ws-panel shadow-(--shadow-dropdown) transition-transform hover:scale-105"
         >
           <Plus aria-hidden="true" className="size-4" />
-          Find a new role
-        </Link>
+          {tx("Find a new role")}</Link>
       </Panel>
     </div>
   );
@@ -427,7 +423,7 @@ function StreamRow({ row }: { row: Row }) {
     <li>
       <Link
         href={row.href}
-        className="flex items-center gap-3 rounded-[22px] bg-ws-card-hover px-4 py-3.5 transition-colors hover:bg-ws-panel"
+        className={cn("flex items-center gap-3 rounded-[22px] bg-ws-card-hover px-4 py-3.5 transition-colors hover:bg-ws-panel", responsive.seekerRow)}
       >
         <span
           className={cn(
@@ -516,6 +512,7 @@ function FilesColumn({
   portfolios: PortfolioResponse[];
   applications: JobApplicationResponse[];
 }) {
+  const tx = useWorkspaceTranslation();
   /* A file a recruiter has already seen is the one worth keeping sharp, so the
      resumes that went out with an application say so on the card. */
   const forwarded = new Set(
@@ -523,13 +520,13 @@ function FilesColumn({
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={cn("flex flex-col gap-4", responsive.files)}>
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-lg font-medium text-ws-fg">Files</h2>
+        <h2 className="text-lg font-medium text-ws-fg">{tx("Files")}</h2>
         <Link
           href="/job-seeker/resumes/new"
           className="flex size-9 items-center justify-center rounded-full bg-ws-card text-ws-muted transition-colors hover:bg-ws-card-hover hover:text-ws-fg"
-          aria-label="New resume"
+          aria-label={tx("New resume")}
         >
           <Plus aria-hidden="true" className="size-4" />
         </Link>
@@ -564,13 +561,12 @@ function FilesColumn({
 
       {!resumes.length && !portfolios.length ? (
         <Panel className="text-sm text-ws-faint">
-          No resumes or portfolios yet.{" "}
+          {tx("No resumes or portfolios yet.")}{" "}
           <Link
             href="/job-seeker/resumes/new"
             className="font-semibold text-ws-fg underline"
           >
-            Create your first
-          </Link>
+            {tx("Create your first")}</Link>
         </Panel>
       ) : null}
     </div>

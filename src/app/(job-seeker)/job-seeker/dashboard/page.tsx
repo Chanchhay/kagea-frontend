@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { OverviewWorkspace } from "@/components/job-seeker/workspace/OverviewWorkspace";
 import { ErrorState } from "@/components/shared/ErrorState";
@@ -13,6 +15,7 @@ import {
 } from "@/services/jobSeekerApi";
 
 export default function JobSeekerOverviewPage() {
+  const tx = useWorkspaceTranslation();
   const userQuery = useGetCurrentUserQuery();
   const profileQuery = useGetJobSeekerProfileQuery();
   const resumesQuery = useGetResumesQuery();
@@ -30,7 +33,7 @@ export default function JobSeekerOverviewPage() {
 
   if (queries.some((query) => query.isLoading)) return <LoadingState rows={6} />;
   if (queries.some((query) => query.isError) || !profileQuery.data) {
-    return <ErrorState message="Unable to load your workspace." />;
+    return <ErrorState message={tx("Unable to load your workspace.")} />;
   }
 
   return (

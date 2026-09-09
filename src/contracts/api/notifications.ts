@@ -26,11 +26,12 @@ export type NotificationEventType =
   | "PROJECT_SUBMITTED"
   | "PROJECT_REVIEWED"
   | "MESSAGE_RECEIVED"
+  | "HIRE_REPORTED"
   | "INVOICE_ISSUED"
   | "INVOICE_PAID";
 
 export type NotificationResponse = {
-  id: number;
+  id: string;
   eventType: NotificationEventType;
   title: string;
   body: string | null;

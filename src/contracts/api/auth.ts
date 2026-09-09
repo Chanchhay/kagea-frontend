@@ -25,15 +25,15 @@ export type RegisterResponse = {
 };
 
 export type CurrentUserProfilesResponse = {
-  jobSeekerProfileId?: number;
-  recruiterProfileId?: number;
-  moderatorProfileId?: number;
-  adminProfileId?: number;
-  financeProfileId?: number;
+  jobSeekerProfileId?: string;
+  recruiterProfileId?: string;
+  moderatorProfileId?: string;
+  adminProfileId?: string;
+  financeProfileId?: string;
 };
 
 export type CurrentUserResponse = {
-  userAccountId: number;
+  userAccountId: string;
   keycloakUserId: string;
   username: string;
   email: string;

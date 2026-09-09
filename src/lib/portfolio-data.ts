@@ -46,10 +46,10 @@ function text(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
-/** Splits the comma-separated `techStack` field into individual tags. */
+/** Splits the `techStack` field into individual tags, however it was delimited. */
 export function parseTechStack(techStack: string | null | undefined): string[] {
   return (techStack ?? "")
-    .split(",")
+    .split(/[,;·|]/)
     .map((item) => item.trim())
     .filter(Boolean);
 }

@@ -1,6 +1,9 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import Link from "next/link";
+import responsive from "@/components/workspace/DashboardResponsive.module.css";
 import { useState } from "react";
 import {
   Briefcase,
@@ -59,6 +62,7 @@ export function RecruiterWorkspace({
   candidates,
   documents,
 }: RecruiterWorkspaceProps) {
+  const tx = useWorkspaceTranslation();
   useSetPageHeading(company.name);
 
   const byStatus = (...statuses: JobPostResponse["status"][]) =>
@@ -70,7 +74,7 @@ export function RecruiterWorkspace({
   const retired = byStatus("CLOSED", "EXPIRED", "REJECTED");
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className={cn("flex flex-col gap-3", responsive.dashboard)}>
       <Hero
         company={company}
         candidates={candidates}
@@ -78,7 +82,7 @@ export function RecruiterWorkspace({
       />
 
       <div className="flex items-center justify-between gap-4">
-        <span className="text-xs font-medium text-ws-muted">Job pipeline</span>
+        <span className="text-xs font-medium text-ws-muted">{tx("Job pipeline")}</span>
         <GhostChip>
           <Flag aria-hidden="true" className="size-3.5" />
           {today()}
@@ -97,8 +101,8 @@ export function RecruiterWorkspace({
       {/* The notch spends ~5.75rem of the left column on the cut, so that column
           is wider than a plain card would need — otherwise the title strip ends
           up shorter than the title it carries. */}
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,18.5rem)_minmax(0,1fr)_minmax(0,19rem)]">
-        <div className="flex flex-col gap-5">
+      <div className={cn("grid gap-3 xl:grid-cols-[minmax(0,21.5rem)_minmax(0,1fr)_minmax(0,20rem)]", responsive.columns)}>
+        <div className={cn("flex flex-col gap-3", responsive.notes)}>
           <CompanyNote company={company} user={user} />
           <VerificationNote company={company} documents={documents} />
         </div>
@@ -126,8 +130,9 @@ function Hero({
   candidates: ForwardedApplicationResponse[];
   published: number;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
-    <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className={cn("flex flex-wrap items-end justify-between gap-4", responsive.hero)}>
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium text-ws-muted">
@@ -144,8 +149,7 @@ function Hero({
             {candidates.length}
           </span>
           <span className="text-xl font-medium text-ws-faint lg:text-2xl">
-            candidates forwarded
-          </span>
+            {tx("candidates forwarded")}</span>
         </p>
       </div>
 
@@ -155,21 +159,18 @@ function Hero({
           className="flex items-center gap-2 rounded-full bg-ws-card px-5 py-3 text-sm font-medium text-ws-muted transition-colors hover:bg-ws-card-hover hover:text-ws-fg"
         >
           <Plus aria-hidden="true" className="size-4" />
-          Post a job
-        </Link>
+          {tx("Post a job")}</Link>
         {/* The reference pairs two filled pills here. Both are counts worth
             acting on, so both link — a grey chip beside a green one read as a
             disabled control rather than as the second half of a pair. */}
         <Link href="/recruiter/jobs" className={heroPill("solid")}>
-          {published} live
-        </Link>
+          {published} {tx(" live")}</Link>
         <Link
           href="/recruiter/forwarded-candidates"
           className={heroPill("soft")}
         >
-          {candidates.length} in review
-        </Link>
-        <IconAction label="More actions" className="bg-ws-card">
+          {candidates.length} {tx(" in review")}</Link>
+        <IconAction label={tx("More actions")} className="bg-ws-card">
           <MoreHorizontal aria-hidden="true" className="size-4" />
         </IconAction>
       </div>
@@ -191,6 +192,7 @@ function CompanyNote({
   company: CompanyResponse;
   user?: CurrentUserResponse;
 }) {
+  const tx = useWorkspaceTranslation();
   const rows = [
     { icon: Building2, label: "Company", value: company.name },
     { icon: UserRound, label: "Recruiter", value: user?.fullName ?? "—" },
@@ -229,19 +231,19 @@ function CompanyNote({
   return (
     <NotchedPanel
       fill="warm"
-      title="Details"
+      title={tx("Details")}
       icon={<Building2 aria-hidden="true" className="size-4" />}
       actions={
         <>
           <IconAction
-            label="Edit company"
+            label={tx("Edit company")}
             href="/recruiter/company"
             className="bg-ws-card text-ws-muted opacity-100 hover:bg-ws-card-hover hover:text-ws-fg"
           >
             <Pencil aria-hidden="true" className="size-4" />
           </IconAction>
           <IconAction
-            label="More company actions"
+            label={tx("More company actions")}
             className="bg-ws-card text-ws-muted opacity-100 hover:bg-ws-card-hover hover:text-ws-fg"
           >
             <MoreHorizontal aria-hidden="true" className="size-4" />
@@ -257,12 +259,12 @@ function CompanyNote({
        * from the workspace tones — an ink-on-ink tint disappears against the
        * yellow, which is why these carry their own fill.
        */}
-      <div className="mt-4 flex items-center gap-1.5">
+      <div className="mt-3 flex items-center gap-1.5">
         {shortcuts.map((shortcut) => (
           <Link
             key={shortcut.label}
             href={shortcut.href}
-            aria-label={shortcut.label}
+            aria-label={tx(shortcut.label)}
             className={cn(
               "flex size-9 items-center justify-center rounded-full transition-transform hover:scale-110",
               shortcut.fill,
@@ -283,25 +285,26 @@ function VerificationNote({
   company: CompanyResponse;
   documents: CompanyDocumentResponse[];
 }) {
+  const tx = useWorkspaceTranslation();
   const pending = documents.filter((document) => document.status === "PENDING");
   const approved = company.verificationStatus === "APPROVED";
 
   return (
     <NotchedPanel
       fill="cool"
-      title="Verification"
+      title={tx("Verification")}
       icon={<ShieldCheck aria-hidden="true" className="size-4" />}
       actions={
         <>
           <IconAction
-            label="Manage documents"
+            label={tx("Manage documents")}
             href="/recruiter/company/documents"
             className="bg-ws-card text-ws-muted opacity-100 hover:bg-ws-card-hover hover:text-ws-fg"
           >
             <Pencil aria-hidden="true" className="size-4" />
           </IconAction>
           <IconAction
-            label="More verification actions"
+            label={tx("More verification actions")}
             className="bg-ws-card text-ws-muted opacity-100 hover:bg-ws-card-hover hover:text-ws-fg"
           >
             <MoreHorizontal aria-hidden="true" className="size-4" />
@@ -337,15 +340,15 @@ function VerificationNote({
       />
 
       {/* Mirrors the yellow card's disc row, so the pair share a rhythm. */}
-      <div className="mt-4 flex items-center gap-1.5">
+      <div className="mt-3 flex items-center gap-1.5">
         <Chip
           tone={approved ? "solid" : "soft"}
-          className="px-2.5 py-1 text-[18px]"
+          className="px-2.5 py-1 text-xs"
         >
-          {approved ? "Verified" : "Awaiting review"}
+          {approved ? tx("Verified") : tx("Awaiting review")}
         </Chip>
-        <span className="inline-flex items-center rounded-full bg-ws-panel px-2.5 py-1 text-[18px] font-semibold text-ws-muted">
-          {pending.length ? `${pending.length} pending` : "Docs clear"}
+        <span className="inline-flex items-center rounded-full bg-ws-panel px-2.5 py-1 text-xs font-semibold text-ws-muted">
+          {pending.length ? `${pending.length} pending` : tx("Docs clear")}
         </span>
       </div>
     </NotchedPanel>
@@ -354,7 +357,7 @@ function VerificationNote({
 
 /**
  * The label/value rhythm both note cards share: a muted caption with the value
- * set tight underneath it, and a small icon in the gutter. Sentence case, not
+ * spaced underneath it, and a small icon in the gutter. Sentence case, not
  * uppercase — the reference's captions are quiet, and letterspaced caps read
  * as headings competing with the card title.
  */
@@ -363,19 +366,20 @@ function NoteRows({
 }: {
   rows: { icon: LucideIcon; label: string; value: string }[];
 }) {
+  const tx = useWorkspaceTranslation();
   return (
-    <dl className="flex flex-col gap-2.5">
+    <dl className="flex flex-col gap-3">
       {rows.map((row) => (
         <div key={row.label} className="flex items-start gap-2.5">
           <row.icon
             aria-hidden="true"
-            className="mt-px size-3.5 shrink-0 opacity-45"
+            className="mt-0.5 size-3.5 shrink-0 opacity-45"
           />
-          <div className="min-w-0">
-            <dt className="text-[18px] font-medium leading-4 opacity-55">
-              {row.label}
+          <div className="min-w-0 flex-1">
+            <dt className="text-xs font-medium leading-4 opacity-55">
+              {tx(row.label)}
             </dt>
-            <dd className="truncate text-[18px] font-semibold leading-4">
+            <dd className="mt-0.5 text-sm font-semibold leading-5 [overflow-wrap:anywhere]">
               {row.value}
             </dd>
           </div>
@@ -412,6 +416,7 @@ function ActivityStream({
   candidates: ForwardedApplicationResponse[];
   documents: CompanyDocumentResponse[];
 }) {
+  const tx = useWorkspaceTranslation();
   const [tab, setTab] = useState<StreamTab>("Candidates");
 
   const rows =
@@ -427,7 +432,7 @@ function ActivityStream({
   ];
 
   return (
-    <div className="flex min-h-104 flex-col">
+    <div className={cn("flex min-h-104 flex-col", responsive.stream, responsive.candidateStream)}>
       {/* The tabs are cut from the card below them, not floated above it. */}
       <FolderTabs
         tabs={streamTabs}
@@ -452,7 +457,7 @@ function ActivityStream({
                       date={row.date}
                       icon={row.icon}
                       iconTone={row.iconTone}
-                      title={row.title}
+                      title={tx(row.title)}
                       meta={row.meta}
                       chip={row.chip}
                       chipTone={row.chipTone}
@@ -467,8 +472,7 @@ function ActivityStream({
 
           {rows.length ? null : (
             <p className="px-2 py-10 text-center text-sm text-ws-faint">
-              Nothing in this stream yet.
-            </p>
+              {tx("Nothing in this stream yet.")}</p>
           )}
         </div>
       </Panel>
@@ -543,17 +547,18 @@ function CandidateFilesColumn({
 }: {
   candidates: ForwardedApplicationResponse[];
 }) {
+  const tx = useWorkspaceTranslation();
   const files = [...candidates]
     .sort((a, b) => time(b.forwardedAt) - time(a.forwardedAt))
     .filter((item) => item.submittedResume);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={cn("flex flex-col gap-4", responsive.files)}>
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-lg font-medium text-ws-fg">Candidate files</h2>
+        <h2 className="text-lg font-medium text-ws-fg">{tx("Candidate files")}</h2>
         <Link
           href="/recruiter/forwarded-candidates"
-          aria-label="See all forwarded candidates"
+          aria-label={tx("See all forwarded candidates")}
           className="flex size-9 items-center justify-center rounded-full bg-ws-card text-ws-muted transition-colors hover:bg-ws-card-hover hover:text-ws-fg"
         >
           <UsersRound aria-hidden="true" className="size-4" />
@@ -569,7 +574,7 @@ function CandidateFilesColumn({
             key={`resume-${item.application.id}`}
             href={`/recruiter/forwarded-candidates/${item.application.id}`}
             eyebrow={`Forwarded ${shortDate(item.forwardedAt)}`}
-            title={resume.title || "Submitted resume"}
+            title={resume.title || tx("Submitted resume")}
             meta={
               item.candidate.headline ||
               item.candidate.currentPosition ||
@@ -586,14 +591,12 @@ function CandidateFilesColumn({
 
       {files.length ? null : (
         <Panel className="text-sm text-ws-faint">
-          No candidate files yet. Resumes and portfolios appear here as soon as
-          candidates are forwarded to{" "}
+          {tx("No candidate files yet. Resumes and portfolios appear here as soon as candidates are forwarded to")}{" "}
           <Link
             href="/recruiter/jobs"
             className="font-semibold text-ws-fg underline"
           >
-            your open jobs
-          </Link>
+            {tx("your open jobs")}</Link>
           .
         </Panel>
       )}

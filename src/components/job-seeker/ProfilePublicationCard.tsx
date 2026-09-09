@@ -1,194 +1,185 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, Copy, ExternalLink, Globe, Lock, EyeOff, Sparkles } from "lucide-react";
+import { Check, Copy, ExternalLink, Globe, Lock, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import type { JobSeekerProfileResponse, PublicationVisibility } from "@/contracts";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { useUpdateJobSeekerPublicationMutation } from "@/services/jobSeekerApi";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatusPill } from "@/components/shared/ApiCards";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface ProfilePublicationCardProps {
   profile: JobSeekerProfileResponse;
 }
 
 export function ProfilePublicationCard({ profile }: ProfilePublicationCardProps) {
+  const tx = useWorkspaceTranslation();
   const [updatePublication, { isLoading }] = useUpdateJobSeekerPublicationMutation();
   const [copied, setCopied] = useState(false);
 
   const handleVisibilityChange = async (visibility: PublicationVisibility) => {
+    if (visibility === profile.profileVisibility || isLoading) return;
     try {
       await updatePublication({ visibility }).unwrap();
       const labels: Record<PublicationVisibility, string> = {
         PUBLIC: "Profile is now public!",
         PRIVATE: "Profile set to private.",
-        HIDDEN: "Profile hidden from search.",
+        HIDDEN: "Profile hidden.",
       };
-      toast.success(labels[visibility]);
+      toast.success(labels[visibility] || "Visibility updated");
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Unable to update profile publication status."));
+      toast.error(getApiErrorMessage(error, tx("Unable to update profile publication status.")));
     }
   };
 
+  const isPublic = profile.profileVisibility === "PUBLIC";
+  const publicUrl = profile.publicProfileSlug
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/profile/${profile.publicProfileSlug}`
+    : "";
+
   const copyPublicLink = () => {
-    if (!profile.publicProfileSlug) return;
-    const url = `${window.location.origin}/profile/${profile.publicProfileSlug}`;
-    navigator.clipboard.writeText(url);
+    if (!publicUrl) {
+      toast.error(tx("No public profile link available yet."));
+      return;
+    }
+    navigator.clipboard.writeText(publicUrl);
     setCopied(true);
-    toast.success("Public profile link copied to clipboard!");
+    toast.success(tx("Public profile link copied to clipboard!"));
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isPublic = profile.profileVisibility === "PUBLIC";
-
   return (
-    <Card className="overflow-hidden rounded-3xl border border-border shadow-sm">
-      <CardHeader className="border-b border-border bg-surface-muted/40 px-6 py-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold text-heading">
-            <Globe className="size-5 text-brand" />
-            Profile Visibility & Publishing
-          </CardTitle>
-          <StatusPill>{profile.profileVisibility}</StatusPill>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-6 p-6">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <button
-            type="button"
-            onClick={() => handleVisibilityChange("PUBLIC")}
-            disabled={isLoading}
-            className={`flex flex-col items-start rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 ${
-              profile.profileVisibility === "PUBLIC"
-                ? "border-brand bg-brand-tint/40 ring-2 ring-brand/20"
-                : "border-border bg-surface hover:border-slate-300"
-            }`}
-          >
-            <div className="flex w-full items-center justify-between">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                <Globe className="size-4" />
-              </span>
-              {profile.profileVisibility === "PUBLIC" && (
-                <span className="text-xs font-semibold text-brand">Active</span>
-              )}
-            </div>
-            <h4 className="mt-3 font-semibold text-heading">Public</h4>
-            <p className="mt-1 text-xs leading-relaxed text-slate-500">
-              Visible to all recruiters and employers searching for candidates.
+    <Card className="min-w-0 overflow-hidden rounded-2xl border border-ws-line bg-ws-panel py-0 shadow-xs ring-0">
+      <CardContent className="space-y-4 p-5 sm:p-6">
+        {/* Header row: Title & Compact Segmented Toggle (PUBLIC / PRIVATE only) */}
+        <div className="flex flex-col gap-3 border-b border-ws-line pb-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="flex items-center gap-2 text-base font-semibold text-ws-fg">
+              <Globe className="size-4.5 text-primary" />
+              {tx("Profile Visibility")}
+            </h2>
+            <p className="mt-0.5 text-xs text-ws-muted">
+              {isPublic
+                ? tx("Your profile is publicly discoverable by recruiters searching for talent.")
+                : tx("Your profile is private. Only companies you directly apply to can see it.")}
             </p>
-          </button>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => handleVisibilityChange("PRIVATE")}
-            disabled={isLoading}
-            className={`flex flex-col items-start rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 ${
-              profile.profileVisibility === "PRIVATE"
-                ? "border-brand bg-brand-tint/40 ring-2 ring-brand/20"
-                : "border-border bg-surface hover:border-slate-300"
-            }`}
-          >
-            <div className="flex w-full items-center justify-between">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
-                <Lock className="size-4" />
-              </span>
-              {profile.profileVisibility === "PRIVATE" && (
-                <span className="text-xs font-semibold text-brand">Active</span>
+          {/* Compact segmented control */}
+          <div className="inline-flex shrink-0 items-center rounded-xl border border-ws-line bg-ws-card p-1 self-start sm:self-auto">
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={() => handleVisibilityChange("PUBLIC")}
+              className={cn(
+                "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all",
+                isPublic
+                  ? "border border-ws-line bg-ws-panel text-primary shadow-xs"
+                  : "text-ws-muted hover:text-ws-fg",
               )}
-            </div>
-            <h4 className="mt-3 font-semibold text-heading">Private</h4>
-            <p className="mt-1 text-xs leading-relaxed text-slate-500">
-              Only visible to companies you directly submit job applications to.
-            </p>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleVisibilityChange("HIDDEN")}
-            disabled={isLoading}
-            className={`flex flex-col items-start rounded-2xl border p-5 text-left transition-all hover:-translate-y-0.5 ${
-              profile.profileVisibility === "HIDDEN"
-                ? "border-brand bg-brand-tint/40 ring-2 ring-brand/20"
-                : "border-border bg-surface hover:border-slate-300"
-            }`}
-          >
-            <div className="flex w-full items-center justify-between">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                <EyeOff className="size-4" />
-              </span>
-              {profile.profileVisibility === "HIDDEN" && (
-                <span className="text-xs font-semibold text-brand">Active</span>
+            >
+              <Globe className="size-3.5" />
+              {tx("Public")}
+              {isPublic && <span className="size-1.5 rounded-full bg-primary" />}
+            </button>
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={() => handleVisibilityChange("PRIVATE")}
+              className={cn(
+                "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all",
+                !isPublic
+                  ? "border border-ws-line bg-ws-panel text-amber-600 shadow-xs dark:text-amber-400"
+                  : "text-ws-muted hover:text-ws-fg",
               )}
-            </div>
-            <h4 className="mt-3 font-semibold text-heading">Hidden</h4>
-            <p className="mt-1 text-xs leading-relaxed text-slate-500">
-              Completely hidden from search results and recruiter candidate lists.
-            </p>
-          </button>
+            >
+              <Lock className="size-3.5" />
+              {tx("Private")}
+              {!isPublic && <span className="size-1.5 rounded-full bg-amber-500" />}
+            </button>
+          </div>
         </div>
 
-        {!isPublic ? (
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-brand/20 bg-brand-tint/30 p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-sm">
+        {/* Primary Useful Section: Live URL + Actions when Public; CTA when Private */}
+        {/* {isPublic ? (
+          <div className="flex flex-col justify-between gap-4 rounded-xl border border-primary/20 bg-ws-card/60 p-4 sm:flex-row sm:items-center sm:p-5">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="relative flex size-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                  <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
+                </span>
+                <span className="text-sm font-semibold text-ws-fg">
+                  {tx("Your profile is live and published!")}
+                </span>
+              </div>
+              {profile.publishedAt && (
+                <p className="mt-1 text-xs text-ws-muted">
+                  {tx("Published on ")}
+                  {new Date(profile.publishedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
+                </p>
+              )} */}
+              {/* {publicUrl && (
+                <p className="mt-1 truncate font-mono text-xs text-primary/90">
+                  {publicUrl}
+                </p>
+              )} */}
+            {/* </div> */}
+
+            {/* <div className="flex shrink-0 flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={copyPublicLink}
+                className="h-9 gap-1.5 rounded-lg border-ws-line bg-ws-panel text-xs font-medium text-ws-fg hover:bg-ws-card hover:text-ws-fg"
+              >
+                {copied ? <Check className="size-3.5 text-primary" /> : <Copy className="size-3.5" />}
+                {copied ? tx("Copied") : tx("Copy Link")}
+              </Button>
+              <Button
+                render={
+                  <Link
+                    href={profile.publicProfileSlug ? `/profile/${profile.publicProfileSlug}` : "/job-seeker/profile"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                }
+                size="sm"
+                className="h-9 gap-1.5 rounded-lg bg-primary text-xs font-medium text-white shadow-xs hover:bg-primary-hover"
+              >
+                <ExternalLink className="size-3.5" />
+                {tx("View Public Profile")}
+              </Button>
+            </div>
+          </div>
+        ) : ( */}
+          {/* <div className="flex flex-col justify-between gap-4 rounded-xl border border-ws-line bg-ws-card/50 p-4 sm:flex-row sm:items-center sm:p-5">
+            <div className="flex items-start gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-ws-line bg-ws-panel text-primary">
                 <Sparkles className="size-5" />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-heading">Ready to publish your profile?</h4>
-                <p className="text-xs text-slate-600">
-                  Publishing makes your profile visible to top recruiters looking for candidates like you.
+                <h3 className="text-sm font-semibold text-ws-fg">
+                  {tx("Ready to publish your profile?")}
+                </h3>
+                <p className="mt-0.5 text-xs text-ws-muted">
+                  {tx("Publishing creates your shareable public link and makes your profile visible to recruiters.")}
                 </p>
               </div>
             </div>
             <Button
               onClick={() => handleVisibilityChange("PUBLIC")}
               disabled={isLoading}
-              className="h-10 rounded-lg px-5 bg-brand hover:bg-brand/90 text-white font-medium shadow-sm"
+              className="h-9 shrink-0 gap-2 rounded-lg bg-primary px-4 text-xs font-medium text-white shadow-xs hover:bg-primary-hover"
             >
-              {isLoading ? "Publishing…" : "Publish Profile Now"}
+              <Globe className="size-3.5" />
+              {isLoading ? tx("Publishing…") : tx("Publish Profile Now")}
             </Button>
-          </div>
-        ) : (
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="inline-block size-2 rounded-full bg-emerald-500 animate-pulse" />
-                <h4 className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
-                  Your profile is live and published!
-                </h4>
-              </div>
-              {profile.publishedAt && (
-                <p className="mt-0.5 text-xs text-emerald-700 dark:text-emerald-400">
-                  Published on {new Date(profile.publishedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={copyPublicLink}
-                className="h-9 gap-1.5 rounded-lg border-emerald-200 hover:bg-emerald-100/50 dark:border-emerald-800"
-              >
-                {copied ? <Check className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />}
-                {copied ? "Copied" : "Copy Link"}
-              </Button>
-              <Button
-                render={<Link href="/job-seeker/profile" target="_blank" />}
-                variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 rounded-lg border-emerald-200 hover:bg-emerald-100/50 dark:border-emerald-800"
-              >
-                <ExternalLink className="size-3.5" />
-                View Public Profile
-              </Button>
-            </div>
-          </div>
-        )}
+          </div> */}
       </CardContent>
     </Card>
   );

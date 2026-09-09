@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { resolveFileUrl } from "@/lib/file-url";
 import Link from "next/link";
@@ -20,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { useDeleteResumeMutation, useGetResumeQuery, useSetDefaultResumeMutation, useUpdateResumeMutation } from "@/services/jobSeekerApi";
 
 export default function ResumeDetailPage() {
+  const tx = useWorkspaceTranslation();
   const { resumeId } = useParams<{ resumeId: string }>();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
@@ -29,46 +32,46 @@ export default function ResumeDetailPage() {
   const [deleteResume, deleteState] = useDeleteResumeMutation();
 
   if (resumeQuery.isLoading) return <LoadingState rows={4} />;
-  if (resumeQuery.isError || !resumeQuery.data) return <ErrorState message="Unable to load this resume." />;
+  if (resumeQuery.isError || !resumeQuery.data) return <ErrorState message={tx("Unable to load this resume.")} />;
   const resume = resumeQuery.data;
 
   async function makeDefault() {
     try {
       await setDefault(resumeId).unwrap();
-      toast.success("Default resume updated");
-    } catch { toast.error("Could not update your default resume."); }
+      toast.success(tx("Default resume updated"));
+    } catch { toast.error(tx("Could not update your default resume.")); }
   }
 
   async function save(body: { title: string; resumeFileUrl?: string; resumeData?: Record<string, unknown> }) {
     try {
       await updateResume({ resumeId, body }).unwrap();
-      toast.success("Resume updated");
+      toast.success(tx("Resume updated"));
       setIsEditing(false);
-    } catch { toast.error("Could not save your changes."); }
+    } catch { toast.error(tx("Could not save your changes.")); }
   }
 
   async function removeResume() {
     if (!window.confirm(`Delete “${resume.title}”? This cannot be undone.`)) return;
     try {
       await deleteResume(resumeId).unwrap();
-      toast.success("Resume deleted");
+      toast.success(tx("Resume deleted"));
       router.replace("/job-seeker/resumes");
-    } catch { toast.error("Could not delete this resume."); }
+    } catch { toast.error(tx("Could not delete this resume.")); }
   }
 
   return (
     <div className={isEditing && !resume.resumeFileUrl ? "mx-auto max-w-7xl" : "mx-auto max-w-6xl"}>
-      <PageIntro title={resume.title} description="Review and manage this resume." />
-      <Link href="/job-seeker/resumes" className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-ws-muted hover:text-ws-fg"><ArrowLeft className="size-4" /> All resumes</Link>
+      <PageIntro title={resume.title} description={tx("Review and manage this resume.")} />
+      <Link href="/job-seeker/resumes" className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-ws-muted hover:text-ws-fg"><ArrowLeft className="size-4" /> {tx(" All resumes")}</Link>
 
       {isEditing ? (
         resume.resumeFileUrl ? (
           <div className="mx-auto max-w-3xl rounded-[24px] bg-ws-card p-6 lg:p-8">
-            <div className="mb-7"><p className="text-xs font-semibold uppercase tracking-widest text-primary">Edit document</p><h2 className="mt-2 text-xl font-semibold text-ws-fg">Update resume details</h2></div>
+            <div className="mb-7"><p className="text-xs font-semibold uppercase tracking-widest text-primary">{tx("Edit document")}</p><h2 className="mt-2 text-xl font-semibold text-ws-fg">{tx("Update resume details")}</h2></div>
             <ResumeForm
               initialTitle={resume.title}
               initialFileUrl={resume.resumeFileUrl}
-              submitLabel="Save changes"
+              submitLabel={tx("Save changes")}
               isSubmitting={updateState.isLoading}
               onCancel={() => setIsEditing(false)}
               onSubmit={(body) => save(body)}
@@ -78,7 +81,7 @@ export default function ResumeDetailPage() {
           <ResumeBuilder
             initialTitle={resume.title}
             initialData={resume.resumeData}
-            submitLabel="Save changes"
+            submitLabel={tx("Save changes")}
             isSubmitting={updateState.isLoading}
             onCancel={() => setIsEditing(false)}
             onSubmit={(body) => save(body)}
@@ -92,7 +95,7 @@ export default function ResumeDetailPage() {
                 <div className="aspect-[0.707] w-full max-w-105 overflow-hidden bg-white shadow-[0_18px_50px_rgba(0,0,0,0.12)]">
                   <iframe
                     src={`${resolveFileUrl(resume.resumeFileUrl)}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`}
-                    title={`${resume.title} preview`}
+                    title={tx("{0} preview", { 0: resume.title })}
                     className="size-full border-0"
                   />
                 </div>
@@ -106,10 +109,10 @@ export default function ResumeDetailPage() {
               </div>}
             </div>
             <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-              <div className="min-w-0"><h2 className="truncate text-lg font-semibold text-ws-fg">{resume.title}</h2><p className="mt-1 text-sm text-ws-muted">{resume.resumeFileUrl ? "Uploaded PDF" : `${getTemplate(normalizeResumeData(resume.resumeData).templateId).name} template`}</p></div>
+              <div className="min-w-0"><h2 className="truncate text-lg font-semibold text-ws-fg">{resume.title}</h2><p className="mt-1 text-sm text-ws-muted">{resume.resumeFileUrl ? tx("Uploaded PDF") : `${getTemplate(normalizeResumeData(resume.resumeData).templateId).name} template`}</p></div>
               <div className="flex gap-2">
-                <Button variant="secondary" onClick={() => setIsEditing(true)} className="rounded-xl"><Pencil /> Edit</Button>
-                {resume.resumeFileUrl ? <Button render={<a href={resolveFileUrl(resume.resumeFileUrl)} target="_blank" rel="noreferrer" />} className="rounded-xl"><Download /> View PDF</Button> : <Button render={<Link href={`/job-seeker/resumes/${resume.id}/view`} />} className="rounded-xl"><Eye /> View resume</Button>}
+                <Button variant="secondary" onClick={() => setIsEditing(true)} className="rounded-xl"><Pencil /> {tx(" Edit")}</Button>
+                {resume.resumeFileUrl ? <Button render={<a href={resolveFileUrl(resume.resumeFileUrl)} target="_blank" rel="noreferrer" />} className="rounded-xl"><Download /> {tx(" View PDF")}</Button> : <Button render={<Link href={`/job-seeker/resumes/${resume.id}/view`} />} className="rounded-xl"><Eye /> {tx(" View resume")}</Button>}
               </div>
             </div>
           </section>
@@ -119,18 +122,18 @@ export default function ResumeDetailPage() {
             <ResumePublishCard resume={resume} />
 
             <section className="rounded-[22px] bg-ws-card p-5">
-              <h2 className="text-sm font-semibold text-ws-fg">Resume status</h2>
+              <h2 className="text-sm font-semibold text-ws-fg">{tx("Resume status")}</h2>
               <div className="mt-5 space-y-4">
-                <InfoRow icon={resume.isDefault ? Check : Star} label="Application default" value={resume.isDefault ? "Default resume" : "Not default"} active={resume.isDefault} />
-                <InfoRow icon={CalendarDays} label="Last updated" value={formatDate(resume.updatedAt)} />
+                <InfoRow icon={resume.isDefault ? Check : Star} label={tx("Application default")} value={resume.isDefault ? "Default resume" : "Not default"} active={resume.isDefault} />
+                <InfoRow icon={CalendarDays} label={tx("Last updated")} value={formatDate(resume.updatedAt)} />
               </div>
-              {!resume.isDefault ? <Button onClick={makeDefault} disabled={defaultState.isLoading} variant="secondary" className="mt-6 w-full rounded-xl">{defaultState.isLoading ? <Loader2 className="animate-spin" /> : <Star />} Make default</Button> : null}
+              {!resume.isDefault ? <Button onClick={makeDefault} disabled={defaultState.isLoading} variant="secondary" className="mt-6 w-full rounded-xl">{defaultState.isLoading ? <Loader2 className="animate-spin" /> : <Star />} {tx(" Make default")}</Button> : null}
             </section>
 
             <section className="rounded-[22px] bg-ws-card p-5">
-              <h2 className="text-sm font-semibold text-ws-fg">Document actions</h2>
-              <p className="mt-2 text-xs leading-5 text-ws-muted">Deleting removes this resume from your library and future applications.</p>
-              <Button variant="destructive" onClick={removeResume} disabled={deleteState.isLoading} className="mt-5 w-full rounded-xl">{deleteState.isLoading ? <Loader2 className="animate-spin" /> : <Trash2 />} Delete resume</Button>
+              <h2 className="text-sm font-semibold text-ws-fg">{tx("Document actions")}</h2>
+              <p className="mt-2 text-xs leading-5 text-ws-muted">{tx("Deleting removes this resume from your library and future applications.")}</p>
+              <Button variant="destructive" onClick={removeResume} disabled={deleteState.isLoading} className="mt-5 w-full rounded-xl">{deleteState.isLoading ? <Loader2 className="animate-spin" /> : <Trash2 />} {tx(" Delete resume")}</Button>
             </section>
           </aside>
         </div>
@@ -140,7 +143,8 @@ export default function ResumeDetailPage() {
 }
 
 function InfoRow({ icon: Icon, label, value, active }: { icon: typeof Star; label: string; value: string; active?: boolean }) {
-  return <div className="flex items-center gap-3"><span className={`flex size-9 items-center justify-center rounded-xl ${active ? "bg-chip-soft text-chip-soft-fg" : "bg-ws-panel text-ws-muted"}`}><Icon className="size-4" /></span><div><p className="text-xs text-ws-muted">{label}</p><p className="mt-0.5 text-sm font-medium capitalize text-ws-fg">{value}</p></div></div>;
+  const tx = useWorkspaceTranslation();
+  return <div className="flex items-center gap-3"><span className={`flex size-9 items-center justify-center rounded-xl ${active ? "bg-chip-soft text-chip-soft-fg" : "bg-ws-panel text-ws-muted"}`}><Icon className="size-4" /></span><div><p className="text-xs text-ws-muted">{tx(label)}</p><p className="mt-0.5 text-sm font-medium capitalize text-ws-fg">{value}</p></div></div>;
 }
 
 function formatDate(value?: string) {

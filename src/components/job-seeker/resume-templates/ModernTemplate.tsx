@@ -1,3 +1,5 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import type { ReactNode } from "react";
 import { formatDateRange } from "@/lib/resume-data";
 import { Description, Photo, Sheet, contactLines, type ResumeTemplateProps } from "./shared";
@@ -7,6 +9,7 @@ import { Description, Photo, Sheet, contactLines, type ResumeTemplateProps } fro
  * and projects lead, with skills and education kept to the right rail.
  */
 export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
+  const tx = useWorkspaceTranslation();
   const name = data.fullName.trim() || fallbackName;
   const accent = data.accent;
   const contacts = contactLines(data);
@@ -33,13 +36,13 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
       <div className="grid flex-1 grid-cols-[1.35fr_0.65fr]">
         <main className="space-y-7 px-12 py-10">
           {data.summary ? (
-            <Section title="About me" accent={accent}>
+            <Section title={tx("About me")} accent={accent}>
               <p className="whitespace-pre-line text-slate-600">{data.summary}</p>
             </Section>
           ) : null}
 
           {data.experience.length ? (
-            <Section title="Experience" accent={accent}>
+            <Section title={tx("Experience")} accent={accent}>
               <div className="space-y-5 border-l-2 pl-5" style={{ borderColor: `${accent}33` }}>
                 {data.experience.map((entry) => (
                   <div key={entry.id} className="relative">
@@ -56,7 +59,7 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
           ) : null}
 
           {data.projects.length ? (
-            <Section title="Projects" accent={accent}>
+            <Section title={tx("Projects")} accent={accent}>
               <div className="space-y-4">
                 {data.projects.map((project) => (
                   <div key={project.id}>
@@ -72,7 +75,7 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
 
         <aside className="space-y-7 bg-slate-50 px-8 py-10">
           {data.skills.length ? (
-            <Section title="Skills" accent={accent}>
+            <Section title={tx("Skills")} accent={accent}>
               <div className="flex flex-wrap gap-1.5">
                 {data.skills.map((skill) => (
                   <span key={skill} className="rounded-full px-2.5 py-1 text-[18px] font-medium" style={{ background: `${accent}1a`, color: accent }}>
@@ -84,7 +87,7 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
           ) : null}
 
           {data.education.length ? (
-            <Section title="Education" accent={accent}>
+            <Section title={tx("Education")} accent={accent}>
               <div className="space-y-4 text-[18px]">
                 {data.education.map((entry) => (
                   <div key={entry.id}>
@@ -99,11 +102,11 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
           ) : null}
 
           {data.links.length ? (
-            <Section title="Links" accent={accent}>
+            <Section title={tx("Links")} accent={accent}>
               <ul className="space-y-2 text-[18px]">
                 {data.links.map((link) => (
                   <li key={link.id} className="break-all">
-                    <span className="block font-medium text-slate-700">{link.label || "Link"}</span>
+                    <span className="block font-medium text-slate-700">{link.label || tx("Link")}</span>
                     <span className="text-slate-500">{link.url}</span>
                   </li>
                 ))}

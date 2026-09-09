@@ -1,3 +1,5 @@
+"use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -13,6 +15,7 @@ export function ErrorState({
   onRetry,
   className,
 }: ErrorStateProps) {
+  const tx = useWorkspaceTranslation();
   return (
     <div
       role="alert"
@@ -31,8 +34,7 @@ export function ErrorState({
           onClick={onRetry}
           className="h-8 text-xs"
         >
-          Try again
-        </Button>
+          {tx("Try again")}</Button>
       ) : null}
     </div>
   );

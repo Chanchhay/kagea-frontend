@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
+
 
 import { useState, type KeyboardEvent, type ReactNode } from "react";
 import { ChevronDown, ChevronUp, GripVertical, Plus, Trash2, X } from "lucide-react";
@@ -19,6 +21,7 @@ export function BuilderSection({
   action?: ReactNode;
   children: ReactNode;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <section className="rounded-2xl border border-ws-line bg-ws-panel p-5">
       <div className="mb-5 flex items-start gap-3">
@@ -27,7 +30,7 @@ export function BuilderSection({
         </span>
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-ws-fg">{title}</h3>
-          <p className="mt-0.5 text-xs leading-5 text-ws-muted">{description}</p>
+          <p className="mt-0.5 text-xs leading-5 text-ws-muted">{tx(description)}</p>
         </div>
         {action}
       </div>
@@ -47,10 +50,11 @@ export function Field({
   className?: string;
   children: ReactNode;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <label className={className}>
       <span className="mb-2 block text-sm font-medium text-ws-fg">
-        {label}
+        {tx(label)}
         {required ? <span className="ml-1 text-primary">*</span> : null}
       </span>
       {children}
@@ -75,9 +79,10 @@ export function TextField({
   required?: boolean;
   className?: string;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
-    <Field label={label} required={required} className={className}>
-      <Input type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} required={required} />
+    <Field label={tx(label)} required={required} className={className}>
+      <Input type={type} value={value} onChange={(event) => onChange(event.target.value)} placeholder={tx(placeholder)} required={required} />
     </Field>
   );
 }
@@ -99,11 +104,12 @@ export function TextAreaField({
   maxLength?: number;
   className?: string;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
-    <Field label={label}>
-      <Textarea value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} maxLength={maxLength} className={className} />
+    <Field label={tx(label)}>
+      <Textarea value={value} onChange={(event) => onChange(event.target.value)} placeholder={tx(placeholder)} maxLength={maxLength} className={className} />
       <span className="mt-1.5 flex justify-between text-xs text-ws-faint">
-        <span>{hint}</span>
+        <span>{tx(hint)}</span>
         {maxLength ? <span>{value.length}/{maxLength}</span> : null}
       </span>
     </Field>
@@ -112,13 +118,14 @@ export function TextAreaField({
 
 /** "Add entry" button used at the foot of every repeatable section. */
 export function AddEntryButton({ label, onClick }: { label: string; onClick: () => void }) {
+  const tx = useWorkspaceTranslation();
   return (
     <button
       type="button"
       onClick={onClick}
       className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-ws-line py-3 text-sm font-medium text-ws-muted transition hover:border-primary hover:text-primary"
     >
-      <Plus className="size-4" /> {label}
+      <Plus className="size-4" /> {tx(label)}
     </button>
   );
 }
@@ -142,6 +149,7 @@ export function EntryCard({
   onRemove: () => void;
   children: ReactNode;
 }) {
+  const tx = useWorkspaceTranslation();
   return (
     <div className="rounded-xl border border-ws-line bg-ws-card p-4">
       <div className="mb-4 flex items-center gap-2">
@@ -151,7 +159,7 @@ export function EntryCard({
           type="button"
           onClick={() => onMove(index, index - 1)}
           disabled={index === 0}
-          aria-label="Move up"
+          aria-label={tx("Move up")}
           className="flex size-8 items-center justify-center rounded-lg text-ws-muted transition hover:bg-ws-card-hover hover:text-ws-fg disabled:opacity-30"
         >
           <ChevronUp className="size-4" />
@@ -160,7 +168,7 @@ export function EntryCard({
           type="button"
           onClick={() => onMove(index, index + 1)}
           disabled={index === total - 1}
-          aria-label="Move down"
+          aria-label={tx("Move down")}
           className="flex size-8 items-center justify-center rounded-lg text-ws-muted transition hover:bg-ws-card-hover hover:text-ws-fg disabled:opacity-30"
         >
           <ChevronDown className="size-4" />
@@ -168,7 +176,7 @@ export function EntryCard({
         <button
           type="button"
           onClick={onRemove}
-          aria-label={`Remove ${title}`}
+          aria-label={tx("Remove {0}", { 0: title })}
           className="flex size-8 items-center justify-center rounded-lg text-ws-muted transition hover:bg-chip-alert hover:text-destructive"
         >
           <Trash2 className="size-4" />
@@ -181,6 +189,7 @@ export function EntryCard({
 
 /** Free-form tag input: type a skill, press Enter or comma to commit it. */
 export function SkillsInput({ skills, onChange }: { skills: string[]; onChange: (skills: string[]) => void }) {
+  const tx = useWorkspaceTranslation();
   const [draft, setDraft] = useState("");
 
   const commit = (raw: string) => {
@@ -213,7 +222,7 @@ export function SkillsInput({ skills, onChange }: { skills: string[]; onChange: 
               <button
                 type="button"
                 onClick={() => onChange(skills.filter((item) => item !== skill))}
-                aria-label={`Remove ${skill}`}
+                aria-label={tx("Remove {0}", { 0: skill })}
                 className="transition hover:text-destructive"
               >
                 <X className="size-3.5" />
@@ -227,9 +236,9 @@ export function SkillsInput({ skills, onChange }: { skills: string[]; onChange: 
         onChange={(event) => setDraft(event.target.value)}
         onKeyDown={handleKeyDown}
         onBlur={() => commit(draft)}
-        placeholder="Type a skill and press Enter"
+        placeholder={tx("Type a skill and press Enter")}
       />
-      <p className="mt-2 text-xs text-ws-muted">Separate skills with Enter or a comma. Backspace removes the last one.</p>
+      <p className="mt-2 text-xs text-ws-muted">{tx("Separate skills with Enter or a comma. Backspace removes the last one.")}</p>
     </div>
   );
 }
