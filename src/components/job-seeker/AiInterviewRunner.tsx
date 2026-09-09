@@ -1,6 +1,4 @@
 "use client";
-import { useWorkspaceTranslation } from "@/i18n/useWorkspaceTranslation";
-
 
 import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -18,11 +16,9 @@ import { isVapiConfigured } from "@/lib/vapi";
 import { resolveFileUrl } from "@/lib/file-url";
 import { useGetCurrentUserQuery } from "@/services/authApi";
 import {
-  useBindAiInterviewVapiCallMutation,
   useCompleteAiInterviewMutation,
   useStartAiInterviewMutation,
   useSubmitAiInterviewAnswerMutation,
-  useSubmitAiInterviewTranscriptMutation,
 } from "@/services/jobSeekerApi";
 
 type AiInterviewRunnerProps = {
@@ -42,10 +38,9 @@ function AnswerForm({
   sessionId,
   question,
 }: {
-  sessionId: string;
+  sessionId: string | number;
   question: AiInterviewQuestionResponse;
 }) {
-  const tx = useWorkspaceTranslation();
   const [answerText, setAnswerText] = useState("");
   const [submitAnswer, submission] = useSubmitAiInterviewAnswerMutation();
 
@@ -59,7 +54,7 @@ function AnswerForm({
         body: { answerText: answerText.trim() },
       }).unwrap();
     } catch {
-      toast.error(tx("Unable to save that answer. Try again."));
+      toast.error("Unable to save that answer. Try again.");
     }
   };
 
@@ -73,19 +68,21 @@ function AnswerForm({
       </h2>
       <form className="mt-4 space-y-3" onSubmit={submit}>
         <label className="block text-sm font-medium text-heading">
-          {tx("Your answer")}<Textarea
+          Your answer
+          <Textarea
             className="mt-1 min-h-40"
             value={answerText}
             onChange={(event) => setAnswerText(event.target.value)}
-            placeholder={tx("Talk through your reasoning, the actions you took, and the outcome.")}
+            placeholder="Talk through your reasoning, the actions you took, and the outcome."
             required
           />
         </label>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-xs text-muted-fg">
-            {tx("Worth up to ")}{question.maxScore} {tx(" points.")}</p>
+            Worth up to {question.maxScore} points.
+          </p>
           <Button type="submit" disabled={submission.isLoading || !answerText.trim()}>
-            {submission.isLoading ? tx("Saving…") : tx("Submit answer")}
+            {submission.isLoading ? "Saving…" : "Submit answer"}
           </Button>
         </div>
       </form>
@@ -94,11 +91,8 @@ function AnswerForm({
 }
 
 export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
-  const tx = useWorkspaceTranslation();
   const router = useRouter();
   const [start, starting] = useStartAiInterviewMutation();
-  const [bindVapiCall] = useBindAiInterviewVapiCallMutation();
-  const [submitTranscript] = useSubmitAiInterviewTranscriptMutation();
   const [complete, completion] = useCompleteAiInterviewMutation();
   const [mode, setMode] = useState<"voice" | "typing">(
     isVapiConfigured ? "voice" : "typing",
@@ -124,14 +118,17 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
       <PlainCard>
         <div className="flex flex-col items-center gap-3 py-6 text-center">
           <CheckCircle2 aria-hidden="true" className="size-8 text-brand" />
-          <h2 className="text-lg font-semibold text-heading">{tx("Interview completed")}</h2>
+          <h2 className="text-lg font-semibold text-heading">Interview completed</h2>
           <p className="max-w-md text-sm leading-6 text-body">
-            {tx("Your answers have been scored. Open the result to see the feedback breakdown.")}</p>
+            Your answers have been scored. Open the result to see the feedback
+            breakdown.
+          </p>
           <Button
             type="button"
             onClick={() => router.push(`/job-seeker/interviews/${session.id}/result`)}
           >
-            {tx("View result")}</Button>
+            View result
+          </Button>
         </div>
       </PlainCard>
     );
@@ -143,9 +140,12 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
         <div className="flex flex-col items-center gap-3 py-6 text-center">
           <Loader2 aria-hidden="true" className="size-8 animate-spin text-brand" />
           <h2 className="text-lg font-semibold text-heading">
-            {tx("Generating your questions")}</h2>
+            Generating your questions
+          </h2>
           <p className="max-w-md text-sm leading-6 text-body">
-            {tx("The AI is writing interview questions for ")}{session.jobTitle}{tx(". This page refreshes on its own.")}</p>
+            The AI is writing interview questions for {session.jobTitle}. This page
+            refreshes on its own.
+          </p>
         </div>
       </PlainCard>
     );
@@ -155,9 +155,11 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
     return (
       <PlainCard>
         <div className="flex flex-col items-center gap-3 py-6 text-center">
-          <StatusPill>{tx(session.status)}</StatusPill>
+          <StatusPill>{session.status}</StatusPill>
           <p className="max-w-md text-sm leading-6 text-body">
-            {tx("This interview can no longer be taken. Start a new one from the job posting.")}</p>
+            This interview can no longer be taken. Start a new one from the job
+            posting.
+          </p>
         </div>
       </PlainCard>
     );
@@ -170,9 +172,12 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
         <div className="flex flex-col items-center gap-3 py-6 text-center">
           <Sparkles aria-hidden="true" className="size-8 text-brand" />
           <h2 className="text-lg font-semibold text-heading">
-            {questions.length} {tx(" questions ready")}</h2>
+            {questions.length} questions ready
+          </h2>
           <p className="max-w-md text-sm leading-6 text-body">
-            {tx("Answer each question in your own words. You can take as long as you need, and the AI scores everything once you finish.")}</p>
+            Answer each question in your own words. You can take as long as you
+            need, and the AI scores everything once you finish.
+          </p>
           <Button
             type="button"
             disabled={starting.isLoading}
@@ -180,11 +185,11 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
               try {
                 await start(session.id).unwrap();
               } catch {
-                toast.error(tx("Unable to start this interview."));
+                toast.error("Unable to start this interview.");
               }
             }}
           >
-            {starting.isLoading ? tx("Starting…") : tx("Start interview")}
+            {starting.isLoading ? "Starting…" : "Start interview"}
           </Button>
         </div>
       </PlainCard>
@@ -194,10 +199,10 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
   const finish = async () => {
     try {
       await complete(session.id).unwrap();
-      toast.success(tx("Interview submitted for scoring."));
+      toast.success("Interview submitted for scoring.");
       router.push(`/job-seeker/interviews/${session.id}/result`);
     } catch {
-      toast.error(tx("Unable to submit this interview."));
+      toast.error("Unable to submit this interview.");
     }
   };
 
@@ -206,17 +211,17 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
       <PlainCard>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm font-medium text-heading">
-            {tx("Question ")}{Math.min(answeredCount + 1, questions.length)} {tx(" of")}{" "}
+            Question {Math.min(answeredCount + 1, questions.length)} of{" "}
             {questions.length}
           </p>
-          <StatusPill>{progress}{tx("% answered")}</StatusPill>
+          <StatusPill>{progress}% answered</StatusPill>
         </div>
         <div
           role="progressbar"
           aria-valuenow={progress}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-label={tx("Interview progress")}
+          aria-label="Interview progress"
           className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface-muted"
         >
           <span
@@ -235,12 +240,6 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
             candidateAvatarUrl={resolveFileUrl(currentUser?.avatarUrl) || undefined}
             jobTitle={session.jobTitle}
             onSwitchToTyping={() => setMode("typing")}
-            bindCall={(callId) =>
-              bindVapiCall({ sessionId: session.id, body: { callId } }).unwrap()
-            }
-            submitTurns={(turns) =>
-              submitTranscript({ sessionId: session.id, body: { turns } }).unwrap()
-            }
           />
         ) : (
           <div className="space-y-3">
@@ -256,7 +255,8 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
                 className="text-xs font-medium text-muted-fg underline underline-offset-4"
                 onClick={() => setMode("voice")}
               >
-                {tx("Answer by voice instead")}</button>
+                Answer by voice instead
+              </button>
             ) : null}
           </div>
         )
@@ -265,11 +265,14 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
           <div className="flex flex-col items-center gap-3 py-6 text-center">
             <CheckCircle2 aria-hidden="true" className="size-8 text-brand" />
             <h2 className="text-lg font-semibold text-heading">
-              {tx("All questions answered")}</h2>
+              All questions answered
+            </h2>
             <p className="max-w-md text-sm leading-6 text-body">
-              {tx("Submit the interview to have the AI score your answers and write your feedback.")}</p>
+              Submit the interview to have the AI score your answers and write
+              your feedback.
+            </p>
             <Button type="button" onClick={finish} disabled={completion.isLoading}>
-              {completion.isLoading ? tx("Scoring…") : tx("Finish and get feedback")}
+              {completion.isLoading ? "Scoring…" : "Finish and get feedback"}
             </Button>
           </div>
         </PlainCard>
@@ -278,7 +281,8 @@ export function AiInterviewRunner({ session }: AiInterviewRunnerProps) {
       {answeredCount > 0 ? (
         <PlainCard>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-fg">
-            {tx("Answered")}</h3>
+            Answered
+          </h3>
           <ul className="mt-3 space-y-3">
             {questions
               .filter((question) => question.answered)
