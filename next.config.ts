@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const apiBaseUrl = process.env.API_BASE_URL?.replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
+  experimental: {
+    useTypeScriptCli: false,
+    webpackBuildWorker: false,
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "i.pravatar.cc" },
