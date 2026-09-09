@@ -460,8 +460,8 @@ export const frontendAnimationStack: TechItem[] = [
     category: "Frontend & Animation",
     icon: <KeyframesIcon className="h-6 w-6" />,
     brandColor: "#1fa628",
-    borderColor: "hover:border-[#1fa628]/50",
-    bgGlow: "group-hover:bg-[#1fa628]/10",
+    borderColor: "hover:border-brand/50",
+    bgGlow: "group-hover:bg-brand/10",
     docUrl: "https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes",
   },
 ];
@@ -479,14 +479,14 @@ export default function TechStackSection() {
         transition={{ duration: 0.4 }}
         className="text-center space-y-3"
       >
-        <div className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/40 bg-[#1fa628]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#1fa628]">
+        <div className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand">
           <Cpu className="h-3.5 w-3.5" />
           {t("about.techStack.badge")}
         </div>
 
         <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl tracking-tight">
-          <span className="text-[#1fa628]">{t("about.techStack.headingPart1")}</span>{" "}
-          <span className="text-[#F3BE00]">{t("about.techStack.headingPart2")}</span>
+          <span className="text-brand">{t("about.techStack.headingPart1")}</span>{" "}
+          <span className="text-warning-text">{t("about.techStack.headingPart2")}</span>
         </h2>
 
         <p className="max-w-2xl mx-auto text-sm sm:text-base font-medium text-slate-500 dark:text-slate-400">
@@ -497,8 +497,8 @@ export default function TechStackSection() {
       {/* Infinite Sliders Display */}
       <div className="space-y-4 relative">
         {/* Left & Right Edge Blur Masks */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-16 sm:w-32 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-[#181B1C] dark:via-[#181B1C]/80 dark:to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-16 sm:w-32 bg-gradient-to-l from-white via-white/80 to-transparent dark:from-[#181B1C] dark:via-[#181B1C]/80 dark:to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-16 sm:w-32 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-background dark:via-background/80 dark:to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-16 sm:w-32 bg-gradient-to-l from-white via-white/80 to-transparent dark:from-background dark:via-background/80 dark:to-transparent" />
 
         {/* Row 1: Backend, Cloud, DevOps & AI (Scrolling Left) */}
         <InfiniteSlider
@@ -541,11 +541,11 @@ function TechLogoPill({ tech }: { tech: TechItem }) {
       className="group relative cursor-default select-none my-1"
     >
       {/* Main Pill Body */}
-      <div className="relative flex items-center gap-3.5 overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 px-5 py-3.5 backdrop-blur-md transition-all duration-300 group-hover:border-[#1fa628]/60 dark:border-slate-800/90 dark:bg-slate-900/95 dark:group-hover:border-[#1fa628]/60">
+      <div className="relative flex items-center gap-3.5 overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 px-5 py-3.5 backdrop-blur-md transition-all duration-300 group-hover:border-brand/60 dark:border-slate-800/90 dark:bg-slate-900/95 dark:group-hover:border-brand/60">
         {/* Animated Border Trail on Hover */}
         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <BorderTrail
-            className="bg-linear-to-r from-transparent via-[#1fa628] to-[#F3BE00] shadow-[0_0_10px_rgba(31,166,40,0.8)] dark:via-[#45D45A] dark:to-[#F3BE00] dark:shadow-[0_0_12px_rgba(243,190,0,0.7)]"
+            className="bg-linear-to-r from-transparent via-brand to-warning shadow-[0_0_10px_rgba(31,166,40,0.8)] dark:via-[#45D45A] dark:to-warning dark:shadow-[0_0_12px_rgba(243,190,0,0.7)]"
             size={70}
             duration={3}
           />
@@ -555,12 +555,12 @@ function TechLogoPill({ tech }: { tech: TechItem }) {
         <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 ease-out group-hover:translate-x-full dark:via-white/10" />
 
         {/* Official Logo Frame */}
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 shadow-inner transition-all duration-300 group-hover:scale-110 group-hover:border-[#1fa628]/30 group-hover:bg-[#1fa628]/10 dark:border-slate-800 dark:bg-slate-800 dark:group-hover:border-[#1fa628]/30 dark:group-hover:bg-[#1fa628]/10">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 shadow-inner transition-all duration-300 group-hover:scale-110 group-hover:border-brand/30 group-hover:bg-brand/10 dark:border-slate-800 dark:bg-slate-800 dark:group-hover:border-brand/30 dark:group-hover:bg-brand/10">
           {tech.icon}
         </div>
 
         {/* Technology Name */}
-        <span className="text-sm font-bold text-slate-800 transition-colors duration-300 group-hover:text-[#1fa628] dark:text-slate-200 dark:group-hover:text-[#22c55e] whitespace-nowrap">
+        <span className="text-sm font-bold text-slate-800 transition-colors duration-300 group-hover:text-brand dark:text-slate-200 dark:group-hover:text-brand whitespace-nowrap">
           {tech.name}
         </span>
       </div>

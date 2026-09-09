@@ -135,11 +135,11 @@ export default function TeamSection() {
           transition={{ duration: 0.4 }}
           className="text-center space-y-2.5"
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#F3BE00]/40 bg-[#F3BE00]/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#D9A700] dark:text-[#F3BE00]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-warning/40 bg-warning/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-warning-text dark:text-warning-text">
             <Sparkles className="h-3.5 w-3.5" />
             {t("about.team.mentorsBadge")}
           </div>
-          <h2 className="text-3xl font-bold text-[#F3BE00] sm:text-4xl lg:text-5xl tracking-tight">
+          <h2 className="text-3xl font-bold text-warning-text sm:text-4xl lg:text-5xl tracking-tight">
             {t("about.team.mentorsHeading")}
           </h2>
           <p className="max-w-md mx-auto text-sm font-medium text-slate-500 dark:text-slate-400">
@@ -175,19 +175,19 @@ export default function TeamSection() {
           transition={{ duration: 0.4 }}
           className="text-center space-y-3"
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/40 bg-[#1fa628]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#1fa628]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand">
             <Code2 className="h-3.5 w-3.5" />
             {t("about.team.membersBadge")}
           </div>
 
           <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl tracking-tight">
-            <span className="text-[#1fa628]">{t("about.team.membersHeadingPart1")}</span>{" "}
-            <span className="text-[#F3BE00]">{t("about.team.membersHeadingPart2")}</span>
+            <span className="text-brand">{t("about.team.membersHeadingPart1")}</span>{" "}
+            <span className="text-warning-text">{t("about.team.membersHeadingPart2")}</span>
           </h2>
 
           <p className="max-w-xl mx-auto text-sm sm:text-base font-medium text-slate-500 dark:text-slate-400">
             {t("about.team.membersSubtitlePre")}{" "}
-            <span className="font-semibold text-[#1fa628]">{t("about.team.membersSubtitleBrand")}</span>{" "}
+            <span className="font-semibold text-brand">{t("about.team.membersSubtitleBrand")}</span>{" "}
             {t("about.team.membersSubtitlePost")}
           </p>
         </motion.div>
@@ -195,8 +195,8 @@ export default function TeamSection() {
         {/* CONTINUOUS HORIZONTAL MARQUEE TRACK */}
         <div className="relative w-full overflow-hidden py-4">
           {/* Ambient Gradient Fades on Edges */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-28 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-[#181B1C] dark:via-[#181B1C]/80 dark:to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-28 bg-gradient-to-l from-white via-white/80 to-transparent dark:from-[#181B1C] dark:via-[#181B1C]/80 dark:to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-28 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-background dark:via-background/80 dark:to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-28 bg-gradient-to-l from-white via-white/80 to-transparent dark:from-background dark:via-background/80 dark:to-transparent" />
 
           {/* Arrow Navigation */}
           <div className="mb-4 flex w-full items-center justify-end">
@@ -204,7 +204,7 @@ export default function TeamSection() {
               <button
                 type="button"
                 onClick={scrollLeft}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[#1fa628] hover:text-[#1fa628] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-brand hover:text-brand dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
                 aria-label={t("about.team.scrollLeft")}
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -212,7 +212,7 @@ export default function TeamSection() {
               <button
                 type="button"
                 onClick={scrollRight}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[#1fa628] hover:text-[#1fa628] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-brand hover:text-brand dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
                 aria-label={t("about.team.scrollRight")}
               >
                 <ChevronRight className="h-4 w-4" />
@@ -313,15 +313,15 @@ function MemberCard({
   const roleLabel = (member as any).roleTitle || (member as any).role || "";
 
   const pillBg =
-    "border border-[#1fa628] bg-[#1fa628] text-white shadow-sm dark:border-[#22c55e] dark:bg-[#22c55e] dark:text-slate-950";
+    "border border-brand bg-brand text-white shadow-sm dark:border-brand dark:bg-brand dark:text-slate-950";
 
   const roleColor = isGold
-    ? "text-[#F3BE00] dark:text-[#F3BE00]"
-    : "text-[#1fa628]";
+    ? "text-warning-text dark:text-warning-text"
+    : "text-brand";
 
   const hoverIconColor = isGold
-    ? "hover:text-[#F3BE00]"
-    : "hover:text-[#1fa628]";
+    ? "hover:text-warning-text"
+    : "hover:text-brand";
 
   return (
     <motion.div
@@ -347,7 +347,7 @@ function MemberCard({
       }`}
     >
       {/* Top Index Badge */}
-      <div className="absolute right-5 top-5 flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200/80 bg-white text-[18px] font-semibold text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400">
+      <div className="absolute right-5 top-5 flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200/80 bg-white text-lg font-semibold text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400">
         {formattedIndex}
       </div>
 
@@ -358,7 +358,7 @@ function MemberCard({
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
           className={`absolute inset-0 rounded-full border border-dashed border-slate-300/80 dark:border-slate-700/80 transition-colors ${
-            isGold ? "group-hover:border-[#F3BE00]/60" : "group-hover:border-[#1fa628]/60"
+            isGold ? "group-hover:border-warning/60" : "group-hover:border-brand/60"
           }`}
         />
 
@@ -378,14 +378,14 @@ function MemberCard({
       <div className="flex flex-col items-center">
         <h3
           className={`text-base font-bold text-slate-900 dark:text-white line-clamp-1 transition-colors ${
-            isGold ? "group-hover:text-[#F3BE00]" : "group-hover:text-[#1fa628]"
+            isGold ? "group-hover:text-warning-text" : "group-hover:text-brand"
           }`}
         >
           {member.name}
         </h3>
 
         <p
-          className={`mt-1 max-w-[15rem] text-[12px] font-semibold uppercase leading-snug tracking-[0.08em] ${roleColor}`}
+          className={`mt-1 max-w-[15rem] text-xs font-semibold uppercase leading-snug tracking-[0.08em] ${roleColor}`}
         >
           {roleLabel}
         </p>
@@ -442,7 +442,7 @@ function MemberCard({
 
           {/* Quick Drawer Open Hint (Only for cards with onSelect) */}
           {onSelect && (
-            <div className="flex items-center gap-1 text-[18px] font-semibold text-[#1fa628] opacity-80 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 text-lg font-semibold text-brand opacity-80 group-hover:opacity-100 transition-opacity">
               <span>{t("about.team.profile")}</span>
               <ArrowRight className="h-3.5 w-3.5 transform transition-transform group-hover:translate-x-0.5" />
             </div>
@@ -533,7 +533,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
               </div>
 
               <div className="flex-1 pb-1">
-                <span className="inline-block rounded-full bg-[#1fa628]/20 px-3 py-0.5 text-[18px] font-bold uppercase tracking-wider text-[#22c55e] border border-[#22c55e]/30 mb-1">
+                <span className="inline-block rounded-full bg-brand/20 px-3 py-0.5 text-lg font-bold uppercase tracking-wider text-brand border border-brand/30 mb-1">
                   {member.roleTitle}
                 </span>
                 <h3
@@ -555,7 +555,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
               href={member.social.github || "https://github.com"}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-[#1fa628] hover:text-[#1fa628] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               <GithubIcon className="h-3.5 w-3.5" />
               <span>{t("about.team.github")}</span>
@@ -565,7 +565,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
               href={member.social.linkedin || "https://linkedin.com"}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-[#1fa628] hover:text-[#1fa628] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               <LinkedinIcon className="h-3.5 w-3.5" />
               <span>{t("about.team.linkedin")}</span>
@@ -575,7 +575,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
               href={member.social.telegram || "https://t.me"}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-[#1fa628] hover:text-[#1fa628] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               <Send className="h-3.5 w-3.5" />
               <span>{t("about.team.telegram")}</span>
@@ -594,7 +594,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                     onClick={() => setActiveTab(tab)}
                     className={`relative py-3.5 text-xs font-bold tracking-wider transition-colors ${
                       isActive
-                        ? "text-[#1fa628] dark:text-[#22c55e]"
+                        ? "text-brand dark:text-brand"
                         : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                     }`}
                   >
@@ -602,7 +602,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                     {isActive && (
                       <motion.div
                         layoutId="activeDrawerTab"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-[#1fa628] dark:bg-[#22c55e]"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-brand dark:bg-brand"
                       />
                     )}
                   </button>
@@ -633,9 +633,9 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
 
                 {/* Quote Block */}
                 {member.quote && (
-                  <div className="rounded-2xl border-l-4 border-[#1fa628] bg-[#1fa628]/10 p-4 dark:bg-[#1fa628]/15">
+                  <div className="rounded-2xl border-l-4 border-brand bg-brand/10 p-4 dark:bg-brand/15">
                     <div className="flex items-start gap-2.5">
-                      <Quote className="h-5 w-5 flex-shrink-0 text-[#1fa628] rotate-180" />
+                      <Quote className="h-5 w-5 flex-shrink-0 text-brand rotate-180" />
                       <p className="text-xs sm:text-sm font-medium italic text-slate-800 dark:text-slate-200">
                         &quot;{member.quote}&quot;
                       </p>
@@ -649,14 +649,14 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                     {t("about.team.educationBackground")}
                   </h4>
                   <div className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/60">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1fa628]/15 text-[#1fa628]">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand/15 text-brand">
                       <GraduationCap className="h-5 w-5" />
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-slate-900 dark:text-white">
                         {member.education}
                       </p>
-                      <p className="text-[18px] text-slate-500 dark:text-slate-400">
+                      <p className="text-lg text-slate-500 dark:text-slate-400">
                         {t("about.team.studentYear")}
                       </p>
                     </div>
@@ -675,7 +675,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                           key={idx}
                           className="flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-300"
                         >
-                          <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-[#1fa628] mt-0.5" />
+                          <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-brand mt-0.5" />
                           <span>{item}</span>
                         </div>
                       ))}
@@ -698,14 +698,14 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                   member.stackCategories.map((group, idx) => (
                     <div key={idx} className="space-y-2.5">
                       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                        <Layers3 className="h-3.5 w-3.5 text-[#1fa628]" />
+                        <Layers3 className="h-3.5 w-3.5 text-brand" />
                         <span>{group.category}</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {group.items.map((tech) => (
                           <span
                             key={tech}
-                            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm dark:border-slate-700/80 dark:bg-slate-800 dark:text-slate-200 hover:border-[#1fa628] transition-colors"
+                            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm dark:border-slate-700/80 dark:bg-slate-800 dark:text-slate-200 hover:border-brand transition-colors"
                           >
                             {tech}
                           </span>
@@ -740,10 +740,10 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                   member.projects.map((proj, idx) => (
                     <div
                       key={idx}
-                      className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800/60 space-y-2 hover:border-[#1fa628]/50 transition-colors"
+                      className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-800/60 space-y-2 hover:border-brand/50 transition-colors"
                     >
                       <div className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#1fa628]/10 text-[#1fa628]">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand/10 text-brand">
                           <Briefcase className="h-3.5 w-3.5" />
                         </div>
                         <h5 className="text-sm font-semibold text-slate-900 dark:text-white">
@@ -756,8 +756,8 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                       </p>
 
                       {proj.impact && (
-                        <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-[18px] font-medium text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                          <Sparkles className="h-3 w-3 text-[#1fa628]" />
+                        <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-lg font-medium text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                          <Sparkles className="h-3 w-3 text-brand" />
                           <span>{t("about.team.impact")}: {proj.impact}</span>
                         </div>
                       )}
@@ -784,11 +784,11 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
                     {member.journey.map((item, idx) => (
                       <div key={idx} className="relative group">
                         {/* Timeline Node Icon */}
-                        <div className="absolute -left-[31px] top-0 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#1fa628] bg-white dark:bg-slate-900 text-[#1fa628]">
-                          <div className="h-2 w-2 rounded-full bg-[#1fa628]" />
+                        <div className="absolute -left-[31px] top-0 flex h-5 w-5 items-center justify-center rounded-full border-2 border-brand bg-white dark:bg-slate-900 text-brand">
+                          <div className="h-2 w-2 rounded-full bg-brand" />
                         </div>
 
-                        <span className="inline-block text-[18px] font-bold uppercase tracking-wider text-[#1fa628]">
+                        <span className="inline-block text-lg font-bold uppercase tracking-wider text-brand">
                           {item.period}
                         </span>
                         <h5 className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
@@ -816,7 +816,7 @@ function MemberDetailDrawer({ member, onClose }: MemberDetailDrawerProps) {
             href={member.social.linkedin || "https://linkedin.com"}
             target="_blank"
             rel="noreferrer"
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#1fa628] hover:bg-[#1fa628]/90 text-white px-4 py-2.5 text-xs font-semibold transition shadow-sm"
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-brand hover:bg-brand/90 text-white px-4 py-2.5 text-xs font-semibold transition shadow-sm"
           >
             <span>{t("about.team.viewFullProfile")}</span>
             <ExternalLink className="h-3.5 w-3.5" />

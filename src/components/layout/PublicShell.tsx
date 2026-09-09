@@ -45,8 +45,15 @@ export function PublicShell({ children }: { children: ReactNode }) {
     const scrolled = useScrolled();
     const { t } = useLocale();
 
+    /*
+     * `.landing-page` repoints the surface/border/text tokens at the landing
+     * palette for everything inside the public shell. The chrome and these
+     * pages used to hand-paint that palette as hex literals in `dark:`
+     * variants; the class is the mechanism they were imitating, and the
+     * job-detail route already opts in the same way.
+     */
     return (
-        <div className="min-h-screen bg-surface text-heading">
+        <div className="landing-page min-h-screen bg-surface text-heading">
             {/*
              * The header is flat and borderless over the hero and only grows a
              * hairline plus a soft shadow once the page scrolls under it, so the
@@ -62,8 +69,8 @@ export function PublicShell({ children }: { children: ReactNode }) {
                      * read as a tinted bar with a seam under it.
                      */
                     scrolled
-                        ? "border-b border-border/70 bg-surface/80 shadow-[0_1px_24px_-12px_rgba(0,0,0,.35)] backdrop-blur-xl supports-backdrop-filter:bg-surface/70 dark:border-[#3E444B]/70 dark:bg-[#181B1C]/80 dark:supports-backdrop-filter:bg-[#181B1C]/70"
-                        : "border-b border-transparent bg-surface dark:bg-[#181B1C]",
+                        ? "border-b border-border/70 bg-surface/80 shadow-[0_1px_24px_-12px_rgba(0,0,0,.35)] backdrop-blur-xl supports-backdrop-filter:bg-surface/70 dark:border-border/70 dark:bg-background/80 dark:supports-backdrop-filter:bg-background/70"
+                        : "border-b border-transparent bg-surface dark:bg-background",
                 )}
             >
                 {/*
@@ -108,7 +115,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
                                     href={link.href}
                                     aria-current={current ? "page" : undefined}
                                     className={cn(
-                                        "rounded-full px-4 py-2 text-[15px] font-medium transition-colors",
+                                        "rounded-full px-4 py-2 text-sm font-medium transition-colors",
                                         current
                                             ? "bg-surface text-brand shadow-sm"
                                             : "text-body hover:bg-surface/70 hover:text-heading",
@@ -220,7 +227,7 @@ export function PublicFooter() {
     const { t } = useLocale();
 
     return (
-        <footer className="relative overflow-hidden bg-white text-slate-700 dark:bg-[#181B1C] dark:text-[#CBD0D5]">
+        <footer className="relative overflow-hidden bg-white text-slate-700 dark:bg-background dark:text-body">
             <div className="relative mx-auto grid w-full max-w-[120rem] grid-cols-2 gap-x-6 gap-y-6 px-5 py-8 sm:gap-x-10 sm:gap-y-8 sm:px-8 sm:py-12 lg:px-12 xl:grid-cols-[1.2fr_1.05fr_.65fr_1fr] xl:gap-x-12 xl:px-16 xl:py-14 2xl:gap-x-16 2xl:px-24 max-sm:[overflow-wrap:anywhere]">
                 <div className="relative col-span-2 min-w-0 sm:col-span-1 sm:pr-4 xl:col-span-1 xl:pr-0">
                     <Link href="/" className="relative block w-fit rounded-lg outline-none transition-opacity hover:opacity-85 focus-visible:ring-3 focus-visible:ring-emerald-600/25" aria-label="Kagea home">
@@ -276,7 +283,7 @@ export function PublicFooter() {
                                 key={label}
                                 aria-label={label}
                                 role="img"
-                                className="flex size-11 items-center justify-center rounded-full border border-emerald-900/10 bg-white text-brand shadow-sm transition-[transform,background-color,border-color] duration-200 hover:scale-105 hover:border-emerald-600/25 hover:bg-emerald-50 sm:size-10 dark:border-[#3E444B] dark:bg-[#23272D] dark:text-emerald-400 dark:hover:border-emerald-400/30 dark:hover:bg-[#2B3036]"
+                                className="flex size-11 items-center justify-center rounded-full border border-emerald-900/10 bg-white text-brand shadow-sm transition-[transform,background-color,border-color] duration-200 hover:scale-105 hover:border-emerald-600/25 hover:bg-emerald-50 sm:size-10 dark:border-border dark:bg-surface dark:text-emerald-400 dark:hover:border-emerald-400/30 dark:hover:bg-surface-muted"
                             >
                                 <Icon className="size-4 sm:size-[18px]" />
                             </span>
@@ -284,7 +291,7 @@ export function PublicFooter() {
                     </div>
                 </div>
             </div>
-            <div className="relative border-t border-emerald-950/10 bg-white/45 dark:border-[#3E444B] dark:bg-[#151819]">
+            <div className="relative border-t border-emerald-950/10 bg-white/45 dark:border-border dark:bg-background">
                 <div className="mx-auto flex w-full max-w-[120rem] flex-col items-center gap-1.5 px-5 py-4 text-center text-xs text-slate-500 sm:px-8 md:flex-row md:justify-between md:text-left lg:px-12 xl:px-16 2xl:px-24 dark:text-slate-400">
                     <p>© 2026 ការងារ. {t("footer.rights")}</p>
                     <p>{t("footer.sponsor")} <span className="font-semibold text-slate-700 dark:text-slate-200">ISTAD</span></p>
@@ -297,7 +304,7 @@ export function PublicFooter() {
 function FooterContact({ icon: Icon, label, children }: { icon: typeof Phone; label: string; children: ReactNode }) {
     return (
         <li className="flex items-start gap-3">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-emerald-900/10 bg-white text-brand shadow-sm dark:border-[#3E444B] dark:bg-[#23272D] dark:text-emerald-400">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-emerald-900/10 bg-white text-brand shadow-sm dark:border-border dark:bg-surface dark:text-emerald-400">
                 <Icon className="size-4" />
             </span>
             <span className="min-w-0 pt-0.5 text-sm">

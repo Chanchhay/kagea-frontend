@@ -11,29 +11,29 @@ const STATS = [
     icon: Briefcase,
     value: "120K+",
     labelKey: "about.whoWeAre.statJobsLabel",
-    color: "text-[#008A1E]",
-    bg: "bg-[#008A1E]/10",
+    color: "text-brand",
+    bg: "bg-brand/10",
   },
   {
     icon: Building2,
     value: "850K+",
     labelKey: "about.whoWeAre.statCompaniesLabel",
-    color: "text-[#008A1E]",
-    bg: "bg-[#008A1E]/10",
+    color: "text-brand",
+    bg: "bg-brand/10",
   },
   {
     icon: Users,
     value: "900K+",
     labelKey: "about.whoWeAre.statCandidatesLabel",
-    color: "text-[#008A1E]",
-    bg: "bg-[#008A1E]/10",
+    color: "text-brand",
+    bg: "bg-brand/10",
   },
   {
     icon: Award,
     value: "100%",
     labelKey: "about.whoWeAre.statSatisfactionLabel",
-    color: "text-[#E8C222]",
-    bg: "bg-[#E8C222]/15",
+    color: "text-warning-text",
+    bg: "bg-warning/15",
   },
 ];
 
@@ -69,8 +69,8 @@ export default function WhoWeAreSection() {
         >
           {/* Section Header */}
           <motion.div variants={fadeInUp} className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#1fa628]">
-              <Sparkles className="h-4 w-4 text-[#F3BE00]" />
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand">
+              <Sparkles className="h-4 w-4 text-warning-text" />
               {t("about.whoWeAre.kicker")}
             </span>
             <h2 className="text-3xl font-black text-slate-900 dark:text-white sm:text-4xl lg:text-5xl tracking-tight">
@@ -90,7 +90,7 @@ export default function WhoWeAreSection() {
                   key={idx}
                   variants={fadeInUp}
                   whileHover={{ y: -4, scale: 1.02 }}
-                  className="group flex flex-col items-center justify-center rounded-2xl border border-slate-200/90 bg-white/80 p-4 text-center backdrop-blur-md transition-all duration-300 hover:border-[#1fa628]/50 hover:shadow-lg dark:border-slate-800/90 dark:bg-slate-900/80 dark:shadow-[0_4px_20px_rgba(0,0,0,0.35)]"
+                  className="group flex flex-col items-center justify-center rounded-2xl border border-slate-200/90 bg-white/80 p-4 text-center backdrop-blur-md transition-all duration-300 hover:border-brand/50 hover:shadow-lg dark:border-slate-800/90 dark:bg-slate-900/80 dark:shadow-[0_4px_20px_rgba(0,0,0,0.35)]"
                 >
                   <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl ${stat.bg} transition-transform group-hover:scale-110`}>
                     <Icon className={`h-4 w-4 ${stat.color}`} />
@@ -98,7 +98,7 @@ export default function WhoWeAreSection() {
                   <p className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                     {stat.value}
                   </p>
-                  <p className="mt-0.5 text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <p className="mt-0.5 text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     {t(stat.labelKey)}
                   </p>
                 </motion.div>
@@ -129,7 +129,7 @@ export default function WhoWeAreSection() {
               {/* Floating Overlay Card */}
               <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl border border-white/20 bg-slate-950/80 p-4 backdrop-blur-md sm:bottom-6 sm:left-6 sm:right-6">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1fa628] text-white shadow-md">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand text-white shadow-md">
                     <GraduationCap className="h-5 w-5" />
                   </div>
                   <div>
@@ -149,14 +149,14 @@ export default function WhoWeAreSection() {
             className="space-y-6 lg:col-span-6"
           >
             <div className="space-y-4 rounded-3xl border border-slate-200/90 bg-white/80 p-6 backdrop-blur-md sm:p-8 dark:border-slate-800/90 dark:bg-slate-900/80 shadow-md">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#1fa628]/30 bg-[#1fa628]/10 px-3 py-1 text-xs font-bold text-[#1fa628]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-bold text-brand">
                 <Code2 className="h-3.5 w-3.5" />
                 {t("about.whoWeAre.badge")}
               </div>
 
               <h3 className="text-2xl font-black leading-snug text-slate-900 dark:text-white sm:text-3xl tracking-tight">
                 {t("about.whoWeAre.headingPre")}{" "}
-                <span className="inline-block border-b-2 border-[#F3BE00] text-[#1fa628]">
+                <span className="inline-block border-b-2 border-warning text-brand">
                   {t("about.whoWeAre.headingSchool")}
                 </span>
               </h3>
@@ -168,14 +168,14 @@ export default function WhoWeAreSection() {
               {/* Skill Tags */}
               <div className="pt-2">
                 <p className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  <Layers className="h-3.5 w-3.5 text-[#1fa628]" />
+                  <Layers className="h-3.5 w-3.5 text-brand" />
                   {t("about.whoWeAre.specializationsLabel")}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {SKILLS.map((skill) => (
                     <span
                       key={skill}
-                      className="rounded-xl border border-slate-200 bg-white/90 px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:border-slate-700/80 dark:bg-slate-800/90 dark:text-slate-200 hover:border-[#1fa628]/40 transition-colors"
+                      className="rounded-xl border border-slate-200 bg-white/90 px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:border-slate-700/80 dark:bg-slate-800/90 dark:text-slate-200 hover:border-brand/40 transition-colors"
                     >
                       {skill}
                     </span>

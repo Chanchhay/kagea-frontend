@@ -95,7 +95,7 @@ export default function TrustedCompaniesSection() {
         transition={{ duration: 0.6 }}
         viewport={{ once: true, margin: '-100px' }}
         data-reveal
-        className="overflow-hidden rounded-[28px] border border-slate-200/70 bg-white px-6 py-12 sm:rounded-[36px] sm:px-10 sm:py-16 lg:px-14 dark:border-[#3E444B] dark:bg-[#22262C]"
+        className="overflow-hidden rounded-[28px] border border-slate-200/70 bg-white px-6 py-12 sm:rounded-[36px] sm:px-10 sm:py-16 lg:px-14 dark:border-border dark:bg-surface"
       >
         {/* Statement */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-16">
@@ -106,7 +106,7 @@ export default function TrustedCompaniesSection() {
             </span>
           </div>
 
-          <h2 className="text-2xl font-medium leading-[1.25] tracking-tight text-slate-900 sm:text-3xl lg:text-[2.5rem] dark:text-white">
+          <h2 className="text-2xl font-medium leading-[1.25] tracking-tight text-slate-900 sm:text-3xl lg:text-4xl dark:text-white">
             We work with ambitious employers across Cambodia — teams whose hiring
             has outgrown word of mouth, and who need the right people faster than
             the market can find them.
@@ -115,7 +115,7 @@ export default function TrustedCompaniesSection() {
 
         {/* Clients */}
         <div className="mt-16 sm:mt-24">
-          <p className="text-center text-[18px] font-medium uppercase tracking-[0.18em] text-slate-400 dark:text-white/40">
+          <p className="text-center text-lg font-medium uppercase tracking-[0.18em] text-slate-400 dark:text-white/40">
             Our clients
           </p>
 

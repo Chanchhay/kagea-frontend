@@ -100,7 +100,7 @@ function TimelineStep({
                 <div
                     className={`flex size-11 items-center justify-center rounded-full border bg-surface transition-colors duration-500 sm:size-12 ${
                         active
-                            ? "border-[#008A1E] text-[#008A1E] dark:border-emerald-400 dark:text-emerald-400"
+                            ? "border-brand text-brand dark:border-emerald-400 dark:text-emerald-400"
                             : "border-slate-200 text-slate-300 dark:border-white/15 dark:text-white/25"
                     }`}
                 >
@@ -122,8 +122,8 @@ function TimelineStep({
                     {t(`landing.jobDiscovery.steps.${step.key}.description`)}
                 </p>
 
-                <p className="mt-4 inline-flex items-center gap-2 text-[18px] font-semibold uppercase tracking-[0.16em] text-[#008A1E] dark:text-emerald-400">
-                    <span className="h-px w-6 bg-[#008A1E]/40 dark:bg-emerald-400/40" />
+                <p className="mt-4 inline-flex items-center gap-2 text-lg font-semibold uppercase tracking-[0.16em] text-brand dark:text-emerald-400">
+                    <span className="h-px w-6 bg-brand/40 dark:bg-emerald-400/40" />
                     {t(`landing.jobDiscovery.steps.${step.key}.outcome`)}
                 </p>
             </div>
@@ -184,7 +184,7 @@ export default function JobDiscoverySection() {
                              * plain heading with the same weight instead of the
                              * character-stroke animation.
                              */
-                            <h2 className="text-[clamp(2.25rem,6vw,4.5rem)] font-bold leading-tight tracking-tight text-[#008A1E]">
+                            <h2 className="text-[clamp(2.25rem,6vw,4.5rem)] font-bold leading-tight tracking-tight text-brand">
                                 {t("landing.jobDiscovery.howItWorksHeading")}
                             </h2>
                         )}
@@ -195,7 +195,7 @@ export default function JobDiscoverySection() {
                         <div className="absolute bottom-6 left-[21px] top-6 w-px bg-slate-200 sm:left-[27px] dark:bg-white/10" />
                         <motion.div
                             aria-hidden="true"
-                            className="absolute bottom-6 left-[21px] top-6 w-px origin-top bg-[#008A1E] sm:left-[27px] dark:bg-emerald-400"
+                            className="absolute bottom-6 left-[21px] top-6 w-px origin-top bg-brand sm:left-[27px] dark:bg-emerald-400"
                             style={{
                                 scaleY: prefersReducedMotion
                                     ? 1
@@ -229,17 +229,17 @@ export default function JobDiscoverySection() {
                     <div className="text-center">
                         <p
                             data-reveal
-                            className="text-[18px] font-semibold uppercase tracking-[0.22em] text-[#008A1E] dark:text-emerald-400"
+                            className="text-lg font-semibold uppercase tracking-[0.22em] text-brand dark:text-emerald-400"
                         >
                             {t("landing.jobDiscovery.builtForCambodia")}
                         </p>
 
                         <h2
                             data-reveal
-                            className="mx-auto mt-7 max-w-3xl text-[clamp(2.5rem,5.5vw,4.25rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-[#008A1E]"
+                            className="mx-auto mt-7 max-w-3xl text-[clamp(2.5rem,5.5vw,4.25rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-brand"
                         >
                             {t("landing.jobDiscovery.connectingTitle")}{" "}
-                            <span className="text-[#F3BE00]">
+                            <span className="text-warning-text">
                                 {t("landing.jobDiscovery.connectingHighlight")}
                             </span>
                         </h2>
@@ -257,13 +257,13 @@ export default function JobDiscoverySection() {
                         >
                             <Link
                                 href="/jobs"
-                                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#F3BE00] px-8 text-sm font-semibold text-[#006F18] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[#E8B500] active:translate-y-0 active:scale-[0.98]"
+                                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-warning px-8 text-sm font-semibold text-brand-hover transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-warning active:translate-y-0 active:scale-[0.98]"
                             >
                                 {t("landing.jobDiscovery.exploreJobs")}
                             </Link>
                             <Link
                                 href="/register"
-                                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#008A1E]/30 px-8 text-sm font-semibold text-[#008A1E] transition-colors duration-200 hover:border-[#008A1E] hover:bg-[#008A1E] hover:text-white dark:border-emerald-400/30 dark:text-emerald-400 dark:hover:border-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white"
+                                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-brand/30 px-8 text-sm font-semibold text-brand transition-colors duration-200 hover:border-brand hover:bg-brand hover:text-white dark:border-emerald-400/30 dark:text-emerald-400 dark:hover:border-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white"
                             >
                                 {t("landing.hero.createAccountCta")}
                             </Link>
@@ -284,7 +284,7 @@ export default function JobDiscoverySection() {
                                 key={key}
                                 className="border-b border-slate-200/80 px-1 py-8 sm:border-b-0 sm:border-r sm:px-8 sm:py-10 sm:last:border-r-0 sm:first:pl-0 sm:last:pr-0 dark:border-white/10"
                             >
-                                <p className="text-[18px] font-semibold uppercase tracking-[0.16em] text-slate-900 dark:text-white">
+                                <p className="text-lg font-semibold uppercase tracking-[0.16em] text-slate-900 dark:text-white">
                                     {t(`landing.jobDiscovery.highlights.${key}.label`)}
                                 </p>
                                 <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">

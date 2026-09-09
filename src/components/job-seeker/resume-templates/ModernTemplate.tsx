@@ -19,10 +19,10 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
       <header className="flex items-center gap-7 px-14 py-10 text-white" style={{ background: accent }}>
         <Photo url={data.profilePhotoUrl} name={name} size={96} className="rounded-2xl" style={{ boxShadow: "0 0 0 3px rgba(255,255,255,0.35)" }} />
         <div className="min-w-0 flex-1">
-          <h1 className="text-[32px] font-semibold leading-tight tracking-tight">{name}</h1>
-          {data.professionalTitle ? <p className="mt-1 text-[18px] text-white/85">{data.professionalTitle}</p> : null}
+          <h1 className="text-4xl font-semibold leading-tight tracking-tight">{name}</h1>
+          {data.professionalTitle ? <p className="mt-1 text-lg text-white/85">{data.professionalTitle}</p> : null}
           {contacts.length ? (
-            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-[18px] text-white/85">
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-lg text-white/85">
               {contacts.map((item) => (
                 <span key={item} className="break-all">
                   {item}
@@ -48,10 +48,10 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
                   <div key={entry.id} className="relative">
                     <span className="absolute -left-[27px] top-1.5 size-2.5 rounded-full" style={{ background: accent }} />
                     <p className="font-semibold text-slate-900">{entry.role}</p>
-                    <p className="text-[18px] text-slate-500">
+                    <p className="text-lg text-slate-500">
                       {[entry.company, entry.location, formatDateRange(entry.start, entry.end, entry.current)].filter(Boolean).join(" · ")}
                     </p>
-                    <Description text={entry.description} className="mt-1.5 text-[18px] text-slate-600" />
+                    <Description text={entry.description} className="mt-1.5 text-lg text-slate-600" />
                   </div>
                 ))}
               </div>
@@ -64,8 +64,8 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
                 {data.projects.map((project) => (
                   <div key={project.id}>
                     <p className="font-semibold text-slate-900">{project.name}</p>
-                    {project.url ? <p className="break-all text-[18px] text-slate-500">{project.url}</p> : null}
-                    <Description text={project.description} className="mt-1 text-[18px] text-slate-600" />
+                    {project.url ? <p className="break-all text-lg text-slate-500">{project.url}</p> : null}
+                    <Description text={project.description} className="mt-1 text-lg text-slate-600" />
                   </div>
                 ))}
               </div>
@@ -78,7 +78,7 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
             <Section title={tx("Skills")} accent={accent}>
               <div className="flex flex-wrap gap-1.5">
                 {data.skills.map((skill) => (
-                  <span key={skill} className="rounded-full px-2.5 py-1 text-[18px] font-medium" style={{ background: `${accent}1a`, color: accent }}>
+                  <span key={skill} className="rounded-full px-2.5 py-1 text-lg font-medium" style={{ background: `${accent}1a`, color: accent }}>
                     {skill}
                   </span>
                 ))}
@@ -88,7 +88,7 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
 
           {data.education.length ? (
             <Section title={tx("Education")} accent={accent}>
-              <div className="space-y-4 text-[18px]">
+              <div className="space-y-4 text-lg">
                 {data.education.map((entry) => (
                   <div key={entry.id}>
                     <p className="font-semibold text-slate-800">{entry.degree}</p>
@@ -103,7 +103,7 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
 
           {data.links.length ? (
             <Section title={tx("Links")} accent={accent}>
-              <ul className="space-y-2 text-[18px]">
+              <ul className="space-y-2 text-lg">
                 {data.links.map((link) => (
                   <li key={link.id} className="break-all">
                     <span className="block font-medium text-slate-700">{link.label || tx("Link")}</span>
@@ -122,7 +122,7 @@ export function ModernTemplate({ data, fallbackName }: ResumeTemplateProps) {
 function Section({ title, accent, children }: { title: string; accent: string; children: ReactNode }) {
   return (
     <section>
-      <h2 className="mb-3 text-[18px] font-semibold uppercase tracking-[0.2em]" style={{ color: accent }}>
+      <h2 className="mb-3 text-lg font-semibold uppercase tracking-[0.2em]" style={{ color: accent }}>
         {title}
       </h2>
       {children}

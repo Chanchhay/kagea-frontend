@@ -21,7 +21,7 @@ export function Sheet({ children, style, className = "" }: { children: ReactNode
   return (
     <div
       style={{ width: A4_WIDTH, minHeight: A4_HEIGHT, ...style }}
-      className={`flex flex-col bg-white text-[18px] leading-relaxed text-slate-700 ${className}`}
+      className={`flex flex-col bg-white text-lg leading-relaxed text-slate-700 ${className}`}
     >
       {children}
     </div>

@@ -309,7 +309,7 @@ function ProfileWheel() {
         const delay = `${0.55 + cwIndex(id) * 0.07}s`;
 
         const text = (
-          <span className="text-[11px] font-bold tracking-wide sm:text-[18px]">{t(labelKey)}</span>
+          <span className="text-xs font-bold tracking-wide sm:text-lg">{t(labelKey)}</span>
         );
         const icon = <Icon className="h-3 w-3 shrink-0 sm:h-4 sm:w-4" />;
 
@@ -410,13 +410,13 @@ export default function CandidateProfileSection() {
         {/* right — the copy */}
         <div className="max-w-xl">
           <span
-            className="inline-flex items-center rounded-md px-3 py-1 text-xs font-semibold bg-[#E9F6E9] text-[#008A1E] dark:bg-slate-800 dark:text-emerald-400"
+            className="inline-flex items-center rounded-md px-3 py-1 text-xs font-semibold bg-brand-wash text-brand dark:bg-slate-800 dark:text-emerald-400"
           >
             {t('landing.profile.badge')}
           </span>
 
           <h2
-            className="mt-6 text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-[2.75rem]"
+            className="mt-6 text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl"
             style={{ color: YELLOW }}
           >
             {t('landing.profile.title')}

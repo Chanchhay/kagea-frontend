@@ -195,7 +195,7 @@ function Avatar({
   return (
     <span
       className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 font-semibold text-primary ${
-        small ? "size-7 text-[10px]" : "size-11 text-sm"
+        small ? "size-7 text-xs" : "size-11 text-sm"
       }`}
     >
       {participant?.avatarUrl && !failed ? (
@@ -301,7 +301,7 @@ function ThreadRow({
           <span className="flex-1 truncate text-sm font-semibold text-ws-fg">
             {threadTitle}
           </span>
-          <span className="shrink-0 text-[10px] text-ws-muted">
+          <span className="shrink-0 text-xs text-ws-muted">
             {thread.lastMessage && formatDate(thread.lastMessage.sentAt, false)}
           </span>
         </span>
@@ -309,7 +309,7 @@ function ThreadRow({
           <BriefcaseBusiness className="size-3 shrink-0" />
           <span className="truncate">{topic(thread, tx)}</span>
           {meta && (
-            <span className="shrink-0 rounded-full bg-ws-panel px-1.5 py-0.5 text-[10px] text-ws-muted">
+            <span className="shrink-0 rounded-full bg-ws-panel px-1.5 py-0.5 text-xs text-ws-muted">
               {meta}
             </span>
           )}
@@ -323,7 +323,7 @@ function ThreadRow({
               : tx("Start the conversation")}
           </span>
           {thread.unreadCount > 0 && (
-            <span className="rounded-full bg-primary px-1.5 text-[10px] font-bold leading-5 text-primary-foreground">
+            <span className="rounded-full bg-primary px-1.5 text-xs font-bold leading-5 text-primary-foreground">
               {thread.unreadCount}
             </span>
           )}
@@ -478,7 +478,7 @@ function Thread({
           <BriefcaseBusiness className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-ws-muted">
+          <p className="text-xs font-medium uppercase tracking-wider text-ws-muted">
             {conversation.applicationId ? tx("Job topic") : tx("Topic")}
           </p>
           <p className="truncate text-sm font-medium text-ws-fg">
@@ -497,7 +497,7 @@ function Thread({
       </div>
 
       <div
-        className="flex items-center gap-1.5 px-4 py-2 text-[10px] text-ws-muted lg:px-6"
+        className="flex items-center gap-1.5 px-4 py-2 text-xs text-ws-muted lg:px-6"
         role="status"
       >
         <span
@@ -608,7 +608,7 @@ function Thread({
               <SendHorizontal className="size-4" />
             </button>
           </div>
-          <div className="mt-2 flex justify-between text-[10px] text-ws-faint">
+          <div className="mt-2 flex justify-between text-xs text-ws-faint">
             <span>
               {sendState.isLoading
                 ? tx("Sending…")
@@ -664,7 +664,7 @@ function MessageGroup({
           {(index === 0 ||
             dayKey(messages[index - 1].sentAt) !== dayKey(message.sentAt)) && (
             <div className="flex justify-center">
-              <time className="rounded-full bg-ws-panel px-3 py-1 text-[10px] text-ws-muted">
+              <time className="rounded-full bg-ws-panel px-3 py-1 text-xs text-ws-muted">
                 {formatDate(message.sentAt, false)}
               </time>
             </div>
@@ -733,7 +733,7 @@ function Bubble({
         }`}
       >
         {!message.mine && (
-          <p className="mb-1 text-[10px] font-semibold text-primary/80">
+          <p className="mb-1 text-xs font-semibold text-primary/80">
             {sender?.displayLabel || tx("Participant")}
           </p>
         )}
@@ -745,7 +745,7 @@ function Bubble({
           {deleted ? tx("This message was deleted") : message.content}
         </p>
         <div
-          className={`mt-1 flex items-center justify-end gap-1 text-[10px] ${
+          className={`mt-1 flex items-center justify-end gap-1 text-xs ${
             message.mine ? "text-primary-foreground/75" : "text-ws-muted"
           }`}
         >

@@ -84,7 +84,7 @@ export function RegisterForm() {
 
   return (
     <Form {...form}>
-      <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-3.5" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="role"
@@ -96,7 +96,7 @@ export function RegisterForm() {
           )}
         />
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3.5 sm:grid-cols-2">
           <TextField control={form.control} name="firstName" label="First name" placeholder="Sokha" />
           <TextField control={form.control} name="lastName" label="Last name" placeholder="Chan" />
         </div>
@@ -110,7 +110,7 @@ export function RegisterForm() {
           placeholder="you@example.com"
         />
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3.5 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="password"
@@ -143,7 +143,7 @@ export function RegisterForm() {
           />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3.5 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="gender"
@@ -152,8 +152,8 @@ export function RegisterForm() {
                 <FormLabel className={authLabelClass}>Gender</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger className={cn(authFieldClass, "mt-1.5 px-4")}>
-                      <span className="flex items-center gap-3">
+                    <SelectTrigger size="sm" className={cn(authFieldClass, "mt-1.5 px-3.5")}>
+                      <span className="flex items-center gap-2.5">
                         <User
                           aria-hidden="true"
                           className="size-4 text-muted-fg dark:text-white/45"
@@ -184,15 +184,14 @@ export function RegisterForm() {
 
         <Button
           type="submit"
-          size="lg"
-          className="mt-1 h-11 w-full rounded-full bg-brand text-[18px] font-semibold text-white shadow-[0_12px_30px_rgba(36,169,68,.28)] transition-colors hover:bg-brand-hover dark:shadow-[0_12px_30px_rgba(36,169,68,.18)]"
+          className="mt-2 w-full rounded-xl bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
           disabled={registration.isLoading}
         >
           <Sparkles aria-hidden="true" className="size-4" />
           {registration.isLoading ? "Creating account..." : "Create account"}
         </Button>
 
-        <p className="flex flex-wrap items-center justify-center gap-2 text-center text-sm text-body">
+        <p className="flex flex-wrap items-center justify-center gap-1.5 pt-1 text-center text-sm text-body">
           Already have an account?
           <KeycloakLoginButton
             variant="link"
@@ -232,7 +231,7 @@ function TextField({
               <Input
                 type={type}
                 placeholder={placeholder}
-                className={cn(authFieldClass, "pl-11")}
+                className={cn(authFieldClass, "pl-10")}
                 {...field}
               />
               <FieldIcon name={name} />

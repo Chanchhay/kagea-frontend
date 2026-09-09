@@ -57,9 +57,9 @@ export default function CommunityOrbit() {
         className="relative flex h-[420px] w-[420px] items-center justify-center overflow-hidden sm:h-[520px] sm:w-[520px] lg:h-[600px] lg:w-[600px]"
         style={{ perspective: '1200px' }}
       >
-        <div className="pointer-events-none absolute h-[280px] w-[280px] rounded-full bg-[#F3BE00]/8 blur-[120px] dark:bg-[#F3BE00]/10 sm:h-[320px] sm:w-[320px]" />
+        <div className="pointer-events-none absolute h-[280px] w-[280px] rounded-full bg-warning/8 blur-[120px] dark:bg-warning/10 sm:h-[320px] sm:w-[320px]" />
 
-        <div className="animate-float absolute z-50 h-24 w-24 overflow-hidden rounded-full border-[2.5px] border-[#F3BE00] shadow-[0_0_28px_rgba(243,190,0,0.24)] dark:border-[#F3BE00] dark:shadow-[0_0_40px_rgba(243,190,0,0.45)]">
+        <div className="animate-float absolute z-50 h-24 w-24 overflow-hidden rounded-full border-[2.5px] border-warning shadow-[0_0_28px_rgba(243,190,0,0.24)] dark:border-warning dark:shadow-[0_0_40px_rgba(243,190,0,0.45)]">
           <Image
             src="/images/avatar/chhaya.jpg"
             alt="Srey ChanChhay"
@@ -71,7 +71,7 @@ export default function CommunityOrbit() {
 
         <div className="container-3d absolute flex h-full w-full items-center justify-center transition-transform duration-500">
           <div
-            className="animate-orbit-ccw group absolute h-[240px] w-[240px] rounded-full border-[1.5px] border-dashed border-[#EAB308]/40 dark:border-[#F3BE00]/40 sm:h-[300px] sm:w-[300px]"
+            className="animate-orbit-ccw group absolute h-[240px] w-[240px] rounded-full border-[1.5px] border-dashed border-warning/40 dark:border-warning/40 sm:h-[300px] sm:w-[300px]"
             style={{ transformStyle: 'preserve-3d' }}
           >
             {innerOrbitUsers.map((user) => (
@@ -82,7 +82,7 @@ export default function CommunityOrbit() {
           </div>
 
           <div
-            className="animate-orbit-cw group absolute h-[420px] w-[420px] rounded-full border-[1.5px] border-dashed border-[#EAB308]/28 dark:border-[#F3BE00]/20 sm:h-[520px] sm:w-[520px]"
+            className="animate-orbit-cw group absolute h-[420px] w-[420px] rounded-full border-[1.5px] border-dashed border-warning/28 dark:border-warning/20 sm:h-[520px] sm:w-[520px]"
             style={{ transformStyle: 'preserve-3d' }}
           >
             {outerOrbitUsers.map((user) => (

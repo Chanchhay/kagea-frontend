@@ -89,7 +89,7 @@ export default function TestimonialsSection() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 sm:py-10">
-      <h2 data-reveal className="text-center text-3xl font-bold text-[#1A202C] dark:text-white sm:text-4xl">
+      <h2 data-reveal className="text-center text-3xl font-bold text-heading dark:text-white sm:text-4xl">
         {t('landing.testimonials.heading')}
       </h2>
 
@@ -101,7 +101,7 @@ export default function TestimonialsSection() {
             onClick={() => setIndex(i)}
             aria-label={`${t('landing.testimonials.goToSlide')} ${i + 1}`}
             className={`h-2 rounded-full transition-all duration-300 ${
-              i === index ? 'w-6 bg-[#22C55E]' : 'w-2 bg-[#22C55E]'
+              i === index ? 'w-6 bg-brand' : 'w-2 bg-brand'
             }`}
           />
         ))}
@@ -124,7 +124,7 @@ export default function TestimonialsSection() {
         <button
           onClick={prev}
           aria-label={t('landing.testimonials.previous')}
-          className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white dark:bg-[#23272D] dark:border dark:border-[#3E444B] shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition hover:scale-105 active:scale-95 text-slate-500 hover:text-slate-900 dark:hover:text-white -ml-4 z-10"
+          className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white dark:bg-surface dark:border dark:border-border shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition hover:scale-105 active:scale-95 text-slate-500 hover:text-slate-900 dark:hover:text-white -ml-4 z-10"
         >
           <ChevronLeftIcon className="w-6 h-6" />
         </button>
@@ -134,7 +134,7 @@ export default function TestimonialsSection() {
           {/* Avatar Area */}
           <div className="relative shrink-0 flex items-center justify-center">
             {/* Green squircle background */}
-            <div className="relative flex h-45 w-45 items-center justify-center rounded-[48px] rounded-tr-[60px] rounded-bl-[60px] bg-[#108A12] shadow-sm sm:h-65 sm:w-65 sm:rounded-[64px] sm:rounded-tr-[80px] sm:rounded-bl-[80px]">
+            <div className="relative flex h-45 w-45 items-center justify-center rounded-[48px] rounded-tr-[60px] rounded-bl-[60px] bg-brand shadow-sm sm:h-65 sm:w-65 sm:rounded-[64px] sm:rounded-tr-[80px] sm:rounded-bl-[80px]">
               <img
                 src={active.image}
                 alt={active.name}
@@ -143,17 +143,17 @@ export default function TestimonialsSection() {
             </div>
 
             {/* Red Quote badge */}
-            <div className="absolute -bottom-3 -right-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#E53E3E] text-white shadow-lg">
+            <div className="absolute -bottom-3 -right-3 flex h-14 w-14 items-center justify-center rounded-full bg-error text-white shadow-lg">
               <span className="text-3xl font-serif font-bold leading-none mt-2">&ldquo;</span>
             </div>
           </div>
 
           {/* Text Content */}
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left flex-1 min-w-0 py-4">
-            <h3 className="text-3xl font-bold text-[#F3BE00]">
+            <h3 className="text-3xl font-bold text-warning-text">
               {active.name}
             </h3>
-            <p className="mt-1.5 text-lg font-medium text-[#E53E3E]">
+            <p className="mt-1.5 text-lg font-medium text-error">
               {t(`landing.testimonials.items.${active.key}.role`)}
             </p>
 
@@ -168,7 +168,7 @@ export default function TestimonialsSection() {
         <button 
           onClick={next}
           aria-label="Next testimonial"
-          className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white dark:bg-[#23272D] dark:border dark:border-[#3E444B] shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition hover:scale-105 active:scale-95 text-slate-500 hover:text-slate-900 dark:hover:text-white -mr-4 z-10"
+          className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white dark:bg-surface dark:border dark:border-border shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition hover:scale-105 active:scale-95 text-slate-500 hover:text-slate-900 dark:hover:text-white -mr-4 z-10"
         >
           <ChevronRightIcon className="w-6 h-6" />
         </button>

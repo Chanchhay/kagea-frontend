@@ -14,11 +14,11 @@ export function ShowcaseTemplate({ title, summary, publicUrl, projects, theme }:
         <div className="flex items-start gap-8">
           {theme.showPhoto ? <Cover url={theme.photoUrl} name={title} size={104} accent={accent} /> : null}
           <div className="min-w-0 flex-1">
-            <h1 className="text-[42px] font-semibold leading-tight tracking-tight text-slate-950">{title}</h1>
-            {theme.tagline ? <p className="mt-2 text-[18px] font-medium" style={{ color: accent }}>{theme.tagline}</p> : null}
-            {summary ? <p className="mt-5 max-w-[640px] whitespace-pre-line text-[18px] leading-7 text-slate-600">{summary}</p> : null}
+            <h1 className="text-5xl font-semibold leading-tight tracking-tight text-slate-950">{title}</h1>
+            {theme.tagline ? <p className="mt-2 text-lg font-medium" style={{ color: accent }}>{theme.tagline}</p> : null}
+            {summary ? <p className="mt-5 max-w-[640px] whitespace-pre-line text-lg leading-7 text-slate-600">{summary}</p> : null}
             {publicUrl ? (
-              <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[18px] font-semibold shadow-sm" style={{ color: accent }}>
+              <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-lg font-semibold shadow-sm" style={{ color: accent }}>
                 <ExternalLink className="size-4" /> {displayUrl(publicUrl)}
               </p>
             ) : null}
@@ -28,8 +28,8 @@ export function ShowcaseTemplate({ title, summary, publicUrl, projects, theme }:
 
       <main className="px-16 pb-16">
         <div className="mb-8 flex items-baseline justify-between border-b border-slate-200 pb-4">
-          <h2 className="text-[18px] font-semibold uppercase tracking-[0.2em] text-slate-950">{tx("Selected work")}</h2>
-          <span className="text-[18px] text-slate-400">{projects.length} {projects.length === 1 ? tx("project") : tx("projects")}</span>
+          <h2 className="text-lg font-semibold uppercase tracking-[0.2em] text-slate-950">{tx("Selected work")}</h2>
+          <span className="text-lg text-slate-400">{projects.length} {projects.length === 1 ? tx("project") : tx("projects")}</span>
         </div>
 
         {projects.length ? (
@@ -38,13 +38,13 @@ export function ShowcaseTemplate({ title, summary, publicUrl, projects, theme }:
               <article key={project.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
                 <ProjectImage url={project.imageUrl} alt={tx(project.title)} accent={accent} className="h-45 w-full" />
                 <div className="p-6">
-                  <h3 className="text-[19px] font-semibold text-slate-950">{project.title}</h3>
+                  <h3 className="text-xl font-semibold text-slate-950">{project.title}</h3>
                   <TechTags techStack={project.techStack} accent={accent} className="mt-3" />
                   {project.description ? (
-                    <p className="mt-3 line-clamp-4 whitespace-pre-line text-[18px] leading-6 text-slate-600">{tx(project.description)}</p>
+                    <p className="mt-3 line-clamp-4 whitespace-pre-line text-lg leading-6 text-slate-600">{tx(project.description)}</p>
                   ) : null}
                   {project.projectUrl || project.githubUrl ? (
-                    <div className="mt-5 flex gap-5 border-t border-slate-100 pt-4 text-[18px] font-semibold">
+                    <div className="mt-5 flex gap-5 border-t border-slate-100 pt-4 text-lg font-semibold">
                       {project.projectUrl ? (
                         <span className="inline-flex items-center gap-1.5" style={{ color: accent }}>
                           <ExternalLink className="size-4" /> {tx(" Live project")}</span>

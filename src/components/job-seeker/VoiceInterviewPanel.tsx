@@ -235,7 +235,7 @@ export function VoiceInterviewPanel({
             <ul className="mt-4 space-y-3">
               {turns.map((turn) => (
                 <li key={turn.id}>
-                  <p className="text-[0.7rem] font-semibold uppercase tracking-wide text-muted-fg">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-fg">
                     {turn.role === "interviewer" ? "Interviewer" : "You"}
                   </p>
                   <p className="mt-0.5 text-sm leading-6 text-body">{turn.text}</p>

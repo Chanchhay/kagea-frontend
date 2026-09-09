@@ -11,7 +11,7 @@ export default function AboutUsPage() {
             {/* Single soft ambient wash -- keeps the page calm instead of busy */}
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -top-64 left-1/2 -z-10 h-[42rem] w-[70rem] -translate-x-1/2 rounded-full bg-[#1fa628]/8 blur-[160px] dark:bg-[#1fa628]/12"
+                className="pointer-events-none absolute -top-64 left-1/2 -z-10 h-[42rem] w-[70rem] -translate-x-1/2 rounded-full bg-brand/8 blur-[160px] dark:bg-brand/12"
             />
 
             {/* Main Content Sections -- full page width, matching the header gutters */}

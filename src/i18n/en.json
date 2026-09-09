@@ -68,10 +68,7 @@
       "error": "Unable to load companies right now.",
       "empty": "Companies with published jobs will appear here.",
       "defaultCategory": "Employer",
-      "defaultLocation": "Cambodia",
-      "role": "role",
-      "roles": "roles",
-      "view": "View"
+      "defaultLocation": "Cambodia"
     },
     "profile": {
       "badge": "Profile",

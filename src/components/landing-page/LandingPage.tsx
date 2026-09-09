@@ -9,7 +9,7 @@ import TestimonialsSection from "./TestimonialsSection";
 export default function LandingPage() {
     return (
         <>
-            <div className="landing-page relative overflow-hidden bg-white text-slate-900 transition-colors duration-300 dark:bg-[#181B1C] dark:text-[#F5F5F5]">
+            <div className="landing-page relative overflow-hidden bg-white text-slate-900 transition-colors duration-300 dark:bg-background dark:text-heading">
                 <div className="relative z-10 mx-auto">
                     <HeroCompaniesSection />
                 </div>
