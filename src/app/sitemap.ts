@@ -1,7 +1,82 @@
 import type { MetadataRoute } from "next";
+import { getApiEndpoint } from "@/lib/api-url";
+import { siteUrl } from "@/lib/site-url";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+export const revalidate = 3600;
+
+type SitemapJob = {
+  id: string;
+  companyId: string | null;
+  publishedAt?: string;
+};
+
+type PublicJobsPage = {
+  content?: SitemapJob[];
+  page?: {
+    number: number;
+    totalPages: number;
+  };
+};
+
+type PublicJobsResponse = {
+  data?: PublicJobsPage;
+};
+
+const SITEMAP_PAGE_SIZE = 100;
+const MAX_SITEMAP_JOBS = 5000;
+
+function dateOrNow(value: string | undefined, now: Date) {
+  if (!value) return now;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? now : date;
+}
+
+async function fetchPublicJobsForSitemap() {
+  const jobs: SitemapJob[] = [];
+  const maxPages = Math.ceil(MAX_SITEMAP_JOBS / SITEMAP_PAGE_SIZE);
+
+  for (let page = 0; page < maxPages; page += 1) {
+    const url = new URL(getApiEndpoint("/public/jobs"));
+    url.searchParams.set("page", String(page));
+    url.searchParams.set("size", String(SITEMAP_PAGE_SIZE));
+    url.searchParams.set("sort", "publishedAt,desc");
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3500);
+
+    try {
+      const res = await fetch(url, {
+        signal: controller.signal,
+        next: { revalidate },
+      });
+
+      if (!res.ok) break;
+
+      const json = (await res.json()) as PublicJobsResponse;
+      const pageData = json.data;
+      const pageJobs = pageData?.content ?? [];
+
+      jobs.push(...pageJobs);
+
+      if (
+        pageJobs.length === 0 ||
+        pageData?.page?.totalPages == null ||
+        page >= pageData.page.totalPages - 1 ||
+        jobs.length >= MAX_SITEMAP_JOBS
+      ) {
+        break;
+      }
+    } catch {
+      break;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  return jobs.slice(0, MAX_SITEMAP_JOBS);
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -31,12 +106,44 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // TODO: Add dynamic routes from API
-  // - Job detail pages: /jobs/[jobId]
-  // - Company pages: /companies/[companyId]
-  // - Practice interview pages: /practice-interview/[jobId]
-  // Fetch from your backend API and map to sitemap entries
-  const dynamicPages: MetadataRoute.Sitemap = [];
+  const jobs = await fetchPublicJobsForSitemap();
+  const companies = new Map<string, Date>();
 
-  return [...staticPages, ...dynamicPages];
+  const jobPages = jobs.flatMap((job): MetadataRoute.Sitemap => {
+    const lastModified = dateOrNow(job.publishedAt, now);
+
+    if (job.companyId) {
+      const previous = companies.get(job.companyId);
+      if (!previous || lastModified > previous) {
+        companies.set(job.companyId, lastModified);
+      }
+    }
+
+    return [
+      {
+        url: `${siteUrl}/jobs/${job.id}`,
+        lastModified,
+        changeFrequency: "weekly",
+        priority: 0.8,
+      },
+      {
+        url: `${siteUrl}/practice-interview/${job.id}`,
+        lastModified,
+        changeFrequency: "weekly",
+        priority: 0.6,
+      },
+    ];
+  });
+
+  const companyPages: MetadataRoute.Sitemap = Array.from(
+    companies,
+    ([companyId, lastModified]) => ({
+      url: `${siteUrl}/companies/${companyId}`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    }),
+  );
+
+  return [...staticPages, ...jobPages, ...companyPages];
 }
