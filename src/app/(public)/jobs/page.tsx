@@ -313,22 +313,30 @@ function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolea
           * needs no account. It leads to the practice page rather than
           * starting anything here, so the questions can be read first.
           */}
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
+        {/*
+          * Sized by the card, not by the viewport: the grid runs one, two or
+          * three columns, so a card is narrow on a phone *and* at the `sm`
+          * two-column break. Each button asks for 9rem and may grow, so the
+          * pair sits side by side when the card can hold both and each takes
+          * its own full-width row when it cannot — no breakpoint can express
+          * that, because the card's width does not follow the window's.
+          */}
+        <div className="flex w-full flex-wrap items-center gap-2">
           <Link
             href={`/practice-interview/${job.id}`}
             aria-label={`${t("findJobsPage.interviewNowAria")} ${job.title}`}
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 font-medium text-slate-700 transition-colors hover:border-brand hover:text-brand dark:border-border dark:text-body dark:hover:border-emerald-400 dark:hover:text-warning-text"
+            className="inline-flex h-11 min-w-0 flex-1 basis-36 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 px-4 font-medium text-slate-700 transition-colors hover:border-brand hover:text-brand dark:border-border dark:text-body dark:hover:border-emerald-400 dark:hover:text-warning-text"
           >
-            <Sparkles className="size-4" />
+            <Sparkles className="size-4 shrink-0" />
             {t("findJobsPage.interviewNow")}
           </Link>
           <Link
             href={`/jobs/${job.id}`}
             aria-label={`${t("findJobsPage.applyForAria")} ${job.title}`}
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-brand px-5 font-medium text-white transition-colors hover:bg-brand-hover"
+            className="inline-flex h-11 min-w-0 flex-1 basis-36 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-brand px-5 font-medium text-white transition-colors hover:bg-brand-hover"
           >
             {t("jobs.apply")}
-            <ArrowUpRight className="size-4" />
+            <ArrowUpRight className="size-4 shrink-0" />
           </Link>
         </div>
       </div>
