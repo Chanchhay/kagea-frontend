@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight, Bookmark, BriefcaseBusiness, ChevronLeft, ChevronRight, MapPin, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowUpRight, Bookmark, BriefcaseBusiness, ChevronLeft, ChevronRight, MapPin, Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import type { PublicJobFacetOption, PublicJobFacetValue, PublicJobResponse } from "@/contracts";
 import { PublicFooter, PublicShell } from "@/components/layout/PublicShell";
+import { JobListInterviewQuestions } from "@/components/public/JobListInterviewQuestions";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { PublicJobsQuery } from "@/services/publicApi";
@@ -221,6 +222,9 @@ export default function PublicJobsPage() {
                       reader's cursor. */}
                   <div className={`grid gap-6 transition-opacity sm:grid-cols-2 xl:grid-cols-3 ${jobsQuery.isFetching ? "opacity-60" : ""}`} aria-busy={jobsQuery.isFetching}>{jobs.map((job) => <JobCard key={job.id} job={job} saved={savedJobs.has(job.id)} onSave={() => setSavedJobs(toggleSet(savedJobs, job.id))} />)}</div>
                   <Pagination page={page} totalPages={totalPages} totalElements={totalElements} pageSize={PAGE_SIZE} onChange={setPage} />
+                  {/* Under the pagination on purpose: it describes the page's
+                      jobs, so it belongs after the control that changes them. */}
+                  <JobListInterviewQuestions jobs={jobs} />
                 </> :
                 <div className="rounded-2xl border border-dashed border-slate-300 px-6 py-20 text-center dark:border-border"><h2 className="text-lg font-semibold">{t("findJobsPage.noMatchingJobs")}</h2><p className="mt-2 text-sm text-slate-500">{t("findJobsPage.tryChangingFilters")}</p><button type="button" onClick={clearFilters} className="mt-5 rounded-xl bg-brand px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-hover">{t("findJobsPage.clearFilters")}</button></div>}
             </section>
@@ -302,14 +306,31 @@ function JobCard({ job, saved, onSave }: { job: PublicJobResponse; saved: boolea
         <p className="min-w-0 truncate font-medium text-slate-950 dark:text-heading">
           {salary(job.salaryMin, job.salaryMax, t)}
         </p>
-        <Link
-          href={`/jobs/${job.id}`}
-          aria-label={`${t("findJobsPage.applyForAria")} ${job.title}`}
-          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-brand px-5 font-medium text-white transition-colors hover:bg-brand-hover"
-        >
-          {t("jobs.apply")}
-          <ArrowUpRight className="size-4" />
-        </Link>
+        {/*
+          * Two ways out of a card, ranked. Applying stays the filled brand
+          * button because it is what the board is for; the interview is the
+          * quieter outline beside it — a rehearsal, not a commitment, and it
+          * needs no account. It leads to the practice page rather than
+          * starting anything here, so the questions can be read first.
+          */}
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <Link
+            href={`/practice-interview/${job.id}`}
+            aria-label={`${t("findJobsPage.interviewNowAria")} ${job.title}`}
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 font-medium text-slate-700 transition-colors hover:border-brand hover:text-brand dark:border-border dark:text-body dark:hover:border-emerald-400 dark:hover:text-warning-text"
+          >
+            <Sparkles className="size-4" />
+            {t("findJobsPage.interviewNow")}
+          </Link>
+          <Link
+            href={`/jobs/${job.id}`}
+            aria-label={`${t("findJobsPage.applyForAria")} ${job.title}`}
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-brand px-5 font-medium text-white transition-colors hover:bg-brand-hover"
+          >
+            {t("jobs.apply")}
+            <ArrowUpRight className="size-4" />
+          </Link>
+        </div>
       </div>
     </article>
   );

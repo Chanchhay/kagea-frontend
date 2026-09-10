@@ -90,7 +90,7 @@ export function GuestInterview({
     : 0;
 
   return (
-    <section className="rounded-3xl border border-line bg-surface p-6">
+    <section className="rounded-3xl border border-border bg-surface p-6">
       <h2 className="flex items-center gap-2 text-lg font-semibold text-heading">
         <Sparkles aria-hidden="true" className="size-5 text-brand" />
         Try the AI interview
@@ -223,7 +223,7 @@ function ModeButton({
       className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
         active
           ? "border-brand bg-brand/10 text-brand"
-          : "border-line text-body hover:border-brand/40"
+          : "border-border text-body hover:border-brand/40"
       }`}
     >
       {icon}
@@ -288,7 +288,7 @@ function Questions({
   if (isScoring) return <Waiting label="Scoring your interview…" />;
 
   return (
-    <section className="rounded-3xl border border-line bg-surface p-6">
+    <section className="rounded-3xl border border-border bg-surface p-6">
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-fg">
         Question {index + 1} of {questions.length}
       </p>
@@ -301,7 +301,7 @@ function Questions({
         onChange={(event) => setDraft(event.target.value)}
         rows={7}
         placeholder="Answer as you would out loud."
-        className="mt-4 w-full resize-none rounded-2xl border border-line bg-surface-2 px-4 py-3 text-sm leading-6 text-body outline-none focus:border-brand"
+        className="mt-4 w-full resize-none rounded-2xl border border-border bg-surface-2 px-4 py-3 text-sm leading-6 text-body outline-none focus:border-brand"
       />
 
       {error ? (
@@ -334,7 +334,7 @@ function Result({
   );
 
   return (
-    <section className="rounded-3xl border border-line bg-surface p-6">
+    <section className="rounded-3xl border border-border bg-surface p-6">
       <h2 className="text-lg font-semibold text-heading">
         Your interview for {jobTitle}
       </h2>
@@ -415,7 +415,7 @@ function Detail({ label, value }: { label: string; value?: string | null }) {
 
 function Waiting({ label }: { label: string }) {
   return (
-    <section className="flex items-center gap-3 rounded-3xl border border-line bg-surface p-6 text-sm text-body">
+    <section className="flex items-center gap-3 rounded-3xl border border-border bg-surface p-6 text-sm text-body">
       <Loader2 aria-hidden="true" className="size-4 animate-spin text-brand" />
       {label}
     </section>
