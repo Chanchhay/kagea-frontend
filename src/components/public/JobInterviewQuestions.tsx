@@ -30,7 +30,8 @@ export function JobInterviewQuestions({
   className?: string;
 }) {
   const { data, isLoading } = useGetPublicJobInterviewQuestionsQuery(jobId);
-  const panel = className ?? "rounded-3xl border border-border bg-surface p-6";
+  const panel =
+    className ?? "rounded-3xl border border-border bg-surface p-4 sm:p-6";
 
   if (isLoading) {
     return (
@@ -45,7 +46,7 @@ export function JobInterviewQuestions({
   return (
     <section className={cn("min-w-0", panel)}>
       <h2 className="flex items-center gap-2 text-lg font-semibold text-heading">
-        <ListChecks aria-hidden="true" className="size-5 text-brand" />
+        <ListChecks aria-hidden="true" className="size-5 shrink-0 text-brand" />
         What this interview asks
       </h2>
 
@@ -70,14 +71,14 @@ export function JobInterviewQuestions({
           .map((question, index) => (
             <li
               key={question.id}
-              className="rounded-2xl border border-border bg-surface-muted/50 p-4"
+              className="rounded-2xl border border-border bg-surface-muted/50 p-3 sm:p-4"
             >
               <div className="flex items-start gap-3">
                 <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-tint text-xs font-semibold text-brand">
                   {index + 1}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-sm leading-6 text-heading">
+                  <p className="break-words text-sm leading-6 text-heading">
                     {question.questionText}
                   </p>
                   <span className="mt-2 inline-flex rounded-md border border-border px-2 py-0.5 text-xs text-body">

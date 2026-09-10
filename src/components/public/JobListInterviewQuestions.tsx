@@ -41,9 +41,9 @@ export function JobListInterviewQuestions({ jobs }: { jobs: PublicJobResponse[] 
   if (withQuestions.length === 0) return null;
 
   return (
-    <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 dark:border-border dark:bg-surface sm:p-7">
+    <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-4 dark:border-border dark:bg-surface sm:p-6 lg:p-7">
       <h2 className="flex items-center gap-2 text-lg font-semibold text-slate-950 dark:text-heading">
-        <ListChecks aria-hidden="true" className="size-5 text-brand" />
+        <ListChecks aria-hidden="true" className="size-5 shrink-0 text-brand" />
         {t("findJobsPage.interviewPreviewHeading")}
       </h2>
       <p className="mt-1.5 text-sm text-slate-600 dark:text-body">
@@ -61,17 +61,17 @@ export function JobListInterviewQuestions({ jobs }: { jobs: PublicJobResponse[] 
           return (
             <article
               key={preview.jobId}
-              className="rounded-xl border border-slate-200 p-5 dark:border-border"
+              className="rounded-xl border border-slate-200 p-4 dark:border-border sm:p-5"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1 basis-48">
                   <Link
                     href={`/jobs/${preview.jobId}`}
-                    className="font-medium text-slate-950 hover:text-brand dark:text-heading"
+                    className="break-words font-medium text-slate-950 hover:text-brand dark:text-heading"
                   >
                     {job.title}
                   </Link>
-                  <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+                  <p className="mt-0.5 break-words text-sm text-slate-500 dark:text-slate-400">
                     {job.companyName}
                     {preview.estimatedMinutes
                       ? ` · ${t("findJobsPage.interviewPreviewMinutes").replace(
@@ -85,11 +85,11 @@ export function JobListInterviewQuestions({ jobs }: { jobs: PublicJobResponse[] 
                 <Link
                   href={`/practice-interview/${preview.jobId}`}
                   aria-label={`${t("findJobsPage.interviewNowAria")} ${job.title}`}
-                  className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
+                  className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-hover max-sm:w-full"
                 >
-                  <Sparkles aria-hidden="true" className="size-4" />
+                  <Sparkles aria-hidden="true" className="size-4 shrink-0" />
                   {t("findJobsPage.interviewNow")}
-                  <ArrowUpRight aria-hidden="true" className="size-4" />
+                  <ArrowUpRight aria-hidden="true" className="size-4 shrink-0" />
                 </Link>
               </div>
 
@@ -102,7 +102,7 @@ export function JobListInterviewQuestions({ jobs }: { jobs: PublicJobResponse[] 
                     <span aria-hidden="true" className="shrink-0 text-muted-fg">
                       {index + 1}.
                     </span>
-                    <span className="min-w-0">{question.questionText}</span>
+                    <span className="min-w-0 break-words">{question.questionText}</span>
                   </li>
                 ))}
               </ol>
