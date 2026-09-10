@@ -5,6 +5,7 @@ import type { PublicJobResponse } from "@/contracts";
 import { Markdown } from "@/components/shared/Markdown";
 import { ApplyJobDialog } from "./ApplyJobDialog";
 import { CompanyLogo } from "./CompanyLogo";
+import { JobInterviewQuestions } from "./JobInterviewQuestions";
 import { PracticeInterviewLink } from "./PracticeInterviewLink";
 import { SaveJobButton } from "./SaveJobButton";
 import { formatDate, formatEnum, formatSalary } from "./PublicJobCard";
@@ -32,9 +33,15 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10 max-lg:[overflow-wrap:anywhere]">
+      {/*
+       * Shown at every width. It used to be `lg:hidden`, on the assumption that
+       * a desktop reader would use the browser's back button — but arriving
+       * from a shared link there is nothing to go back to, and the only other
+       * way out was a link buried under the similar-jobs list.
+       */}
       <Link
         href="/jobs"
-        className="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-body hover:text-brand lg:hidden"
+        className="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-body hover:text-brand"
       >
         <ArrowLeft aria-hidden="true" className="size-4 shrink-0" />
         Back to jobs
@@ -146,6 +153,17 @@ export function PublicJobDetails({ job, relatedJobs }: PublicJobDetailsProps) {
               />
             </ContentCard>
           ))}
+
+          {/*
+           * Last in the column on purpose: it answers "what would this actually
+           * be like", which is a question someone asks after they have read the
+           * role, not before. Removes itself when nobody wrote questions for
+           * this job, so most postings end on their last section as before.
+           */}
+          <JobInterviewQuestions
+            jobId={job.id}
+            className={`${PANEL} p-4 sm:p-5 lg:p-7`}
+          />
         </div>
 
         <aside className="min-w-0 space-y-4 lg:space-y-5 max-lg:[&>div]:p-4 sm:max-lg:[&>div]:p-5 max-lg:[&>div]:min-w-0 max-lg:[&_span]:max-w-full">

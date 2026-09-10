@@ -137,3 +137,67 @@ export type ApiResponseListPublicJobCategoryResponse = ApiResponse<
 export type ApiResponseListPublicIndustryResponse = ApiResponse<
   PublicIndustryResponse[]
 >;
+
+/**
+ * The kinds of question an interview can ask. Mirrors the backend's
+ * `InterviewQuestionType`, and `AiInterviewQuestionResponse["questionType"]` on
+ * the job-seeker side: a written question is copied into the session verbatim,
+ * so all three vocabularies have to stay identical.
+ */
+export type PublicJobInterviewQuestionType =
+  | "TECHNICAL"
+  | "BEHAVIORAL"
+  | "SITUATIONAL"
+  | "COMMUNICATION"
+  | "PROBLEM_SOLVING"
+  | "GENERAL";
+
+/**
+ * One question an administrator wrote for a job, as shown to a visitor *before*
+ * the interview starts.
+ *
+ * <p>Deliberately thinner than the admin console's view of the same row: it
+ * carries no `expectedAnswer`. That field is the scoring rubric, and this
+ * endpoint is public — the syllabus is fair to publish, the mark scheme is not.
+ */
+export type PublicJobInterviewQuestionResponse = {
+  id: string;
+  displayOrder: number;
+  questionType: PublicJobInterviewQuestionType;
+  questionText: string;
+  maxScore: number;
+};
+
+/**
+ * What the interview for one job will cover.
+ *
+ * <p>`questions` holds only the questions an administrator wrote. It is shorter
+ * than `questionCount` whenever the job is in `MANUAL_PLUS_AI` mode, because
+ * the rest are written by the AI when the session starts and so do not exist
+ * yet. Report length from `questionCount`, never from `questions.length`.
+ *
+ * <p>A job nobody wrote questions for comes back with an empty `questions` and
+ * a non-zero `questionCount` — the interview still runs, entirely generated.
+ */
+export type PublicJobInterviewPreviewResponse = {
+  jobId: string;
+  jobTitle: string;
+  /** How many questions the interview will actually ask. */
+  questionCount: number;
+  /** A rough sitting time, or null when the backend will not estimate one. */
+  estimatedMinutes: number | null;
+  questions: PublicJobInterviewQuestionResponse[];
+};
+
+export type ApiResponsePublicJobInterviewPreviewResponse =
+  ApiResponse<PublicJobInterviewPreviewResponse>;
+
+/**
+ * Previews for a page of the board, in the order the ids were asked for.
+ *
+ * <p>Shorter than the list of ids sent when one of them has left the board
+ * since the listing was drawn — match on `jobId` rather than by position.
+ */
+export type ApiResponseListPublicJobInterviewPreviewResponse = ApiResponse<
+  PublicJobInterviewPreviewResponse[]
+>;

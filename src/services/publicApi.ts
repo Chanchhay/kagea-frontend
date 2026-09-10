@@ -6,7 +6,10 @@ import type {
   ApiResponseListPublicSkillResponse,
   ApiResponsePagePublicJobResponse,
   ApiResponsePublicJobFacetsResponse,
+  ApiResponseListPublicJobInterviewPreviewResponse,
+  ApiResponsePublicJobInterviewPreviewResponse,
   ApiResponsePublicJobResponse,
+  PublicJobInterviewPreviewResponse,
 } from "@/contracts";
 import { baseApi, normalizePage, unwrapApiResponse } from "./baseApi";
 
@@ -95,6 +98,45 @@ export const publicApi = baseApi.injectEndpoints({
       transformResponse: unwrapPublicJob,
       providesTags: (_result, _error, id) => [{ type: "PublicJobs", id }],
     }),
+    /**
+     * The interview questions a recruiter set for one job, read before the
+     * visitor commits to sitting it.
+     *
+     * <p>Open to anyone, like the job itself: the point is to let someone
+     * decide whether the interview is worth their time, and a preview behind a
+     * login cannot do that.
+     */
+    getPublicJobInterviewQuestions: builder.query<
+      PublicJobInterviewPreviewResponse,
+      string
+    >({
+      query: (jobId) => `/public/jobs/${jobId}/interview-questions`,
+      transformResponse: (
+        response: ApiResponsePublicJobInterviewPreviewResponse,
+      ) => unwrapApiResponse(response),
+      providesTags: (_result, _error, id) => [
+        { type: "PublicJobs", id: `${id}-interview-questions` },
+      ],
+    }),
+    /**
+     * The same previews for a whole page of the board in one request.
+     *
+     * <p>Skipped by passing an empty list — the hook is called before the jobs
+     * arrive, and a request for no jobs is one nobody needs to answer.
+     */
+    getPublicJobInterviewQuestionsBatch: builder.query<
+      PublicJobInterviewPreviewResponse[],
+      string[]
+    >({
+      query: (jobIds) => ({
+        url: "/public/job-interview-questions",
+        params: { jobIds: jobIds.join(",") },
+      }),
+      transformResponse: (
+        response: ApiResponseListPublicJobInterviewPreviewResponse,
+      ) => unwrapApiResponse(response),
+      providesTags: ["PublicJobs"],
+    }),
     getPublicSkills: builder.query<
       ReturnType<typeof unwrapPublicSkills>,
       void
@@ -133,6 +175,8 @@ export const {
   useGetPublicJobsQuery,
   useGetPublicJobFacetsQuery,
   useGetPublicJobQuery,
+  useGetPublicJobInterviewQuestionsQuery,
+  useGetPublicJobInterviewQuestionsBatchQuery,
   useGetPublicSkillsQuery,
   useGetPublicJobCategoriesQuery,
   useGetPublicIndustriesQuery,
